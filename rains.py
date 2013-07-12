@@ -18,6 +18,7 @@ from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.rings.finite_rings.constructor import GF
 from sage.matrix.constructor import diagonal_matrix
 from sage.combinat.cartesian_product import CartesianProduct as CProd
+from sage.misc.misc import cputime, walltime
 
 class FalseConjecture(Exception):
     pass
@@ -29,9 +30,15 @@ def test_gens_cyclotomic(p, n):
     tests that the returned elements have the same minimal polynomial
     over F_p, and that the polynomial has degree n.
     '''
+    c, w = cputime(), walltime()
     k1 = GF(p**n, 'z1', modulus='random')
     k2 = GF(p**n, 'z2', modulus='random')
+    print "Field creation: CPU %s, Wall %s" % (cputime(c), walltime(w))
+
+    c, w = cputime(), walltime()
     a, b = find_gens_cyclotomic(k1, k2)
+    print "Rains' algorithm: CPU %s, Wall %s" % (cputime(c), walltime(w))
+
     P = a.minpoly()
     assert(P.degree() == n)
     assert(P == b.minpoly())
@@ -144,6 +151,9 @@ def find_root_order(p, n):
     [1]. Heuristically m ∈ O(n log n).  Pinch [2] and Rains give some
     tabulations.
 
+    Note: this algorithm is very naive and very slow (in some cases,
+    slower than `find_unique_orbit`). Any optimizations welcome.
+
     [1]: D. R. Heath-Brown, Zero-free regions for Dirichlet L-functions, and
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
@@ -171,7 +181,7 @@ def find_root_order(p, n):
             # Check condition (3).  Notice that we can divide λ(m) by
             # n⋅o, rather than n, because we know that gcd(n,o) = 1
             carmich = S.diagonal()[-1]
-            if n.gcd(carmich // ord):
+            if n.gcd(carmich // ord) == 1:
 
                 # Get the new generators
                 gens = [(prod(g**e for g, e in zip(gens, r)), o)
