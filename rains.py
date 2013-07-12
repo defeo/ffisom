@@ -17,9 +17,24 @@ The algorithm for finding the generators α and β is implemented by
 from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.rings.finite_rings.constructor import GF
 from sage.matrix.constructor import diagonal_matrix
+from sage.combinat.cartesian_product import CartesianProduct as CProd
 
 class FalseConjecture(Exception):
     pass
+
+def test_gens_cyclotomic(p, n):
+    '''
+    Test routine for `find_gen_cyclotomic`. Constructs two random
+    extensions of F_p of degree n, then calls find_gens_cyclotomic and
+    tests that the returned elements have the same minimal polynomial
+    over F_p, and that the polynomial has degree n.
+    '''
+    k1 = GF(p**n, 'z1', modulus='random')
+    k2 = GF(p**n, 'z2', modulus='random')
+    a, b = find_gens_cyclotomic(k1, k2)
+    P = a.minpoly()
+    assert(P.degree() == n)
+    assert(P == b.minpoly())
 
 def find_gens_cyclotomic(k1, k2):
     '''
@@ -48,7 +63,7 @@ def find_gens_cyclotomic(k1, k2):
     o, G = find_root_order(p, n)
 
     # Construct extensions of k1 and k2, if needed
-    P = none
+    P = None
     if (ord > n):
         P = GF(p**o, 'z').polynomial()
         k1, k2 = [k.extension(P) for k in (k1, k2)]
@@ -68,7 +83,8 @@ def find_root_order(p, n):
     2. gcd(n, o) = 1;
     3. ℤ/m* = <p^o> × G for some G ⊂ ℤ/m*;
 
-    then return o and a set of generators for G.
+    then return o and a set of generators for G, together with their
+    respective orders.
 
     Rains also requires m to be square-free, but we like to live
     dangerously.
@@ -114,8 +130,8 @@ def find_root_order(p, n):
 
     Unless the SNF has two entries equal to λ(m) (a very rare case,
     but look at m=15⋅16, if you like nasty examples), there is a
-    unique group, call it C₁, of order λ(m). Suppose that the order of <p>
-    is greater than the order of any other group than C₁, then
+    unique group, call it C₁, of order λ(m). Suppose that the order of
+    <p> is greater than the order of any other group than C₁, then
     necessarily <p> ⊂ C₁.
 
     My intuition is that if these things do not happen, then a smaller
@@ -134,6 +150,9 @@ def find_root_order(p, n):
     '''
     m = n + 1
     while True:
+        if m % p == 0:
+            m += 1
+            continue
         R = Zmod(m)
         ord = R(p).multiplicative_order()
 
@@ -146,22 +165,22 @@ def find_root_order(p, n):
             S, _, Q = A.smith_form()
 
             # Check that my "intuition" was correct
-            if A.ncols() > 1 and ord <= S.diagonal[-2]:
+            if A.ncols() > 1 and ord <= S.diagonal()[-2]:
                 raise FalseConjecture('Wow! Report these: p=%d, n=%d, m=%d' % (p,n,m))
 
             # Check condition (3).  Notice that we can divide λ(m) by
             # n⋅o, rather than n, because we know that gcd(n,o) = 1
-            carmich = S.diagonal[-1]
+            carmich = S.diagonal()[-1]
             if n.gcd(carmich // ord):
 
                 # Get the new generators
-                gens = [prod(g**e for g, e in zip(gens, r)) 
-                        for r in (Q**-1).rows()]
-
-               # Replace the last generator by g^n
-               gens[-1] = gens[-1]**n
-               return ord // n, gens
-            m += 1
+                gens = [(prod(g**e for g, e in zip(gens, r)), o)
+                        for r, o in zip((Q**-1).rows(), S.diagonal())]
+                
+                # Replace the last generator by g^n
+                gens[-1] = (lambda (g, o): (g**n, o // n))(gens[-1])
+                return ord // n, gens
+        m += 1
 
 
 def find_unique_orbit(k, G):
@@ -209,29 +228,40 @@ def find_unique_orbit(k, G):
     impossible. There is a good deal of literature on linear
     dependencies of roots of unity in ℂ, but I haven't find any on
     finite fields. An old result by Mann [1] tells that for such a
-    relation to happen in ℂ, m should divide the product of all the
+    relation to happen in ℂ, m needs to divide the product of all the
     primes up to 2⋅#G + 1 (which is unlikely to happen in our case). I
-    have no idea of how to adapt this to finite fields, but this
-    doesn't seem impossible.
+    have no idea of how to adapt this to finite fields, but it doesn't
+    seem impossible to do.
 
     As an optimization that is not implemented here, notice that if
-    ℤ/m* = <p> × G' for some other group G' ⊂ ℤ/m*, then there is an
+    ℤ/m* = <p> × G' for some other group G' ⊂ G, then there is an
     uniquely defined element
 
       Θ = ∑_{g ∈ G'} ζ^g
 
     in k, and η is the trace of θ over F_{p^n}.
 
+    Complexity of this phase. Finding a root ζ is done in O(1) trials,
+    each costing O(n⋅o) multiplications in k. The Gaussian period is
+    the sum of O(m/n) elements of k, each of which is computed with
+    O(log m) multiplications in k. By computing the powers ζ^g smartly
+    (not done here), one can obviously do all the job with only
+    O(log m) multiplications and O(m/n) additions.
+
     [1]: H.B. Mann. On linear relations between roots of unity. 1965
     '''
-    m = G[0].parent().order()
-    cofactor = k.cardinality() / m
+    m = G[0][0].parent().order()
+    cofactor = k.cardinality() // m
     fact = m.factor()
 
     # find an m-th root of unity
     zeta = 1
-    while any(root**(m/f[0]) == 1 for f in fact):
-        zeta = F.random_element()**cofactor
+    while any(zeta**(m // f[0]) == 1 for f in fact):
+        zeta = k.random_element()**cofactor
         
-    # return the Gaussian period (todo)
-    return zeta
+    # return the Gaussian period
+    # ... lovely combinatorial iterators!
+    return sum(zeta**prod(g**e for (g, _), e in zip(G, exps))
+               for exps in CProd(*map(lambda (_,x): xrange(x),
+                                      G)))
+
