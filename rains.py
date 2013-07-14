@@ -25,7 +25,7 @@ class FalseConjecture(Exception):
 
 def test_gens_cyclotomic(p, n):
     '''
-    Test routine for `find_gen_cyclotomic`. Constructs two random
+    Test routine for `find_gens_cyclotomic`. Constructs two random
     extensions of F_p of degree n, then calls find_gens_cyclotomic and
     tests that the returned elements have the same minimal polynomial
     over F_p, and that the polynomial has degree n.
@@ -158,8 +158,7 @@ def find_root_order(p, n):
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
-    m = n + 1
-    while True:
+    for m in sieve(p, n):
         if m % p == 0:
             m += 1
             continue
@@ -190,8 +189,51 @@ def find_root_order(p, n):
                 # Replace the last generator by g^n
                 gens[-1] = (lambda (g, o): (g**n, o // n))(gens[-1])
                 return ord // n, gens
-        m += 1
 
+
+def sieve(p, n):
+    '''
+    '''
+    class prime_data:
+        def __init__(self, prime, mul, p):
+            self.prime = prime
+            self.mul = mul
+            self.fact = prime**mul
+            self.dict = {0: (1,1)}
+            self.p = p
+
+        def __getitem__(self, k):
+            if k not in self.dict:
+                self.dict[k] = None
+
+                # Primes of the form m = k⋅n + 1.  k must be prime to
+                # n, in order to be able to satisfy (1), (2) and (3').
+                if k % self.prime != 0:
+                    m = k*fact + 1
+                    if m.is_prime() and m != self.p:
+                        p = Zmod(m)(self.p)
+                        if p^(self.fact // self.prime) != 1:
+                            ord = p.multiplicative_order()
+                            self.dict[k] = (m, ord)
+
+                # Prime powers of the form prime^a
+                elif ((k == self.prime and k != 2 and self.p != self.prime) 
+                      or (k == 2 and self.fact == 2 and self.p % 4 == 3)
+                      or (k == 4 and self.prime == 2 and self.p != 2)):
+                    m = k*fact
+                    p = Zmod(m)(self.p)
+                    if p^(self.fact // self.prime) != 1: 
+                        ord = p.multiplicative_order()
+                        self.dict[k] = (m, ord)
+
+            return self.dict[k]
+    
+
+    facts = [[prime_data(f, m, p), 1, False]
+             for (f, m) in sorted(n.factor(), key=lambda (x,y): x**y)]
+    while True:
+        pass
+    
 
 def find_unique_orbit(k, G):
     '''
