@@ -194,46 +194,52 @@ def find_root_order(p, n):
 def sieve(p, n):
     '''
     '''
-    class prime_data:
-        def __init__(self, prime, mul, p):
-            self.prime = prime
-            self.mul = mul
-            self.fact = prime**mul
-            self.dict = {0: (1,1)}
-            self.p = p
+    def accept(k, ell, e, p):
+        fact = ell**e
+        # Primes of the form m = k⋅n + 1.  k must be prime to
+        # n, in order to be able to satisfy (1), (2) and (3').
+        if k % p != 0:
+            m = k*fact + 1
+            if m.is_prime() and m != p:
+                p = Zmod(m)(p)
+                ord = m - 1
+                if p^(ord // ell) != 1:
+                    return m, ord
+                    
+        # Prime powers of the form prime^a
+        elif ((k == ell and k != 2 and p != ell) 
+              or (k == 2 and fact == 2 and p % 4 == 3)
+              or (k == 4 and prime == 2 and p != 2)):
+            m = k*fact
+            p = Zmod(m)(p)
+            ord = (ell - 1) * k * fact // ell
+            if p^(ord // ell) != 1:
+                return m, ord
 
-        def __getitem__(self, k):
-            if k not in self.dict:
-                self.dict[k] = None
+        return None
+    
+    # For each prime power, find the smallest multiplier.  The name
+    # `sieve` refers to an algorithm that is not implemented yet.
+    sieve = []
+    for ell, mul in n.factor():
+        k, m = 0, None
+        while m is None:
+            k += 1
+            m, ord = accept(k, ell, mul, p)
+        sieve.append((ell**mul, m, ord))
 
-                # Primes of the form m = k⋅n + 1.  k must be prime to
-                # n, in order to be able to satisfy (1), (2) and (3').
-                if k % self.prime != 0:
-                    m = k*fact + 1
-                    if m.is_prime() and m != self.p:
-                        p = Zmod(m)(self.p)
-                        if p^(self.fact // self.prime) != 1:
-                            ord = p.multiplicative_order()
-                            self.dict[k] = (m, ord)
-
-                # Prime powers of the form prime^a
-                elif ((k == self.prime and k != 2 and self.p != self.prime) 
-                      or (k == 2 and self.fact == 2 and self.p % 4 == 3)
-                      or (k == 4 and self.prime == 2 and self.p != 2)):
-                    m = k*fact
-                    p = Zmod(m)(self.p)
-                    if p^(self.fact // self.prime) != 1: 
-                        ord = p.multiplicative_order()
-                        self.dict[k] = (m, ord)
-
-            return self.dict[k]
+    # Construct ℤ/m* as the product of the factors ℤ/f*
+    m = prod(map(lambda (f, m, ord) : m, sieve))
+    R = Zmod(m)
+    ord = R(p).multiplicative_order()
+    G = []
+    for g, n, (f, o) in zip(R.unit_gens(), sieve.iterkeys(), sieve.itervalues()):
+        assert(g**o == 1)
+        G.append((g**f, o // f))
+        
+    return ord // n, G
     
 
-    facts = [[prime_data(f, m, p), 1, False]
-             for (f, m) in sorted(n.factor(), key=lambda (x,y): x**y)]
-    while True:
-        pass
-    
 
 def find_unique_orbit(k, G):
     '''
