@@ -15,6 +15,7 @@ The algorithm for finding the generators α and β is implemented by
 '''
 
 from sage.rings.finite_rings.integer_mod_ring import Zmod
+from sage.rings.integer_ring import crt_basis
 from sage.rings.finite_rings.constructor import GF
 from sage.matrix.constructor import diagonal_matrix
 from sage.combinat.cartesian_product import CartesianProduct as CProd
@@ -158,7 +159,8 @@ def find_root_order(p, n):
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
-    for m in sieve(p, n):
+    m = n+1
+    while True:
         if m % p == 0:
             m += 1
             continue
@@ -189,7 +191,7 @@ def find_root_order(p, n):
                 # Replace the last generator by g^n
                 gens[-1] = (lambda (g, o): (g**n, o // n))(gens[-1])
                 return ord // n, gens
-
+        m += 1
 
 def sieve(p, n):
     '''
@@ -198,44 +200,82 @@ def sieve(p, n):
         fact = ell**e
         # Primes of the form m = k⋅n + 1.  k must be prime to
         # n, in order to be able to satisfy (1), (2) and (3').
-        if k % p != 0:
+        if k % ell != 0:
             m = k*fact + 1
             if m.is_prime() and m != p:
                 p = Zmod(m)(p)
                 ord = m - 1
-                if p^(ord // ell) != 1:
-                    return m, ord
+                if p**(ord // ell) != 1:
+                    return m, 1
                     
         # Prime powers of the form prime^a
-        elif ((k == ell and k != 2 and p != ell) 
-              or (k == 2 and fact == 2 and p % 4 == 3)
-              or (k == 4 and prime == 2 and p != 2)):
+        elif (k == ell and k != 2 and p != ell):
             m = k*fact
             p = Zmod(m)(p)
-            ord = (ell - 1) * k * fact // ell
-            if p^(ord // ell) != 1:
-                return m, ord
+            ord = (ell - 1) * fact
+            if p**(ord // ell) != 1:
+                return ell, e+1
+
+        # Primes p of the form -1 mod 4, only useful when fact = 2
+        elif (k == 2 and fact == 2 and p % 4 == 3):
+            return fact, 2
+
+        # Prime powers 2^a
+        elif (k == 4 and ell == 2 and p != 2):
+            m = 4*fact
+            R = Zmod(m)
+            p = R(p)
+            ord = 2*fact
+            if p**fact != 1:
+                return ell, e+2
 
         return None
     
-    # For each prime power, find the smallest multiplier.  The name
-    # `sieve` refers to an algorithm that is not implemented yet.
-    sieve = []
+    class factor:
+        def __init__(self, ell):
+            self.ell = ell
+            self.mul = 1
+            self.exp = 1
+
+        def add(self, mul, exp):
+            self.mul = max(self.mul, mul)
+            self.exp *= exp
+            return self
+            
+        def fact(self):
+            return self.ell**self.mul
+
+        def order(self):
+            return (self.ell-1) * self.ell**(self.mul-1)
+
+        def gen(self):
+            R = Zmod(self.fact())
+            if R.order() == 2:
+                return R(1)
+            elif R.order() % 2 == 0:
+                return R(-1)
+            else:
+                return R.unit_gens()[0]**self.exp
+
+    # For each prime power, find the smallest multiplier.
+    sieve = {}
     for ell, mul in n.factor():
         k, m = 0, None
         while m is None:
             k += 1
-            m, ord = accept(k, ell, mul, p)
-        sieve.append((ell**mul, m, ord))
+            m = accept(k, ell, mul, p)
+        sieve[m[0]] = sieve.get(m[0], factor(m[0])).add(m[1], ell**mul)
 
     # Construct ℤ/m* as the product of the factors ℤ/f*
-    m = prod(map(lambda (f, m, ord) : m, sieve))
+    m = prod(sieve[ell].fact() for ell in sieve)
     R = Zmod(m)
+    crt = crt_basis([sieve[ell].fact() for ell in sieve])
+    G = [(sum(crt[:i]) + R(sieve[ell].gen())*crt[i] + sum(crt[i+1:]), 
+          sieve[ell].order() // sieve[ell].exp)
+         for (i, ell) in enumerate(sieve)]
+    assert(all(g**e == 1 for (g,e) in G))
+
     ord = R(p).multiplicative_order()
-    G = []
-    for g, n, (f, o) in zip(R.unit_gens(), sieve.iterkeys(), sieve.itervalues()):
-        assert(g**o == 1)
-        G.append((g**f, o // f))
         
     return ord // n, G
     
