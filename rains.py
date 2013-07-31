@@ -195,6 +195,11 @@ def find_root_order(p, n):
 
 def sieve(p, n):
     '''
+    This function computes the same output as `find_root_order`.
+
+    It is much faster, but the integer m might be larger for composite
+    n. A real sieving strategy (as promised in the function name)
+    could make this function return the optimal result.
     '''
     def accept(k, ell, e, p):
         fact = ell**e
@@ -250,7 +255,7 @@ def sieve(p, n):
 
         def gen(self):
             R = Zmod(self.fact())
-            if R.order() == 2:
+            if R.order() == 4:
                 return R(1)
             elif R.order() % 2 == 0:
                 return R(-1)
