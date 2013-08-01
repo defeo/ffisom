@@ -42,7 +42,7 @@ def test_gens_cyclotomic(p, n):
 
     P = a.minpoly()
     assert(P.degree() == n)
-    assert(P == b.minpoly())
+    assert(P(b) == 0)
 
 def find_gens_cyclotomic(k1, k2):
     '''
@@ -97,9 +97,11 @@ def find_root_order(p, n):
     Rains also requires m to be square-free, but we like to live
     dangerously.
 
-    The first two conditions imply that the m-th roots of unity
-    generate a superfield of F_{p^n}, and that the extension can be
-    defined by a polynomial with coefficients in F_p.
+    The first condition implies that the m-th roots of unity generate
+    a superfield of F_{p^n}. The second condition is not strictly
+    necessary, but it makes the algorithm much more efficient by
+    insuring that the superfield is generated over F_{p^n} by a
+    polynomial with coefficients in F_p.
 
     The third condition is needed so that the construction of
     `find_unique_orbit` applies. In his paper, Rains' gives a
@@ -109,151 +111,120 @@ def find_root_order(p, n):
 
     It is easy to see that this condition is also necessary when ℤ/m*
     is cyclic, but there are easy counterexamples when it is not
-    (e.g., take p=13, n=2, m=21, although this is a stupid example
-    because m=7 would suffice).
+    (e.g., take p=233, n=6, m=21).
 
-    Remark that, when n is a prime power, m must be a prime power, so
-    (3') is largely sufficient (just a little warning when n is a
-    power of 2). However, did I mention that we also like to do group
-    theory just for the sake of it?
-
-    The straightforward generalization of (3') is: suppose
-
-      ℤ/m* = C₁ × C₂ × ⋅⋅⋅ × C_r
-
-    and suppose that <p^o> ⊂ C₁, then (3) is satisfied if and only if
-    gcd(n, #C₁/n) = 1.
-
-    The problem is that the decomposition of ℤ/m* into cyclic groups
-    is not unique. And here I start getting sloppy.
-
-    If we know the factorization of m (and we do), using an SNF we can
-    compute a factorization of ℤ/m* into cyclic groups of orders
-
-      d₁ | d₂ | ⋅⋅⋅ | λ(m)
-
-    where λ(m) is the Carmichael function (the lcm of the orders of
-    the cyclic groups associated to the prime-power factors of m). The
-    SNF also gives a basis for such decomposition.
-
-    Unless the SNF has two entries equal to λ(m) (a very rare case,
-    but look at m=15⋅16, if you like nasty examples), there is a
-    unique group, call it C₁, of order λ(m). Suppose that the order of
-    <p> is greater than the order of any other group than C₁, then
-    necessarily <p> ⊂ C₁.
-
-    My intuition is that if these things do not happen, then a smaller
-    factor m would also have worked. However, if by running this
-    algorithm we bump into some nasty example, I will be even more
-    pleased to look at it.
+    The algorithm implemented here factors n, then for each prime
+    power finds an m_i satisfying (1)-(3). Since the m_i must be prime
+    powers, we use condition (3') (with some adaptation for powers of
+    2) to insure (3). Then, the lcm of all the m_i is used as m.
+    
+    This algorithm always computes the smallest m when n is a prime
+    power. It may compute a subotimal m otherwise: e.g., p=2, n=6
+    gives m=21, but m=9 is also a solution. It is doable, although
+    painful to adapt the algorithm to always find the smallest m.
 
     To conclude: bounds on m, hard to tell. When n is prime, m must be
     prime, and under GRH the best bound is m ∈ O(n^{2.4 + ε})
     [1]. Heuristically m ∈ O(n log n).  Pinch [2] and Rains give some
     tabulations.
 
-    Note: this algorithm is very naive and very slow (in some cases,
-    slower than `find_unique_orbit`). Any optimizations welcome.
-
     [1]: D. R. Heath-Brown, Zero-free regions for Dirichlet L-functions, and
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
-    m = n+1
-    while True:
-        if m % p == 0:
-            m += 1
-            continue
-        R = Zmod(m)
-        ord = R(p).multiplicative_order()
-
-        # Check conditions (1) and (2)
-        if ord % n == 0 and n.gcd(ord // n) == 1:
-
-            # Get the SNF of ℤ/m*
-            gens = R.unit_gens()
-            A = diagonal_matrix([g.multiplicative_order() for g in gens])
-            S, _, Q = A.smith_form()
-
-            # Check that my "intuition" was correct
-            if A.ncols() > 1 and ord <= S.diagonal()[-2]:
-                raise FalseConjecture('Wow! Report these: p=%d, n=%d, m=%d' % (p,n,m))
-
-            # Check condition (3).  Notice that we can divide λ(m) by
-            # n⋅o, rather than n, because we know that gcd(n,o) = 1
-            carmich = S.diagonal()[-1]
-            if n.gcd(carmich // ord) == 1:
-
-                # Get the new generators
-                gens = [(prod(g**e for g, e in zip(gens, r)), o)
-                        for r, o in zip((Q**-1).rows(), S.diagonal())]
-                
-                # Replace the last generator by g^n
-                gens[-1] = (lambda (g, o): (g**n, o // n))(gens[-1])
-                return ord // n, gens
-        m += 1
-
-def sieve(p, n):
-    '''
-    This function computes the same output as `find_root_order`.
-
-    It is much faster, but the integer m might be larger for composite
-    n. A real sieving strategy (as promised in the function name)
-    could make this function return the optimal result.
-    '''
     def accept(k, ell, e, p):
-        fact = ell**e
+        '''
+        This function tells wether there is a m ~ k·ℓ^e such that p
+        and ℓ^e satisfy conditions (1)-(3).
+
+        It returns m as a pair of a prime and an exponent
+        '''
+        n = ell**e
+
+        # Case 1: m prime
+        #
         # Primes of the form m = k⋅n + 1.  k must be prime to
         # n, in order to be able to satisfy (1), (2) and (3').
         if k % ell != 0:
-            m = k*fact + 1
+            m = k*n + 1
             if m.is_prime() and m != p:
                 p = Zmod(m)(p)
                 ord = m - 1
                 if p**(ord // ell) != 1:
                     return m, 1
                     
-        # Prime powers of the form prime^a
+        # Case 2: m a higher power of a prime
+        #
+        # These cases are avoided by the original algorithm (which
+        # needs m squarefree).
+        #
+        # Notice that in order to satisfy (1)-(3), there is
+        # essentially only one choice for m.
+
+        # m = ℓ^{e+1}, ℓ odd.
         elif (k == ell and k != 2 and p != ell):
-            m = k*fact
+            m = k*n
             p = Zmod(m)(p)
-            ord = (ell - 1) * fact
+            ord = (ell - 1) * n
             if p**(ord // ell) != 1:
                 return ell, e+1
 
-        # Primes p of the form -1 mod 4, only useful when fact = 2
-        elif (k == 2 and fact == 2 and p % 4 == 3):
-            return fact, 2
+        # m = 4. This only works for n=2, and hence 
+        #   p = -1 mod 4
+        elif (k == 2 and n == 2 and p % 4 == 3):
+            return ell, 2
 
-        # Prime powers 2^a
+        # m = 2^{e+2}.
         elif (k == 4 and ell == 2 and p != 2):
-            m = 4*fact
+            m = 4*n
             R = Zmod(m)
             p = R(p)
-            ord = 2*fact
-            if p**fact != 1:
+            if p**(n // 2) != 1:
                 return ell, e+2
 
         return None
     
     class factor:
+        '''
+        This class represents one of the factors m_i. It contains
+        three fields:
+        
+        - A prime `ell`;
+        - An exponent `mul`, m_i is defined as ell^mul;
+        - An integer `exp` dividing φ(m_i), it is factor of n.
+        '''
         def __init__(self, ell):
             self.ell = ell
             self.mul = 1
             self.exp = 1
 
         def add(self, mul, exp):
+            '''
+            This function is called when two factors of n collide (the
+            m_i's are powers of the same prime). This function updates
+            self with the new data.
+            '''
             self.mul = max(self.mul, mul)
             self.exp *= exp
             return self
             
         def fact(self):
+            '''
+            Returns m_i
+            '''
             return self.ell**self.mul
 
         def order(self):
+            '''
+            Returns φ(m_i).
+            '''
             return (self.ell-1) * self.ell**(self.mul-1)
 
         def gen(self):
+            '''
+            Returns a generator of the unique subgroup of order
+            φ(m_i)/exp of ℤ/m_i.
+            '''
             R = Zmod(self.fact())
             if R.order() == 4:
                 return R(1)
@@ -262,7 +233,7 @@ def sieve(p, n):
             else:
                 return R.unit_gens()[0]**self.exp
 
-    # For each prime power, find the smallest multiplier.
+    # For each prime power, find the smallest multiplier k.
     sieve = {}
     for ell, mul in n.factor():
         k, m = 0, None
