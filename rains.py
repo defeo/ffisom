@@ -70,7 +70,10 @@ def find_gens_cyclotomic(k1, k2):
     # Find a suitable m, see doc below
     o, G = find_root_order(p, n)
 
-    # Construct extensions of k1 and k2, if needed
+    # Construct extensions of k₁ and k₂, if needed
+    #
+    # Note: `find_unique_orbit` is horribly slow if k₁ and k₂ are not
+    # fields. Some composita tricks would be welcome.
     P = None
     if (ord > n):
         P = GF(p**o, 'z').polynomial()
