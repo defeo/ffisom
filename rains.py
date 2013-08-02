@@ -17,7 +17,10 @@ The algorithm for finding the generators α and β is implemented by
 from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.rings.integer_ring import crt_basis
 from sage.rings.finite_rings.constructor import GF
-from sage.matrix.constructor import diagonal_matrix
+#from sage.matrix.constructor import diagonal_matrix
+from sage.misc.cachefunc import cached_method
+from sage.sets.set import Set
+from sage.combinat.set_partition import SetPartitions
 from sage.combinat.cartesian_product import CartesianProduct as CProd
 from sage.misc.misc import cputime, walltime
 
@@ -257,7 +260,68 @@ def find_root_order(p, n):
     ord = R(p).multiplicative_order()
         
     return ord // n, G
-    
+
+
+def sieve(n, accept=None):
+    if accept is None:
+        accept = lambda x : True
+
+    class factorization:
+        def __init__(self, f):
+            self.factors = f
+
+        def lcm(self, other):
+            lcm = self.factors.copy()
+            for (p,(e,o)) in other.factors.iteritems():
+                try:
+                    E, O = lcm[p]
+                    lcm[p] = (max(E,e), O*o)
+                except KeyError:
+                    lcm[p] = (e, o)
+            return factorization(lcm)
+
+        @cached_method
+        def expand(self):
+            return prod(map(lambda (p,(e,o)) : p**e, self.factors.items()))
+
+        def __str__(self):
+            return ' * '.join('%d^%d<--%d' % (p, e, o) 
+                              for (p,(e,o)) in self.factors.iteritems())
+
+        def __repr__(self):
+            return 'factorization(%s)' % repr(self.factors)
+            
+
+    fact = Set(list(n.factor()))
+    optima = {}
+
+    for S in fact.subsets():
+        if S.is_empty():
+            continue
+        
+        f = prod(map(lambda (x,y): x**y, S))
+        
+        if S.cardinality() == 1:
+            start = 1
+            end = None
+        else:
+            parts = SetPartitions(S, 2)
+            start = max(optima[s].expand() for p in parts for s in p)
+            end = min((optima[p[0]].lcm(optima[p[1]]) for p in parts),
+                      key=lambda x : x.expand())
+            
+        k = start // f or 1
+        while True:
+            m = k*f + 1
+            if end is not None and m >= end.expand():
+                optima[S] = end
+                break
+            elif m.is_prime() and accept(m):
+                optima[S] = factorization({m:(1,f)})
+                break
+            k += 1
+            
+    return optima[fact]
 
 
 def find_unique_orbit(k, G):
