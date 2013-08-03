@@ -264,7 +264,7 @@ def find_root_order(p, n):
 
 def sieve(n, accept=None):
     if accept is None:
-        accept = lambda x : True
+        accept = lambda p, e, o : True
 
     class factorization:
         def __init__(self, f):
@@ -295,11 +295,15 @@ def sieve(n, accept=None):
     fact = Set(list(n.factor()))
     optima = {}
 
+    # Main loop
     for S in fact.subsets():
         if S.is_empty():
             continue
         
-        f = prod(map(lambda (x,y): x**y, S))
+        P, E = max(S, key=lambda (p,e) : p)
+        c = prod(p**e for p, e in S if p != P)
+        powers = (P-1) % c == 0
+        o = c * P**E
         
         if S.cardinality() == 1:
             start = 1
@@ -310,15 +314,22 @@ def sieve(n, accept=None):
             end = min((optima[p[0]].lcm(optima[p[1]]) for p in parts),
                       key=lambda x : x.expand())
             
-        k = start // f or 1
+        k = start // o or 1
         while True:
-            m = k*f + 1
+            m = k*o + 1
             if end is not None and m >= end.expand():
                 optima[S] = end
                 break
-            elif m.is_prime() and accept(m):
-                optima[S] = factorization({m:(1,f)})
+            elif m.is_prime() and accept(m, 1, o):
+                optima[S] = factorization({m:(1,o)})
                 break
+            # prime powers  k·o + 1 < P^x < (k+1)·o + 1
+            d = k*c + 1
+            if (powers and d.is_power_of(P) and
+                accept(P, E + d.valuation(P), o)):
+                optima[S] = factorization({P:(E + d.valuation(P), o)})
+                break
+                
             k += 1
             
     return optima[fact]
