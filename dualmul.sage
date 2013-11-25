@@ -1,6 +1,9 @@
+#-*- encoding: utf-8 
+
 from itertools import product
 
 v = {}
+# Don't go over n = 5 !
 n = 3
 
 #for c in ['a', 'b', 'c', 'p', 'q', 'x', 'y', 'z']:
@@ -34,10 +37,13 @@ def mulmodmatrix(P, Mod):
 MAmod = mulmodmatrix(A, P)
 Tmul = MAmod.transpose() * vector(v['x'])
 
-# This is the matrix of transposed modular multiplication with respect to its scalar argument.
+# This is the matrix of transposed modular multiplication with respect
+# to its "scalar" argument, i.e:
+#   DotProd(x) : A → A*
+#                a ↦ a · x
 # It is a Hankel matrix
-Tmul2 = findmatrix(v['a'], Tmul)
-assert Tmul2 == matrix([[Tmul[i].coefficient(v['a'][j]) for j in range(n)] for i in range(n)])
+DotProd = findmatrix(v['a'], Tmul)
+assert DotProd == matrix([[Tmul[i].coefficient(v['a'][j]) for j in range(n)] for i in range(n)])
 
 ####
 
@@ -52,9 +58,24 @@ def tr2pol(tr, Mod, iMod):
 
 ATr = pol2tr(A, P)
 A2 = tr2pol(ATr, P, iPprime)
-#assert A == A2
+assert A == A2
 
 BTr = pol2tr(B, P)
 ABTr = pol2tr(A*B % P, P)
 
-DualMul = findmatrix(ATr, ABTr)
+# This is just transposed multiplication
+TransMul = findmatrix(BTr, ABTr)
+assert TransMul == MAmod.transpose()
+
+########
+
+Mpol2tr = findmatrix(v['a'], ATr)
+Mtr2pol = (Mpol2tr^-1 * P.discriminant()).change_ring(R)
+assert Mtr2pol.denominator() == 1
+
+# This is the matrix of multiplication in the dual basis (up to a denominator).
+# Pretty messy, huh?
+DualMul = DotProd * Mtr2pol
+
+# this verification is just too slow (blame polynomial multiplication)
+assert n > 3 or (DualMul * ATr == P.discriminant() * pol2tr(tr2pol(v['x'], P, iPprime) * A % P, P))
