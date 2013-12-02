@@ -113,13 +113,13 @@
 %//////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-\title{Computing Isomorphisms}
+\title{Computing Finite Field Isomorphisms}
 \date{}
 
 \begin{document}
 
 \maketitle
-%\tableofcontents
+\tableofcontents
 
 \section{Introduction}
 
@@ -133,88 +133,46 @@ restrict ourself to extensions of prime degree. In other words, we assume for no
 \end{align*}
 of degrees $r_i$ for both extensions. The isomorphism tower can then be constructed inductively. 
 
-\paragraph{Our approach.} Suppose we are given extensions $F_1, F_2$ of $\F_p$ of prime degree $r$. Our strategy of constructing an isomorphism $F_1 \simeq F_2$ is divided into the following cases.
-\begin{description}
-	\item[Case 1.] If $r \mid p - 1$ then there is an $r$-th root of unity in $\F_p$. We can find an element $\eta \in \F_p$ such that $X^r - \eta$ is irreducible over $\F_p$. We are then left with computing the isomorphisms $\varphi_1, \varphi_2$ in the following diagram.
+\paragraph{Our approach.} Suppose we are given extensions $F_1, F_2$ of $\F_p$ of prime degree $r \ne p$. We construct an isomorphism $F_1 \simeq F_2$ as follows. Let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) = 1$. We first move to cyclotomic extensions $\F_p[\zeta], F_1[\zeta], F_2[\zeta]$ of degree $s$ over $\F_p, F_1, F_2$ respectively. Then there is a non-$r$-adic residue $\eta \in \F_p[\zeta]$ such that $X^r - \eta$ is irreducible in $\F_p[\zeta][X]$. This provides us isomorphisms $\varphi_1, \varphi_2$ as in Figure \ref{figure:our-approach}.
+\begin{figure}
+\label{figure:our-approach}
 	\begin{center}
 		\begin{tikzpicture}
-			\node (Fq) {$\F_p$};
-			\node[above = of Fq] (Fqx) {$\F_p[X] / \langle X^r - \eta \rangle$};
-			\node[left = of Fqx] (F1) {$F_1$};
-			\node[right = of Fqx] (F2) {$F_2$};
-			\draw (Fq)
-				edge (F1)
-				edge (F2)
-				edge (Fqx);
-			\draw[->] (F1) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_1 $} (Fqx);
-			\draw[->] (Fqx) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_2 $} (F2);
-		\end{tikzpicture}
-	\end{center}
-	To compute these isomorphisms we first compute an $r$-th root of $\eta$ in $F_1, F_2$ to get the isomorphisms
-	\begin{center}
-		\begin{tikzpicture}
-			\node (Fqx) {$\F_p[X] / \langle X^r - \eta \rangle$};
-			\node[left = of Fqx] (F1) {$F_1$};
-			\node[right = of Fqx] (F2) {$F_2$};
-			\draw[->] (Fqx) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \psi $}
-				node[below = 3mm, inner sep=0.5pt] {$\eta^{1 / r} \longleftmapsto x$} (F1);
-			\draw[->] (Fqx) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_2 $} 
-				node[below = 3mm, inner sep=0.5pt] {$x \longmapsto \eta^{1 / r}$} (F2);
-		\end{tikzpicture}
-	\end{center}
-	Then $\varphi_1 = \psi^{-1}$ is computed using transposed modular composition.
-	\item[Case 2.] If $r = p$ then Artin-Schreier theory is used.
-	\item[Case 3.] If $r \nmid p - 1$ then first move to cyclotomic extensions $\F_p[\zeta], F_1[\zeta], F_2[\zeta]$. We then find an element $\eta \in \F_p[\zeta]$ that provides us isomorphisms $\varphi_1, \varphi_2$ as in the following diagram.
-	\begin{center}
-		\begin{tikzpicture}
-			\node (Fq) {$\F_p$};
-			\node[above = of Fq] (Fqz) {$\F_p[\zeta]$};
-			\node[above = of Fqz] (Fqzx) {$\F_p[\zeta][X] / \langle X^r - \eta \rangle$};
-			\node[left = of Fqzx] (F1z) {$F_1[\zeta]$};
-			\node[right = of Fqzx] (F2z) {$F_2[\zeta]$};
+			\node (Fp) {$\F_p$};
+			\node[above = of Fp] (Fpz) {$\F_p[\zeta]$};
+			\node[above = of Fpz] (Fpzx) {$\F_p[\zeta][X] / \langle X^r - \eta \rangle$};
+			\node[left = of Fpzx] (F1z) {$F_1[\zeta]$};
+			\node[right = of Fpzx] (F2z) {$F_2[\zeta]$};
 			\node[below = of F1z] (F1) {$F_1$};
 			\node[below = of F2z] (F2) {$F_2$};
-			\draw (Fq) edge (F1) edge (F2)	edge (Fqz)
-				(Fqz) edge (Fqzx)
-				(F1) edge (F1z)
-				(F2) edge (F2z);
-			\draw[->] (F1z) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_1 $} (Fqzx);
-			\draw[->] (Fqzx) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_2 $} (F2z);
+			\draw (Fp) edge (F1) edge (F2) edge node[left, midway] {$s$} (Fpz)
+				(Fpz) edge (Fpzx) edge[dashed] (F1z) edge[dashed] (F2z)
+				(F1) edge node[left, midway] {$s$} (F1z)
+				(F2) edge node[right, midway] {$s$} (F2z);
+			\draw[->] (F1z) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_1 $} (Fpzx);
+			\draw[->] (Fpzx) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner sep=0.5pt] {$ \varphi_2 $} (F2z);
 		\end{tikzpicture}
+		\caption{Constructing isomorphisms}
 	\end{center}
-	Then we descend $\varphi_1, \varphi_2$ down to $F_1, F_2$ respectively.
-\end{description}
-Throughout this note We assume the representations
+\end{figure}
+Once we obtain an isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$, we descend it down to an isomorphism $F_1 \rightarrow F_2$.
+
+\paragraph{Representation.} Throughout this note we assume the representations
 \begin{equation}
 \label{equation:rep}
 	F_1 = \F_p[X] / \langle f(X) \rangle, \; \F_p[\zeta] = \F_p[Z] / \langle g(Z) \rangle, \;
 	F_1[\zeta] = \F_p[X, Z] / \langle f(X), g(Z) \rangle
 \end{equation}
-where $g(Z)$ is an irreducible factor of the $r$-th cyclotomic polynomial $\Phi_r(Z)$. We also let $x, z = \zeta$ be the residue classes of $X, Z$ in these quotients.
-
-
-%///////////////////////////////////////////
-
-\section{The case $r \mid p - 1$}
-
-We follow \cite{doliskanischost2011} to compute an $r$-th root of $\eta$ in $F_2$. Assume that $\gamma$ is an $r$-th root of $\eta$ in $F_2$. Let $\beta = T_{F_2 / \F_p}(\gamma)$, where $T_{F_2 / \F_p}:F_2 \to \F_p$ is the trace linear form. We have
-\begin{align}
-\label{equation:tr-simple}
-\beta 
-& = \sum_{i = 0}^{r - 1} \gamma^{p^i} \nonumber \\
-& = \gamma(1 + \gamma^{p - 1} + \gamma^{p^2 - 1} + \cdots + \gamma^{p^{r - 1} - 1}) \nonumber \\
-& = \gamma(1 + a^{(p - 1) / r} + a^{(p^2 - 1) / r} + \cdots + a^{(p^{r - 1} - 1) / r}).
-\end{align}
-Let $b = 1 + a^{(p - 1) / r} + a^{(p^2 - 1) / r} + \cdots + a^{(p^{(r - 1)} - 1) / r}$, so that Equation (\ref{equation:tr-simple}) gives $\beta = \gamma b$. Taking the $r$-th power in both sides gives $\beta^r = ab^r$ over $\F_p$. We then can compute $\beta$ by an $r$-th root extraction in $\F_p$. If we assume that $b \ne 0$ (or equivalently that $\beta \ne 0$), we deduce $\gamma = \beta b^{-1}$; in case $\beta$ is zero, we replace $a$ by $a'=ac^r$, for a nonzero random $c \in F_2$. By Proposition 3 in \cite{doliskanischost2011} all these take $O(\M(r)\log(p) + \CC(r)\log(r))$ operations in $\F_p$.
+where $f(X) \in \F_p[X]$ is an irreducible polynomial of degree $r$, and $g(Z)$ is an irreducible factor of the $r$-th cyclotomic polynomial $\Phi_r(Z)$. We also let $x, z = \zeta$ be the residue classes of $X, Z$ in these quotients.
 
 
 
 
 %///////////////////////////////////////////
 
-\section{The case $r \nmid p - 1$}
+\section{Preliminaries}
 
-In this section we assume that $r \nmid p - 1, r \ne p$. Let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) = 1$. To mimic Case 1 above, we can find a non-$r$-adic residue $\eta$ in $\F_p[\zeta]$, construct the extension $\F_p[\zeta][X] / \langle X^r - \eta \rangle$, and finally compute an $r$-th root of $\eta$ in $F_1, F_2$. But, as a more efficient way, we show how to do all these at once while skipping some detail computations. We first need the following result.
+As mentioned above, we let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) = 1$. The obvious way constructing isomorphisms $\varphi_1, \varphi_2$ in Figure \ref{figure:our-approach} is to compute an $r$-th root of $\eta$ in $F_1[\zeta], F_2[\zeta]$. But, as a more efficient way, we show how to avoid the costly operation of taking roots in these extensions, and skip some detail computations. We first need the following result.
 \begin{proposition}
 \label{proposition:semi-trace}
 	For an element $a \in F_1[\zeta]$ define 
@@ -273,9 +231,9 @@ by computing an $r$-th root in $\F_p[\zeta]$.
 
 
 
-%---------------------------------------------------
+%///////////////////////////////////////////
 
-\subsection{Computing $\theta_a$}
+\section{Computing $\theta_a$}
 
 Let $a \in F_1[\zeta]$. To compute $\theta_a$, we use a binary powering scheme similar to the one in \cite{doliskanischost2011}. Assuming the representations (\ref{equation:rep}) we let 
 \[
@@ -299,16 +257,16 @@ Then we have the following relations:
 Assuming $\xi_i = x^{p^{is}}$ is already known, $\delta_i$ can be computed using the following algorithm.
 
 \begin{algorithm}
-[XiDelta$(i, \xi_1,\zeta_1)$]
+[XiDelta$(i, \xi_1,\delta_1)$]
 \label{algorithm:xidelta}
 	\begin{algorithmic}[1]
-		\REQUIRE a positive integer $i$, $\xi_1 = x^{p^s}$, $\zeta_1 = a$
+		\REQUIRE a positive integer $i$, $\xi_1 = x^{p^s}$, $\delta_1 = a$
 		\ENSURE $\xi_i$, $\delta_i$
 		\IF {$i=1$} 
-			\RETURN $\xi_1$, $\zeta_1$
+			\RETURN $\xi_1$, $\delta_1$
 		\ENDIF
 		\STATE $j \leftarrow \lfloor i/2\rfloor$
-		\STATE $\xi_{j}, \delta_j \leftarrow {\rm XiDelta}(j,\xi_1,\zeta_1)$ 
+		\STATE $\xi_{j}, \delta_j \leftarrow {\rm XiDelta}(j,\xi_1,\delta_1)$ 
 		\STATE\label{step:xi} $\xi_{2j} \leftarrow \xi_j(\xi_j)$
 		\STATE\label{step:delta} $\delta_{2j} \leftarrow z^{r - j}\delta_j(\xi_j) + \delta_j$
 		\IF {$i$ is even} 
@@ -323,18 +281,37 @@ Assuming $\xi_i = x^{p^{is}}$ is already known, $\delta_i$ can be computed using
 The following proposition is deduced from Algorithm \ref{algorithm:xidelta}.
 \begin{proposition}
 \label{proposition:XiDelta}
-	For an element $a \in F_1[\zeta]$, $\theta_a$ can be computed using $O(\CC(r)\log(r) + rM(s)\log(r) + \M(r)\log(p))$ operations in $\F_p$.
+	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes \[O(s\CC(r)\log(r) + \M(r)\log(p))\] operations in $\F_p$.
 \end{proposition}
 \begin{proof}
-	To compute the initial value $\xi_1 = x^{p^s}$ we first compute $x^p$, and then do $\log(s)$ modular compositions at a total cost of $O(\M(r)\log(p) + C(r)\log(s))$ operations in $\F_p$. Then $\theta_a = \delta_r$ is computed using Algorithm \ref{algorithm:xidelta}: the complexity of the algorithm is dominated by steps \ref{step:xi}, \ref{step:delta}. The former takes $C(r)$ operations in $\F_p$, and the later is done by evaluating $\delta_i$ at $\xi_i$ using the Horner's method at a cost of $O(r\M(s))$ operations in $\F_p$. Accounting for a recursion depth of $\log(r)$, the running time of the algorithm is then $O(\CC(r)\log(r) + rM(s)\log(r))$ operations in $\F_p$. All in all, we get the claimed complexity.
+	To compute the initial value $\xi_1 = x^{p^s}$ we first compute $x^p$, and then do $\log(s)$ modular compositions at a total cost of $O(\M(r)\log(p) + C(r)\log(s))$ operations in $\F_p$. Then $\theta_a = \delta_r$ is computed using Algorithm \ref{algorithm:xidelta}: the complexity of the algorithm is dominated by steps \ref{step:xi}, \ref{step:delta}. The former is a modular composition in $\F_p[X]$ which takes $C(r)$ operations in $\F_p$. For the later suppose $\delta_j = \delta_{j,0}(x) + \delta_{j,1}(x)z + \cdots + \delta_{j,s - 1}(x)z^{s - 1}$. Then   
+	\[ \delta_j(\xi_j) = \sum_{i = 0}^{s - 1}\delta_{ij}(\xi_j)z^i, \]
+	which is done using $O(s\CC(r))$ operations in $\F_p$. Accounting for a recursion depth of $\log(r)$, the running time of the algorithm is then $O(s\CC(r)\log(r))$ operations in $\F_p$. All in all, we get the claimed complexity.
 \end{proof}
+The above running time for computing $\theta_a$ is only acceptable for small $s$. To keep the complexity at most quadratic in $r$ for larger $s$, say $s \in O(r)$, we proceed as follows. We know that $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma x^\ell) \ne 0$ for at least one $1 \le \ell \le r - 1$, otherwise $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma a) = 0$ for all $a \in F_1[\zeta]$ by linearity. Therefore, the linear map 
+\[
+\begin{array}{rrll}
+	T_{F_1[\zeta] / \F_p[\zeta]}\vert_{F_1}: & F_1 & \longrightarrow & \F_p[\zeta] \\
+	& d(x) & \longmapsto & T_{F_1[\zeta] / \F_p[\zeta]}(\gamma d(x))
+\end{array}
+\]
+is not identically zero. This implies that we need to try at most $O(1)$ random $d(x) \in F_1$ to obtain a nonzero
+\[ \theta_{d(x)} = d(x) + \zeta^{r - 1}d(x)^{p^s} + \cdots + \zeta^2d(x)^{p^{(r - 2)s}} + \zeta d(x)^{p^{(r - 1)s}}. \]
+The sequence $d(x), d(x)^{p^s}, \dots, d(x)^{p^{(r - 1)s}}$ in $F_1$ can be computed by Algorithm 3.1 in \cite{von1992computing} using $O(\M(r^2)\log(r))$ operations in $\F_p$. Therefore, we have proved the following,
+\begin{proposition}
+\label{proposition:XiDelta-updated}
+	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes
+	\begin{itemize}
+		\item $O(s\CC(r)\log(r) + \M(r)\log(p))$ operations in $\F_p$ for small $s$, or
+		\item $O(\M(r^2)\log(r) + \M(r)\log(p))$ operations in $\F_p$ for large $s$.
+	\end{itemize}
+\end{proposition}
 
 
 
+%///////////////////////////////////////////
 
-%---------------------------------------------------
-
-\subsection{Computing $r$-th roots in $\F_p[\zeta]$}
+\section{Computing $r$-th roots in $\F_p[\zeta]$}
 \label{subsection:rth-root-fpz}
 
 Let $a \in \F_p[\zeta]$ be an $r$-th power. To compute an $r$-th root of $a$ we factor the polynomial $X^r - a$ using the Equal Degree Factorization algorithm given in \cite{kaltofen1997fast}.
@@ -385,19 +362,32 @@ For a positive integer $j$ we have
 Therefore we have a recursive algorithm for computing $\beta = \beta_{s - 1}$. Let us analyze the complexity of the algorithm. First note that we always have $z^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions at the end of each step. For example $x^p = a^{\lfloor p / r\rfloor}x^{p \bmod r}$ which can be computed using $O(\M(s)\log(p))$ operations in $\F_p$. At step $j$ of the recursion we have the following costs in $\F_p$:
 \begin{itemize}
 	\item $O(\M(r) + \M(s)\log(r))$ for computing $x^{p^j}$, and computing $z^{p^j}$ is free.
-	\item $O(n\M(r))$ for reducing coefficients $c_l(z)$ of (\ref{equation:betaj}) modulo $g(z)$.
+	\item If $s$ is small we can first reduce $z^{p^j \bmod r}$ modulo $g(Z)$, and then do $n$ modular compositions at a total cost of $O(\M(r) + n\CC(s))$. But if $s$ is large we can reduce $c_l(z^{p^j \bmod r})$ modulo $g(Z)$ for all $0 \le l < n$ at a total cost of $O(n\M(r))$.
 	\item $O(n\M(s))$ for evaluating $\beta_j$ at $x^{p^j}$ using Horner's method.
 	\item $O(\M(r)\M(s))$ for reducing (\ref{equation:betaj}) modulo $f$.
 \end{itemize}
-The depth of the recursion is $\log(s)$, hence $\beta$ can be computed in 
-\[O(\M(s)\log(p) + n\M(r)\log(s) + \M(r)\M(s)\log(s)) \]
-operations in $\F_p$. Finally since the depth of the recursion in Algorithm \ref{algorithm:edf} is $\log(r)$, the total cost of root finding in $\F_p[\zeta]$ is 
-\[ O(\M(s)\log(p)\log(r) + r\M(r)\log(s) + \M(r)\M(s)\log(s)\log(r)). \]
+The depth of the recursion is $\log(s)$, hence $\beta$ can be computed in
+\begin{itemize}
+	\item $O(\M(s)\log(p) + n\CC(s)\log(s) + \M(r)\M(s)\log(s))$ operations in $\F_p$ for small $s$, or
+	\item $O(\M(s)\log(p) + n\M(r)\log(s) + \M(r)\M(s)\log(s))$ operations in $\F_p$ for large $s$.
+\end{itemize} 
+Finally since the depth of the recursion in Algorithm \ref{algorithm:edf} is $\log(r)$, we have the following.
+\begin{proposition}
+\label{proposition:root-fpz}
+	The total cost of root finding in $\F_p[\zeta]$ is
+	\begin{itemize}
+		\item $O(\M(s)\log(p)\log(r) + r\CC(s)\log(s) + \M(r)\M(s)\log(s)\log(r))$\\ operations in $\F_p$ for small $s$, or
+		\item $O(\M(s)\log(p)\log(r) + r\M(r)\log(s) + \M(r)\M(s)\log(s)\log(r))$\\ operations in $\F_p$ for large $s$.
+	\end{itemize}
+\end{proposition}
 
 
-%---------------------------------------------------
 
-\subsection{Computing the isomorphism $F_1 \rightarrow F_2$}
+
+
+%///////////////////////////////////////////
+
+\section{Computing the isomorphism $F_1 \rightarrow F_2$}
 
 In this section, we analyze the computational cost of building an isomorphism $\varphi: F_1 \rightarrow F_2$. We first construct the isomorphism $\varphi_2 \circ \psi \circ \varphi_1 : F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain}), and then descend back to the desired fields. The following algorithm builds the above chain of isomorphism based on the observations at the start of the section. 
 
@@ -423,12 +413,14 @@ In this section, we analyze the computational cost of building an isomorphism $\
 \end{algorithm}
 
 \begin{proposition}
-	Algorithm \ref{algorithm:ext-iso} computes the isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$ in
-	\[ O(\M(r)\log(p) + \M(s)\log(p)\log(r) + r\M(r)\log(s) + \M(s)\M(r)\log(s)\log(r)) \]
-	operations in $\F_p$.
+	Algorithm \ref{algorithm:ext-iso} computes the isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$ using
+	\begin{itemize}
+		\item $O(s\CC(r)\log(r) + \M(r)\log(p) + \M(s)\log(p)\log(r))$\\ operations in $\F_p$ for small $s$, or
+		\item $O(\M(r)\log(p) + \M(s)\log(p)\log(r) + \M(r^2)\log(r) + \M(s)\M(r)\log(s)\log(r))$\\ operations in $\F_p$ for large $s$.
+	\end{itemize}
 \end{proposition}
 \begin{proof}
-	By \cite[Theorem 9]{shoup1994fast} Step \ref{step:factor-cyclo} takes $O(r\log^2(r) + r\log(r)\log(p))$ operations in $\F_p$. Finding a nonzero $\theta_a$ for a random $a \in F_1[\zeta]$ requires $O(1)$ trials, so the two repeat...until loops take $O(\CC(r)\log(r) + rM(s)\log(r) + \M(r)\log(p))$ operations in $\F_p$ by Proposition \ref{proposition:XiDelta}. Step \ref{step:gamma-pow} is done using $O(\M(s)\M(r)\log(r))$ operations in $\F_p$. Step \ref{step:psi} takes $O(\M(s)\log(p)\log(r) + r\M(r)\log(s) + \M(r)\M(s)\log(s)\log(r))$ as explained in Subsection \ref{subsection:rth-root-fpz}. Adding all these up proves the proposition.
+	By \cite[Theorem 9]{shoup1994fast} Step \ref{step:factor-cyclo} takes $O(r\log^2(r) + r\log(r)\log(p))$ operations in $\F_p$. The running time of the two repeat...until loops is given by Proposition \ref{proposition:XiDelta-updated}. Step \ref{step:gamma-pow} is done using $O(\M(s)\M(r)\log(r))$ operations in $\F_p$. The running time of Step \ref{step:psi} is given by Proposition \ref{proposition:root-fpz}. Adding all these up proves the proposition.
 \end{proof}
 
 So, now we have an isomorphism $\phi: F_1[\zeta] \rightarrow F_2[\zeta]$ that sends $\theta_a$ to some $h(z, x) \in F_2[\zeta]$. To construct the isomorphism $\varphi: F_1 \rightarrow F_2$ we the technique in \cite{Allombert2002}. Let 
