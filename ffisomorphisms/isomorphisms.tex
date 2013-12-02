@@ -123,17 +123,26 @@
 
 \section{Introduction}
 
-Let $F_1, F_2$ be degree $n$ extensions of the finite field $\F_p$ where $n$ is a positive integer, and $p$ is a prime number. We have an isomorphism $F_1 \simeq F_2$. Our goal is to design an efficient algorithm that provides us explicit computation of such an isomorphism.
+Let $F_1, F_2$ be degree $n$ extensions of the finite field $\F_p$ where $n$ is a positive integer, and $p$ is a prime number. We
+have an isomorphism $F_1 \simeq F_2$. Our goal is to design an efficient algorithm that provides us explicit computation of such
+an isomorphism.
 
-\paragraph{Prime-degree extensions.} Although this might not be a feasible assumption, to make everything more easier and more intuitive we 
-restrict ourself to extensions of prime degree. In other words, we assume for now, that we have an algorithm for computing the subfield of a given degree of a finite field. Then for an extension of degree $n$ we can write $n = r_1r_2\cdots r_k$ with $r_i$ prime, not necessarily different. Then we find subfields 
+\paragraph{Prime-degree extensions.} Although this might not be a feasible assumption, to make everything more easier and more
+intuitive we 
+restrict ourself to extensions of prime degree. In other words, we assume for now, that we have an algorithm for computing the
+subfield of a given degree of a finite field. Then for an extension of degree $n$ we can write $n = r_1r_2\cdots r_k$ with $r_i$
+prime, not necessarily different. Then we find subfields 
 \begin{align*}
 	\F_p & \subset E_1 \subset \ldots \subset E_k \subset F_1 \\
 	\F_p & \subset E_1' \subset \ldots \subset E_k' \subset F_2
 \end{align*}
 of degrees $r_i$ for both extensions. The isomorphism tower can then be constructed inductively. 
 
-\paragraph{Our approach.} Suppose we are given extensions $F_1, F_2$ of $\F_p$ of prime degree $r \ne p$. We construct an isomorphism $F_1 \simeq F_2$ as follows. Let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) = 1$. We first move to cyclotomic extensions $\F_p[\zeta], F_1[\zeta], F_2[\zeta]$ of degree $s$ over $\F_p, F_1, F_2$ respectively. Then there is a non-$r$-adic residue $\eta \in \F_p[\zeta]$ such that $X^r - \eta$ is irreducible in $\F_p[\zeta][X]$. This provides us isomorphisms $\varphi_1, \varphi_2$ as in Figure \ref{figure:our-approach}.
+\paragraph{Our approach.} Suppose we are given extensions $F_1, F_2$ of $\F_p$ of prime degree $r \ne p$. We construct an
+isomorphism $F_1 \simeq F_2$ as follows. Let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$
+where $\gcd(r, u) = 1$. We first move to cyclotomic extensions $\F_p[\zeta], F_1[\zeta], F_2[\zeta]$ of degree $s$ over $\F_p,
+F_1, F_2$ respectively. Then there is a non-$r$-adic residue $\eta \in \F_p[\zeta]$ such that $X^r - \eta$ is irreducible in
+$\F_p[\zeta][X]$. This provides us isomorphisms $\varphi_1, \varphi_2$ as in Figure \ref{figure:our-approach}.
 \begin{figure}
 \label{figure:our-approach}
 	\begin{center}
@@ -163,7 +172,8 @@ Once we obtain an isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$, we descend it
 	F_1 = \F_p[X] / \langle f(X) \rangle, \; \F_p[\zeta] = \F_p[Z] / \langle g(Z) \rangle, \;
 	F_1[\zeta] = \F_p[X, Z] / \langle f(X), g(Z) \rangle
 \end{equation}
-where $f(X) \in \F_p[X]$ is an irreducible polynomial of degree $r$, and $g(Z)$ is an irreducible factor of the $r$-th cyclotomic polynomial $\Phi_r(Z)$. We also let $x, z = \zeta$ be the residue classes of $X, Z$ in these quotients.
+where $f(X) \in \F_p[X]$ is an irreducible polynomial of degree $r$, and $g(Z)$ is an irreducible factor of the $r$-th cyclotomic
+polynomial $\Phi_r(Z)$. We also let $x, z = \zeta$ be the residue classes of $X, Z$ in these quotients.
 
 
 
@@ -172,7 +182,10 @@ where $f(X) \in \F_p[X]$ is an irreducible polynomial of degree $r$, and $g(Z)$ 
 
 \section{Preliminaries}
 
-As mentioned above, we let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) = 1$. The obvious way constructing isomorphisms $\varphi_1, \varphi_2$ in Figure \ref{figure:our-approach} is to compute an $r$-th root of $\eta$ in $F_1[\zeta], F_2[\zeta]$. But, as a more efficient way, we show how to avoid the costly operation of taking roots in these extensions, and skip some detail computations. We first need the following result.
+As mentioned above, we let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$, and write $p^s - 1 = ur^t$ where $\gcd(r, u) =
+1$. The obvious way constructing isomorphisms $\varphi_1, \varphi_2$ in Figure \ref{figure:our-approach} is to compute an $r$-th
+root of $\eta$ in $F_1[\zeta], F_2[\zeta]$. But, as a more efficient way, we show how to avoid the costly operation of taking
+roots in these extensions, and skip some detail computations. We first need the following result.
 \begin{proposition}
 \label{proposition:semi-trace}
 	For an element $a \in F_1[\zeta]$ define 
@@ -187,7 +200,8 @@ As mentioned above, we let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$
 	\end{enumerate}
 \end{proposition}
 \begin{proof}
-	Let $v = u^{-1} \bmod r$, and let $\gamma \in F_1[\zeta]$ be an $r^t$-th root of $\zeta^{v(r - 1)}$. There exists an element $a \in F_1[\zeta]$ such that $\beta = T_{F_1[\zeta] / \F_p[\zeta]}(\gamma a) \ne 0$, and we have
+	Let $v = u^{-1} \bmod r$, and let $\gamma \in F_1[\zeta]$ be an $r^t$-th root of $\zeta^{v(r - 1)}$. There exists an element $a
+\in F_1[\zeta]$ such that $\beta = T_{F_1[\zeta] / \F_p[\zeta]}(\gamma a) \ne 0$, and we have
 	\begin{equation}
 	\label{equation:trace}
 		\begin{aligned}
@@ -199,10 +213,14 @@ As mentioned above, we let $s$ be the order of $p$ in $\mathbb{Z} / r\mathbb{Z}$
 			& = \gamma \theta_a.
 		\end{aligned}
 	\end{equation}
-	This proves (i). To prove (ii), first observe that $\theta_a^{p^s} = \zeta\theta_a$ so that $\sigma(\theta_a) = \zeta\theta_a$ for a generator $\sigma: x \to x^{p^s}$ of $\gal(F_1[\zeta] / \F_p[\zeta])$. Therefore, we have $\sigma(\theta_a^r) = \theta_a^r$, which means that $\theta_a^r \in \F_p[\zeta]$, and $\theta_a^{ur^t} = \theta_a^{p^s - 1} = \zeta$ which proves that $\theta_a, \theta_a^r$ are non-$r$-adic residues.
+	This proves (i). To prove (ii), first observe that $\theta_a^{p^s} = \zeta\theta_a$ so that $\sigma(\theta_a) = \zeta\theta_a$
+for a generator $\sigma: x \to x^{p^s}$ of $\gal(F_1[\zeta] / \F_p[\zeta])$. Therefore, we have $\sigma(\theta_a^r) = \theta_a^r$,
+which means that $\theta_a^r \in \F_p[\zeta]$, and $\theta_a^{ur^t} = \theta_a^{p^s - 1} = \zeta$ which proves that $\theta_a,
+\theta_a^r$ are non-$r$-adic residues.
 \end{proof}
 
-Let $\eta_a = \theta_a^r, \eta_b = \theta_b^r$ for nonzero $\theta_a, \theta_b$ as in Proposition \ref{proposition:semi-trace}. Then we can construct isomorphisms $\varphi_1, \varphi_2$ as in the following diagram.
+Let $\eta_a = \theta_a^r, \eta_b = \theta_b^r$ for nonzero $\theta_a, \theta_b$ as in Proposition \ref{proposition:semi-trace}.
+Then we can construct isomorphisms $\varphi_1, \varphi_2$ as in the following diagram.
 \begin{equation}
 \label{equation:iso-chain}
 	\begin{tikzpicture}
@@ -217,7 +235,10 @@ Let $\eta_a = \theta_a^r, \eta_b = \theta_b^r$ for nonzero $\theta_a, \theta_b$ 
 			node[below = 3mm, inner sep=0.5pt] {$x \longmapsto \theta_b$} (F2z);
 	\end{tikzpicture}
 \end{equation}
-To complete this isomorphism chain, we need to compute $\psi$. For that we simply compute an $r$-th root of $\eta_a$ in $E = \F_p[\zeta][X] / \langle X^r - \eta_b \rangle$, and construct the isomorphism in the obvious way. Note that from (\ref{equation:trace}) we have $\beta_a = \gamma_a\theta_a$,  $\beta_b = \gamma_b\theta_b$, and we can choose $\gamma_a, \gamma_b$ such that $\gamma_a^r = \gamma_b^r$. Therefore,
+To complete this isomorphism chain, we need to compute $\psi$. For that we simply compute an $r$-th root of $\eta_a$ in $E =
+\F_p[\zeta][X] / \langle X^r - \eta_b \rangle$, and construct the isomorphism in the obvious way. Note that from
+(\ref{equation:trace}) we have $\beta_a = \gamma_a\theta_a$,  $\beta_b = \gamma_b\theta_b$, and we can choose $\gamma_a, \gamma_b$
+such that $\gamma_a^r = \gamma_b^r$. Therefore,
 \[ \eta_a\eta_b^{-1} = \beta_a^r\beta_b^{-r} = (\beta_a\beta_b^{-1})^r = c^r. \]
 So we can construct the isomorphism
 \begin{equation*}
@@ -235,7 +256,8 @@ by computing an $r$-th root in $\F_p[\zeta]$.
 
 \section{Computing $\theta_a$}
 
-Let $a \in F_1[\zeta]$. To compute $\theta_a$, we use a binary powering scheme similar to the one in \cite{doliskanischost2011}. Assuming the representations (\ref{equation:rep}) we let 
+Let $a \in F_1[\zeta]$. To compute $\theta_a$, we use a binary powering scheme similar to the one in \cite{doliskanischost2011}.
+Assuming the representations (\ref{equation:rep}) we let 
 \[
 \xi_i = x^{p^{is}}, \quad
 \delta_i = a + z^{r - 1}a^{p^s} + \cdots + z^2a^{p^{(i - 1)s}} + z^{r - i + 1} a^{p^{(i - 1)s}}.
@@ -284,11 +306,19 @@ The following proposition is deduced from Algorithm \ref{algorithm:xidelta}.
 	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes \[O(s\CC(r)\log(r) + \M(r)\log(p))\] operations in $\F_p$.
 \end{proposition}
 \begin{proof}
-	To compute the initial value $\xi_1 = x^{p^s}$ we first compute $x^p$, and then do $\log(s)$ modular compositions at a total cost of $O(\M(r)\log(p) + C(r)\log(s))$ operations in $\F_p$. Then $\theta_a = \delta_r$ is computed using Algorithm \ref{algorithm:xidelta}: the complexity of the algorithm is dominated by steps \ref{step:xi}, \ref{step:delta}. The former is a modular composition in $\F_p[X]$ which takes $C(r)$ operations in $\F_p$. For the later suppose $\delta_j = \delta_{j,0}(x) + \delta_{j,1}(x)z + \cdots + \delta_{j,s - 1}(x)z^{s - 1}$. Then   
+	To compute the initial value $\xi_1 = x^{p^s}$ we first compute $x^p$, and then do $\log(s)$ modular compositions at a total cost
+of $O(\M(r)\log(p) + C(r)\log(s))$ operations in $\F_p$. Then $\theta_a = \delta_r$ is computed using Algorithm
+\ref{algorithm:xidelta}: the complexity of the algorithm is dominated by steps \ref{step:xi}, \ref{step:delta}. The former is a
+modular composition in $\F_p[X]$ which takes $C(r)$ operations in $\F_p$. For the later suppose $\delta_j = \delta_{j,0}(x) +
+\delta_{j,1}(x)z + \cdots + \delta_{j,s - 1}(x)z^{s - 1}$. Then   
 	\[ \delta_j(\xi_j) = \sum_{i = 0}^{s - 1}\delta_{ij}(\xi_j)z^i, \]
-	which is done using $O(s\CC(r))$ operations in $\F_p$. Accounting for a recursion depth of $\log(r)$, the running time of the algorithm is then $O(s\CC(r)\log(r))$ operations in $\F_p$. All in all, we get the claimed complexity.
+	which is done using $O(s\CC(r))$ operations in $\F_p$. Accounting for a recursion depth of $\log(r)$, the running time of the
+algorithm is then $O(s\CC(r)\log(r))$ operations in $\F_p$. All in all, we get the claimed complexity.
 \end{proof}
-The above running time for computing $\theta_a$ is only acceptable for small $s$. To keep the complexity at most quadratic in $r$ for larger $s$, say $s \in O(r)$, we proceed as follows. We know that $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma x^\ell) \ne 0$ for at least one $1 \le \ell \le r - 1$, otherwise $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma a) = 0$ for all $a \in F_1[\zeta]$ by linearity. Therefore, the linear map 
+The above running time for computing $\theta_a$ is only acceptable for small $s$. To keep the complexity at most quadratic in $r$
+for larger $s$, say $s \in O(r)$, we proceed as follows. We know that $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma x^\ell) \ne 0$ for at
+least one $1 \le \ell \le r - 1$, otherwise $T_{F_1[\zeta] / \F_p[\zeta]}(\gamma a) = 0$ for all $a \in F_1[\zeta]$ by linearity.
+Therefore, the linear map 
 \[
 \begin{array}{rrll}
 	T_{F_1[\zeta] / \F_p[\zeta]}\vert_{F_1}: & F_1 & \longrightarrow & \F_p[\zeta] \\
@@ -297,7 +327,8 @@ The above running time for computing $\theta_a$ is only acceptable for small $s$
 \]
 is not identically zero. This implies that we need to try at most $O(1)$ random $d(x) \in F_1$ to obtain a nonzero
 \[ \theta_{d(x)} = d(x) + \zeta^{r - 1}d(x)^{p^s} + \cdots + \zeta^2d(x)^{p^{(r - 2)s}} + \zeta d(x)^{p^{(r - 1)s}}. \]
-The sequence $d(x), d(x)^{p^s}, \dots, d(x)^{p^{(r - 1)s}}$ in $F_1$ can be computed by Algorithm 3.1 in \cite{von1992computing} using $O(\M(r^2)\log(r))$ operations in $\F_p$. Therefore, we have proved the following,
+The sequence $d(x), d(x)^{p^s}, \dots, d(x)^{p^{(r - 1)s}}$ in $F_1$ can be computed by Algorithm 3.1 in \cite{von1992computing}
+using $O(\M(r^2)\log(r))$ operations in $\F_p$. Therefore, we have proved the following,
 \begin{proposition}
 \label{proposition:XiDelta-updated}
 	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes
@@ -314,7 +345,8 @@ The sequence $d(x), d(x)^{p^s}, \dots, d(x)^{p^{(r - 1)s}}$ in $F_1$ can be comp
 \section{Computing $r$-th roots in $\F_p[\zeta]$}
 \label{subsection:rth-root-fpz}
 
-Let $a \in \F_p[\zeta]$ be an $r$-th power. To compute an $r$-th root of $a$ we factor the polynomial $X^r - a$ using the Equal Degree Factorization algorithm given in \cite{kaltofen1997fast}.
+Let $a \in \F_p[\zeta]$ be an $r$-th power. To compute an $r$-th root of $a$ we factor the polynomial $X^r - a$ using the Equal
+Degree Factorization algorithm given in \cite{kaltofen1997fast}.
 
 \begin{algorithm}
 [Root Finding]
@@ -357,12 +389,18 @@ Then we have $\beta_1 = \alpha^p$, $\xi_1 = x^p$, $\zeta_1 = z^p$, and
 For a positive integer $j$ we have
 \begin{equation}
 \label{equation:betaj}
-	\beta_j^{p^j} = \left( \sum_{l = 0}^{n - 1}c_l(z)x^l \right)^{p^j} = \sum_{l = 0}^{n - 1}c_l(z^{p^j})(x^{p^j})^l = \sum_{l = 0}^{n - 1}c_l(\zeta_j)\xi_j^l.
+	\beta_j^{p^j} = \left( \sum_{l = 0}^{n - 1}c_l(z)x^l \right)^{p^j} = \sum_{l = 0}^{n - 1}c_l(z^{p^j})(x^{p^j})^l = \sum_{l =
+0}^{n - 1}c_l(\zeta_j)\xi_j^l.
 \end{equation}
-Therefore we have a recursive algorithm for computing $\beta = \beta_{s - 1}$. Let us analyze the complexity of the algorithm. First note that we always have $z^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions at the end of each step. For example $x^p = a^{\lfloor p / r\rfloor}x^{p \bmod r}$ which can be computed using $O(\M(s)\log(p))$ operations in $\F_p$. At step $j$ of the recursion we have the following costs in $\F_p$:
+Therefore we have a recursive algorithm for computing $\beta = \beta_{s - 1}$. Let us analyze the complexity of the algorithm.
+First note that we always have $z^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions at
+the end of each step. For example $x^p = a^{\lfloor p / r\rfloor}x^{p \bmod r}$ which can be computed using $O(\M(s)\log(p))$
+operations in $\F_p$. At step $j$ of the recursion we have the following costs in $\F_p$:
 \begin{itemize}
 	\item $O(\M(r) + \M(s)\log(r))$ for computing $x^{p^j}$, and computing $z^{p^j}$ is free.
-	\item If $s$ is small we can first reduce $z^{p^j \bmod r}$ modulo $g(Z)$, and then do $n$ modular compositions at a total cost of $O(\M(r) + n\CC(s))$. But if $s$ is large we can reduce $c_l(z^{p^j \bmod r})$ modulo $g(Z)$ for all $0 \le l < n$ at a total cost of $O(n\M(r))$.
+	\item If $s$ is small we can first reduce $z^{p^j \bmod r}$ modulo $g(Z)$, and then do $n$ modular compositions at a total cost
+of $O(\M(r) + n\CC(s))$. But if $s$ is large we can reduce $c_l(z^{p^j \bmod r})$ modulo $g(Z)$ for all $0 \le l < n$ at a total
+cost of $O(n\M(r))$.
 	\item $O(n\M(s))$ for evaluating $\beta_j$ at $x^{p^j}$ using Horner's method.
 	\item $O(\M(r)\M(s))$ for reducing (\ref{equation:betaj}) modulo $f$.
 \end{itemize}
@@ -389,7 +427,10 @@ Finally since the depth of the recursion in Algorithm \ref{algorithm:edf} is $\l
 
 \section{Computing the isomorphism $F_1 \rightarrow F_2$}
 
-In this section, we analyze the computational cost of building an isomorphism $\varphi: F_1 \rightarrow F_2$. We first construct the isomorphism $\varphi_2 \circ \psi \circ \varphi_1 : F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain}), and then descend back to the desired fields. The following algorithm builds the above chain of isomorphism based on the observations at the start of the section. 
+In this section, we analyze the computational cost of building an isomorphism $\varphi: F_1 \rightarrow F_2$. We first construct
+the isomorphism $\varphi_2 \circ \psi \circ \varphi_1 : F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain}), and
+then descend back to the desired fields. The following algorithm builds the above chain of isomorphism based on the observations
+at the start of the section. 
 
 \begin{algorithm}
 [Isomorphism ${F_1[\zeta] \rightarrow F_2[\zeta]}$]
@@ -397,7 +438,8 @@ In this section, we analyze the computational cost of building an isomorphism $\
 	\begin{algorithmic}[1]
 		\REQUIRE degree $r$ extensions $F_1, F_2$ of $\F_p$
 		\ENSURE an isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$
-		\STATE\label{step:factor-cyclo} factor the cyclotomic polynomial $\Phi_r(Z)$ over $\F_p$ to build extensions $\F_p[\zeta], F_1[\zeta], F_2[\zeta]$
+		\STATE\label{step:factor-cyclo} factor the cyclotomic polynomial $\Phi_r(Z)$ over $\F_p$ to build extensions $\F_p[\zeta],
+F_1[\zeta], F_2[\zeta]$
 		\REPEAT
 			\STATE choose a random $a \in F_1[\zeta]$
 			\STATE compute $\theta_a$ using Algorithm \ref{algorithm:xidelta}
@@ -420,10 +462,14 @@ In this section, we analyze the computational cost of building an isomorphism $\
 	\end{itemize}
 \end{proposition}
 \begin{proof}
-	By \cite[Theorem 9]{shoup1994fast} Step \ref{step:factor-cyclo} takes $O(r\log^2(r) + r\log(r)\log(p))$ operations in $\F_p$. The running time of the two repeat...until loops is given by Proposition \ref{proposition:XiDelta-updated}. Step \ref{step:gamma-pow} is done using $O(\M(s)\M(r)\log(r))$ operations in $\F_p$. The running time of Step \ref{step:psi} is given by Proposition \ref{proposition:root-fpz}. Adding all these up proves the proposition.
+By \cite[Theorem 9]{shoup1994fast} Step \ref{step:factor-cyclo} takes $O(r\log^2(r) + r\log(r)\log(p))$ operations in $\F_p$. The
+running time of the two repeat...until loops is given by Proposition \ref{proposition:XiDelta-updated}. Step \ref{step:gamma-pow}
+is done using $O(\M(s)\M(r)\log(r))$ operations in $\F_p$. The running time of Step \ref{step:psi} is given by Proposition
+\ref{proposition:root-fpz}. Adding all these up proves the proposition.
 \end{proof}
 
-So, now we have an isomorphism $\phi: F_1[\zeta] \rightarrow F_2[\zeta]$ that sends $\theta_a$ to some $h(z, x) \in F_2[\zeta]$. To construct the isomorphism $\varphi: F_1 \rightarrow F_2$ we the technique in \cite{Allombert2002}. Let 
+So, now we have an isomorphism $\phi: F_1[\zeta] \rightarrow F_2[\zeta]$ that sends $\theta_a$ to some $h(z, x) \in F_2[\zeta]$.
+To construct the isomorphism $\varphi: F_1 \rightarrow F_2$ we the technique in \cite{Allombert2002}. Let 
 \[ \theta_a = \sum_{i = 0}^{s - 1}f_i(x)z^i, \quad\text{and}\quad z^s = (v(z)  \bmod g(z)) = \sum_{i = 0}^{s - 1}v_iz^i. \] 
 Then since $\theta_a^{p^s} = z\theta_a$ we have
 \[ \sum_{i = 0}^{s - 1}f_i(x)^{p^s}z^i = f_{s - 1}(x)v(z) + f_0(x)z + \cdots + f_{s - 2}(x)z^{s - 1}.\]
@@ -436,7 +482,10 @@ f_1(x)^{p^s} & = & f_0(x) + v_1f_{s - 1}(x) \\
 f_{s - 1}(x)^{p^s} & = & f_{s - 2}(x) + v_{s - 1}f_{s - 1}(x)
 \end{array} 
 \]
-form which we see that $f_i(x) \in \F_p(f_0(x)) \subseteq F_1$ for all $i$. We prove $\F_p(f_0) = F_1$. Let $\sigma \in \gal(F_1(z) / \F_p)$ be a generator, and let $j \le r$ be the smallest integer such that $\sigma^jf_0 = f_0$. Then $\sigma^{js}\theta_a = \theta_a$, but $\theta_a$ is not contained in any proper subfield; so $j = r$. Let $h_0$ be the constant term of $h(z, x)$. Then we similarly have $F_2 = \F_p(h_0)$. This gives us an isomorphism
+form which we see that $f_i(x) \in \F_p(f_0(x)) \subseteq F_1$ for all $i$. We prove $\F_p(f_0) = F_1$. Let $\sigma \in
+\gal(F_1(z) / \F_p)$ be a generator, and let $j \le r$ be the smallest integer such that $\sigma^jf_0 = f_0$. Then
+$\sigma^{js}\theta_a = \theta_a$, but $\theta_a$ is not contained in any proper subfield; so $j = r$. Let $h_0$ be the constant
+term of $h(z, x)$. Then we similarly have $F_2 = \F_p(h_0)$. This gives us an isomorphism
 \[
 \begin{array}{rlll}
 	\phi: & F_1 & \longrightarrow & F_2 \\
