@@ -32,6 +32,8 @@
 \def\x {\ensuremath{\mathbf{x}}}
 \def\Tr {\ensuremath{\mathrm{Tr}}}
 
+\newcommand{\wrt}{\vdash} 
+
 \newtheorem{Def}{Definition}
 \newtheorem{Theo}{Theorem}
 \newtheorem{Prop}{Proposition}
@@ -43,8 +45,103 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In all that follows, $\K$ is a perfect field. We give algorithms 
-for embedding and isomorphism.
+In all that follows, $\F_p$ is a finite field.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Computing in the algebraic closure of $\F_p$}
+
+Suppose that the following is available:
+\begin{itemize}
+\item For any prime $\ell$, an $\ell$-adic tower over $\F_p$ is known,
+  with in particular polynomials $Q_{\ell^i}$, irreducible of degree
+  $\ell^i$ over $\F_p$. In particular, we can identify  $\F_{p^{\ell^i}}$
+  with $\F_p[X]/\langle Q_{\ell^i} \rangle$, with $\F_p$-basis
+  $U_{\ell^i}=(1,X,\dots,X^{\ell^i-1})$. 
+
+  In addition, for any $i,j$, with $i \le j$, we also have a
+  polynomial $Q_{\ell^i,\ell^j}$ in $\F_p[X,Y]$, that defines
+  $\F_{p^{\ell^j}}$ over $\F_{p^{\ell^j}}$. This gives us a bivariate
+  $\F_p$-basis $B_{\ell^i,\ell^j}=(X^r Y^s)_{0 \le r < \ell^i, 0 \le s
+    < \ell^{j-i}}$ of $\F_{p^{\ell^j}}$.
+  
+  We assume lift-up and push-down are available, that is, conversions
+  between the bases $U_{\ell^j}$ and $B_{\ell^i,\ell^j}$.a
+
+\item For any finite extension $\F_q$ of $\F_p$, and any coprime
+  $m,n$, we can compute a compositum and do embedding and isomorphism
+  in degrees $m,n$ over $\F_q$ (cf. the sections below). For this to
+  be feasible, we need a basis for $\F_q$, of course.
+\end{itemize}
+We want to achieve the following more general versions of embedding
+and isomorphism:
+\begin{itemize}
+\item For any $m \ge 1$, find an irreducible polynomial $Q_m$ of
+  degree $m$ in $\F_p[X]$; this will allow us to identify $\F_{p^m}$
+  with $\F_p[X]/\langle Q_m \rangle$, with $\F_p$-basis
+  $U_m=(1,X,\dots,X^{m-1})$. 
+
+  This is easy: write $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$. Compute
+  $Q_{\ell_i^{c_i}}$ for all $i$, and apply the compositum algorithm
+  (in a subproduct-tree style) to compute $Q_m$. This also allows us
+  to compute the isomorphism $\F_{p^{\ell_1^{c_1}}} \times \cdots
+  \times \F_{p^{\ell_s^{c_s}}} \to \F_{p^m}$ and its inverse.
+
+\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
+  Embed}_{m,m'}$ as the conversion from $U_{m}$ to $U_{m'}$. 
+
+  When $g=\gcd(m,m'/m)=1$, we know how to do this in quasi-linear
+  time. Otherwise, it is more complicated (to do it right, we would
+  need to work over $\F_{p^g}$, but that would require conversion to
+  bivariate bases, see below).
+
+  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
+  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
+  Take $A$ in $\F_{p^m}$. Decompose it on $\F_{p^{\ell_1^{c_1}}}
+  \times \cdots \times \F_{p^{\ell_s^{c_s}}}$ (previous item). Lift-up
+  a few times to $\F_{p^{\ell_1^{e_1}}} \times \cdots \times
+  \F_{p^{\ell_s^{e_s}}}$. Recompose the result on the basis of
+  $\F_{p^{m'}}$ (previous item).
+
+\item For any $m,m' \ge 1$, with $m'$ a multiple of $m$, find a
+  polynomial $Q_{m,m'}$ in $\F[X,Y]$ that defines $\F_{p^{m'}}$ over
+  $\F_{p^m}$. The associated $\F_p$-basis is $B_{m,m'}=(X^i Y^j)_{0
+    \le i < m, 0 \le j < m'/m}$.
+
+  To compute $Q_{m,m'}$, it is enough to handle the case where $m'/m =
+  \ell^c$, for some prime $\ell$ (then, we use the same compositum
+  process as in the first item). If $\ell$ does not divide $m$, take
+  $Q_{m,m'}=Q_{\ell^c}$. Else, we need to work a bit more: let $c'$ be
+  the $\ell$-adic valuation of $m$, and consider
+  $Q_{\ell^{c'},\ell^c}$. We define $Q_{m,m'}$ as the polynomial
+  obtained by applying the embedding $\F_{p^{\ell^{c'}}}\to\F_{p^m}$ to
+  all coefficients of $Q_{\ell^{c'},\ell^c}$.
+  
+\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
+  ChangeBasis}_{m,m'}$ as the conversion from $U_{m'}$ to $B_{m,m'}$.
+  
+  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
+  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
+  Take $A$ written on $U_{m'}$. Decompose it on $\F_{p^{\ell_1^{e_1}}}
+  \times \cdots \times \F_{p^{\ell_s^{e_s}}}$. Apply $\ell_i$-adic
+  change-of basis, to rewrite $A$ on the products of the bases
+  $B_{\ell_1^{c_1},\ell_1^{e_1}},\dots,B_{\ell_s^{c_s},\ell_s^{e_s}}$.
+  Now work with the components of degrees $\ell_1^{c_1},\dots,\ell_s^{c_s}$,
+  to rewrite $A$ univariate in $X$ (for $\F_{p^m}$), multivariate 
+  in $Y_1,\dots,Y_s$. Finish as in the first item (but with coefficients in
+  $\F_{p^m}$).
+\end{itemize}
+
+With this, we can do $+,\times$ over the algebraic closure (embed the
+operands in a common extension), relative characteristic and minimal
+polynomials (and thus traces and norms), and probably most other
+required operations.
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,89 +155,89 @@ as~\cite{vzGG}, and that are not available in standard computer
 algebra systems.
 
 We denote by $\M:\N \to \N$ a function such that polynomials in
-$\K[X]$ of degree at most $n$ can be multiplied in $\M(n)$ operations
-in $\K$, and we make the usual super-linearity assumptions on
+$\F[X]$ of degree at most $n$ can be multiplied in $\M(n)$ operations
+in $\F$, and we make the usual super-linearity assumptions on
 $\M$~\cite[Chapter~8]{vzGG}. We also denote by $\omega$ a constant in
-$(2,3]$ such that one can multiply matrices of size $n$ over $\K$
-using $O(n^\omega)$ operations in $\K$.
+$(2,3]$ such that one can multiply matrices of size $n$ over $\F$
+using $O(n^\omega)$ operations in $\F$.
 
 Given variables $X_1,\dots,X_s$ and integers $d_1,\dots,d_s$,
-$\K[X_1,\dots,X_s]_{d_1,\dots,d_s}$ denotes the set of polynomials $P$
-in $\K[X_1,\dots,X_s]$ such that $\deg(P,X_i) < d_i$ holds for all
+$\F[X_1,\dots,X_s]_{d_1,\dots,d_s}$ denotes the set of polynomials $P$
+in $\F[X_1,\dots,X_s]$ such that $\deg(P,X_i) < d_i$ holds for all
 $i$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Polynomial multiplication and remainder}
 
-For $B$ in $\K[X]$ of degree at most $m$, it will be convenient to let
+For $B$ in $\F[X]$ of degree at most $m$, it will be convenient to let
 $$
 \begin{array}{cccc}
-\mul(.,B,m,k): &\K[X]_k& \to &\K[X]_{k+m}\\
+\mul(.,B,m,k): &\F[X]_k& \to &\F[X]_{k+m}\\
 & A & \mapsto & AB
 \end{array}$$ 
 denote the multiplication-by-$B$ operator, which can be applied using
-$\M(\max(m,k))$ operations in $\K$. In a similar vein, we denote by
+$\M(\max(m,k))$ operations in $\F$. In a similar vein, we denote by
 $$
 \begin{array}{cccc}
-\rev(.,m): &\K[X]_m &\to& \K[X]_m  \\
+\rev(.,m): &\F[X]_m &\to& \F[X]_m  \\
 & F & \mapsto & X^{m-1} F(1/X)
 \end{array}$$ the reversal operator. 
 
-Next, fix a monic polynomial $P$ of degree $m$ in $\K[X]$. For $k \ge 1$, we denote by
+Next, fix a monic polynomial $P$ of degree $m$ in $\F[X]$. For $k \ge 1$, we denote by
 $\rem(.,P,k)$ the operator
 $$
 \begin{array}{cccc}
-\rem(.,P,k): &\K[X]_k& \to &\K[X]_{m}\\
+\rem(.,P,k): &\F[X]_k& \to &\F[X]_{m}\\
 & A & \mapsto & A \bmod P.
 \end{array}$$ 
 Such remainders can be computed in time $O(\M(\max(k,m)))$ using the
 Cook-Sieveking-Kung algorithm~\cite[Chapter~9]{vzGG}. For $B$
-in $\K[X]/\langle P \rangle$ we will also use the modular multiplication
+in $\F[X]/\langle P \rangle$ we will also use the modular multiplication
 operator
-$$\begin{array}{cccc} \mulmod(.,B,P): & \K[X]/\langle P \rangle & \to
-  & \K[X]/\langle P \rangle\\ & A & \mapsto & AB \bmod P.
+$$\begin{array}{cccc} \mulmod(.,B,P): & \F[X]/\langle P \rangle & \to
+  & \F[X]/\langle P \rangle\\ & A & \mapsto & AB \bmod P.
 \end{array}$$ 
-Identifying $\K[X]_m$ and $\K[X]/\langle P \rangle$, and using the
+Identifying $\F[X]_m$ and $\F[X]/\langle P \rangle$, and using the
 direct algorithm for modular multiplication (multiply, then reduce),
 we can write $$\mulmod(.,B,P) = \rem(.,P,2m-1) \circ \mul(.,B,m-1,m);$$
 one can thus compute $\mulmod(A,B,P)$ using $O(\M(m))$ operations in
-$\K$, as is well known.
+$\F$, as is well known.
 
 Finally, we say a brief word about bivariate algorithms.  Given two
 integers $d,e$, we denote by
 $$
 \begin{array}{cccc}
-\rev(.,d,e): &\K[X,Y]_{d,e} &\to& \K[X,Y]_{d,e}  \\
+\rev(.,d,e): &\F[X,Y]_{d,e} &\to& \F[X,Y]_{d,e}  \\
 & F & \mapsto & X^d Y^e F(1/X,1/Y)
 \end{array}$$
 the operator that reverses a polynomial $F$ with respect to both $X$
 and $Y$ (and does not require any arithmetic operation).
 
-Given $P$ and $Q$ monic in respectively $\K[X]$ and $\K[Y]$, 
-and given $B$ in $\K[X,Y]/\langle P,Q\rangle$, we will use the
+Given $P$ and $Q$ monic in respectively $\F[X]$ and $\F[Y]$, 
+and given $B$ in $\F[X,Y]/\langle P,Q\rangle$, we will use the
 bivariate modular multiplication operator
-$$\begin{array}{cccc} \mulmod(.,B,\langle P,Q \rangle): & \K[X,Y]/\langle P,Q \rangle & \to
-  & \K[X,Y]/\langle P,Q \rangle\\ & A & \mapsto & AB \bmod \langle P, Q \rangle.
+$$\begin{array}{cccc} \mulmod(.,B,\langle P,Q \rangle): & \F[X,Y]/\langle P,Q \rangle & \to
+  & \F[X,Y]/\langle P,Q \rangle\\ & A & \mapsto & AB \bmod \langle P, Q \rangle.
 \end{array}$$ 
-Applying this operator take $O(\M(de))$ operations in $\K$ (todo: ref).
+Applying this operator take $O(\M(de))$ operations in $\F$ (todo: ref).
 
 
 \paragraph{Transposed algorithms.}
 Next, we briefly review the transposed version of some the operations
 seen above. In what follows, the dual of a vector space such as
-$\K[X]_m$ or $\K[X]/\langle P \rangle$, with $P$ of degree $m$, is
-simply seen as $\K^m$.
+$\F[X]_m$ or $\F[X]/\langle P \rangle$, with $P$ of degree $m$, is
+simply seen as $\F^m$.
 
 The transpose of the multiplication-by-$B$ map is denoted by
-$$\mul^t(.,B,m,k): \K^{k+m} \to \K^k;$$ to implement it, one can use
+$$\mul^t(.,B,m,k): \F^{k+m} \to \F^k;$$ to implement it, one can use
 transposed versions of plain, Karatsuba and
 FFT algorithms~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann},
 which have the same running time, up to an extra $O(m)$.
-By identifying $\K[X]_k$ with its dual, one can also see
-$\mul^t(.,B,m,k)$ mapping $\K[X]_{k+m}$ to $\K[X]_{k}$ and notice that
-$\mul^t(.,B,m,k)$ then becomes $$A \in \K[X]_{k+m} \mapsto
-(A\ \rev(B,m+1) \bmod X^{k+m}){\rm~div~}X^{m} \in \K[X]_k;$$ this
+By identifying $\F[X]_k$ with its dual, one can also see
+$\mul^t(.,B,m,k)$ mapping $\F[X]_{k+m}$ to $\F[X]_{k}$ and notice that
+$\mul^t(.,B,m,k)$ then becomes $$A \in \F[X]_{k+m} \mapsto
+(A\ \rev(B,m+1) \bmod X^{k+m}){\rm~div~}X^{m} \in \F[X]_k;$$ this
 formula leads to algorithms for the transposed product that can be
 implemented using only ``classical'' polynomial multiplication, but
 are slower than those
@@ -148,19 +245,19 @@ of~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann} by a
 constant factor. 
 
 The reversal operator is its own tranpose. Finally, taking $P$ monic
-of degree $m$ in $\K[X]$, we discuss the tranposes of $\rem$ and
-$\mulmod$. Since elements of $\K[X]/\langle P \rangle$ are given on
+of degree $m$ in $\F[X]$, we discuss the tranposes of $\rem$ and
+$\mulmod$. Since elements of $\F[X]/\langle P \rangle$ are given on
 the monomial basis $1,X,\dots,X^{m-1}$, a linear form $\ell:
-\K[X]/\langle P \rangle \to \K$ is represented by its values on the
+\F[X]/\langle P \rangle \to \F$ is represented by its values on the
 monomial basis, that is, by the sequence $(\ell_i=\ell(X^i))_{0 \le i
   < m}$.
 
 As showed in~\cite{bostan+lecerf+schost:tellegen}, the transposed map
 $$
 \begin{array}{cccc}
-\rem^t(.,P,k): &\K^m& \to &\K^k
+\rem^t(.,P,k): &\F^m& \to &\F^k
 \end{array}$$ 
-takes as input a linear form $\ell$ over $\K[X]/\langle P \rangle$,
+takes as input a linear form $\ell$ over $\F[X]/\langle P \rangle$,
 given by means of its values $(\ell(X^i))_{0 \le i < m}$; the output
 is then the values $(\ell(X^i))_{0 \le i < k}$. For $k \le m$, there
 is nothing to do; for greater values of $k$, the transposed version of
@@ -172,7 +269,7 @@ is $O(\M(k))$.
 \begin{algorithm}[H]
   \caption{$\rem^t(\ell,P,k)$}
   \begin{algorithmic}[1]
-    \REQUIRE $\ell=(\ell_i)_{0 \le i < m}$, $P$ in $\K[X]$ monic of degree $m$, $k \ge m$
+    \REQUIRE $\ell=(\ell_i)_{0 \le i < m}$, $P$ in $\F[X]$ monic of degree $m$, $k \ge m$
     \STATE $S = 1/\rev(P, m+1) \bmod X^{k-m}$
     \STATE $A = \mul^t( \sum_{0 \le i < m} \ell_{i}X^i, P, m, k-m)$
     \STATE $C = S A \bmod X^{k-m}$
@@ -182,18 +279,18 @@ is $O(\M(k))$.
 \end{algorithm}
 
 Finally, the definition of $\mulmod$ shows that for and $B$ in
-$\K[X]/\langle P \rangle$, the transposed map $\mulmod^t(.,B,P)$ maps
-a linear form $\ell \in (\K[X]/\langle P \rangle)^\star$ to the linear
+$\F[X]/\langle P \rangle$, the transposed map $\mulmod^t(.,B,P)$ maps
+a linear form $\ell \in (\F[X]/\langle P \rangle)^\star$ to the linear
 form $B \circ \ell$ defined by
 $$
 \begin{array}{cccc}
-B \circ \ell: &\K[X]/\langle P \rangle &\to& \K  \\
+B \circ \ell: &\F[X]/\langle P \rangle &\to& \F  \\
 & A & \mapsto & \ell(A B).
 \end{array}$$
 Since we have seen that $\mulmod(.,B,P) = \rem(.,P,2m-1) \circ \mul(.,B,m-1,m)$,
 we obtain the following algorithm for the transpose of modular multiplication
 algorithm (see also~\cite{shoup99,bostan+lecerf+schost:tellegen});
-it costs $O(\M(m))$ operations in $\K$.
+it costs $O(\M(m))$ operations in $\F$.
 
 
 \begin{algorithm}[H]
@@ -211,38 +308,38 @@ it costs $O(\M(m))$ operations in $\K$.
 \section{Trace formulas} 
 
 Let $s$ be a positive integer and let $I$ be a maximal ideal in
-$\K[X_1,\dots,X_s]$, so that $\L=\K[X_1,\dots,X_s]/I$ is a finite
-extension of $\K$.  The {\em trace} $\tau_{\L/\K}$ will be denoted by
-$\tau_I$; equivalently, since $\K$ is perfect, we have for $B$ in $\L$
+$\F[X_1,\dots,X_s]$, so that $\L=\F[X_1,\dots,X_s]/I$ is a finite
+extension of $\F$.  The {\em trace} $\tau_{\L/\F}$ will be denoted by
+$\tau_I$; equivalently, since $\F$ is perfect, we have for $B$ in $\L$
 \begin{equation}\label{eq:tr}
 \tau_{I}(B)=\sum_{\x \in V} B(\x),
 \end{equation}
-where $V=V(I)$ lies in $\Kbar^n$. 
+where $V=V(I)$ lies in $\overline{\F}^n$. 
 
 \paragraph{Univariate formulas.} In this paragraph, we fix $B$ in $\L$ and we 
-denote by $M_{I,B} \in \K[X]$ the minimal polynomial of $B$. If we let
-$V_B \subset \Kbar$ be the image of $V$ under the mapping $\x \mapsto
+denote by $M_{I,B} \in \F[X]$ the minimal polynomial of $B$. If we let
+$V_B \subset \overline{F}$ be the image of $V$ under the mapping $\x \mapsto
 B(\x)$, then $M_{I,B}$ is the polynomial $\prod_{\beta \in
   V_B}(X-\beta)$.
 
-The subfield $\K(B) \subset \L$ is isomorphic to $\K[X]/\langle
+The subfield $\F(B) \subset \L$ is isomorphic to $\F[X]/\langle
 M_{I,B} \rangle$. We may then consider the trace
-${\rm Tr}_{\L/\K(B)}$, which we see as an $\K[X]/\langle
+${\rm Tr}_{\L/\F(B)}$, which we see as an $\F[X]/\langle
 M_{I,B}\rangle$-linear mapping
 $$
 \begin{array}{cccc}
-\tau_{I,B} :& \L& \to& \K[X]/\langle M_{I,B} \rangle.
+\tau_{I,B} :& \L& \to& \F[X]/\langle M_{I,B} \rangle.
 \end{array}$$
-The trace ${\rm Tr}_{\L/\K(B)}$ is $n$ times the identity on $\K(B)$,
-where we denote by $n$ the index $[\L:\K(B)]$. In particular, if
-$A=C(B)$, for some polynomial $C$ in $\K[X]$, then $\tau_{I,B}(A)=n
+The trace ${\rm Tr}_{\L/\F(B)}$ is $n$ times the identity on $\F(B)$,
+where we denote by $n$ the index $[\L:\F(B)]$. In particular, if
+$A=C(B)$, for some polynomial $C$ in $\F[X]$, then $\tau_{I,B}(A)=n
 \ C \bmod M_{I,B}$.
 
 The following lemma shows how to relate $\tau_{I,B} (A)$ to the
 sequence $\tau_I(A B^i)$. This is a restatement of well-known results,
 see for instance~\cite{rouiller99}. In what follows, we sometimes
-identify $\tau_{I,B}(A)$, which lies in $\K[X]/\langle M_{I,B} \rangle$,
-to its canonical preimage in $\K[X]$.
+identify $\tau_{I,B}(A)$, which lies in $\F[X]/\langle M_{I,B} \rangle$,
+to its canonical preimage in $\F[X]$.
 
 \begin{Lemma}\label{lemma:trace:1}
   For $A$ and $B$ in $\L$, 
@@ -284,7 +381,7 @@ the following classical algorithm.
 \begin{algorithm}[H]
   \caption{TraceFromMinpoly$(M_{I,B}, n, k)$}
   \begin{algorithmic}[1]
-    \REQUIRE  $M_{I,B}$ monic in $\K[X]$ of degree $m$, $k \ge 1$, $n=[\L:\K(B)]$    
+    \REQUIRE  $M_{I,B}$ monic in $\F[X]$ of degree $m$, $k \ge 1$, $n=[\L:\F(B)]$    
     \ENSURE $(\tau_I(B^i))_{0 \le i < k}$
     \STATE\label{algo:minpolytotrace:1} $D = n\, \rev(M'_{I,B}, m)/\rev(M_{I,B}, m+1) \bmod X^k$
     \RETURN $(\coeff(D,i))_{0 \le i < k}$
@@ -297,7 +394,7 @@ the following classical algorithm.
   $(\tau_I(B^i))_{0 \le i < k}$ in time $O(\M(k))$.
 \end{Lemma}
 
-As a second application, we consider $A$ in $\K(B)$. Given traces of
+As a second application, we consider $A$ in $\F(B)$. Given traces of
 the form $\tau_I(A B^i)$, we want to express $A$ as a polynomial in
 $B$ (the natural context for this kind of algorithm is a situation
 where we do not have access to $A$ itself but can indirectly compute
@@ -308,8 +405,8 @@ traces, but random linear forms) or Rouillier's~\cite{rouiller99}.
 \begin{algorithm}[H]
   \caption{ConvertFromTrace$(t, M_{I,B}, n)$}
   \begin{algorithmic}[1]
-    \REQUIRE  $t=(\tau_I(A B^i))_{0 \le i < m}$, $M_{I,B}$ monic in $\K[X]$ of degree $m$, $n=[\L:\K(B)]$
-    \ENSURE $C$ in $\K[X]_m$
+    \REQUIRE  $t=(\tau_I(A B^i))_{0 \le i < m}$, $M_{I,B}$ monic in $\F[X]$ of degree $m$, $n=[\L:\F(B)]$
+    \ENSURE $C$ in $\F[X]_m$
     \STATE $D =  1/M'_{I,B} \bmod M_{I,B}$
     \STATE $N=\rev(M_{I,B}, m+1)( \sum_{0 \le i <m} t_i X^i) \bmod X^m$
     \STATE $N^\star = \rev(N, m)$
@@ -320,8 +417,8 @@ traces, but random linear forms) or Rouillier's~\cite{rouiller99}.
 \end{algorithm}
 
 \begin{Lemma}
-  Suppose that $n=[\L:\K(B)]$ is a unit in $\K$. If $A$ is in
-  $\K(B)$, Algorithm~\ref{algo:tracetopoly} computes a polynomial $C$
+  Suppose that $n=[\L:\F(B)]$ is a unit in $\F$. If $A$ is in
+  $\F(B)$, Algorithm~\ref{algo:tracetopoly} computes a polynomial $C$
   such that $A=C(B)$ in time $O(\M(m)\log(m))$.
 \end{Lemma}
 \begin{proof}
@@ -348,8 +445,8 @@ bases is the Hankel matrix with entries $\tau_I(B^{i+j})$.
 %% \begin{algorithm}[H]
 %%   \caption{ConvertFromTrace$^t(C,M_{I,B},n)$}
 %%   \begin{algorithmic}[1]
-%%    \REQUIRE $C=(c_i)_{0 \le i <m}$, $M_{I,B}$ monic in $\K[X]$ of degree $m$, $n=[\L:\K(B)]$
-%%    \ENSURE  $T \in \K[X]_m$
+%%    \REQUIRE $C=(c_i)_{0 \le i <m}$, $M_{I,B}$ monic in $\F[X]$ of degree $m$, $n=[\L:\F(B)]$
+%%    \ENSURE  $T \in \F[X]_m$
 %%     \STATE $D =  1/M'_{I,B} \bmod M_{I,B}$
 %%     \STATE $(N^\star_i)_{0 \le i < m}=\mulmod^t(C/n, D, M_{I,B})$
 %%     \STATE $N = (N^\star_{m-1-i})_{0 \le i < m}$
@@ -362,18 +459,18 @@ bases is the Hankel matrix with entries $\tau_I(B^{i+j})$.
 \paragraph{Trace formulas: bivariate case.} 
 Let $\L$ be as above. Consider $B$ and $C$ in $\L$, Below, we will
 take the minimal polynomials $M_{I,B}$ and $M_{I,C}$ of respectively
-$B$ and $C$ in respectively $\K[X]$ and $\K[Y]$, and we will assume
-that $\K(B)$ and $\K(C)$ are linearly disjoint, so that $\K(B,C) \simeq
-\K[X,Y]/\langle M_{I,B}, M_{I,C}\rangle$. Thus, the trace ${\rm
-  Tr}_{\L/\K(B,C)}: \L \to \K(B,C)$
+$B$ and $C$ in respectively $\F[X]$ and $\F[Y]$, and we will assume
+that $\F(B)$ and $\F(C)$ are linearly disjoint, so that $\F(B,C) \simeq
+\F[X,Y]/\langle M_{I,B}, M_{I,C}\rangle$. Thus, the trace ${\rm
+  Tr}_{\L/\F(B,C)}: \L \to \F(B,C)$
 can be written as 
 $$\begin{array}{cccc}
-\tau_{I,B,C} :& \L& \to& \K[X,Y]/\langle M_{I,B}, M_{I,C} \rangle.
+\tau_{I,B,C} :& \L& \to& \F[X,Y]/\langle M_{I,B}, M_{I,C} \rangle.
 \end{array}$$
 In this context, we can write a bivariate version of Lemma~\ref{lemma:trace:1}.
 \begin{Lemma}
-  Let $A, B, C$ be in $\L$, such that $\K(B)$ and $\K(C)$ are linearly
-  disjoint, and let $M_{I,B}\in \K[X]$ and $M_{I,C}\in \K[Y]$ be the
+  Let $A, B, C$ be in $\L$, such that $\F(B)$ and $\F(C)$ are linearly
+  disjoint, and let $M_{I,B}\in \F[X]$ and $M_{I,C}\in \F[Y]$ be the
   minimal polynomials of respectively $B$ and $C$. Then,
   $$\sum_{i,j \ge 0} \tau_I(A B^i C^j) X^i Y^j= 
   \frac{\rev( M'_{I,B}\, M'_{I,C}\, \tau_{I,B,C} (A) \bmod \langle M_{I,B}, M_{I,C}\rangle,m,n)}{\rev(M_{I,B},m+1)\, \rev(M_{I,C},n+1)},$$
@@ -417,10 +514,10 @@ and expresses $A$ as a polynomial in $B$ and $C$, if possible.
 \begin{algorithm}[H]
   \caption{ConvertFromTrace$(t, M_{I,B}, M_{I,C}, p)$}
   \begin{algorithmic}[1]
-    \REQUIRE  $t=(\tau_I(A B^iC^j))_{0 \le i < m, 0 \le i < n}$, $M_{I,B}$ monic in $\K[X]$ of degree $m$,
-    $M_{I,C}$ monic in $\K[Y]$ of degree $n$, 
-    $p=[\L:\K(B,C)]$
-    \ENSURE a polynomial $H$ in $\K[X,Y]_{m,n}$
+    \REQUIRE  $t=(\tau_I(A B^iC^j))_{0 \le i < m, 0 \le i < n}$, $M_{I,B}$ monic in $\F[X]$ of degree $m$,
+    $M_{I,C}$ monic in $\F[Y]$ of degree $n$, 
+    $p=[\L:\F(B,C)]$
+    \ENSURE a polynomial $H$ in $\F[X,Y]_{m,n}$
     \STATE $D =  1/M'_{I,B} \bmod M_{I,B}$
     \STATE $E =  1/M'_{I,C} \bmod M_{I,C}$
     \STATE $N=\rev(M_{I,B}, m+1)\rev(M_{I,C}, n+1)( \sum_{0 \le i <m, 0 \le j < n} t_{i,j} X^iY^i) \bmod \langle X^m, Y^n \rangle$
@@ -432,15 +529,15 @@ and expresses $A$ as a polynomial in $B$ and $C$, if possible.
 \end{algorithm}
 
 \begin{Lemma}
-  Suppose that $p=[\L:\K(B,C)]$ is a unit in $\K$. If $A$ is in
-  $\K(B,C)$, with $\K(B)$ and $\K(C)$ linearly disjoint,
+  Suppose that $p=[\L:\F(B,C)]$ is a unit in $\F$. If $A$ is in
+  $\F(B,C)$, with $\F(B)$ and $\F(C)$ linearly disjoint,
   Algorithm~\ref{algo:tracetopoly2} computes a polynomial $H$ such
   that $A=H(B,C)$ in time $O(\M(m)\log(m)+\M(n)\log(n)+\M(mn))$, which
   is $O(\M(mn)\log(mn))$.
 \end{Lemma}
 \begin{proof}
-  Correctness follows from the remark that if $A$ is in $\K(B,C)$, say
-  $A=H(B,C)$, then $\tau_{I,B,C} (A)=[\L:\K(B,C)]\, H \bmod \langle
+  Correctness follows from the remark that if $A$ is in $\F(B,C)$, say
+  $A=H(B,C)$, then $\tau_{I,B,C} (A)=[\L:\F(B,C)]\, H \bmod \langle
   M_{I,B}, M_{I,C} \rangle$.  As to the running time, computing
   the inverses $D$ and $E$ takes total time $O(\M(m)\log(m)+\M(n)\log(n))$;
   the subsequent products take time $O(\M(mn))$.
@@ -453,27 +550,27 @@ and expresses $A$ as a polynomial in $B$ and $C$, if possible.
 \section{Field embedding and isomorphism} 
 
 Consider two irreducible polynomials $P$ and $Q$ in respectively
-$\K[X]$ and $\K[Y]$, with respective degrees $m$ and $n$. We assume
-that $\gcd(m,n)=1$, and that $\K$ is a finite field. As a result, the
-ideal $\langle P, Q\rangle$ is maximal in $\K[X,Y]$, and $XY$
-generates the field $\L=\K[X,Y]/\langle P, Q \rangle$.
+$\F[X]$ and $\F[Y]$, with respective degrees $m$ and $n$. We assume
+that $\gcd(m,n)=1$, and that $\F$ is a finite field. As a result, the
+ideal $\langle P, Q\rangle$ is maximal in $\F[X,Y]$, and $XY$
+generates the field $\L=\F[X,Y]/\langle P, Q \rangle$.
 
-Let $R \in \K[X]$ be the minimal polynomial of $XY$ in the extension
-$\K\to \L$; then, $R$ is irreducible of degree $m n$ and we have embeddings
+Let $R \in \F[X]$ be the minimal polynomial of $XY$ in the extension
+$\F\to \L$; then, $R$ is irreducible of degree $m n$ and we have embeddings
 of the form
 $$\begin{array}{cccc}
-\varphi_X: & \K[X]/\langle P \rangle & \to & \K[Z]/\langle R \rangle\\
+\varphi_X: & \F[X]/\langle P \rangle & \to & \F[Z]/\langle R \rangle\\
 & X & \mapsto & S
 \end{array}$$
 and
 $$\begin{array}{cccc}
-\varphi_Y: & \K[Y]/\langle Q \rangle & \to & \K[Z]/\langle R \rangle\\
+\varphi_Y: & \F[Y]/\langle Q \rangle & \to & \F[Z]/\langle R \rangle\\
 & Y & \mapsto & T,
 \end{array}$$
-for some polynomials $S$ and $T$ in $\K[Z]$ of degree less than $mn$; 
+for some polynomials $S$ and $T$ in $\F[Z]$ of degree less than $mn$; 
 we also have an isomorphism of the form
 $$\begin{array}{cccc} 
-\Phi:&  \K[X,Y]/\langle P,Q\rangle & \to & \K[Z]/\langle R \rangle \\
+\Phi:&  \F[X,Y]/\langle P,Q\rangle & \to & \F[Z]/\langle R \rangle \\
 &  X & \mapsto & S \\
 &  Y & \mapsto & T \\
 &  XY & \mapsfrom & Z.
@@ -490,9 +587,9 @@ computing $\varphi_X(F)$ as $F(S) \bmod R$. The algorithms given below
 are better than such a direct approach.
 
 In what follows, we write $\tau_P,\tau_Q,\tau_R$ for the traces modulo
-the ideals $\langle P\rangle\subset \K[X]$, $\langle Q \rangle \subset
-\K[Y]$ and $\langle R \rangle \subset \K[Z]$. Let as well $I$ be the ideal
-$\langle P, Q\rangle$ in $\K[X,Y]$.
+the ideals $\langle P\rangle\subset \F[X]$, $\langle Q \rangle \subset
+\F[Y]$ and $\langle R \rangle \subset \F[Z]$. Let as well $I$ be the ideal
+$\langle P, Q\rangle$ in $\F[X,Y]$.
 
 Note finally that algorithms TraceFromMinpoly and ConvertFromTrace
 take as inputs some indices (denoted by $n$ and $p$ in their
@@ -515,14 +612,14 @@ completeness. It is based on the following lemma.
 \end{Lemma}
 \begin{proof}
   Because $\Phi$ is an isomorphism, $\tau_R(Z^i) = \tau_I(X^i
-  Y^i)$. Because $\K[X,Y]/I$ is the tensor product of $\K[X]/P$ and
-  $\K[Y]/Q$, $\tau_I(X^i Y^i)=\tau_P(X^i) \ \tau_Q(Y^i)$.
+  Y^i)$. Because $\F[X,Y]/I$ is the tensor product of $\F[X]/P$ and
+  $\F[Y]/Q$, $\tau_I(X^i Y^i)=\tau_P(X^i) \ \tau_Q(Y^i)$.
 \end{proof}
 
 The algorithm follows: we first compute the traces of the powers $X^i$
 and $Y^i$, deduce those of $Z^i$, and finally recover the minimal
 polynomial of $Z$ from them. To do the latter, one may use Newton
-iteration (as in~\cite{Schoenhage82}) if the characteristics of $\K$
+iteration (as in~\cite{Schoenhage82}) if the characteristics of $\F$
 is greater than $mn$; in general, we use the Berlekamp Massey
 algorithm (or rather a fast variant thereof), which is slightly slower
 ($O(\M(mn)\log(mn))$ instead of $O(\M(mn))$). In any case, 
@@ -532,8 +629,8 @@ see the discussion in~\cite{BoFlSaSc06}).
 \begin{algorithm}[H]
   \caption{ComputeR$(P, Q)$}
   \begin{algorithmic}[1]
-    \REQUIRE $P$ monic of degree $m$ in $\K[X]$, $Q$ monic of degree $n$ in $\K[Y]$
-    \ENSURE $R$ monic of degree $mn$ in $\K[Z]$
+    \REQUIRE $P$ monic of degree $m$ in $\F[X]$, $Q$ monic of degree $n$ in $\F[Y]$
+    \ENSURE $R$ monic of degree $mn$ in $\F[Z]$
     \STATE  $t$=TraceFromMinpoly$(P,2mn,1)$
     \STATE  $u$=TraceFromMinpoly$(Q,2mn,1)$
     \STATE $v=(t_i u_i)_{0 \le i < 2mn}$
@@ -544,7 +641,7 @@ see the discussion in~\cite{BoFlSaSc06}).
 
 \begin{Lemma}
   Algorithm~\ref{algo:R} returns $R$ using $O(\M(mn)\log(mn))$ operations in
-  $\K$.
+  $\F$.
 \end{Lemma}
 \begin{proof}
   Correctness is straightforward.  Lemma~\ref{lemma:computetrace}
@@ -560,11 +657,11 @@ see the discussion in~\cite{BoFlSaSc06}).
 \subsection{Embedding} 
 
 Next, we show how to compute an embedding, say $\varphi_X$. Let thus
-$F$ and $G$ be in respectively $\K[X]/\langle P \rangle$ and
-$\K[Z]/\langle R \rangle$, such that $G=\varphi_X(F)$. Assuming
+$F$ and $G$ be in respectively $\F[X]/\langle P \rangle$ and
+$\F[Z]/\langle R \rangle$, such that $G=\varphi_X(F)$. Assuming
 $S=\varphi_X(X)$ is known, using Brent and Kung's modular composition
 techniques~\cite{brent+kung} to compute $G$ as $G=F(S) \bmod R$, this
-can be done in $O(n m^{(\omega+1)/2})$ operations in $\K$, since we
+can be done in $O(n m^{(\omega+1)/2})$ operations in $\F$, since we
 evaluate a polynomial of degree $m$ modulo the polynomial $R$ of
 degree $mn$ (see the analysis in~\cite{shoup94}).
 
@@ -609,12 +706,12 @@ the following lemma.
 
 \begin{Lemma}\label{lemma:algo:embed}
   Algorithm~\ref{algo:embed} correctly computes $\varphi_X(F)$
-  using $O(\M(mn)\log(mn))$ operations in~$\K$.
+  using $O(\M(mn)\log(mn))$ operations in~$\F$.
 \end{Lemma}
 
 
 
-For the inverse, we take $G$ in $\K[Z]/\langle R \rangle$ of the form
+For the inverse, we take $G$ in $\F[Z]/\langle R \rangle$ of the form
 $G=\varphi_X(F)$, and compute $F$. As above, will achieve this by
 computing $\tau_P(F X^i)$ and recovering $F$. Using the first equality
 of Lemma~\ref{lemma:traces:PQR} in the form $\tau_P(F X^i) =\tau_R(G
@@ -627,7 +724,7 @@ techniques. We mentioned above that applying $\varphi_X$ amounts to a
 modular composition: given $F$, $G$ is given by $G= F(S) \bmod R$. As
 a consequence, the transposed map $\varphi_X^t$ computes the values
 $\ell \mapsto (\ell(S^i))_{0 \le i < m}$, for $\ell$ in
-$(\K[Z]/\langle R \rangle)^\star$ (this duality between modular
+$(\F[Z]/\langle R \rangle)^\star$ (this duality between modular
 composition and power projection was observed in~\cite{shoup94}).
 
 The following algorithm for $\varphi_X^t$ is the transpose of
@@ -668,7 +765,7 @@ mentioned above that $\tau_P(F X^i) =\tau_R(G S^i)/n$ for all $i$.
 \begin{Lemma}
   Given $G$ in the image of $\varphi_X$, Algorithm~\ref{algo:inverseEmbed}
   correctly computes $F$ such that $G=\varphi_X(F)$ using
-  $O(\M(mn)\log(mn))$ operations in~$\K$.
+  $O(\M(mn)\log(mn))$ operations in~$\F$.
 \end{Lemma}
 \begin{proof}
   The cost of Algorithm~\ref{algo:embedT} remains $O(\M(mn)\log(mn))$,
@@ -692,9 +789,9 @@ for which we use techniques similar to those use for InverseEmbed.
 We start by a direct application of the results in the previous
 subsection, which is well-suited to situations where $m$ is small compared to $n$. 
 
-Let $F$ be in $\K[X,Y]/\langle P,Q\rangle$ and let
+Let $F$ be in $\F[X,Y]/\langle P,Q\rangle$ and let
 $G=\Phi(F)$. Writing $F=\sum_{0 \le i < m} F_i X^i$, with all $F_i$ in
-$\K[Y]/\langle Q \rangle$, we obtain the following straightforward
+$\F[Y]/\langle Q \rangle$, we obtain the following straightforward
 algorithm to compute $G$: compute all $\varphi_Y(F_i)$, and use a
 Horner scheme to deduce $G$ as $G=\sum_{0 \le i < m} \varphi_Y(F_i) S^i$.
 \begin{algorithm}[H]
@@ -713,7 +810,7 @@ Horner scheme to deduce $G$ as $G=\sum_{0 \le i < m} \varphi_Y(F_i) S^i$.
 
 \begin{Lemma}
   Algorithm~\ref{algo:iso1} correctly computes $\Phi(F)$ using
-  $O(m\M(mn)\log(mn))$ operations in~$\K$.
+  $O(m\M(mn)\log(mn))$ operations in~$\F$.
 \end{Lemma}
 
 The proof is a direct application of Lemma~\ref{lemma:algo:embed}.  As
@@ -740,7 +837,7 @@ of the same order of magnitude.
 
 This approach is based on baby steps / giant steps techniques, as in
 Brent and Kung's modular composition algorithm, but uses the fact that
-$Z=\Phi(XY)$ to reduce the cost. Given $F$ in $\K[X,Y]/\langle
+$Z=\Phi(XY)$ to reduce the cost. Given $F$ in $\F[X,Y]/\langle
 P,Q\rangle$, let us write
 \begin{eqnarray*}
 F&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} f_{i,j}X^i Y^j\\
@@ -790,7 +887,7 @@ scheme to obtain $G$.
 
 \begin{Lemma}
   Algorithm~\ref{algo:iso2} correctly computes $\Phi(F)$ using
-  $O(\M(m) n^{(\omega+1)/2} )$ operations in~$\K$.
+  $O(\M(m) n^{(\omega+1)/2} )$ operations in~$\F$.
 \end{Lemma}
 \begin{proof}
   Remark first that $n'=O(n)$, and that $p$ and $q$ are both
@@ -801,7 +898,7 @@ scheme to obtain $G$.
   Step~\ref{iso2:7}, which involves matrices of size $O(\sqrt{n})
   \times O(\sqrt{n})$ and $O(\sqrt{n}) \times O(n)$, with polynomial
   entries of degree $m$: this takes $O(\M(m) n^{(\omega+1)/2})$ 
-  operations in $\K$.
+  operations in $\F$.
 \end{proof}
 
 As before, we will need the transpose of this algorithm (todo: more
@@ -843,7 +940,7 @@ $(\tau_R(G S^i T^j))_{0 \le i < m, 0 \le i < n}$, which can be
 rewritten as $(\ell(S^i T^j))_{0 \le i < m, 0 \le i < n}$, where $\ell
 = G \circ \tau_R$. Now, as in the univariate case, the operation $\ell
 \mapsto (\ell(S^i T^j))_{0 \le i < m, 0 \le i < n}$ is the dual of the
-modular composition $F \in \K[X,Y]/I \mapsto F(S,T) \bmod R$, that is,
+modular composition $F \in \F[X,Y]/I \mapsto F(S,T) \bmod R$, that is,
 the dual of $\Phi$. Thus, given an algorithm ChangeBasis, the inverse
 algorithm is as follows:
 
