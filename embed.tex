@@ -32,6 +32,8 @@
 \def\x {\ensuremath{\mathbf{x}}}
 \def\Tr {\ensuremath{\mathrm{Tr}}}
 
+\newcommand{\bk}[2]{\langle#1,#2\rangle}
+
 \newcommand{\wrt}{\vdash} 
 
 \newtheorem{Def}{Definition}
@@ -45,103 +47,54 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In all that follows, $\F_p$ is a finite field.
+\section{Trace representation of polynomial quotient rings}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Let $k$ be a field, $s$ a positive integer, and $I$ a radical ideal in
+$k[x_1,\dots,x_s]$ such that $R=k[x_1,\dots,x_s]/I$ is a finite
+extension of $k$ (i.e., $I$ is zero dimensional).
 
-\section{Computing in the algebraic closure of $\F_p$}
+We define the \emph{trace} of an element $a\in R$ as the trace of the
+multilplication-by-$a$ endomorphism, and denote it by $\tau_{R/k}(a)$,
+or $\tau_I(a)$, or simply $\tau(a)$ when $I$ is clear from the
+context.  Equivalently, since $I$ is radical, we have
+\begin{equation}\label{eq:tr}
+\tau_{I}(a)=\sum_{\x \in V} a(\x),
+\end{equation}
+where $V=V(I)$ lies in $\overline{k}^s$~\cite{todo}.
 
-Suppose that the following is available:
-\begin{itemize}
-\item For any prime $\ell$, an $\ell$-adic tower over $\F_p$ is known,
-  with in particular polynomials $Q_{\ell^i}$, irreducible of degree
-  $\ell^i$ over $\F_p$. In particular, we can identify  $\F_{p^{\ell^i}}$
-  with $\F_p[X]/\langle Q_{\ell^i} \rangle$, with $\F_p$-basis
-  $U_{\ell^i}=(1,X,\dots,X^{\ell^i-1})$. 
+Thanks again to $I$ being radical~\cite{todo}, the trace defines a
+non-degenerate bilinear form on $R\times R$
+\begin{equation}
+  \label{eq:trace-def}
+  \bk{a}{b} = \tau(ab).
+\end{equation}
+Denote by $R^\ast$ the space of $k$-linear forms on $R$. By the
+non-degeneracy of the trace we obtain a vector space isomorphism
+\begin{equation}
+  \label{eq:trace-isom}
+  \begin{aligned}
+  \phi_\tau : R &\to R^\ast,\\
+            a &\mapsto a\cdot\tau,
+  \end{aligned}
+\end{equation}
+where $a\cdot\tau$ is the linear form $x\mapsto\tau(ax)$. Then, to any
+$k$-vector space basis $(b_i)_i$ of $R$, we can associate a unique
+\emph{dual basis} $(b_i^\ast)_i$ such that
+\begin{equation}
+  \label{eq:dual-basis}
+  \bk{b_i}{b_j^\ast} = \phi_\tau(b_i^\ast)(b_i) = \begin{cases}
+    1 &\text{if $i=j$,}\\
+    0 &\text{otherwise}.
+  \end{cases}
+\end{equation}
+When there is a natural choice for the basis of $R$ (e.g., $I$ is a
+triangular ideal and elements are represented on its natural monomial
+basis), by \emph{the} dual basis we will mean the basis dual to the
+natural one.
 
-  In addition, for any $i,j$, with $i \le j$, we also have a
-  polynomial $Q_{\ell^i,\ell^j}$ in $\F_p[X,Y]$, that defines
-  $\F_{p^{\ell^j}}$ over $\F_{p^{\ell^j}}$. This gives us a bivariate
-  $\F_p$-basis $B_{\ell^i,\ell^j}=(X^r Y^s)_{0 \le r < \ell^i, 0 \le s
-    < \ell^{j-i}}$ of $\F_{p^{\ell^j}}$.
-  
-  We assume lift-up and push-down are available, that is, conversions
-  between the bases $U_{\ell^j}$ and $B_{\ell^i,\ell^j}$.a
-
-\item For any finite extension $\F_q$ of $\F_p$, and any coprime
-  $m,n$, we can compute a compositum and do embedding and isomorphism
-  in degrees $m,n$ over $\F_q$ (cf. the sections below). For this to
-  be feasible, we need a basis for $\F_q$, of course.
-\end{itemize}
-We want to achieve the following more general versions of embedding
-and isomorphism:
-\begin{itemize}
-\item For any $m \ge 1$, find an irreducible polynomial $Q_m$ of
-  degree $m$ in $\F_p[X]$; this will allow us to identify $\F_{p^m}$
-  with $\F_p[X]/\langle Q_m \rangle$, with $\F_p$-basis
-  $U_m=(1,X,\dots,X^{m-1})$. 
-
-  This is easy: write $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$. Compute
-  $Q_{\ell_i^{c_i}}$ for all $i$, and apply the compositum algorithm
-  (in a subproduct-tree style) to compute $Q_m$. This also allows us
-  to compute the isomorphism $\F_{p^{\ell_1^{c_1}}} \times \cdots
-  \times \F_{p^{\ell_s^{c_s}}} \to \F_{p^m}$ and its inverse.
-
-\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
-  Embed}_{m,m'}$ as the conversion from $U_{m}$ to $U_{m'}$. 
-
-  When $g=\gcd(m,m'/m)=1$, we know how to do this in quasi-linear
-  time. Otherwise, it is more complicated (to do it right, we would
-  need to work over $\F_{p^g}$, but that would require conversion to
-  bivariate bases, see below).
-
-  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
-  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
-  Take $A$ in $\F_{p^m}$. Decompose it on $\F_{p^{\ell_1^{c_1}}}
-  \times \cdots \times \F_{p^{\ell_s^{c_s}}}$ (previous item). Lift-up
-  a few times to $\F_{p^{\ell_1^{e_1}}} \times \cdots \times
-  \F_{p^{\ell_s^{e_s}}}$. Recompose the result on the basis of
-  $\F_{p^{m'}}$ (previous item).
-
-\item For any $m,m' \ge 1$, with $m'$ a multiple of $m$, find a
-  polynomial $Q_{m,m'}$ in $\F[X,Y]$ that defines $\F_{p^{m'}}$ over
-  $\F_{p^m}$. The associated $\F_p$-basis is $B_{m,m'}=(X^i Y^j)_{0
-    \le i < m, 0 \le j < m'/m}$.
-
-  To compute $Q_{m,m'}$, it is enough to handle the case where $m'/m =
-  \ell^c$, for some prime $\ell$ (then, we use the same compositum
-  process as in the first item). If $\ell$ does not divide $m$, take
-  $Q_{m,m'}=Q_{\ell^c}$. Else, we need to work a bit more: let $c'$ be
-  the $\ell$-adic valuation of $m$, and consider
-  $Q_{\ell^{c'},\ell^c}$. We define $Q_{m,m'}$ as the polynomial
-  obtained by applying the embedding $\F_{p^{\ell^{c'}}}\to\F_{p^m}$ to
-  all coefficients of $Q_{\ell^{c'},\ell^c}$.
-  
-\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
-  ChangeBasis}_{m,m'}$ as the conversion from $U_{m'}$ to $B_{m,m'}$.
-  
-  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
-  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
-  Take $A$ written on $U_{m'}$. Decompose it on $\F_{p^{\ell_1^{e_1}}}
-  \times \cdots \times \F_{p^{\ell_s^{e_s}}}$. Apply $\ell_i$-adic
-  change-of basis, to rewrite $A$ on the products of the bases
-  $B_{\ell_1^{c_1},\ell_1^{e_1}},\dots,B_{\ell_s^{c_s},\ell_s^{e_s}}$.
-  Now work with the components of degrees $\ell_1^{c_1},\dots,\ell_s^{c_s}$,
-  to rewrite $A$ univariate in $X$ (for $\F_{p^m}$), multivariate 
-  in $Y_1,\dots,Y_s$. Finish as in the first item (but with coefficients in
-  $\F_{p^m}$).
-\end{itemize}
-
-With this, we can do $+,\times$ over the algebraic closure (embed the
-operands in a common extension), relative characteristic and minimal
-polynomials (and thus traces and norms), and probably most other
-required operations.
-
-
-
-
+The goal of this paper is to show that dual bases are an excellent
+tool to work efficiently in subextensions of $R/k$. In the next
+sections we \dots %todo
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -149,7 +102,8 @@ required operations.
 
 \section{Basic algorithms}
 
-In this section, we review several known algorithms. We give
+In this section, we review several known algorithms for the special
+case where $I=\langle P\rangle$ or $I=\langle P,Q\rangle$. We give
 pseudo-code for those that cannot be found in standard references such
 as~\cite{vzGG}, and that are not available in standard computer
 algebra systems.
@@ -200,8 +154,12 @@ $$\begin{array}{cccc} \mulmod(.,B,P): & \F[X]/\langle P \rangle & \to
 \end{array}$$ 
 Identifying $\F[X]_m$ and $\F[X]/\langle P \rangle$, and using the
 direct algorithm for modular multiplication (multiply, then reduce),
-we can write $$\mulmod(.,B,P) = \rem(.,P,2m-1) \circ \mul(.,B,m-1,m);$$
-one can thus compute $\mulmod(A,B,P)$ using $O(\M(m))$ operations in
+we can write 
+\begin{equation}
+  \label{eq:mulmod}
+  \mulmod(.,B,P) = \rem(.,P,2m-1) \circ \mul(.,B,m-1,m).
+\end{equation}
+One can thus compute $\mulmod(A,B,P)$ using $O(\M(m))$ operations in
 $\F$, as is well known.
 
 Finally, we say a brief word about bivariate algorithms.  Given two
@@ -220,101 +178,135 @@ bivariate modular multiplication operator
 $$\begin{array}{cccc} \mulmod(.,B,\langle P,Q \rangle): & \F[X,Y]/\langle P,Q \rangle & \to
   & \F[X,Y]/\langle P,Q \rangle\\ & A & \mapsto & AB \bmod \langle P, Q \rangle.
 \end{array}$$ 
-Applying this operator take $O(\M(de))$ operations in $\F$ (todo: ref).
+Applying this operator takes $O(\M(de))$ operations in $\F$ (todo: ref).
 
 
-\paragraph{Transposed algorithms.}
-Next, we briefly review the transposed version of some the operations
-seen above. In what follows, the dual of a vector space such as
-$\F[X]_m$ or $\F[X]/\langle P \rangle$, with $P$ of degree $m$, is
-simply seen as $\F^m$.
+\subsection{Algorithms for the dual basis}
 
-The transpose of the multiplication-by-$B$ map is denoted by
-$$\mul^t(.,B,m,k): \F^{k+m} \to \F^k;$$ to implement it, one can use
-transposed versions of plain, Karatsuba and
-FFT algorithms~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann},
-which have the same running time, up to an extra $O(m)$.
-By identifying $\F[X]_k$ with its dual, one can also see
-$\mul^t(.,B,m,k)$ mapping $\F[X]_{k+m}$ to $\F[X]_{k}$ and notice that
-$\mul^t(.,B,m,k)$ then becomes $$A \in \F[X]_{k+m} \mapsto
-(A\ \rev(B,m+1) \bmod X^{k+m}){\rm~div~}X^{m} \in \F[X]_k;$$ this
-formula leads to algorithms for the transposed product that can be
-implemented using only ``classical'' polynomial multiplication, but
-are slower than those
+Next, we briefly review some algorithms dealing with the dual basis
+representation.  We start by considering the vector space $k[x]_m$,
+represented on the standard polynomial basis $(x^i)_{i<m}$. We
+identify its dual space $k[x]_m^\ast$ with $k^m$, and we consider the
+natural non-degenerate bilinear form on $k[x]_m^\ast\times k[x]_m$
+given by evaluation of linear forms: $\bk{\ell}{a} = \ell(a)$.
+
+Mutliplication by a fixed $b\in k[x]_m$ is a linear map
+\begin{equation*}
+  M_b: k[x]_n \to k[x]_{m+n}
+\end{equation*}
+for any positive integer $n$. By definition, its \emph{dual} (or
+\emph{transpose}, especially when talking about algorithms) is a
+linear map
+\begin{equation*}
+  M_b^t : k^{m+n} \to k^n
+\end{equation*}
+such that
+\begin{equation*}
+  \bk{\ell}{M_b(a)} = \bk{\ell}{ab} = \bk{M_b^t(\ell)}{a}.
+\end{equation*}
+
+We denote by $\mul^t(.,b,m,n)$ an algorithm to compute $M_b^t$ for
+fixed $b$ of degree $m$, and for fixed $0\le n\le m$. To implement it,
+one can use \emph{transposed versions} of plain, Karatsuba and FFT
+algorithms~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann},
+which have the same running time, up to an extra $O(m)$.  By
+identifying $k[X]_n$ with its dual, one can also see $\mul^t(.,b,m,n)$
+mapping $k[X]_{m+n}$ to $k[X]_{n}$ and notice that $\mul^t(.,b,m,n)$
+then becomes $$a \in k[X]_{m+n} \mapsto (a\ \rev(b,m+1) \bmod
+x^{m+n}){\rm~div~}x^{m} \in k[X]_n.$$ This formula leads to algorithms
+for the transposed product that can be implemented using only
+``classical'' polynomial multiplication, but are slower than those
 of~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann} by a
-constant factor. 
+constant factor.
 
-The reversal operator is its own tranpose. Finally, taking $P$ monic
-of degree $m$ in $\F[X]$, we discuss the tranposes of $\rem$ and
-$\mulmod$. Since elements of $\F[X]/\langle P \rangle$ are given on
-the monomial basis $1,X,\dots,X^{m-1}$, a linear form $\ell:
-\F[X]/\langle P \rangle \to \F$ is represented by its values on the
-monomial basis, that is, by the sequence $(\ell_i=\ell(X^i))_{0 \le i
-  < m}$.
+The reversal operator on $k[x]_m$ is its own dual. Finally, we
+consider $R=k[x]/\langle P\rangle$, with $P$ monic of degree $m$, and
+we discuss the tranposes of $\rem$ and $\mulmod$.  The \emph{monomial
+  basis} of $R$ is made up of the monomials $x^i$ for $0\le i<m$, and
+we denote by $(x^i)^\ast$ the elements of its dual basis.
 
-As showed in~\cite{bostan+lecerf+schost:tellegen}, the transposed map
+As shown in~\cite{bostan+lecerf+schost:tellegen}, the dual map
 $$
 \begin{array}{cccc}
-\rem^t(.,P,k): &\F^m& \to &\F^k
+\rem^t(.,P,n): &k^m& \to &k^n
 \end{array}$$ 
-takes as input a linear form $\ell$ over $\F[X]/\langle P \rangle$,
-given by means of its values $(\ell(X^i))_{0 \le i < m}$; the output
-is then the values $(\ell(X^i))_{0 \le i < k}$. For $k \le m$, there
-is nothing to do; for greater values of $k$, the transposed version of
-the Cook-Sieveking-Kung fast Euclidean division algorithm given
-in~\cite{bostan+lecerf+schost:tellegen} is given below. As for the
-forward direction, for $k \ge m$, the cost of the transposed algorithm
-is $O(\M(k))$.
+takes as input a linear form $\ell\in R^\ast$ expressed on the basis $(x^i)^\ast$; the output
+is then the values $(\ell(x^i))_{0 \le i < k}$. For $n \le m$, there
+is nothing to do. For greater values of $n$, $\rem^t$ is \emph{linear sequence extension}: it takes as input the initial $m$ values of a linear recurring sequence of minimal polynomial $P$, and outputs its first $n$ values.
+
+LFSRs give a simple, though suboptimal, implementation of this
+operator~\cite{todo}. The transposed version of the
+Cook-Sieveking-Kung fast Euclidean division algorithm yield better
+algorithms, as explainted in~\cite{bostan+lecerf+schost:tellegen}:
+like for the forward direction the cost of the transposed algorithm is
+$O(\M(n))$ if $n>m$. We recall this below.
 
 \begin{algorithm}[H]
   \caption{$\rem^t(\ell,P,k)$}
   \begin{algorithmic}[1]
-    \REQUIRE $\ell=(\ell_i)_{0 \le i < m}$, $P$ in $\F[X]$ monic of degree $m$, $k \ge m$
-    \STATE $S = 1/\rev(P, m+1) \bmod X^{k-m}$
-    \STATE $A = \mul^t( \sum_{0 \le i < m} \ell_{i}X^i, P, m, k-m)$
-    \STATE $C = S A \bmod X^{k-m}$
-    \STATE $D = \ell ~\cat~ (-\coeff(C,i))_{0 \le i < k-m}$
+    \REQUIRE $\ell=(\ell_i)_{0 \le i < m}$, $P$ in $k[X]$ monic of degree $m$, $n \ge m$
+    \STATE $S = 1/\rev(P, m+1) \bmod x^{n-m}$
+    \STATE $A = \mul^t( \sum_{0 \le i < m} \ell_{i}x^i, P, m, n-m)$
+    \STATE $C = S A \bmod x^{n-m}$
+    \STATE $D = \ell ~\cat~ (-\coeff(C,i))_{0 \le i < n-m}$
     \RETURN $D$
   \end{algorithmic}
 \end{algorithm}
 
-Finally, the definition of $\mulmod$ shows that for and $B$ in
-$\F[X]/\langle P \rangle$, the transposed map $\mulmod^t(.,B,P)$ maps
-a linear form $\ell \in (\F[X]/\langle P \rangle)^\star$ to the linear
-form $B \circ \ell$ defined by
-$$
-\begin{array}{cccc}
-B \circ \ell: &\F[X]/\langle P \rangle &\to& \F  \\
-& A & \mapsto & \ell(A B).
-\end{array}$$
-Since we have seen that $\mulmod(.,B,P) = \rem(.,P,2m-1) \circ \mul(.,B,m-1,m)$,
-we obtain the following algorithm for the transpose of modular multiplication
-algorithm (see also~\cite{shoup99,bostan+lecerf+schost:tellegen});
-it costs $O(\M(m))$ operations in $\F$.
+Finally, multiplication by a fixed $b\in R$ is a linear map $M_b:R\to
+R$. By definition
+\begin{equation}
+  \label{eq:mulmodt-def}
+  \bk{M_b^t(a)}{c} = \bk{a}{M_b(c)} = \bk{a}{bc} = \tau_P(abc).
+\end{equation}
+Hence, if $a$ is written on the dual basis, the transposed map
+$\mulmod^t(.,b,P)$ maps a linear form $\ell = a\cdot\tau_P$ to the
+linear form $b \cdot \ell=ab\cdot\tau_P$.  
+
+From Eq.~\eqref{eq:mulmod},
+we obtain the following algorithm $\mulmod^t$, costing $O(\M(m))$
+operations in $k$ (see
+also~\cite{shoup99,bostan+lecerf+schost:tellegen}).
 
 
 \begin{algorithm}[H]
-  \caption{$\mulmod^t(\ell,B,P)$}
+  \caption{$\mulmod^t(\ell,b,P)$}
   \begin{algorithmic}[1]
     \STATE $D = \rem^t(\ell,P,2m-1)$
-    \RETURN $\mul^t(D, B, m-1, m)$
+    \RETURN $\mul^t(D, b, m-1, m)$
   \end{algorithmic}
 \end{algorithm}
 
+Algorithms for $\mulmod^t$ have been subject to much
+research. Berlekamp's \emph{bit serial multiplication}~\cite{todo} is
+a popular arithmetic circuit for transposed modular multiplication in
+the case $k=\F_2$. It can be understood as a transposed Horner
+rule, hence its software version is suboptimal.
+
+Given an algorithm for $\mulmod^t$ one can multiply two elements
+represented on the dual basis by converting one to the monomial basis,
+and then applying $\mulmod^t$. Since $\mulmod^t$ has the same cost as
+$\mulmod$~\cite{shoup99,bostan+lecerf+schost:tellegen}, this is better
+than converting both elements to the monomial basis.
+
+Much research has gone in finding polynomials $P$ that make the
+conversion between the monomial and the dual basis cheap. An open
+question is whether there exists a better algorithm to multiply two
+elements directly in the dual basis.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \section{Trace formulas} 
 
-Let $s$ be a positive integer and let $I$ be a maximal ideal in
-$\F[X_1,\dots,X_s]$, so that $\L=\F[X_1,\dots,X_s]/I$ is a finite
-extension of $\F$.  The {\em trace} $\tau_{\L/\F}$ will be denoted by
-$\tau_I$; equivalently, since $\F$ is perfect, we have for $B$ in $\L$
-\begin{equation}\label{eq:tr}
-\tau_{I}(B)=\sum_{\x \in V} B(\x),
-\end{equation}
-where $V=V(I)$ lies in $\overline{\F}^n$. 
+We now describe algorithms for converting between the monomial and the
+dual basis. We discuss the univariate case first, then the bivariate
+briefly.
+
+%todo
 
 \paragraph{Univariate formulas.} In this paragraph, we fix $B$ in $\L$ and we 
 denote by $M_{I,B} \in \F[X]$ the minimal polynomial of $B$. If we let
@@ -969,6 +961,100 @@ $\delta=mn$, the minimum of the two is
 $O\tilde{~}(\delta^{2\omega/(\omega+1)})$.
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Computing in the algebraic closure of $\F_p$}
+
+Suppose that the following is available:
+\begin{itemize}
+\item For any prime $\ell$, an $\ell$-adic tower over $\F_p$ is known,
+  with in particular polynomials $Q_{\ell^i}$, irreducible of degree
+  $\ell^i$ over $\F_p$. In particular, we can identify  $\F_{p^{\ell^i}}$
+  with $\F_p[X]/\langle Q_{\ell^i} \rangle$, with $\F_p$-basis
+  $U_{\ell^i}=(1,X,\dots,X^{\ell^i-1})$. 
+
+  In addition, for any $i,j$, with $i \le j$, we also have a
+  polynomial $Q_{\ell^i,\ell^j}$ in $\F_p[X,Y]$, that defines
+  $\F_{p^{\ell^j}}$ over $\F_{p^{\ell^j}}$. This gives us a bivariate
+  $\F_p$-basis $B_{\ell^i,\ell^j}=(X^r Y^s)_{0 \le r < \ell^i, 0 \le s
+    < \ell^{j-i}}$ of $\F_{p^{\ell^j}}$.
+  
+  We assume lift-up and push-down are available, that is, conversions
+  between the bases $U_{\ell^j}$ and $B_{\ell^i,\ell^j}$.a
+
+\item For any finite extension $\F_q$ of $\F_p$, and any coprime
+  $m,n$, we can compute a compositum and do embedding and isomorphism
+  in degrees $m,n$ over $\F_q$ (cf. the sections below). For this to
+  be feasible, we need a basis for $\F_q$, of course.
+\end{itemize}
+We want to achieve the following more general versions of embedding
+and isomorphism:
+\begin{itemize}
+\item For any $m \ge 1$, find an irreducible polynomial $Q_m$ of
+  degree $m$ in $\F_p[X]$; this will allow us to identify $\F_{p^m}$
+  with $\F_p[X]/\langle Q_m \rangle$, with $\F_p$-basis
+  $U_m=(1,X,\dots,X^{m-1})$. 
+
+  This is easy: write $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$. Compute
+  $Q_{\ell_i^{c_i}}$ for all $i$, and apply the compositum algorithm
+  (in a subproduct-tree style) to compute $Q_m$. This also allows us
+  to compute the isomorphism $\F_{p^{\ell_1^{c_1}}} \times \cdots
+  \times \F_{p^{\ell_s^{c_s}}} \to \F_{p^m}$ and its inverse.
+
+\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
+  Embed}_{m,m'}$ as the conversion from $U_{m}$ to $U_{m'}$. 
+
+  When $g=\gcd(m,m'/m)=1$, we know how to do this in quasi-linear
+  time. Otherwise, it is more complicated (to do it right, we would
+  need to work over $\F_{p^g}$, but that would require conversion to
+  bivariate bases, see below).
+
+  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
+  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
+  Take $A$ in $\F_{p^m}$. Decompose it on $\F_{p^{\ell_1^{c_1}}}
+  \times \cdots \times \F_{p^{\ell_s^{c_s}}}$ (previous item). Lift-up
+  a few times to $\F_{p^{\ell_1^{e_1}}} \times \cdots \times
+  \F_{p^{\ell_s^{e_s}}}$. Recompose the result on the basis of
+  $\F_{p^{m'}}$ (previous item).
+
+\item For any $m,m' \ge 1$, with $m'$ a multiple of $m$, find a
+  polynomial $Q_{m,m'}$ in $\F[X,Y]$ that defines $\F_{p^{m'}}$ over
+  $\F_{p^m}$. The associated $\F_p$-basis is $B_{m,m'}=(X^i Y^j)_{0
+    \le i < m, 0 \le j < m'/m}$.
+
+  To compute $Q_{m,m'}$, it is enough to handle the case where $m'/m =
+  \ell^c$, for some prime $\ell$ (then, we use the same compositum
+  process as in the first item). If $\ell$ does not divide $m$, take
+  $Q_{m,m'}=Q_{\ell^c}$. Else, we need to work a bit more: let $c'$ be
+  the $\ell$-adic valuation of $m$, and consider
+  $Q_{\ell^{c'},\ell^c}$. We define $Q_{m,m'}$ as the polynomial
+  obtained by applying the embedding $\F_{p^{\ell^{c'}}}\to\F_{p^m}$ to
+  all coefficients of $Q_{\ell^{c'},\ell^c}$.
+  
+\item Consider $m,m' \ge 1$, with $m'$ a multiple of $m$. Define ${\sf
+  ChangeBasis}_{m,m'}$ as the conversion from $U_{m'}$ to $B_{m,m'}$.
+  
+  Suppose that $m = \ell_1^{c_1} \cdots \ell_s^{c_s}$ and $m' =
+  \ell_1^{e_1} \cdots \ell_s^{e_s}$, with $c_i \le e_i$ for all $i$.
+  Take $A$ written on $U_{m'}$. Decompose it on $\F_{p^{\ell_1^{e_1}}}
+  \times \cdots \times \F_{p^{\ell_s^{e_s}}}$. Apply $\ell_i$-adic
+  change-of basis, to rewrite $A$ on the products of the bases
+  $B_{\ell_1^{c_1},\ell_1^{e_1}},\dots,B_{\ell_s^{c_s},\ell_s^{e_s}}$.
+  Now work with the components of degrees $\ell_1^{c_1},\dots,\ell_s^{c_s}$,
+  to rewrite $A$ univariate in $X$ (for $\F_{p^m}$), multivariate 
+  in $Y_1,\dots,Y_s$. Finish as in the first item (but with coefficients in
+  $\F_{p^m}$).
+\end{itemize}
+
+With this, we can do $+,\times$ over the algebraic closure (embed the
+operands in a common extension), relative characteristic and minimal
+polynomials (and thus traces and norms), and probably most other
+required operations.
+
+
+
 
 \bibliographystyle{plain} \bibliography{defeo}
 
@@ -977,3 +1063,9 @@ $O\tilde{~}(\delta^{2\omega/(\omega+1)})$.
 
 
 
+% Local Variables:
+% mode:flyspell
+% ispell-local-dictionary:"american"
+% mode:TeX-PDF
+% mode:reftex
+% End:
