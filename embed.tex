@@ -642,6 +642,7 @@ C\}.$$
 It is based on the following lemma.
 
 \begin{Lemma}
+  \label{lemma:traces:PQR}
   Let $b\in B$ and $c \in C$, then $\tau_R(bc) = \tau_I(bc) =
   \tau_P(b) \ \tau_Q(c)$.
 \end{Lemma}
@@ -653,14 +654,14 @@ It is based on the following lemma.
 
 An easy consequence is that $\tau_R(z^i) =
 \tau_P(x^i)\tau_Q(y^i)$. From this, we immediately deduce
-Algorithm~\ref{algo:embed}, which computes the image in $k[x]/\ang{R}$
+Algorithm~\ref{algo:embed}, which computes the image in $k[z]/\ang{R}$
 of any element of $BC$.
 
 \begin{algorithm}[H]
   \caption{Embed$(b,c,k)$}
   \begin{algorithmic}[1]
     \REQUIRE $b_P^\ast\in k[x]/\ang{P}$, $c_Q^\ast\in k[y]/\ang{Q}$, an integer $k$, or $k=mn$ by default
-    \ENSURE $a_R^\ast\in k[x]/\ang{R}$ such that $a_R^\ast=\Phi(b_P^\ast c_Q^\ast)$
+    \ENSURE $a_R^\ast\in k[z]/\ang{R}$ such that $a_R^\ast=\Phi(b_P^\ast c_Q^\ast)$
     \STATE $(t_i^\ast) = \rem^t(b_P^\ast,P,k)$
     \STATE $(u_i^\ast) = \rem^t(c_Q^\ast,Q,k)$
     \RETURN $(t_i^\ast u_i^\ast)_{0 \le i < k}$
@@ -679,7 +680,7 @@ of any element of $BC$.
   computes $$\bigl(\tau_P(b_P^\ast x^i)\tau_Q(c_Q^\ast
   y^i)\bigr)_{i<mn} = \bigl(\tau_R(b_p^\ast c_q^\ast
   z^i)\bigr)_{i<mn},$$ and this is exactly the representation of
-  $\Phi(b_P^\ast c_Q^\ast)$ on the dual basis of $k[x]/\ang{R}$.
+  $\Phi(b_P^\ast c_Q^\ast)$ on the dual basis of $k[z]/\ang{R}$.
 
   As explained in Section~\ref{sec:algor-dual-basis}, the two calls to
   $\rem^t$ take time $O(\M(mn))$. Then, the last step takes $mn$
@@ -709,69 +710,54 @@ but some traces $\tau_Q(y^i)$ may vanish.\footnote{This leads to an
   recover the \emph{erased} coefficients from the known ones.}  We
 take a different path, instead.
 
-We can see Embed$(\cdot,1_Q^\ast)$ as a mapping $\epsilon:B^\ast\to A^\ast$,
-hence its dual with respect to the bilinear forms $\tau_R$ and
-$\tau_P$ is a map $\epsilon^t:A\to B$. Let $a_P^\ast,b_P\in B$, and
-let $a_R^\ast=\varphi_x(a_P^\ast), b_R=\varphi_x(b_P)$. Then
+Let $\rho^\ast\in C$, we can see Embed$(\cdot,\rho^\ast)$ as a mapping
+$\epsilon_\rho:B^\ast\to A^\ast$. Hence its dual with respect to the
+bilinear forms $\tau_R$ and $\tau_P$ is a map $\epsilon_\rho^t:A\to B$. Let
+$a_P^\ast,b_P\in B$, and let $a_R^\ast=\varphi_x(a_P^\ast),
+b_R=\varphi_x(b_P)$. Then
 \begin{equation}
   \label{eq:transpose-embed}
-  n\tau_P(a_P^\ast b_P) = \tau_I(a_R^\ast b_R) = \ang{\epsilon(a_P^\ast),b_R}_R = \ang{a_P^\ast,\epsilon^t(b_R)}_P,
+  \tau_Q(\rho^\ast)\tau_P(a_P^\ast b_P) = \tau_I(\rho^\ast a_R^\ast b_R) = \ang{\rho^\ast a_R^\ast,b_R}_R = \ang{\epsilon_\rho(a_P^\ast),b_R}_R = \ang{a_P^\ast,\epsilon_\rho^t(b_R)}_P.
 \end{equation}
 where the first equality comes from Lemma~\ref{lemma:traces:PQR}, and
 we use the fact that the trace is independent from the basis. Hence
-$\epsilon^t(b_R)/n = b_P$.  So $\epsilon^t/n$ is the inverse of
-$\epsilon$, although on the monomial basis.
-
-There is a problem here when $n$ is divisible by the characteristic of
-$k$. An easy workaround is to generalize
-Eq.~\eqref{eq:transpose-embed}.  There necessarily is a $k< n$ such
-that $\tau_Q(y^k)\ne 0$ (when $n$ is coprime to the characteristic one
-can take $k=0$ as before). We consider a slightly more general map
-$\epsilon_k= \mathrm{Embed}(\cdot,y^k)$, then
-\begin{equation}
-  \label{eq:transpose-embed-2}
-  \tau_Q(y^k)\tau_P(a_P^\ast b_P) = \tau_I(y^ka_R^\ast b_R) = \ang{y^ka_R^\ast,b_R}_R = \ang{\epsilon_k(a_P^\ast),b_R}_R = \ang{a_P^\ast,\epsilon_k^t(b_R)}_P.
-\end{equation}
-Hence $\epsilon_k^t(b_R)/\tau_Q(y^k)=b_P$. We deduce
+$\epsilon_\rho^t(b_R)/\tau_Q(\rho^\ast) = b_P$.  In particular, when
+$\tau_Q(\rho^\ast)=1$, the map $\epsilon_\rho^t$ is the inverse of
+$\phi_x$ on the monomial basis. Observe that it is easy to pick a
+$\rho^\ast$ such that $\tau_Q(\rho^\ast)=1$, for example the
+\emph{residue form} $(1,0,\dots,0)$ works. We deduce
 Algorithm~\ref{algo:inverseEmbed}.
 
 \begin{algorithm}[H]
-  \caption{InverseEmbed$(a,y^k)$}
+  \caption{InverseEmbed$(a,\rho)$}
   \begin{algorithmic}[1]
-    \REQUIRE $a_R\in k[x]/\ang{R}$, $(y^k)^\ast\in k[y]/\ang{Q}$ such that $\tau_Q((y^k)^\ast)\ne0$
+    \REQUIRE $a_R\in k[z]/\ang{R}$, $\rho^\ast\in k[y]/\ang{Q}$ such that $\tau_Q(\rho^\ast)=1$
     \ENSURE $a_P\in k[x]/\ang{P}$ such that $a_R=\varphi_x(a_P)$
-    \STATE $(u_i^\ast) = \rem^t((y^k)^\ast,Q,mn)$
+    \STATE $(u_i^\ast) = \rem^t(\rho^\ast,Q,mn)$
     \STATE\label{algo:inverseEmbed:psi} $T = \sum_{i=0}^{mn-1} (a_R)_i u_i^\ast x^i$
-    \STATE\label{algo:inverseEmbed:mod} $A = T \bmod P$
-    \RETURN $A/\tau_Q((y^k)^\ast)$
+    \RETURN\label{algo:inverseEmbed:mod} $T \bmod P$
   \end{algorithmic}\label{algo:inverseEmbed}
 \end{algorithm}
 
 \begin{Lemma}
-  Given $a_R$ in the image of $\varphi_x$, and $y^k$ satisfying the
-  hypotheses, Algorithm~\ref{algo:inverseEmbed} correctly computes
-  $a_P$ such that $a_P=\varphi_x(a_R)$ using $O(\M(mn))$ operations in
-  $k$.
+  Given $a_R$ in the image of $\varphi_x$, and $\rho^\ast$ such that
+  $\tau_Q(\rho^\ast)=1$, Algorithm~\ref{algo:inverseEmbed} correctly
+  computes $a_P$ such that $a_P=\varphi_x(a_R)$ using $O(\M(mn))$
+  operations in $k$.
 \end{Lemma}
 \begin{proof}
   We show correctness using transposition techniques as
   in~\cite{bostan+lecerf+schost:tellegen}. Observe that for fixed
-  $y^k$ algorithm Embed$(a,y^k)$ is a linear transform on
-  $a$. Precisely, it is equal to $\psi_k\circ\rem^t$, where $\psi_k$
-  is the map that multiplies a vector in $k^{mn}$ coefficient-wise by
-  $(\tau_Q(y^{k+i}))_{i<mn}$. Hence, its transpose is
-  $\rem\circ\psi_k^t$. It is evident that $\psi_k^t=\psi_k$, then
-  $\rem$ is just reduction modulo $P$. These correspond to
-  steps~\ref{algo:inverseEmbed:psi}
-  and~\ref{algo:inverseEmbed:mod}. The last step reflects the fact
-  that $\epsilon_k^t/\tau_Q(y^k)$ is the inverse of $\epsilon_k$.
-
-  For the cost analysis, observe that we can compute $y^k$ on the dual
-  basis by computing $\rem^t(1_Q^\ast,Q,mn+k)$ and then shifting $k$
-  coefficients to the left. Since $k<n$, this adds only a constant
-  factor. Steps~\ref{algo:inverseEmbed:psi}
-  and~\ref{algo:inverseEmbed:mod} cost $O(\M(mn))$ each, and the last
-  division is just $m$ scalar multiplications.
+  $\rho^\ast$ algorithm Embed$(a,\rho^\ast)$ is a linear transform on
+  $a$. Precisely, it is equal to $\psi_\rho\circ\rem^t$, where
+  $\psi_\rho$ is the map that multiplies a vector in $k^{mn}$
+  coefficient-wise by $(\tau_Q(\rho^\ast y^i))_{i<mn}$. Hence, its
+  transpose is $\rem\circ\psi_\rho^t$. It is evident that
+  $\psi_\rho^t=\psi_\rho$, then $\rem$ is just reduction modulo
+  $P$. These correspond to steps~\ref{algo:inverseEmbed:psi}
+  and~\ref{algo:inverseEmbed:mod}. Since $\tau_Q(\rho^\ast)=1$, this
+  transpose is the inverse of $\phi_x$ on the dual basis.  The cost
+  analysis is similar to the one in Lemma~\ref{lemma:algo:embed}.
 \end{proof}
 
 
@@ -1079,4 +1065,4 @@ required operations.
 % mode:reftex
 % End:
 
-% LocalWords:  embeddings
+% LocalWords:  embeddings bilinear
