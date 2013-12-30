@@ -34,6 +34,7 @@
 \def\Tr {\ensuremath{\mathrm{Tr}}}
 
 \newcommand{\ang}[1]{\langle#1\rangle}
+\newcommand{\dual}[1]{\overline{#1}}
 
 \newcommand{\wrt}{\vdash} 
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
@@ -624,8 +625,8 @@ the ideals $\langle P\rangle\subset k[x]$, $\langle Q \rangle \subset
 k[y]$ and $\langle R \rangle \subset k[z]$. Let as well $I$ be the
 ideal $\langle P, Q\rangle$ in $k[x,y]$. To stress the fact that an
 element $a\in A$ is represented on the dual basis, we will write
-$a^\ast$. When an element, such as $1$, may belong to more than one
-algebra, we add a subscript like in $1_P^\ast, 1_R^\ast, \dots$ to
+$\dual{a}$. When an element, such as $1$, may belong to more than one
+algebra, we add a subscript like in $\dual{1}_P, \dual{1}_R, \dots$ to
 remove ambiguities.
 
 
@@ -658,29 +659,28 @@ Algorithm~\ref{algo:embed}, which computes the image in $k[z]/\ang{R}$
 of any element of $BC$.
 
 \begin{algorithm}[H]
-  \caption{Embed$(b,c,k)$}
+  \caption{Embed$(\dual{b},\dual{c},k)$}
   \begin{algorithmic}[1]
-    \REQUIRE $b_P^\ast\in k[x]/\ang{P}$, $c_Q^\ast\in k[y]/\ang{Q}$, an integer $k$, or $k=mn$ by default
-    \ENSURE $a_R^\ast\in k[z]/\ang{R}$ such that $a_R^\ast=\Phi(b_P^\ast c_Q^\ast)$
-    \STATE $(t_i^\ast) = \rem^t(b_P^\ast,P,k)$
-    \STATE $(u_i^\ast) = \rem^t(c_Q^\ast,Q,k)$
-    \RETURN $(t_i^\ast u_i^\ast)_{0 \le i < k}$
+    \REQUIRE $\dual{b}_P\in k[x]/\ang{P}$, $\dual{c}_Q\in k[y]/\ang{Q}$, an integer $k$, or $k=mn$ by default
+    \ENSURE $\dual{a}_R\in k[z]/\ang{R}$ such that $\dual{a}_R=\Phi(\dual{b}_P \dual{c}_Q)$
+    \STATE $(t_i)_{0\le i<k} = \rem^t(\dual{b}_P,P,k)$
+    \STATE $(u_i)_{0\le i<k} = \rem^t(\dual{c}_Q,Q,k)$
+    \RETURN $(t_i u_i)_{0 \le i < k}$
   \end{algorithmic}
   \label{algo:embed}
 \end{algorithm}
 
 \begin{Lemma}\label{lemma:algo:embed}
-  Algorithm~\ref{algo:embed} correctly computes $\Phi(b_P^\ast
-  c_Q^\ast)$ using $O(\M(mn))$ operations in $k$.
+  Given $\dual{b}\in B$ and $\dual{c}\in C$, algorithm~\ref{algo:embed} correctly
+  computes $\dual{\Phi(b c)}$ using $O(\M(mn))$ operations in $k$.
 \end{Lemma}
 \begin{proof}
-  Recall that $b_P^\ast$ is written on the dual basis as
-  $(\tau_P(b_P^\ast x^i))_{i<n}$ and there is a similar writing for
-  $c_Q^\ast$. By Lemma~\ref{lemma:traces:PQR}, the algorithm
-  computes $$\bigl(\tau_P(b_P^\ast x^i)\tau_Q(c_Q^\ast
-  y^i)\bigr)_{i<mn} = \bigl(\tau_R(b_p^\ast c_q^\ast
-  z^i)\bigr)_{i<mn},$$ and this is exactly the representation of
-  $\Phi(b_P^\ast c_Q^\ast)$ on the dual basis of $k[z]/\ang{R}$.
+  Recall that $b$ is written on the dual basis as
+  $(\tau_P(bx^i))_{i<n}$ and there is a similar writing for $c$. By
+  Lemma~\ref{lemma:traces:PQR}, the algorithm
+  computes $$\bigl(\tau_P(bx^i)\tau_Q(cy^i)\bigr)_{i<mn} =
+  \bigl(\tau_R(bcz^i)\bigr)_{i<mn},$$ and this is exactly the
+  representation of $\Phi(bc)$ on the dual basis of $k[z]/\ang{R}$.
 
   As explained in Section~\ref{sec:algor-dual-basis}, the two calls to
   $\rem^t$ take time $O(\M(mn))$. Then, the last step takes $mn$
@@ -688,9 +688,9 @@ of any element of $BC$.
 \end{proof}
 
 In particular, the map $\varphi_x$ is computed as
-Embed$(\cdot,1_Q^\ast)$, and the map $\varphi_y$ as
-Embed$(1_P^\ast,\cdot)$. Another interesting consequence is that we
-can now compute $R$ by a call to Embed$(1_Q^\ast,1_Q^\ast,2mn)$,
+Embed$(\cdot,\dual{1}_Q)$, and the map $\varphi_y$ as
+Embed$(\dual{1}_P,\cdot)$. Another interesting consequence is that we
+can now compute $R$ by a call to Embed$(\dual{1}_Q,\dual{1}_Q,2mn)$,
 followed by a Berlekamp-Massey algorithm as explained in
 Section~\ref{sec:trace-formulas}. This algorithm for computing $R$ is
 well-known, see for instance~\cite{BoFlSaSc06}.
@@ -710,54 +710,71 @@ but some traces $\tau_Q(y^i)$ may vanish.\footnote{This leads to an
   recover the \emph{erased} coefficients from the known ones.}  We
 take a different path, instead.
 
-Let $\rho^\ast\in C$, we can see Embed$(\cdot,\rho^\ast)$ as a mapping
-$\epsilon_\rho:B^\ast\to A^\ast$. Hence its dual with respect to the
-bilinear forms $\tau_R$ and $\tau_P$ is a map $\epsilon_\rho^t:A\to B$. Let
-$a_P^\ast,b_P\in B$, and let $a_R^\ast=\varphi_x(a_P^\ast),
-b_R=\varphi_x(b_P)$. Then
+Let $(\gamma_i)_{i<n}$ be a basis of $C$, and let
+$(\gamma_i^\ast)_{i<n}$ be its dual basis. Then, any element of
+$k[z]/\ang{R}$ can be written as $\sum b_i\gamma_i$ with $b_i\in B$
+for any $i$.  Then, for any $i$, we can see
+Embed$\left(\cdot,\dual{\gamma_i^\ast}\right)$ as a mapping
+$\epsilon_i:B^\ast\to A^\ast$. The dual of $\epsilon_i$ with respect
+to the bilinear forms $\tau_R$ and $\tau_P$ is a map
+$\epsilon_i^t:A\to B$. Let $\dual{a}_P,b_P\in B$, and let
+$\dual{a}_R=\varphi_x(\dual{a}_P), b_R=\varphi_x(b_P)$. Then for any $i,j$
 \begin{equation}
   \label{eq:transpose-embed}
-  \tau_Q(\rho^\ast)\tau_P(a_P^\ast b_P) = \tau_I(\rho^\ast a_R^\ast b_R) = \ang{\rho^\ast a_R^\ast,b_R}_R = \ang{\epsilon_\rho(a_P^\ast),b_R}_R = \ang{a_P^\ast,\epsilon_\rho^t(b_R)}_P.
+  \tau_Q(\gamma_i^\ast\gamma_j)\tau_P(a_P b_P) = \tau_I(\gamma_i^\ast a_R b_R \gamma_j) = \ang{\dual{\gamma_i^\ast a_R},b_R\gamma_j}_R = \ang{\epsilon_i(\dual{a}_P),b_R\gamma_j}_R = \ang{\dual{a}_P,\epsilon_i^t(b_R\gamma_j)}_P.
 \end{equation}
 where the first equality comes from Lemma~\ref{lemma:traces:PQR}, and
 we use the fact that the trace is independent from the basis. Hence
-$\epsilon_\rho^t(b_R)/\tau_Q(\rho^\ast) = b_P$.  In particular, when
-$\tau_Q(\rho^\ast)=1$, the map $\epsilon_\rho^t$ is the inverse of
-$\phi_x$ on the monomial basis. Observe that it is easy to pick a
-$\rho^\ast$ such that $\tau_Q(\rho^\ast)=1$, for example the
-\emph{residue form} $(1,0,\dots,0)$ works. We deduce
+\begin{equation}
+  \epsilon_i^t(b_R\gamma_j) =
+  \begin{cases}
+    b_P &\text{if $i=j$,}\\
+    0  &\text{otherwise.}
+  \end{cases}
+\end{equation}
+By linearity, we see that
+\begin{equation}
+  \epsilon_i^t \left(\sum b_j\gamma_j\right) = b_i.
+\end{equation}
+Hence $\epsilon_i^t$ is the projection map onto the coordinate
+$\gamma_i$, with inputs and outputs given on the monomial bases of $A$
+and $B$ respectively. In particular, when $\gamma_i=y^i$,
+$(\gamma_i^\ast)$ is just the canonical dual basis, and $\epsilon_0^t$
+is the inverse of $\varphi_x$. We deduce
 Algorithm~\ref{algo:inverseEmbed}.
 
+
 \begin{algorithm}[H]
-  \caption{InverseEmbed$(a,\rho)$}
+  \caption{Project$(a,\dual{\gamma})$}
   \begin{algorithmic}[1]
-    \REQUIRE $a_R\in k[z]/\ang{R}$, $\rho^\ast\in k[y]/\ang{Q}$ such that $\tau_Q(\rho^\ast)=1$
-    \ENSURE $a_P\in k[x]/\ang{P}$ such that $a_R=\varphi_x(a_P)$
-    \STATE $(u_i^\ast) = \rem^t(\rho^\ast,Q,mn)$
-    \STATE\label{algo:inverseEmbed:psi} $T = \sum_{i=0}^{mn-1} (a_R)_i u_i^\ast x^i$
+    \REQUIRE $a\in k[z]/\ang{R}$, $\dual{\gamma}\in k[y]/\ang{Q}$, or $\dual{\gamma}=\dual{1}_Q=(1,0,\dots,0)$ by default
+    \ENSURE $b\in k[x]/\ang{P}$ \todo{such that $\tau_R(a\varphi_y(\gamma)) = \tau_R(\varphi_x(b)\varphi_y(\gamma))$?}
+    \STATE $(u_i)_{0\le i<mn} = \rem^t(\dual{\gamma},Q,mn)$
+    \STATE\label{algo:inverseEmbed:dotprod} $T = \sum_{i=0}^{mn-1} a_i u_i x^i$
     \RETURN\label{algo:inverseEmbed:mod} $T \bmod P$
   \end{algorithmic}\label{algo:inverseEmbed}
 \end{algorithm}
 
 \begin{Lemma}
-  Given $a_R$ in the image of $\varphi_x$, and $\rho^\ast$ such that
-  $\tau_Q(\rho^\ast)=1$, Algorithm~\ref{algo:inverseEmbed} correctly
-  computes $a_P$ such that $a_P=\varphi_x(a_R)$ using $O(\M(mn))$
-  operations in $k$.
+  Given $a\in k[z]/\ang{R}$ such that $a=\sum b_j\gamma_j$ with
+  $b_j\in B$ for some basis $(\gamma_j)_{0\le j<n}$ of $C$,
+  Algorithm~\ref{algo:inverseEmbed} correctly computes any $b_j$,
+  given $\dual{\gamma_j^\ast}$, using $O(\M(mn))$ operations in $k$.
 \end{Lemma}
 \begin{proof}
   We show correctness using transposition techniques as
   in~\cite{bostan+lecerf+schost:tellegen}. Observe that for fixed
-  $\rho^\ast$ algorithm Embed$(a,\rho^\ast)$ is a linear transform on
-  $a$. Precisely, it is equal to $\psi_\rho\circ\rem^t$, where
-  $\psi_\rho$ is the map that multiplies a vector in $k^{mn}$
-  coefficient-wise by $(\tau_Q(\rho^\ast y^i))_{i<mn}$. Hence, its
-  transpose is $\rem\circ\psi_\rho^t$. It is evident that
-  $\psi_\rho^t=\psi_\rho$, then $\rem$ is just reduction modulo
-  $P$. These correspond to steps~\ref{algo:inverseEmbed:psi}
-  and~\ref{algo:inverseEmbed:mod}. Since $\tau_Q(\rho^\ast)=1$, this
-  transpose is the inverse of $\phi_x$ on the dual basis.  The cost
-  analysis is similar to the one in Lemma~\ref{lemma:algo:embed}.
+  $\dual{\gamma}$ algorithm Embed$(a,\dual{\gamma})$ is a linear
+  transform on $a$. Precisely, it is equal to $\pi_\gamma\circ\rem^t$,
+  where $\pi_\gamma$ is the map that multiplies a vector in $k^{mn}$
+  coefficient-wise by $(\tau_Q(\gamma y^i))_{i<mn}$. Hence, its
+  transpose is $\rem\circ\pi_\gamma^t$. It is evident that
+  $\pi_\gamma^t=\pi_\gamma$, then $\rem$ is just reduction modulo
+  $P$. These correspond to steps~\ref{algo:inverseEmbed:dotprod}
+  and~\ref{algo:inverseEmbed:mod}. The discussion above now proves
+  that the output is $\epsilon_\gamma^t(a)$, the projection of $a$
+  onto the basis element $\gamma$.  The cost analysis is similar to
+  the one in Lemma~\ref{lemma:algo:embed}.
 \end{proof}
 
 
@@ -766,56 +783,56 @@ Algorithm~\ref{algo:inverseEmbed}.
 \subsection{Isomorphism} 
 
 In all that follows, without loss of generality, {\em we assume that
-  $m\le n$}. We are not able to give an algorithm for the isomorphism
+  $n\le m$}. We are not able to give an algorithm for the isomorphism
 $\Phi$ that would be as efficient as those for embedding. Instead, we
 provide two such algorithms, with different domains of applicability.
-In a second time, we discuss computing the inverse of $\Phi$,
-for which we use techniques similar to those use for InverseEmbed.
+In a second time, we discuss computing the inverse of $\Phi$, for
+which we use techniques similar to those use for Project.
 
-\paragraph{First case: $m$ is small.}
+\paragraph{First case: $n$ is small.}
 We start by a direct application of the results in the previous
-subsection, which is well-suited to situations where $m$ is small compared to $n$. 
+subsection, which is well-suited to situations where $n$ is small compared to $m$. 
 
-Let $F$ be in $\F[X,Y]/\langle P,Q\rangle$ and let
-$G=\Phi(F)$. Writing $F=\sum_{0 \le i < m} F_i X^i$, with all $F_i$ in
-$\F[Y]/\langle Q \rangle$, we obtain the following straightforward
-algorithm to compute $G$: compute all $\varphi_Y(F_i)$, and use a
-Horner scheme to deduce $G$ as $G=\sum_{0 \le i < m} \varphi_Y(F_i) S^i$.
+Let $a$ be in $k[x,y]/I$ and let $b=\Phi(a)$. Writing $a=\sum_{0 \le i
+  < n} a_i y^i$, with all $a_i$ in $k[y]/\langle P \rangle$, we obtain
+a straightforward algorithm to compute $b$: compute all
+$\Phi(a_iy^i)$, using Algorithm~\ref{algo:embed}, then sum. We use the
+observartion that $\dual{y^i}$ is $\dual{1}_Q$ shifted by $i$
+positions to give a slightly more compact algorithm.
+
 \begin{algorithm}[H]
-  \caption{ChangeBasis1$(F,P,Q,R)$}
+  \caption{ChangeBasis1$(\dual{a_0}, \dots, \dual{a_{n-1}})$}
   \begin{algorithmic}[1]
-    \STATE $S={\rm Embed}(X,P,R)$
-    \STATE $G=0$
-    \FOR{$i=m-1,\dots,0$}
-    \STATE $G_i = {\rm Embed}(\coeff(F,X,i),Q,R)$
-    \STATE $G = GS+G_i \bmod R$
+    \REQUIRE $\dual{a_i}\in k[x]/\ang{P}$
+    \ENSURE $\dual{b}\in k[z]/\ang{R}$ such that $b = \sum a_iy^i$
+    \STATE $(u_i)_{0\le i < (m+1)n-1} = \rem^t(\dual{1}_Q,Q,(m+1)n-1)$
+    \STATE $(b_i)_{0\le i < mn} = (0,\dots,0)$
+    \FOR {$0\le j < n$}
+    \STATE $(t_i)_{0\le i < mn} = \rem^t(\dual{a_j},P,mn)$
+    \STATE $(b_i)_{0\le i < mn} = (b_i + t_iu_{i+j})_{0\le i < mn}$
     \ENDFOR
-    \RETURN $G$
+    \RETURN $(b_i)_{0\le i <mn}$
   \end{algorithmic}
   \label{algo:iso1}
 \end{algorithm}
 
 \begin{Lemma}
-  Algorithm~\ref{algo:iso1} correctly computes $\Phi(F)$ using
-  $O(m\M(mn)\log(mn))$ operations in~$\F$.
+  Algorithm~\ref{algo:iso1} correctly computes $\Phi(a)$ using
+  $O(n\M(mn))$ operations in~$k$ and requiring the storage of $O(nm)$
+  elements of $k$.
 \end{Lemma}
 
-The proof is a direct application of Lemma~\ref{lemma:algo:embed}.  As
-was the case for $\varphi_X$, we will need the transpose of this
-algorithm as well (todo: more explanations)
-\begin{algorithm}[H]
-  \caption{ChangeBasis1$^t(\gamma,P,Q,R)$}
-  \begin{algorithmic}[1]
-    \STATE $S={\rm Embed}(X,P,R)$
-    \STATE $\ell=0$
-    \FOR{$i=0,\dots,m-1$}
-    \STATE $\ell_{i,j} = ({\rm Embed}^t(\gamma,Q,R))_j$, {\bf for} $j=0,\dots,n-1$
-    \STATE $\gamma = \mulmod^t(\gamma,S,R)$
-    \ENDFOR
-    \RETURN $\ell$
-  \end{algorithmic}
-  \label{algo:tiso1}
-\end{algorithm}
+The proof is a direct application of
+Lemma~\ref{lemma:algo:embed}. \todo{The analysis can be improved to
+  $O(n^2M(m))$ by observing that $\rem$ and $\rem^t$ can use
+  unbalanced multiplication.}
+
+The inverse of $\Phi$ (in the monomial basis) is also straightforward
+and has the same complexity: it amounts to $n$ applications of
+Project. We are not able to gain a constant factor as in
+Algorithm~\ref{algo:iso1} (notice though that the constants
+$\dual{y^i}$ and $\dual{(y^i)^\ast}$ can be precomputed).
+
 
 \paragraph{Second case: $m$ not small.}
 The previous algorithm is most efficient when $m$ is small; now, we
