@@ -36,9 +36,9 @@ int _pq_nmod_insure_dual(const pq_nmod_elt_t x, const pq_nmod_t A) {
     pq_nmod_elt_struct* tmp = (pq_nmod_elt_struct*)x;
     _pq_nmod_insure_M(A);
     _pq_nmod_insure_S(A);
-    _pq_nmod_insure_trace(A);
+    _pq_nmod_insure_newton(A);
     nmod_poly_init2(tmp->dual, A->M->mod.n, A->M->length-1);
-    nmod_poly_tmulmod(tmp->dual->coeffs, A->trace, tmp->mono, A->M, A->S);
+    nmod_poly_tmulmod(tmp->dual->coeffs, A->newton->coeffs, tmp->mono, A->M, A->S);
     tmp->dual->length = A->M->length-1;
     tmp->bit_field |= HAS_DUAL;
   }

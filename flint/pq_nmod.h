@@ -18,9 +18,8 @@ typedef struct{
   nmod_poly_t M;
   nmod_poly_t iM;
   nmod_poly_t S;
-  nmod_poly_t trace;
+  nmod_poly_t newton;
   slong degree;
-  short bit_field;
 } pq_nmod_struct;
 typedef pq_nmod_struct pq_nmod_t[1];
 
@@ -37,11 +36,16 @@ typedef pq_nmod_elt_struct pq_nmod_elt_t[1];
 
 /************** ALGEBRAS *****************/
 
-void pq_nmod_init(pq_nmod_t A, slong degree);
+void pq_nmod_init(pq_nmod_t A, const nmod_poly_t M);
+void _pq_nmod_init_newton(pq_nmod_t A, const nmod_t mod, 
+			  mp_srcptr newton, slong k, 
+			  slong degree);
 int _pq_nmod_insure_M(const pq_nmod_t A);
-int _pq_nmod_insure_trace(const pq_nmod_t A);
+int _pq_nmod_insure_newton_w_length(const pq_nmod_t A, slong k);
+int _pq_nmod_insure_newton(const pq_nmod_t A);
 int _pq_nmod_insure_iM(const pq_nmod_t A);
 int _pq_nmod_insure_S(const pq_nmod_t A);
+void pq_nmod_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B);
 
 /************** ELEMENTS *****************/
 
