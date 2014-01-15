@@ -4,18 +4,8 @@
 #include <flint/nmod_vec.h>
 
 
-// For private use only
-// (these should go in macros, really)
-static inline void __coeff_prod(mp_ptr res,
-				mp_srcptr x, mp_srcptr y,
-				const nmod_t mod, slong M) {
-  for (M--; M >= WORD(0); M--)
-    res[M] = nmod_mul(x[M], y[M], mod);
-}
-static inline void __zero_pad(mp_ptr res, slong start, slong end) {
-  for (end--; end >= start; end--)
-    res[end] = UWORD(0);
-}
+// Coefficient-wise multiplication of vectors of length M
+#define __COEFF_PROD(res, x, y, mod, M) for (M--; M >= WORD(0); M--) res[M] = nmod_mul(x[M], y[M], mod)
 
 /************** EMBEDDING *****************/
 
@@ -26,7 +16,7 @@ static inline void __zero_pad(mp_ptr res, slong start, slong end) {
   M is the product of deg P and deg Q. res must have enough memory to
   hold M limbs.
 
-  res must not equal to P->coeffs. You would be crazy to do so.
+  res must not be equal to P->coeffs. You would be crazy to do so.
  */
 void _pq_nmod_embed(mp_ptr res,
 		    mp_srcptr x, const nmod_poly_t P, 
@@ -35,7 +25,7 @@ void _pq_nmod_embed(mp_ptr res,
   mp_ptr tmp = _nmod_vec_init(M);
   nmod_poly_trem(tmp, y, Q, M);
   nmod_poly_trem(res, x, P, M);
-  __coeff_prod(res, res, tmp, P->mod, M);
+  __COEFF_PROD(res, res, tmp, P->mod, M);
   _nmod_vec_clear(tmp);
 }
 
@@ -47,15 +37,20 @@ void pq_nmod_embed(pq_nmod_elt_t res,
 		   const pq_nmod_elt_t x, const pq_nmod_t A,
 		   const pq_nmod_elt_t y, const pq_nmod_t B) {
   slong
-    m = A->M->length,
-    n = B->M->length,
+    m = nmod_poly_degree(A->M),
+    n = nmod_poly_degree(B->M),
     M = m*n;
   _pq_nmod_insure_dual(x, A);
   _pq_nmod_insure_dual(y, B);
-  nmod_poly_fit_length(res->dual, M);
-  _pq_nmod_embed(res->dual->coeffs, x->dual->coeffs, A->M, y->dual->coeffs, B->M, M);
-  res->dual->length = M;
-  _pq_nmod_clear_mono(res);
+  if (!nmod_poly_is_zero(x->dual) &&
+      !nmod_poly_is_zero(y->dual)) {
+    nmod_poly_fit_length(res->dual, M);
+    _pq_nmod_embed(res->dual->coeffs, x->dual->coeffs, A->M, y->dual->coeffs, B->M, M);
+    res->dual->length = M;
+  } else {
+    nmod_poly_zero(res->dual);
+  }
+  nmod_poly_zero(res->mono);
 }
 
 
@@ -78,8 +73,8 @@ void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t x,
   mp_ptr tmp = _nmod_vec_init(M);
   nmod_poly_trem(tmp, y, Q, M);
   nmod_poly_fit_length(res, M);
-  __coeff_prod(res->coeffs, x->coeffs, tmp, P->mod, M);
   res->length = M;
+  __COEFF_PROD(res->coeffs, x->coeffs, tmp, P->mod, M);
   _nmod_poly_normalise(res);
   _nmod_vec_clear(tmp);
 
@@ -92,6 +87,8 @@ void pq_nmod_project(pq_nmod_elt_t res,
 		     const pq_nmod_t A) {
   _pq_nmod_insure_mono(x, AB);
   _pq_nmod_insure_dual(y, B);
-  _pq_nmod_project(res->mono, x->mono, y->mono->coeffs, B->M, A->M);
-  _pq_nmod_clear_dual(res);
+  if (!nmod_poly_is_zero(y->dual)) {
+    _pq_nmod_project(res->mono, x->mono, y->dual->coeffs, B->M, A->M);
+    nmod_poly_zero(res->dual);
+  }
 }

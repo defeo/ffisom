@@ -37,7 +37,7 @@ typedef pq_nmod_elt_struct pq_nmod_elt_t[1];
 
 void pq_nmod_init(pq_nmod_t A, const nmod_poly_t M);
 void pq_nmod_init_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B);
-void _pq_nmod_init_newton_w_length(pq_nmod_t A, slong k);
+void _pq_nmod_set_newton_length(const pq_nmod_t A, slong k);
 void _pq_nmod_init_newton(pq_nmod_t A);
 void _pq_nmod_init_iM(pq_nmod_t A);
 void _pq_nmod_init_S(pq_nmod_t A);
@@ -97,5 +97,32 @@ void pq_nmod_project(pq_nmod_elt_t res,
 		     const pq_nmod_elt_t x, const pq_nmod_t R,
 		     const pq_nmod_elt_t y, const pq_nmod_t Q,
 		     const pq_nmod_t P);
+
+/************** ISOMORPHISM *****************/
+
+/*
+  res must not alias any x[i]
+*/
+void pq_nmod_iso_from_mono(pq_nmod_elt_t res,
+			   const pq_nmod_elt_t* x, const pq_nmod_t A, 
+			   const pq_nmod_t B);
+/*
+  x must not alias any res[i]
+*/
+void pq_nmod_iso_to_dual(pq_nmod_elt_t* res,
+			 const pq_nmod_elt_t x, const pq_nmod_t AB,
+			 const pq_nmod_t B, const pq_nmod_t A);
+void pq_nmod_iso_to_mono(pq_nmod_elt_t* res,
+			 const pq_nmod_elt_t x, const pq_nmod_t AB,
+			 const pq_nmod_t B, const pq_nmod_t A);
+void pq_nmod_iso_from_BSGS(pq_nmod_elt_t res,
+			   const pq_nmod_elt_t* x, const pq_nmod_t A, 
+			   const pq_nmod_t B);
+void pq_nmod_iso_to_BSGS(pq_nmod_elt_t* res,
+			 const pq_nmod_elt_t x, const pq_nmod_t AB,
+			 const pq_nmod_t B, const pq_nmod_t A);
+
+
+
 
 #endif
