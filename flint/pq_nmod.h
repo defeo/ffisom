@@ -29,7 +29,6 @@ typedef pq_nmod_struct pq_nmod_t[1];
 typedef struct {
   nmod_poly_t mono;
   nmod_poly_t dual;
-  short bit_field;
 } pq_nmod_elt_struct;
 typedef pq_nmod_elt_struct pq_nmod_elt_t[1];
 
@@ -37,22 +36,28 @@ typedef pq_nmod_elt_struct pq_nmod_elt_t[1];
 /************** ALGEBRAS *****************/
 
 void pq_nmod_init(pq_nmod_t A, const nmod_poly_t M);
-void _pq_nmod_init_newton(pq_nmod_t A, const nmod_t mod, 
-			  mp_srcptr newton, slong k, 
-			  slong degree);
-int _pq_nmod_insure_M(const pq_nmod_t A);
-int _pq_nmod_insure_newton_w_length(const pq_nmod_t A, slong k);
-int _pq_nmod_insure_newton(const pq_nmod_t A);
-int _pq_nmod_insure_iM(const pq_nmod_t A);
-int _pq_nmod_insure_S(const pq_nmod_t A);
-void pq_nmod_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B);
+void pq_nmod_init_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B);
+void _pq_nmod_init_newton_w_length(pq_nmod_t A, slong k);
+void _pq_nmod_init_newton(pq_nmod_t A);
+void _pq_nmod_init_iM(pq_nmod_t A);
+void _pq_nmod_init_S(pq_nmod_t A);
+void pq_nmod_clear(pq_nmod_t A);
 
 /************** ELEMENTS *****************/
 
-inline void _pq_nmod_clear_mono(pq_nmod_elt_t x);
-inline void _pq_nmod_clear_dual(pq_nmod_elt_t x);
-int _pq_nmod_insure_mono(const pq_nmod_elt_t x, const pq_nmod_t A);
-int _pq_nmod_insure_dual(const pq_nmod_elt_t x, const pq_nmod_t A);
+void pq_nmod_elt_init(pq_nmod_elt_t x, mp_limb_t n);
+void pq_nmod_elt_set(pq_nmod_elt_t x, const pq_nmod_elt_t y);
+void pq_nmod_elt_set_mono(pq_nmod_elt_t x, const nmod_poly_t val);
+void pq_nmod_elt_set_dual(pq_nmod_elt_t x, const nmod_poly_t val);
+void _pq_nmod_insure_mono(const pq_nmod_elt_t x, const pq_nmod_t A);
+void _pq_nmod_insure_dual(const pq_nmod_elt_t x, const pq_nmod_t A);
+void pq_nmod_add(pq_nmod_elt_t res, const pq_nmod_elt_t x, const pq_nmod_elt_t y);
+void pq_nmod_sub(pq_nmod_elt_t res, const pq_nmod_elt_t x, const pq_nmod_elt_t y);
+void pq_nmod_mul(pq_nmod_elt_t res, const pq_nmod_elt_t x,
+		 const pq_nmod_elt_t y, const pq_nmod_t A);
+int pq_nmod_inv(pq_nmod_elt_t res, const pq_nmod_elt_t x, const pq_nmod_t A);
+int pq_nmod_div(pq_nmod_elt_t res, const pq_nmod_elt_t x,
+		const pq_nmod_elt_t y, const pq_nmod_t A);
 
 /************** EMBEDDING *****************/
 
