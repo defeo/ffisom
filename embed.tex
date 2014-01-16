@@ -228,7 +228,7 @@ $\F_p[x_i,x_j]/\ang{Q_{\ell^i},Q_{\ell^i,\ell^{j-i}}}$ are two models
 for $\F_{p^{\ell^j}}$. Provided conversions between these two
 representations are available, this will allow us to perform
 embeddings (that will necessarily be compatible) between different
-levels of the ``tower'', that is extensions of degrees $(\ell^i)_{i
+levels of the ``tower'', \emph{i.e.}\ extensions of degrees $(\ell^i)_{i
   \ge 1}$.
 
 Such towers, together with efficient conversion algorithms, were
@@ -370,7 +370,7 @@ basic subroutine, and reversing their order.
 
 Let us briefly review the transposes of operations described in the
 previous subsection. The transpose of polynomial multiplication is
-described in~\cite{bostan+lecerf+schost:tellegen}; it is closed
+described in~\cite{bostan+lecerf+schost:tellegen}; it is closely
 related to the {\em middle product}~\cite{hanrot+quercia+zimmermann}.
 Let next $P$ be monic of degree $m$, and define $A=k[x]/\ang{P}$; we
 can then discuss the tranposes of $\rem$ and $\mulmod$. As shown
@@ -387,8 +387,8 @@ it takes as input the initial $m$ values of a linear recurring
 sequence of minimal polynomial $P$, and outputs its first $n$ values.
 LFSRs give a simple, though suboptimal, implementation of this
 operator. The transposed version of the Cook-Sieveking-Kung fast
-Euclidean division algorithm yield better algorithms: as for the
-forward direction the cost of the transposed algorithm is
+Euclidean division algorithm yield better algorithms: like the
+forward direction, the cost of the transposed algorithm is
 $O(n\M(m)/m)$ operations in $k$~\cite{vzgathen+shoup92:journal,shoup99}.
 
 Multiplication by a fixed $b\in A$ is a linear map $M_b:A\to A$. By
@@ -399,7 +399,7 @@ research (for instance, Berlekamp's \emph{bit serial
   multiplication}~\cite{Berlekamp82} is a popular arithmetic circuit
 for $\mulmod^t$ in the case $k=\F_2$); algorithms of cost $O(\M(m))$
 are given in~\cite{shoup99,bostan+lecerf+schost:tellegen}. Finally,
-the reversal operator on $k[x]_m$ is its transpose.
+the reversal operator on $k[x]_m$ is its own transpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -419,7 +419,7 @@ section, $k$ is a perfect field.
 A general reference for what follows
 is~\cite[Ch.~IX.1.8]{BourbakiAlgCom9}. Let $E$ and $F$ be $k$-vector
 spaces, with $\dim(E)=\dim(F) < \infty$; suppose further that
-$\ang{.,.}: E\times F \to k$ is a non-degenerate $k$-bilinear form
+$\ang{.,.}: E\times F \to k$ is a non-degenerate $k$-bilinear form.
 Then, to any $k$-vector space basis $\bgamma=(\gamma_i)_i$ of $E$, we
 can associate a unique \emph{dual basis}
 $\bgamma^\ast=(\gamma_i^\ast)_i$ of $F$ such that $
@@ -483,8 +483,8 @@ expression on the dual basis $\bgamma^\ast$ is $a=\sum_{0 \le i < d}
 \subsection{Conversion algorithms} \label{ssec:conversions}
 \label{sec:trace-formulas}
 
-We now describe algorithms for converting between the monomial and its
-dual, in two particular cases, involving respectively of univariate
+We now describe algorithms for converting between the monomial basis and its
+dual, in two particular cases, involving respectively univariate
 and bivariate polynomials. In both cases, our conclusion will be that
 such conversions have quasi-linear complexity.
 
@@ -515,7 +515,7 @@ that follows, input and outputs are vectors (written in {\sf sans
   serif} font).
 
 \begin{algorithm_noendline}
-{MonomialtoDual$(\va,P)$}
+{MonomialToDual$(\va,P)$}
 {$\va=(a_i)_{0 \le i < m} \in k^m$ \\  $P$ monic squarefree in $k[x]$ of degree $m$}
 {$(\tau_P(a x^i))_{0 \le i < m}$, with $a=\sum_{0 \le i < m} a_i x^i$}
 {algo:minpolytotrace}
@@ -675,7 +675,7 @@ $\ang{.,.}_R$.
 Finally, we denote by $\vu_P \in k^m$ the vector of the coordinates of
 $1 \in k[x]/\ang{P}$ on the dual basis $\bgamma^\ast$; the vector
 $\vu_Q$ is defined similarly. These vectors can both be computed in
-quasi-linear time, since we have, for instance, $\vu_P = {\rm
+quasi-linear time, since we have, for instance, $\vu_P = {\sf
   MonomialToDual}((1,0,\dots,0), P)$. Thus, in what follows, we assume
 that these vectors are known.
 
@@ -718,8 +718,8 @@ bases.
 \begin{Lemma}\label{lemma:algo:embed}
   Let $b \in k[x]/\ang{P}$ and $c \in k[y]/\ang{Q}$.  Given the
   coefficients $\vb$ and $\vc$ of respectively $b$ and $c$ in the
-  bases $\bgamma^\ast$ and $\bbeta^\ast$, {\em Embed}$(\vb,\vc,\ell)$
-  computes $a_i=\tau_R(\Phi(bc)z^i$ for $0 \le i < \ell$ in time
+  bases $\bgamma^\ast$ and $\bbeta^\ast$, {\sf Embed}$(\vb,\vc,\ell)$
+  computes $a_i=\tau_R\left(\Phi(bc)z^i\right)$ for $0 \le i < \ell$ in time
   $O(\ell(\M(m)/m+\M(n)/n))$. If $\ell=mn$, $(a_i)_{0 \le i < mn}$ are
   the coefficients of $\Phi(bc)$ in the basis~$\bbbeta^\ast$.
 \end{Lemma}
@@ -741,9 +741,9 @@ bases.
 \end{proof}
 
 In particular, the map $\varphi_x$ is computed as
-Embed$(\cdot,\vu_Q)$, and the map $\varphi_y$ as
-Embed$(\vu_P,\cdot)$. Another interesting consequence is that, when
-$A$ is known to be a field, Embed allows us to compute $R$, using the
+{\sf Embed}$(\cdot,\vu_Q)$, and the map $\varphi_y$ as
+{\sf Embed}$(\vu_P,\cdot)$. Another interesting consequence is that, when
+$A$ is known to be a field, {\sf Embed} allows us to compute $R$, using the
 Berlekamp-Massey algorithm.
 
 \begin{algorithm_endline}
@@ -751,11 +751,11 @@ Berlekamp-Massey algorithm.
 {$P$ in $k[x]$, $Q$ in $k[y]$}
 {$R$ in $k[z]$}
 {algo:R}
-\item $(t_i)_{0 \le i < 2mn}={\rm Embed}(\vu_P,\vu_Q,2mn)$,
+\item $(t_i)_{0 \le i < 2mn}={\sf Embed}(\vu_P,\vu_Q,2mn)$,
 \item {\bf return} BerlekampMassey$((t_i)_{0 \le i < 2mn})$
 \end{algorithm_endline}
 
-Indeed, in this case, Embed$(\vu_P,\vu_Q,2mn)$ computes the sequence
+Indeed, in this case, {\sf Embed}$(\vu_P,\vu_Q,2mn)$ computes the sequence
 $(\tau_R(z^i))_{0\le i < 2mn}$. If we know that $A$ is a field, $R$ is
 irreducible, so the minimal polynomial of this sequence (which is
 computed by the Berlekamp-Massey algorithm) is precisely $R$; the
@@ -793,8 +793,8 @@ $\ang{.,.}_P$, we get $\epsilon^t(\Phi(b')) = b'$, that is,
 $\epsilon^t(\varphi_x(b')) = b'$. Thus, $\epsilon^t$ is an inverse of
 $\varphi_x$ on its image.
 
-Writing $\vc=(1,0,\dots,0)$, we remark that Embed$(.,\vc)$ precisely
-computes the mapping $b\mapsto \epsilon(b)$. Since Embed is written in
+Writing $\vc=(1,0,\dots,0)$, we remark that {\sf Embed}$(.,\vc)$ precisely
+computes the mapping $b\mapsto \epsilon(b)$. Since {\sf Embed} is written in
 the dual bases, the discussion of Section~\ref{ssec:duality} shows
 that transposing this algorithm (with respect to $b$) yields an
 algorithm for $\epsilon^t$ written in the monomial bases. 
@@ -815,7 +815,7 @@ algorithm for $\epsilon^t$ written in the monomial bases.
 \begin{Lemma}\label{lemma:project}
   Let $b \in k[x]/\ang{P}$ and $a=\varphi_x(b)$. Given the
   coefficients $\va$ of $a$ in the basis $\bbbeta=(z^i)_{0 \le i
-    < mn}$, {\em Project}$(\va)$ computes the coefficients of $b$ in
+    < mn}$, {\sf Project}$(\va)$ computes the coefficients of $b$ in
   the basis $\bgamma=(x^i)_{0 \le i < m}$ using $O(n\M(m) + n\M(n))$
   operations in $k$.
 \end{Lemma}
@@ -878,10 +878,10 @@ compared to $n$.
 
 Let $b$ be in $k[x,y]/I$ and let $a=\Phi(b)$. Writing $b=\sum_{0 \le i
   < m} b_i x^i$, with all $b_i$ in $k[y]/\ang{Q}$, we obtain a
-straightforward algorithm to compute $a$: compute all $\Phi(b_i x^i)$,
-using Algorithm~\ref{algo:embed}, then sum.
+straightforward algorithm to compute $a$: compute all $\Phi(b_i x^i)$
+using {\sf Embed}, then sum.
 
-Since Algorithm~\ref{algo:embed} takes its inputs written on the dual
+Since {\sf Embed} takes its inputs written on the dual
 bases, the following algorithm requires all $b_i$ be written on the
 dual basis of $k[y]/\ang{Q}$ (equivalently, the input is given on the
 basis $\bgamma \otimes \bbeta^\ast$ of $A$). We use the further
@@ -906,7 +906,7 @@ more compact algorithm.
 
 \begin{Lemma}
   Let $b \in k[x,y]/I$. Given the coefficients $\vb$ of $b$ in the
-  basis $\bgamma \otimes \bbeta^\ast$, {\em Phi1}$(\vb)$ computes the
+  basis $\bgamma \otimes \bbeta^\ast$, {\sf Phi1}$(\vb)$ computes the
   coefficients of $\Phi(b)$ in the basis $\bbbeta^\ast$ using
   $O(m^2\M(n))$ operations in~$k$.
 \end{Lemma}
@@ -927,7 +927,6 @@ $k[z]/\ang{R}$; the output is written on the basis $\bgamma^\ast
 {$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
 {algo:tiso1}
 \item $(u_i)_{0\le i < m(n+1)-1} = \rem^t(\vu_P,P,m(n+1)-1)$
-\item $(b_{i,j}) = (0)_{0\le i < m, 0 \le j < n}$
 \item {\bf for} {$i = m-1,\dots,0$}
 \item \hspace{7mm} $d=\sum_{0 \le j < mn} a_j u_{i+j} y^j \bmod Q$
 \item \hspace{7mm}  $(b_{i,j})_{0 \le j < n} = (\coeff(d,j))_{0 \le j < n}$
@@ -936,20 +935,20 @@ $k[z]/\ang{R}$; the output is written on the basis $\bgamma^\ast
 
 \begin{Lemma}
    Let $a\in k[z]/\ang{R}$. Given the coefficients $\va$ of $a$ in the
-  basis $\bbbeta=(z^i)_{0 \le i < mn}$, {\em InversePhi1}$(\va)$
+  basis $\bbbeta=(z^i)_{0 \le i < mn}$, {\sf InversePhi1}$(\va)$
   computes the coefficients of $\Phi^{-1}(a)$ in the basis $\bgamma
   \otimes \bbeta^\ast$ using $O(m^2\M(n))$ operations in~$k$.
 \end{Lemma}
 \begin{proof}
   The correctness of this algorithm is proved as in
   Lemma~\ref{lemma:project}, observing that it consists in the
-  line-by-line transposition of Phi1. The running time analysis is
+  line-by-line transposition of {\sf Phi1}. The running time analysis is
   straightforward: the dominant cost is that of $m$ remainders, each
   of which costs $O(m\M(n))$.
 \end{proof}
 
 \noindent{{\bf \rm Second case: $m$ is not small.}}  The previous
-algorithm is most efficient when $m$ is small; now, we propose an
+algorithms are most efficient when $m$ is small; now, we propose an
 alternative solution that does better when $m$ and $n$ are of the same
 order of magnitude (with still $m \le n$)
 
@@ -994,8 +993,8 @@ that inputs {\em and} output are written on the monomial bases.
 {$\va = (a_{i})_{0 \le i < mn} \in k^{m n}$}
 {algo:iso2}
 \item $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
-\item $\vy={\rm MonomialToDual}((0,1,0,\dots,0),Q)$ 
-\item \label{iso2:2} $T={\rm DualToMonomial}({\rm Embed}(\vu_P, \vy), R)$
+\item $\vy={\sf MonomialToDual}((0,1,0,\dots,0),Q)$ 
+\item \label{iso2:2} $T={\sf DualToMonomial}({\sf Embed}(\vu_P, \vy), R)$
 \item \label{iso2:3} $U=1/T \bmod R$
 \item \label{iso2:4} $T'=[T^i \bmod R]_{0 \le i \le q}$
 \item $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
@@ -1015,7 +1014,7 @@ that inputs {\em and} output are written on the monomial bases.
 \begin{Lemma}
   Let $b \in k[x,y]/I$. Given the coefficients $\vb$ of $b$ in the
   basis $\bgamma \otimes \bbeta=(x^i y^j)_{0 \le i < m, 0 \le j < n}$,
-  {\em Phi1}$(\vb)$ computes the coefficients of $\Phi(b)$ in the
+  {\sf Phi1}$(\vb)$ computes the coefficients of $\Phi(b)$ in the
   basis $\bbbeta=(z^i)_{0 \le i < mn}$ using $O(\M(mn)n^{1/2}+\M(m)
   n^{(\omega+1)/2} )$ operations in~$k$.
 \end{Lemma}
@@ -1040,12 +1039,12 @@ involving line-by-line transposition. The only point that deserves
 mention is Step~\ref{step:tmatmul}, where we transpose polynomial
 matrix multiplication; it becomes a similar matrix product, but this
 time involving transposed polynomial multiplications (with degree
-parameters $m-1$ and $m$). The cost then remains the same, and leas to
+parameters $m-1$ and $m$). The cost then remains the same, and leads to
 Lemma~\ref{lemma:tiso2}.
 
 \begin{Lemma}\label{lemma:tiso2}
   Let $a\in k[z]/\ang{R}$. Given the coefficients $\va$ of $a$ in the
-  basis $\bbbeta^\ast$, {\em InversePhi2}$(\va)$ computes the
+  basis $\bbbeta^\ast$, {\sf InversePhi2}$(\va)$ computes the
   coefficients of $\Phi^{-1}(a)$ in the basis $\bgamma^\ast \otimes
   \bbeta^\ast$ using $O(\M(mn)n^{1/2}+\M(m) n^{(\omega+1)/2} )$
   operations in~$k$.
@@ -1058,8 +1057,8 @@ Lemma~\ref{lemma:tiso2}.
 {$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
 {algo:tiso2}
 \item $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
-\item $\vy={\rm MonomialToDual}((0,1,0,\dots,0),Q)$ 
-\item $T={\rm DualToMonomial}({\rm Embed}(\vu_P, \vy), R)$
+\item $\vy={\sf MonomialToDual}((0,1,0,\dots,0),Q)$ 
+\item $T={\sf DualToMonomial}({\sf Embed}(\vu_P, \vy), R)$
 \item $U=1/T \bmod R$
 \item $T'=[T^i \bmod R]_{0 \le i \le q}$
 \item $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
@@ -1160,7 +1159,7 @@ $n/m=\ell_1^{g_1-c_1}\cdots \ell_r^{g_r-c_r}$.
 Consider a sequence $d=(d_1,\dots,d_s)$ of positive integers, and let
 $m=d_1 \cdots d_s$. The set
 $$B_d = \{ x_{d_1}^{e_1} x_{d_1 d_2}^{e_2} \cdots x_{d_1 \cdots
-  d_s}^{e_1} \mid 0 \le e_i < d_i \}$$ is a basis of $\F(x_m)$. Our
+  d_s}^{e_1} \mid 0 \le e_i < d_i \}$$ is a basis of $\F_p(x_m)$. Our
 main examples are sequences of the form $d=(d_1)$, with thus $m=d_1$,
 for which $B_d$ is the univariate basis $(x_m^i)_{0 \le i < m}$.
 
