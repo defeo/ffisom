@@ -4,9 +4,6 @@
 #include <flint/nmod_vec.h>
 
 
-// Coefficient-wise multiplication of vectors of length M
-#define __COEFF_PROD(res, x, y, mod, M) for (M--; M >= WORD(0); M--) res[M] = nmod_mul(x[M], y[M], mod)
-
 /************** EMBEDDING *****************/
 
 /*
@@ -87,8 +84,22 @@ void pq_nmod_project(pq_nmod_elt_t res,
 		     const pq_nmod_t A) {
   _pq_nmod_insure_mono(x, AB);
   _pq_nmod_insure_dual(y, B);
-  if (!nmod_poly_is_zero(y->dual)) {
+  if (!nmod_poly_is_zero(y->dual) &&
+      !nmod_poly_is_zero(x->mono))
     _pq_nmod_project(res->mono, x->mono, y->dual->coeffs, B->M, A->M);
-    nmod_poly_zero(res->dual);
-  }
+  else
+    nmod_poly_zero(res->mono);
+  nmod_poly_zero(res->dual);
+}
+
+/* Relative trace of AB/A */
+void pq_nmod_trace(pq_nmod_elt_t res,
+		   const pq_nmod_elt_t x, const pq_nmod_t AB,
+		   const pq_nmod_t B, const pq_nmod_t A) {
+  _pq_nmod_insure_mono(x, AB);
+  if (!nmod_poly_is_zero(x->mono))
+    _pq_nmod_project(res->mono, x->mono, B->newton->coeffs, B->M, A->M);
+  else
+    nmod_poly_zero(res->mono);
+  nmod_poly_zero(res->dual);
 }

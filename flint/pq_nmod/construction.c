@@ -42,19 +42,11 @@ void pq_nmod_init_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B) 
   _pq_nmod_init_iM(C);
 }
 
-void _pq_nmod_set_newton_length(const pq_nmod_t A, slong k) {
-  if (A->newton->length < k) {
-    pq_nmod_struct* tmp = (pq_nmod_struct*)A;
-    nmod_poly_fit_length(tmp->newton, k);
-    // TODO: improve using trem
-    nmod_poly_to_newton_sums(tmp->newton->coeffs, A->M, k);
-    tmp->newton->length = k;
-  }
-}
-
 void _pq_nmod_init_newton(pq_nmod_t A) {
   nmod_poly_init(A->newton, A->M->mod.n);
-  _pq_nmod_set_newton_length(A, A->degree);
+  nmod_poly_fit_length(A->newton, A->degree);
+  nmod_poly_to_newton_sums(A->newton->coeffs, A->M, A->degree);
+  A->newton->length = A->degree;
 }
 
 void _pq_nmod_init_iM(pq_nmod_t A) {

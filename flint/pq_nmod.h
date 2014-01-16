@@ -10,10 +10,6 @@
 
 
 // Polynomial quotient algebras
-#define HAS_M 1
-#define HAS_iM 2
-#define HAS_S 4
-#define HAS_trace 8
 typedef struct{
   nmod_poly_t M;
   nmod_poly_t iM;
@@ -24,20 +20,19 @@ typedef struct{
 typedef pq_nmod_struct pq_nmod_t[1];
 
 // Elements of polynomial quotient algebras
-#define HAS_MONO 1
-#define HAS_DUAL 2
 typedef struct {
   nmod_poly_t mono;
   nmod_poly_t dual;
 } pq_nmod_elt_struct;
 typedef pq_nmod_elt_struct pq_nmod_elt_t[1];
 
+#define __COEFF_PROD(res, x, y, mod, M) for ((M)--; (M) >= WORD(0); (M)--) (res)[M] = nmod_mul((x)[M], (y)[M], (mod))
+
 
 /************** ALGEBRAS *****************/
 
 void pq_nmod_init(pq_nmod_t A, const nmod_poly_t M);
 void pq_nmod_init_compositum(pq_nmod_t C, const pq_nmod_t A, const pq_nmod_t B);
-void _pq_nmod_set_newton_length(const pq_nmod_t A, slong k);
 void _pq_nmod_init_newton(pq_nmod_t A);
 void _pq_nmod_init_iM(pq_nmod_t A);
 void _pq_nmod_init_S(pq_nmod_t A);
@@ -97,6 +92,9 @@ void pq_nmod_project(pq_nmod_elt_t res,
 		     const pq_nmod_elt_t x, const pq_nmod_t R,
 		     const pq_nmod_elt_t y, const pq_nmod_t Q,
 		     const pq_nmod_t P);
+void pq_nmod_trace(pq_nmod_elt_t res,
+		   const pq_nmod_elt_t x, const pq_nmod_t AB,
+		   const pq_nmod_t B, const pq_nmod_t A);
 
 /************** ISOMORPHISM *****************/
 
