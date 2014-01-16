@@ -5,6 +5,8 @@
 \usepackage{amsmath}
 \usepackage{alltt, amssymb,stmaryrd}
 \usepackage{color}
+\usepackage{mdwlist}
+\usepackage{float}
 
 \usepackage{algorithm}
 \usepackage{algorithmic}
@@ -26,12 +28,12 @@
 \def\B {\ensuremath{\mathbb{B}}}
 
 \def\va {\ensuremath{\mathsf{a}}}
+\def\vy {\ensuremath{\mathsf{a}}}
 \def\vu {\ensuremath{\mathsf{u}}}
 \def\vb {\ensuremath{\mathsf{b}}}
 \def\vc {\ensuremath{\mathsf{c}}}
 
 \def\mul {\ensuremath{\mathrm{mul}}}
-\def\div {\ensuremath{\mathrm{div}}}
 \def\rem {\ensuremath{\mathrm{rem}}}
 \def\cat {\ensuremath{\mathrm{cat}}}
 \def\coeff {\ensuremath{\mathrm{coefficient}}}
@@ -44,10 +46,61 @@
 \DeclareBoldMathCommand{\bbbeta}{\beta}
 \DeclareBoldMathCommand{\blambda}{\lambda}
 
+\newcounter{algo}
+
+\newenvironment{algorithm_noendline}[4]{\small\begin{center}\begin{minipage}{0.48\textwidth}
+      \refstepcounter{algo}
+      \label{#4}
+      \sf
+      \rule{\textwidth}{0.2pt}\\
+      \makebox[\textwidth][c]{Algorithm~\arabic{algo}:~\textbf{#1}}\\
+      \rule[0.5\baselineskip]{\textwidth}{0.2pt}\\
+
+      \vspace{-12pt}
+
+      \parbox{\textwidth}{\textbf{Input} #2}
+      \parbox{\textwidth}{\textbf{Output} #3}
+
+\vspace{-7pt}
+
+      \begin{enumerate*}}{\end{enumerate*}
+      \vspace{-11pt}
+\end{minipage}\end{center}
+}
+
+\newenvironment{algorithm_endline}[4]{\small\begin{center}\begin{minipage}{0.48\textwidth}
+      \refstepcounter{algo}
+      \label{#4}
+      \sf
+      \rule{\textwidth}{0.2pt}\\
+      \makebox[\textwidth][c]{Algorithm~\arabic{algo}:~\textbf{#1}}\\
+      \rule[0.5\baselineskip]{\textwidth}{0.2pt}\\
+
+      \vspace{-12pt}
+
+      \parbox{\textwidth}{\textbf{Input} #2}
+      \parbox{\textwidth}{\textbf{Output} #3}
+
+\vspace{-7pt}
+
+      \begin{enumerate*}}{\end{enumerate*}
+      \vspace{-11pt}
+      \rule{\textwidth}{0.2pt}
+\end{minipage}\end{center}
+%\vspace{-0.5cm}
+}
+
+\floatstyle{plain}
+\newfloat{algofloat}{thp}{bla}
+\floatname{algofloat}{}
+
 \newcommand{\wrt}{\vdash} 
 \newcommand{\ang}[1]{\langle#1\rangle}
 \newcommand{\dual}[1]{\overline{#1}}
 \newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+\def\gathen#1{{#1}}
+\def\hoeven#1{{#1}}
 
 \newtheorem{Def}{Definition}
 \newtheorem{Theo}{Theorem}
@@ -76,12 +129,12 @@
 
 \maketitle
 \begin{abstract}
-  This paper presents algorithms to construct and perform arithmetic
-  operations in the algebraic closure of the finite field
-  $\mathbb{F}_p$. Our approach is inspired by algorithms for
-  constructing irreducible polynomials, which first reduce to prime
-  power degrees, then use composita techniques. We use similar ideas to
-  give efficient algorithms for embeddings and isomorphisms.
+  We present algorithms to construct and do arithmetic operations in
+  the algebraic closure of the finite field $\mathbb{F}_p$. Our
+  approach is inspired by algorithms for constructing irreducible
+  polynomials, which first reduce to prime power degrees, then use
+  composita techniques. We use similar ideas to give efficient
+  algorithms for embeddings and isomorphisms.
 \end{abstract}
 
 \category{F.2.1}{Theory of computation}{Analysis of algorithms and problem complexity}[Computations in finite fields]
@@ -95,13 +148,136 @@
 
 \section{Introduction}
 
+Several computer algebra systems or libraries, such as Magma, Sage,
+NTL or Flint, offer built-in features to build and compute in
+arbitrary finite fields. At the core of these designs, one finds
+algorithms for building irreducible polynomials, together with
+algorithms to compute embeddings and isomorphisms. The
+paper~\cite{bosma+cannon+steel97} describes the system used in Magma,
+one of the most complete we are aware of.
+
+Previous algorithms typically rely on linear algebra techniques, for
+instance to describe embeddings or isomorphisms (this is the case for
+the algorithms in~\cite{bosma+cannon+steel97}, but also for those
+in~\cite{LenstraJr91,Allombert02}). Unfortunately, linear algebra
+techniques have cost at least quadratic in the degree of the
+extensions we consider, and (usually) quadratic memory requirements.
+Our goal here is to replace linear algebra by polynomial arithmetic,
+exploiting fast polynomial multiplication to obtain algorithms of
+quasi-linear complexity. As we will see, we meet this goal for
+several, but not all, operations.
+
+\paragraph*{{\bf \rm Setup}}
+Let $p$ be a prime (that will be fixed throughout this paper). We are
+interested in describing extensions $\F_{p^n}$ of $\F_p$; such an
+extension has dimension $n$ over $\F_p$, so representing an element in
+it involves $n$ base field elements.
+
+It is customary to use polynomial arithmetic to describe these
+extensions (but not necessary: Lenstra's algorithm~\cite{LenstraJr91}
+uses an entire multiplication tensor, which has size $n^3$). Given an
+extension degree $n$, a first step is then to construct an irreducible
+polynomial $Q_n$ of degree $n$ in $\F_p[x]$. This will allow us to
+identify $\F_{p^n}$ with $\F_p[x]/\ang{Q_n}$; then, using fast
+Euclidean division and extended GCD, operations $(+,\times,\div)$ in
+$\F_p[x]/\ang{Q_n}$ all take quasi-linear time in~$n$.
+
+However, this is not sufficient, as we also want mechanisms to perform
+(for instance) field embeddings. Given irreducible polynomials $Q_n$
+and $Q_m$ over $\F_p$, with $\deg(Q_n)=n$ dividing $\deg(Q_m)=m$,
+there certainly exist algorithms that determine an embedding
+$\F_p[x]/\ang{Q_n} \to \F_p[x]/\ang{Q_m}$. However, as said above,
+most such algorithms use linear algebra techniques. In addition, in
+order for the system to be consistent, we must ensure that these
+embeddings are {\em compatible}, as explained
+in~\cite{bosma+cannon+steel97}.
+
+To bypass these issues, we use an approach inspired by e.g. Shoup's
+algorithm for computing irreducible polynomials~\cite{Shoup90,shoup94}
+(see also~\cite{couveignes+lercier11,lenstra+desmit08-stdmodels}):
+first reduce to the case of prime power degrees, then use composita
+techniques, in a manner that ensures compatibility of the embeddings
+automatically.
+
+\smallskip\noindent{{\bf \rm Background: towers.}}
+Suppose that for any prime $\ell$, an {\em $\ell$-adic tower} over
+$\F_p$ is available. By this, we mean a family of polynomials
+$(T_{\ell,i})_{i \ge 1}$, with $T_{\ell,i} \in \F_p[x_1,\dots,x_i]$,
+monic of degree $\ell$ in $x_i$, such that the ideal
+$\ang{T_{\ell,1},\dots,T_{\ell,i}}$ is prime in $\F_p[x_1,\dots,x_i]$.
+Of course, our model of the field with $p^{\ell^n}$ elements could
+simply be
+$\K_{\ell^n}=\F_p[x_1,\dots,x_n]/\ang{T_{\ell,1},\dots,T_{\ell,n}}$,
+but we prefer to work with univariate polynomials (the cost of
+arithmetic operations is higher in the multivariate basis).  
+
+For $1 \le i \le n$, let then $Q_{\ell^i}$ be the minimal polynomial
+of $x_i$ in the extension $\F_p \to \K_{\ell^n}$. This polynomial does
+not depend on $n$, but only on $i$; it is monic, irreducible of degree
+$\ell^i$ in $\F_p[x_i]$ and allows us to define $\F_{p^{\ell^i}}$ as
+$\F_p[x_i]/\ang{Q_{\ell^i}}$.
+
+For $1 \le i \le j \le n$, let further $Q_{\ell^i,\ell^{j-i}}$ be the
+minimal polynomial of $x_j$ in the extension
+$\F_p[x_i]/\ang{Q_{\ell^i}} \to \K_{\ell^n}$ (as above, it does not
+depend on $n$). This polynomial is monic, irreducible of degree
+$\ell^{j-i}$ in $\F_{p^{\ell^i}}[x_j]=\F_p[x_i]/\ang{Q_{\ell^i}}[x_j]$.
+
+In particular, $\F_p[x_j]/\ang{Q_{\ell^j}}$ and
+$\F_p[x_i,x_j]/\ang{Q_{\ell^i},Q_{\ell^i,\ell^{j-i}}}$ are two models
+for $\F_{p^{\ell^j}}$. Provided conversions between these two
+representations are available, this will allow us to perform
+embeddings (that will necessarily be compatible) between different
+levels of the ``tower'', that is extensions of degrees $(\ell^i)_{i
+  \ge 1}$.
+
+Such towers, together with efficient conversion algorithms, were
+constructed in the cases $\ell = p$
+in~\cite{cantor89,couveignes00,df+schost12}, $\ell=2$
+in~\cite{DoSc12}, and for other values of $\ell$ in~\cite{DeDoSc13}.
+Thus, it remains to give algorithms to ``glue'' towers defined for
+different values of $\ell$. This is the purpose of this paper.
+
+\smallskip\noindent{{\bf \rm Our contribution.}} The algorithms used
+in the constructions of the towers are inspired by those used
+in~\cite{Shoup90,shoup94,couveignes+lercier11} to construct
+irreducible polynomials. Also used in these references is the
+following idea: if $Q_n(x)$ and $Q_m(y)$ are irreducible polynomials
+over $\F_p$, with coprime degrees $n$ and $m$, their {\em composed
+  product} $Q_{nm} = \prod_{1 \le i \le n, 1 \le j \le m} (z- a_i
+b_j)$ is irreducible of degree $mn$ in $\F_p[z]$ ($(a_i)_{1 \le
+  i \le n}$ and $(b_j)_{1 \le j \le m}$ are the roots of $Q_n$ and
+$Q_m$ in an algebraic closure of $\F_p$).
+
+If the goal is building irreducible polynomials, computing $Q_{nm}$ is
+enough; an algorithm given in~\cite{BoFlSaSc06} has quasi-linear cost
+in $mn$ (in this paper, we use an {\em algebraic complexity model},
+where the cost of an algorithm is counted in terms of the number of
+operations $(+,\times,\div)$ in $\F_p$). Our goal here is to give
+algorithms for further operations: computing embeddings of the form
+$\varphi_x: \F_p[x]/\ang{Q_n}\to \F_p[z]/\ang{Q_{nm}}$ or $\varphi_y:
+\F_p[y]/\ang{Q_m}\to \F_p[z]/\ang{Q_{nm}}$, and the isomorphism $\Phi:
+\F_p[x,y]/\ang{Q_n,Q_m}\to \F_p[z]/\ang{Q_{nm}}$ or its inverse.
+
+Standard solutions to these questions exist, using {\em modular
+  composition} techniques: once the image $S=\varphi_x(x)$ is known,
+computing $\varphi_x(a)$ amounts to computing $a(S) \bmod Q_{nm}$.
+This can be done using the Brent and Kung algorithm~\cite{brent+kung};
+the resulting cost is $O(n m^{(\omega+1)/2}) \subset O(n m^{1.69})$
+for $\varphi_x$ and $O((n m)^{(\omega+1)/2}) \subset O(n^{1.69}
+m^{1.69})$ for $\Phi$ or its inverse. Here, we denote by $\omega$ a
+constant in $(2,3]$ such that one can multiply matrices of size $n$
+  over $A$ using $O(n^\omega)$ operations $(+,\times)$ in~$A$; using
+  the algorithms of~\cite{coppersmith+winograd,Williams12}, we can
+  take $\omega \le 2.38$.
+
+
+\paragraph*{{\bf \rm Notation}}
 We denote by $\M:\N \to \N$ a function such that for any ring $A$,
 polynomials in $A[x]$ of degree at most $n$ can be multiplied in
 $\M(n)$ operations $(+,\times)$ in $A$, and we make the usual
-super-linearity assumptions on $\M$~\cite[Chapter~8]{vzGG}. We also
-denote by $\omega$ a constant in $(2,3]$ such that one can multiply
-  matrices of size $n$ over $A$ using $O(n^\omega)$ operations
-  $(+,\times)$ in $A$.
+super-linearity assumptions on $\M$~\cite[Chapter~8]{vzGG}. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -110,68 +286,56 @@ denote by $\omega$ a constant in $(2,3]$ such that one can multiply
 \section{Preliminaries}
 
 We recall first previous results concerning basic polynomial
-arithmetic and duality. 
-
-In all this section, the ground field $k$ is fixed. The following
-notation will be useful: given variables $x_1,\dots,x_s$ and integers
-$d_1,\dots,d_s$, $k[x_1,\dots,x_s]_{d_1,\dots,d_s}$ denotes the set of
-polynomials $P$ in $k[x_1,\dots,x_s]$ such that $\deg(P,x_i) < d_i$
-holds for all $i$.
+arithmetic and duality.  In all this section, the ground field $k$ is
+fixed. For integers $m,n$, we denote by $k[x]_m$
+(resp.\ $k[x,y]_{m,n}$) the set of polynomials $P$ in $k[x]$ with
+$\deg(P) <m$ (resp.\ $P$ in $k[x,y]$ with $\deg(P,x) <m$ and
+$\deg(P,y)<n$).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Polynomial multiplication and remainder}
 
-We start by describing some classical algorithms and their complexity.
-For $b$ in $k[x]$ of degree at most $m$, it will be convenient to let
-$$
-\begin{array}{cccc}
-\mul(.,b,m,n): &k[x]_n& \to &k[x]_{k+n}\\
-& a & \mapsto & ab
-\end{array}$$ 
-denote the multiplication-by-$b$ operator, which can be applied using
-$\M(\max(m,n))$ operations in $k$. In a similar vein, we denote by
-$$
-\begin{array}{cccc}
-\rev(.,m): &k[x]_m &\to& k[x]_m  \\
-& a & \mapsto & x^{m-1} a(1/x)
-\end{array}$$ the reversal operator. 
-Next, fix a monic polynomial $P$ of degree $m$ in $k[x]$. For $n \ge 1$, we denote by
-$\rem(.,P,n)$ the operator
+We start with some classical algorithms and their complexity; for all
+the algorithms that follow, all polynomials are written on the
+canonical monomial basis (this is innocuous for the moment, but other
+bases will be discussed below).
+
+The product of two polynomials of respective degrees at most $m$ and
+$n$ can be computed in $\M(\max(m,n))$ operations in $k$.  If $P$ is a
+monic polynomial $P$ of degree $m$ in $k[x]$, for $n \ge 1$, we let
+$\rem(.,P,n)$ be the operator
 $$
 \begin{array}{cccc}
 \rem(.,P,n): &k[x]_n& \to &k[x]_{m}\\
 & a & \mapsto & a \bmod P.
 \end{array}$$ 
-Such remainders can be computed in time $O(\M(\max(n,m)))$ using the
-Cook-Sieveking-Kung algorithm~\cite[Chapter~9]{vzGG}. For $b$
-in $k[x]/\ang{P}$ we will also use the modular multiplication
-operator
-$$\begin{array}{cccc} \mulmod(.,b,P): & k[x]/\ang{P} & \to
-  & k[x]/\ang{P}\\ & a & \mapsto & ab \bmod P.
+For $n \le m$, this is free of cost. For $n > m$, this can be computed
+in time $O(n\M(m)/m)$ using the Cook-Sieveking-Kung algorithm and
+blocking techniques~\cite[Ch.~5.1.3]{Bostan10}. Defining
+$A=k[x]/\ang{P}$, and choosing a fixed $b \in A$, we can then define
+the mapping $\mulmod(.,b,P)$, which maps $a \in A$ to $ab \bmod P$; it
+can be computed in time $O(\M(m))$. 
+
+Finally, for a fixed integer $m$, we denote the reversal operator in
+length $m$ by
+$$
+\begin{array}{cccc}
+\rev(.,m): &k[x]_m &\to& k[x]_m  \\
+& a & \mapsto & x^{m-1} a(1/x).
 \end{array}$$ 
-Identifying $k[x]_m$ and $k[x]/\ang{P}$, and using the
-direct algorithm for modular multiplication (multiply, then reduce),
-we can write 
-\begin{equation}
-  \label{eq:mulmod}
-  \mulmod(.,b,P) = \rem(.,P,2m-1) \circ \mul(.,b,m-1,m).
-\end{equation}
-One can thus compute $\mulmod(a,b,P)$ using $O(\M(m))$ operations in
-$k$, as is well known.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{The transposition principle}
 \label{sec:algor-dual-basis}
 
-The {\em transposition principle} is an algorithmic theorem which
+The {\em transposition principle} is an algorithmic result which
 states that given an algorithm that performs an $r \times s$
 matrix-vector product $u \mapsto M u$, one can deduce an algorithm
 with the same cost, up to $O(\max(r,s))$, which performs the
 transposed matrix-vector product $v \mapsto M^t
-v$~\cite[Chapter~13]{burgisser+clausen-shokrollahi}; see~\cite{Ka2K}
-for historical notes.
+v$~\cite[Ch.~13]{burgisser+clausen-shokrollahi}.
 
 Although that theorem is constructive, the proof involves going down
 to the DAG representation of the algorithm, which is hardly
@@ -180,14 +344,14 @@ from~\cite{bostan+lecerf+schost:tellegen} in order to simplify the
 transposition process: in a nutshell, most of our algorithms will rely
 on a few basic operations (such as polynomial or matrix
 multiplication), and their transposes are obtained by transposing each
-such basic subroutine and reversing their order.
+basic subroutine, and reversing their order.
 
-If $M$ represents a $k$-linear mapping $E \to F$, its transpose can
-naturally be seen as a $k$-linear mapping between the dual spaces $F^*
-\to E^*$ (other interpretations will be discussed below). We will
-often work with vector spaces such as $k[x]_m$, represented on the
-standard polynomial basis $(x^i)_{i<m}$; its dual space $k[x]_m^\ast$
-is identified with $k^m$.
+%% If $M$ represents a $k$-linear mapping $E \to F$, its transpose can
+%% naturally be seen as a $k$-linear mapping between the dual spaces $F^*
+%% \to E^*$ (other interpretations will be discussed below). We will
+%% often work with vector spaces such as $k[x]_m$, represented on the
+%% standard polynomial basis $(x^i)_{i<m}$; its dual space $k[x]_m^\ast$
+%% is identified with $k^m$.
 
 %% Mutliplication by a fixed $b\in k[x]_m$ is a linear map
 %% \begin{equation*}
@@ -204,187 +368,114 @@ is identified with $k^m$.
 %%   \ang{\ell,M_b(a)} = \ang{\ell,ab} = \ang{M_b^t(\ell),a}.
 %% \end{equation*}
 
-We will briefly review the transposes of the operations described in
-the previous subsection, and we give pseudo-code for those that cannot
-be found in standard references such as~\cite{vzGG}, or that are not
-available in standard computer algebra systems.
-
-For $b$ in $k[x]$ of degree at most $m$, $\mul^t(.,b,m,n)$ denotes the
-transposed of the multiplication-by-$b$ mapping introduced above. To
-implement it, one can use transposed versions of plain, Karatsuba and
-FFT
-algorithms~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann},
-which have the same running time, up to an extra $O(m)$.  By
-identifying $k[x]_n$ with its dual, one can also see $\mul^t(.,b,m,n)$
-mapping $k[x]_{m+n}$ to $k[x]_{n}$ and notice that $\mul^t(.,b,m,n)$
-then becomes $$a \in k[x]_{m+n} \mapsto (a\ \rev(b,m+1) \bmod
-x^{m+n}){\rm~div~}x^{m} \in k[x]_n.$$ This formula leads to algorithms
-for the transposed product that can be implemented using only
-``classical'' polynomial multiplication, but are slower than those
-of~\cite{bostan+lecerf+schost:tellegen,hanrot+quercia+zimmermann} by a
-constant factor.
-
-The reversal operator on $k[x]_m$ is its own dual. Finally, we
-consider $A=k[x]/\ang{P}$, with $P$ monic of degree $m$, and we
-discuss the tranposes of $\rem$ and $\mulmod$.  For the moment, we
-work in the \emph{monomial basis} of $A$, which is made up of the
-monomials $x^i$ for $0\le i<m$.  As shown
+Let us briefly review the transposes of operations described in the
+previous subsection. The transpose of polynomial multiplication is
+described in~\cite{bostan+lecerf+schost:tellegen}; it is closed
+related to the {\em middle product}~\cite{hanrot+quercia+zimmermann}.
+Let next $P$ be monic of degree $m$, and define $A=k[x]/\ang{P}$; we
+can then discuss the tranposes of $\rem$ and $\mulmod$. As shown
 in~\cite{bostan+lecerf+schost:tellegen}, the dual map
 $$
 \begin{array}{cccc}
 \rem^t(.,P,n): &k^m& \to &k^n
 \end{array}$$ 
-takes as input a linear form $\ell\in A^\ast$ expressed on the dual
-basis (that is, given by the values $(\ell(x^i))_{0 \le i <m}$; the
-output is then the values $(\ell(x^i))_{0 \le i < k}$. For $n \le m$,
-there is nothing to do. For greater values of $n$, $\rem^t$ is
-\emph{linear sequence extension}: it takes as input the initial $m$
-values of a linear recurring sequence of minimal polynomial $P$, and
-outputs its first $n$ values.
-
+takes as input a linear form $\ell\in A^\ast$ given by the values
+$(\ell(x^i))_{0 \le i < m}$; the output is then the values
+$(\ell(x^i))_{0 \le i < n}$. For $n < m$, there is nothing to do. For
+greater values of $n$, $\rem^t$ is \emph{linear sequence extension}:
+it takes as input the initial $m$ values of a linear recurring
+sequence of minimal polynomial $P$, and outputs its first $n$ values.
 LFSRs give a simple, though suboptimal, implementation of this
 operator. The transposed version of the Cook-Sieveking-Kung fast
 Euclidean division algorithm yield better algorithms: as for the
-forward direction the cost of the transposed algorithm is $O(\M(n))$
-if $n>m$. We recall this below.
+forward direction the cost of the transposed algorithm is
+$O(n\M(m)/m)$ operations in $k$~\cite{vzgathen+shoup92:journal,shoup99}.
 
-\begin{algorithm}[H]
-  \caption{$\rem^t(\ell,P,n)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\ell=(\ell_i)_{0 \le i < m}$, $P$ in $k[x]$ monic of degree $m$, $n \ge m$
-    \STATE $S = 1/\rev(P, m+1) \bmod x^{n-m}$
-    \STATE $a = \mul^t( \sum_{0 \le i < m} \ell_{i}x^i, P, m, n-m)$
-    \STATE $c = S a \bmod x^{n-m}$
-    \STATE $d = \ell ~\cat~ (-\coeff(c,i))_{0 \le i < n-m}$
-    \RETURN $d$
-  \end{algorithmic}
-\end{algorithm}
-
-Finally, multiplication by a fixed $b\in A$ is a linear map $M_b:A\to
-A$. By definition, the dual map $M_b^t: A^* \to A^*$ maps a linear
-form to $b \cdot \ell$, which is such that $(b \cdot \ell)(a)
-=\ell(ab)$.  
-
-Algorithms for $\mulmod^t$ have been subject to much
+Multiplication by a fixed $b\in A$ is a linear map $M_b:A\to A$. By
+definition, the dual map $M_b^t: A^* \to A^*$ maps a linear form to $b
+\cdot \ell$, which is such that $(b \cdot \ell)(a)
+=\ell(ab)$. Algorithms for $\mulmod^t$ have been subject to much
 research (for instance, Berlekamp's \emph{bit serial
   multiplication}~\cite{Berlekamp82} is a popular arithmetic circuit
-for transposed modular multiplication in the case $k=\F_2$, with
-quadratic complexity). From Eq.~\eqref{eq:mulmod}, we obtain the
-following algorithm $\mulmod^t$, costing $O(\M(m))$ operations in
-$k$~\cite{shoup99,bostan+lecerf+schost:tellegen}.
-
-%% \begin{equation}
-%%   \label{eq:mulmodt-def}
-%%   \ang{M_b^t(a),c}_P = \ang{a,M_b(c)}_P = \ang{a,bc}_P = \tau_P(abc).
-%% \end{equation}
-%% Hence, if $a$ is written on the dual basis, the transposed map
-%% $\mulmod^t(.,b,P)$ maps a linear form $\ell = a\cdot\tau_P$ to the
-%% linear form $b \cdot \ell=ab\cdot\tau_P$.  
-
-\begin{algorithm}[H]
-  \caption{$\mulmod^t(\ell,b,P)$}
-  \begin{algorithmic}[1]
-    \STATE $\ell' = \rem^t(\ell,P,2m-1)$
-    \RETURN $\mul^t(\ell', b, m-1, m)$
-  \end{algorithmic}
-\end{algorithm}
+for $\mulmod^t$ in the case $k=\F_2$); algorithms of cost $O(\M(m))$
+are given in~\cite{shoup99,bostan+lecerf+schost:tellegen}. Finally,
+the reversal operator on $k[x]_m$ is its transpose.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Trace}
+\section{Trace and duality}
+
+We discuss some classical facts about duality induced by
+non-degenerate bilinear forms, pairs of primal / dual bases, and give
+change-of-basis algorithms for a useful particular case. In all this
+section, $k$ is a perfect field.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Duality}\label{ssec:duality}
 
-We continue with some classical facts about dualities induced by
-non-degenerate bilinear forms. A general reference for what follows
-is~\cite[Ch.~IX.1.8]{BourbakiAlgCom9}.
+A general reference for what follows
+is~\cite[Ch.~IX.1.8]{BourbakiAlgCom9}. Let $E$ and $F$ be $k$-vector
+spaces, with $\dim(E)=\dim(F) < \infty$; suppose further that
+$\ang{.,.}: E\times F \to k$ is a non-degenerate $k$-bilinear form
+Then, to any $k$-vector space basis $\bgamma=(\gamma_i)_i$ of $E$, we
+can associate a unique \emph{dual basis}
+$\bgamma^\ast=(\gamma_i^\ast)_i$ of $F$ such that $
+\ang{\gamma_i,\gamma^\ast_j} = \delta_{i,j}$ (the Kronecker symbol).
 
-Let $E$ and $F$ be finite dimensional $k$-vector spaces, with
-$\dim(E)=\dim(F)$; suppose further that $\Phi$ is a non-degenerate
-$k$-bilinear form $E\times F \to k$. Then, to any $k$-vector space basis
-$\bgamma=(\gamma_i)_i$ of $E$, we can associate a unique \emph{dual basis}
-$\bgamma^\ast=(\gamma_i^\ast)_i$ of $F$ such that
-\begin{equation}
-  \label{eq:dual-basis}
-  \Phi(\gamma_i,\gamma^\ast_i) = \begin{cases} 1 &\text{if $i=j$,}\\ 0
-    &\text{otherwise}.
-  \end{cases}
-\end{equation}
 In other words, given $a$ in $F$, the coefficients $(a_i)$ of $a$ on
-the basis $\bgamma^\ast$ are given by $a_i=\Phi(\gamma_i, a)$. A
+the basis $\bgamma^\ast$ are given by $a_i=\ang{\gamma_i, a}$. A
 standard example (implicitly used in the previous section) is the case
-where $F$ is the dual $E^*$ of $E$, with $\Phi(v,\ell)=\ell(v)$ for
+where $F$ is the dual $E^*$ of $E$, with $\ang{v,\ell}=\ell(v)$ for
 all $v\in E$ and $\ell \in E^*$; we will see in the next subsection
 another family of examples, with $E=F$.
 
 Let $E',F'$ be two further vector spaces, with $\dim(E')=\dim(F')$ and
-let $\Phi'$ be a $k$-bilinear form $E'\times F' \to k$. Then, to any
-$k$-linear mapping $u:E\to E'$, one associates its {\em dual} (with
-respect to $\Phi$ and $\Phi'$), which is a $k$-linear mapping $u^t: F'
-\to F$ characterized by the equality $\Phi'(u(a),b')=\Phi(a,u^t(b'))$,
-for all $a\in E$ and $b'$ in $F'$.  
+let $\ang{.,.}$ be a $k$-bilinear form $E'\times F' \to k$. Then, to
+any $k$-linear mapping $u:E\to E'$, one associates its {\em dual}
+(with respect to $\ang{.,.}$ and $\ang{.,.}'$), which is a $k$-linear
+mapping $u^t: F' \to F$ characterized by the equality
+$\ang{u(a),b'}'=\ang{a,u^t(b')}$, for all $a\in E$ and $b'$ in $F'$.
 
 Let as above $\bgamma$ be a basis of $E$, and let $\bgamma^\ast$ be
-the dual basis of $F$. Similarly, consider a basis $\bbeta$ of $E'$
-and its dual basis $\bbeta^\ast$ of $E'$. Then, if $M$ is the matrix
-of $u$ in the bases $(\bgamma,\bbeta)$, the matrix of $u^t$ in the
-bases $(\bbeta^\ast,\bgamma^\ast)$ is the transpose of $M$.
-
-The transposition principle then implies that, given an algorithm that
+the dual basis of $F$; consider as well a basis $\bbeta$ of $E'$ and
+its dual basis $\bbeta^\ast$ of $F'$. If $M$ is the matrix of $u$ in
+the bases $(\bgamma,\bbeta)$, the matrix of $u^t$ in the bases
+$(\bbeta^\ast,\bgamma^\ast)$ is the transpose of $M$. The
+transposition principle then implies that, from an algorithm that
 computes $u: E \to E'$ in the bases $(\bgamma,\bbeta)$, we deduce the
-existence of an algorithm for the dual map $u^t: F' \to F$, expressed
-in the bases $(\bbeta^\ast,\bgamma^\ast)$, with essentially the same
-cost.
- 
-%% Given an algorithm for $\mulmod^t$ one can multiply two elements
-%% represented on the dual basis by converting one to the monomial basis,
-%% and then applying $\mulmod^t$. Since $\mulmod^t$ has the same cost as
-%% $\mulmod$~\cite{shoup99,bostan+lecerf+schost:tellegen}, this is better
-%% than converting both elements to the monomial basis.
-%% Much research has gone in finding polynomials $P$ that make the
-%% conversion between the monomial and the dual basis cheap. An open
-%% question is whether there exists a better algorithm to multiply two
-%% elements directly in the dual basis.
+existence of an algorithm for the dual map $u^t: F' \to F$ in the
+bases $(\bbeta^\ast,\bgamma^\ast)$, with essentially the same cost.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Traces in reduced algebras}
 
-A general reference for all the following
-is~\cite{Cox-Little-OShea:UAG2005}. Suppose in this subsection that
-$k$ is a {\em perfect} field, $s$ a positive integer, and $I$ a zero
-dimensional radical ideal in $k[x_1,\dots,x_s]$; thus,
-$A=k[x_1,\dots,x_s]/I$ is a reduced $k$-algebra of finite dimension
-$d$, where $d$ is the cardinality of $V=V(I) \subset\overline{k}^s$
-(but in general, $A$ is not a field).
+General reference for the following
+are~\cite{Kunz86,Cox-Little-OShea:UAG2005}. Suppose now that $s$ a
+positive integer, and $I$ a zero dimensional radical ideal in
+$k[x_1,\dots,x_s]$; thus, $A=k[x_1,\dots,x_s]/I$ is a reduced
+$k$-algebra of finite dimension $d$, where $d$ is the cardinality of
+$V=V(I) \subset\overline{k}^s$ (but in general, $A$ is not a field).
 
-Let $a$ be in $A$. As we did in the case of one variable we associate
+Let $a$ be in $A$. As we did in the case of one variable, we associate
 to $a$ the endomorphism of multiplication-by-$a$ $M_a: A \to A$ given
 by $M_a(b)=ab$.  Even though $A$ may not be a field, we may still
-define the {\em minimal polynomial} of $a$ (in the extension $A/k$) as
-the minimal polynomial of $M_a$; since $I$ is radical, this polynomial
-is squarefree, with roots $a(x)$, for $x$ in $V$. Similarly, we define
-the \emph{trace} of $a$ as the trace of $M_a$, and denote it by
-$\tau_I(a)$; then, we have
-\begin{equation}\label{eq:tr}
-\tau_{I}(a)=\sum_{\x \in V} a(\x),
-\end{equation}
-Thanks again to $I$ being radical, the trace defines a non-degenerate
-bilinear form on $A\times A$
-\begin{equation}
-  \label{eq:trace-def}
-  \ang{a,b}_I = \tau_I(ab).
-\end{equation}
+define the {\em minimal polynomial} of $a$ as the minimal polynomial
+of $M_a$; since $I$ is radical, this polynomial is squarefree, with
+roots $a(x)$, for $x$ in $V$. Similarly, we define the \emph{trace} of
+$a$ as the trace of $M_a$, and denote it by $\tau_I(a)$. Thanks to $I$
+being radical, the trace defines a non-degenerate bilinear form on
+$A\times A$, given by $\ang{a,b}_I = \tau_I(ab)$.
+
 Thus, to any basis $\bgamma=(\gamma_i)_{0 \le i < d}$ of $A$, one can
 associate a dual basis $\bgamma^\ast=(\gamma^\ast_i)_{0 \le i < d}$,
-such that $\tau_I(\gamma_i \gamma^\ast_j)=\delta_{i,j}$ for all $i,j$.
-It will be useful to keep in mind that for $a \in A$, its expression
-on the dual basis $\bgamma^\ast$ is $a=\sum_{0 \le i < d} \tau_I(a
-\gamma_i) \gamma^\ast_i$.
+such that $\ang{\gamma_i, \gamma^\ast_j}_I=\delta_{i,j}$ for all
+$i,j$.  It will be useful to keep in mind that for $a \in A$, its
+expression on the dual basis $\bgamma^\ast$ is $a=\sum_{0 \le i < d}
+\ang{a,\gamma_i}_I \gamma^\ast_i$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -397,9 +488,9 @@ dual, in two particular cases, involving respectively of univariate
 and bivariate polynomials. In both cases, our conclusion will be that
 such conversions have quasi-linear complexity.
 
-\paragraph*{{\bf \rm Univariate conversion}} Let $P$ be monic of degree $m$ 
-and squarefree in $k[x]$, and define $A=k[x]/\ang{P}$. We denote by
-$\tau_P$ the trace modulo $P$.
+\smallskip\noindent{{\bf \rm Univariate conversion.}} 
+Let $P$ be monic of degree $m$ and squarefree in $k[x]$, and define
+$A=k[x]/\ang{P}$. We denote by $\tau_P$ the trace modulo $P$.
 
 The $k$-algebra $A$ is endowed with the canonical monomial basis
 $\bgamma=(x^i)_{0 \le i < m}$.  In this case, conversion algorithms
@@ -419,35 +510,31 @@ of~\cite[Theorem~3.1]{rouiller99}.
   $$\sum_{i \ge 0} \tau_P(a x^i) x^i = \frac{\rev( P' a \bmod P,m)}{\rev(P,m+1)}.$$
 \end{Lemma}
 
-The conversion algorithms follow easily. 
+The conversion algorithms follow easily. In these algorithms, and all
+that follows, input and outputs are vectors (written in {\sf sans
+  serif} font).
 
-\begin{algorithm}[H]
-  \caption{MonomialToDual$(\va, P)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\va=(a_i)_{0 \le i < m} \in k^m$ \\
-    $P$ monic squarefree in $k[x]$ of degree $m$
-    \ENSURE $(\tau_P(a x^i))_{0 \le i < m}$, with $a=\sum_{0 \le i < m} a_i x^i$
-    \STATE $T = 1/\rev(P, m+1) \bmod x^m$
-    \STATE\label{algo:minpolytotrace:1} $b = \rev(P' \sum_{0 \le i < m} a_i x^i \bmod P, m) T \bmod x^m$
-    \RETURN $(\coeff(b,i))_{0 \le i < m}$
-  \end{algorithmic}
-  \label{algo:minpolytotrace}
-\end{algorithm}
+\begin{algorithm_noendline}
+{MonomialtoDual$(\va,P)$}
+{$\va=(a_i)_{0 \le i < m} \in k^m$ \\  $P$ monic squarefree in $k[x]$ of degree $m$}
+{$(\tau_P(a x^i))_{0 \le i < m}$, with $a=\sum_{0 \le i < m} a_i x^i$}
+{algo:minpolytotrace}
+\item $T = 1/\rev(P, m+1) \bmod x^m$
+\item $b = \rev(P' \sum_{0 \le i < m} a_i x^i \bmod P, m)\, T \bmod x^m$
+\item {\bf return} $(\coeff(b,x^i))_{0 \le i < m}$
+\end{algorithm_noendline}
 
-\begin{algorithm}[H]
-  \caption{DualToMonomial$(\vb, P)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\vb=(b_i)_{0 \le i < m} \in k^m$\\
-    $P$ monic squarefree in $k[x]$ of degree $m$
-    \ENSURE $(a_i)_{0 \le i < m}$ such that $\tau_P(\sum_{0 \le i < m} a_i x^{i+j}) = b_j$
-    \STATE $S = 1/P' \bmod P$
-    \STATE $b= \rev(P,m+1) \sum_{0 \le i < m} b_i x^i \bmod x^m$
-    \STATE $c= \rev(b, m)$
-    \STATE\label{algo:minpolytotrace:1} $d =c S \bmod P$
-    \RETURN $(\coeff(d,i))_{0 \le i < m}$
-  \end{algorithmic}
-  \label{algo:tracetopoly}
-\end{algorithm}
+\begin{algorithm_endline}
+{DualToMonomial$(\vb, P)$}
+{$\vb=(b_i)_{0 \le i < m} \in k^m$\\ $P$ monic squarefree in $k[x]$ of degree $m$}
+{$(a_i)_{0 \le i < m}$ such that $\tau_P(\sum_{0 \le i < m} a_i x^{i+j}) = b_j$}
+{algo:tracetopoly}
+\item $S = 1/P' \bmod P$
+\item $b= \rev(P,m+1) \sum_{0 \le i < m} b_i x^i \bmod x^m$
+\item $c= \rev(b, m)$
+\item $d =c\, S \bmod P$
+\item {\bf return} $(\coeff(d,x^i))_{0 \le i < m}$
+\end{algorithm_endline}
 
 \begin{Lemma}\label{lemma:uniconv}
   Algorithms~\ref{algo:minpolytotrace} and~\ref{algo:tracetopoly} are
@@ -457,21 +544,22 @@ The conversion algorithms follow easily.
   $O(\M(m))$.
 \end{Lemma}
 \begin{proof}
-  Correctness follows from Lemma~\ref{lemma:trace:1}.  The running
-  time analysis is straightforward; for
-  Algorithm~\ref{algo:tracetopoly}, the dominant part is the
-  computation of $S$, which takes time $O(\M(m)\log(m))$ by fast XGCD;
-  all other steps take $O(\M(m))$ operations in $k$.
+  Correctness follows from Lemma~\ref{lemma:trace:1}.  Once we point
+  out that power series inversion modulo $x^m$ can be done in time
+  $O(\M(m))$, the running time analysis of the former is
+  straightforward. For Algorithm~\ref{algo:tracetopoly}, the dominant
+  part is the computation of $S$, which takes time $O(\M(m)\log(m))$
+  by fast XGCD; all other steps take $O(\M(m))$ operations in $k$.
 \end{proof}
 
-\paragraph*{{\bf \rm Bivariate conversions}} Let now $P,Q$ be monic of respective 
-degrees $m$ and $n$, and squarefree, in respectively $k[x]$ and
-$k[y]$, and define $A=k[x,y]/I$, with $I=\ang{P,Q}$; we denote by
-$\tau_I$ the trace modulo $I$. Remark that $A$ has the canonical
-monomial basis $(x^i y^j)_{0 \le i <m, 0 \le j < n}$ (so we may
-identify $A$ and $k[x,y]_{m,n}$). For $a$ in $k[x,y]$, $a \bmod I$
-denotes the polynomial in $k[x,y]_{m,n}$ obtained by reduction modulo
-both $P$ and $Q$.
+\noindent{{\bf \rm Bivariate conversions.}} Let now $P,Q$ be monic of
+respective degrees $m$ and $n$ and squarefree in respectively $k[x]$
+and $k[y]$, and define $A=k[x,y]/I$, with $I=\ang{P,Q}$. Remark that
+$A$ has the canonical monomial basis $(x^i y^j)_{0 \le i <m, 0 \le j <
+  n}$. For $a$ in $k[x,y]$, $a \bmod I$ denotes the polynomial in
+$k[x,y]_{m,n}$ obtained by reduction modulo both $P$ and $Q$.  We
+denote by $\tau_I$ the trace modulo $I$, and by $\tau_P$ and $\tau_Q$
+the traces modulo respectively $\ang{P}$ and $\ang{Q}$.
 
 In addition to its monomial basis, $A$ can be endowed with a total of
 four natural bases, which are described as follows. Let
@@ -479,8 +567,8 @@ $\bgamma=(x^i)_{0 \le i < m}$ and $\bbeta=(y^i)_{0 \le j < n}$ be the
 monomial bases of respectively $k[x]/\ang{P}$ and $k[y]/\ang{Q}$; let
 $\bgamma^\ast$ and $\bbeta^\ast$ be their respective dual bases, with
 respect to $\tau_P$ and $\tau_Q$. The monomial basis seen above is
-$\bgamma \cdot \bbeta$; the other combinations $\bgamma^\ast \cdot
-\bbeta$, $\bgamma \cdot \bbeta^\ast$ and $\bgamma^\ast \cdot
+$\bgamma \otimes \bbeta$; the other combinations $\bgamma^\ast \otimes
+\bbeta$, $\bgamma \otimes \bbeta^\ast$ and $\bgamma^\ast \otimes
 \bbeta^\ast$ are bases of $A$ as well. The following easy lemma will
 help us exhibit the duality relationships between them; it follows
 from the fact that $A$ is the tensor product of $k[x]/\ang{P}$ and
@@ -492,62 +580,51 @@ $k[y]/\ang{Q}$.
   $\tau_I(bc) = \tau_P(b) \ \tau_Q(c)$.
 \end{Lemma}
 
-This lemma readily implies that $\bgamma \cdot \bbeta$ and
-$\bgamma^\ast \cdot \bbeta^\ast$ are dual to one another with respect
-to $\tau_I$, as are $\bgamma^\ast \cdot \bbeta$ and $\bgamma \cdot
-\bbeta^\ast$. 
-
-After a precomputation of cost $O(\M(m)\log(m) + \M(n)\log(n))$,
-Lemma~\ref{lemma:uniconv} shows that conversions between any pair of
-these dual bases can be done using $O(n\M(m)+m\M(n))$ operations in
-$k$. Using fast multiplication, this quasi-linear in the dimension
-$mn$ of $A$.
+This lemma implies that $\bgamma \otimes \bbeta$ and $\bgamma^\ast
+\otimes \bbeta^\ast$ are dual to one another with respect to
+$\ang{.,.}_I$, as are $\bgamma^\ast \otimes \bbeta$ and $\bgamma
+\otimes \bbeta^\ast$. After a precomputation of cost $O(\M(m)\log(m) +
+\M(n)\log(n))$, Lemma~\ref{lemma:uniconv} shows that conversions
+between any pair of these dual bases can be done using
+$O(n\M(m)+m\M(n))$ operations in $k$ (by applying the univariate
+conversion algorithms $n$ times $x$-wise and $m$ times $y$-wise). Using
+fast multiplication, this quasi-linear in the dimension $mn$ of $A$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Embedding and isomorphism} 
+\section{Embedding and isomorphism} \label{sec:emb-iso}
 
-In this section, we consider two squarefree polynomials $P(x)$ and
-$Q(y)$ of respective degrees $m$ and $n$, with coefficients in a
-perfect field $k$. Let us then set $A=k[x,y]/I$, where $I$ is the
-ideal $\ang{P(x),Q(y)}$ in $k[x,y]$. In all this section, {\em we
-  assume that $xy$ is a generator of $A$ as a $k$-algebra}. The
-following lemma gives a sufficient condition for this to be the case.
-
-\begin{Lemma}
-  \label{lemma:compositum}
-  Let $(\alpha_i)_{i<m}$ be the roots of $P$ in an algebraic closure
-  of $k$, and let $(\beta_i)_{i<n}$ be the roots of $Q$. Assume that
-  the elements $\alpha_i\beta_j$ are pairwise distinct. Then $xy$
-  generates $A$ as a $k$-algebra.
-\end{Lemma}
-\begin{proof}
-  The assumption implies that the eigenvalues of the
-  multiplication-by-$xy$ map of $A$ are pairwise distinct; the result
-  the follows (for instance) from~\cite[Prop.~2.2.12]{DiEm05}.
-\end{proof}
+This section contains the main algorithms of this paper. We consider
+two squarefree polynomials $P(x)$ and $Q(y)$ of respective degrees $m$
+and $n$, with coefficients in a perfect field $k$. Let us then set
+$A=k[x,y]/I$, where $I$ is the ideal $\ang{P(x),Q(y)}$ in $k[x,y]$. In
+all this section, {\em we assume that $xy$ is a generator of $A$ as a
+  $k$-algebra}. 
 
 The main example we have in mind is the following: $k$ is a finite
-field and both $P$ and $Q$ are irreducible, with $\gcd(m,n)=1$; then,
-the assumptions of the lemma are satisfied. In addition, in this case,
-$A$ is a field (namely, $A$ is the {\em compositum} of the fields
-$k[x]/\ang{P}$ and $k[y]/\ang{Q}$), see~\cite{BrCa87}; however, in
-what follows, we do not need to assume that $A$ be a field.
+field and both $P$ and $Q$ are irreducible, with $\gcd(m,n)=1$; then
+our assumption is satisfied and in addition $A$ is a field, namely,
+the {\em compositum} of the fields $k[x]/\ang{P}$ and $k[y]/\ang{Q}$,
+see~\cite{BrCa87}. More generally, if we let $(r_i)_{i<m}$ be the
+roots of $P$ in an algebraic closure of $k$, and let $(s_j)_{j<n}$ be
+the roots of $Q$, then as soon as the products $r_i s_j$ are pairwise
+distinct, $xy$ generates $A$ as a $k$-algebra.
 
-Let $R(z)$ be the minimal polynomial of $xy$ in the extension $A/k$, so
-that as $k$-algebras we have $A \simeq k[x]/\ang{R}$. Then, we have
-embeddings of the form
-$$\begin{array}{cccc}
-\varphi_x: & k[x]/\ang{P} & \to & k[z]/\ang{R}\\
-& x & \mapsto & S
-\end{array}$$
-and
-$$\begin{array}{cccc}
-\varphi_y: & k[y]/\langle Q \rangle & \to & k[z]/\ang{R}\\
-& y & \mapsto & T,
-\end{array}$$
+Let $R \in k[z]$ be the minimal polynomial of $xy$ in the extension
+$A/k$ (equivalently, the roots of $R$ are the products $r_i s_j$);
+this polynomial is known as the {\em composed product} of $P$ and $Q$,
+and we will denote it $R = P \odot Q$. As $k$-algebras, we have $A
+\simeq k[x]/\ang{R}$, so there exist embeddings of the form
+$$
+\begin{array}{ccccc}
+&\varphi_x: & k[x]/\ang{P} & \to & k[z]/\ang{R}\\
+& & x & \mapsto & S,\\[2mm]
+\text{and} & \varphi_y: & k[y]/\langle Q \rangle & \to & k[z]/\ang{R}\\
+& & y & \mapsto & T,
+\end{array}
+$$
 for some polynomials $S$ and $T$ in $k[z]$ of degrees less
 than $mn$. We also have an isomorphism of the form
 $$\begin{array}{cccc} 
@@ -556,43 +633,44 @@ $$\begin{array}{cccc}
 &  y & \mapsto & T \\
 &  xy & \mapsfrom & z.
 \end{array}$$
-
-In what follows, we discuss algorithms for computing $R$, then
-applying $\varphi_x$ and $\varphi_y$ as well as their inverses (when
+In this section, we give algorithms for computing $R$, applying
+$\varphi_x$ and $\varphi_y$ as well as their inverses (when
 well-defined), as well as $\Phi$ and its inverse. Except from the
-computation of $R$, these are all linear algebra problems. 
+computation of $R$, these are all linear algebra problems.
 
 If $R,S,T$ are known, then a direct solution is available: modular
 composition. For instance assuming $S=\varphi_x(x)$ is known,
-$\varphi_x(F)$ is computed as $G=F(S) \bmod R$. Using Brent and Kung's
+$\varphi_x(a)$ is computed as $b=a(S) \bmod R$. Using Brent and Kung's
 modular composition techniques~\cite{brent+kung}, this can be done in
 $O(n m^{(\omega+1)/2})$ operations in $k$, since we evaluate a
 polynomial of degree $m$ modulo the polynomial $R$ of degree $mn$ (see
-the analysis in~\cite{shoup94}).
+the analysis in~\cite{shoup94}). Similarly, once $S$ and $T$ are
+known, computing $\Phi(a)$ for $a$ in $A$ can be done using a
+bivariate version of the Brent-Kung algorithm, with running time
+$O((nm)^{(\omega+1)/2})$~\cite{PoSc13b}.
 
-We take a different path. One of the key aspects of our algorithms is
-that some of them are written in the usual monomial bases of
-respectively $k[x]/\ang{P}$, $k[y]/\ang{Q}$, $k[z]/\ang{R}$, whereas
-others are naturally expressed in the corresponding dual bases. From
-the complexity point of view, this is not an issue, since we saw that
-all change-of-bases can be done in quasi-linear time.
-%%  To write the algorithms, we use the following conventions: to
-%% stress the fact that an element say $a\in A$ is represented on the
-%% dual basis, we will write $\dual{a}$ (when an element, such as $1$,
-%% may belong to more than one algebra, we add a subscript like in
-%% $\dual{1}_P, \dual{1}_R, \dots$ to remove ambiguities).
+We take a different path. Our algorithms have quasi-linear running
+time for $\varphi_x$ and $\varphi_y$ and improve on the Brent-Kung
+algorithm for $\Phi$; put together, they establish
+Theorem~\ref{theo:main}. One of the key aspects of these algorithms is
+that some are written in the usual monomial bases, whereas others are
+naturally expressed in the corresponding dual bases. From the
+complexity point of view, this is not an issue, since we saw that all
+change-of-bases can be done in quasi-linear time.
 
 In what follows, we write $\tau_P,\tau_Q,\tau_R,\tau_I$ for the traces
 modulo the ideals $\ang{P}\subset k[x]$, $\ang{Q} \subset k[y]$,
-$\ang{R} \subset k[z]$ and $I=\ang{P,Q} \subset k[x,y]$. 
+$\ang{R} \subset k[z]$ and $I=\ang{P,Q} \subset k[x,y]$; the
+corresponding bilinear forms are denoted by $\ang{.,.}_P$, \dots
 
-It will also be useful to denote by $\bgamma=(x^i)_{0 \le i < m}$,
-$\bbeta=(y^i)_{0 \le j < n}$ and $\bbbeta = (z^i)_{0 \le i < mn}$ the
-monomial bases of respectively $k[x]/\ang{P}$, $k[y]/\ang{Q}$ and
-$k[z]/\ang{R}$. We let $\bgamma^\ast=(\gamma^\ast_i)_{0 \le i <m}$,
+We will denote by $\bgamma=(x^i)_{0 \le i < m}$, $\bbeta=(y^i)_{0 \le
+  j < n}$ and $\bbbeta = (z^i)_{0 \le i < mn}$ the monomial bases of
+respectively $k[x]/\ang{P}$, $k[y]/\ang{Q}$ and $k[z]/\ang{R}$. We let
+$\bgamma^\ast=(\gamma^\ast_i)_{0 \le i <m}$,
 $\bbeta^\ast=(\eta^\ast_i)_{0 \le i < n}$ and
-$\bbbeta^\ast=(\beta^\ast_i)_{0 \le i < mn}$ be their dual bases, with
-respect to respectively $\tau_P$, $\tau_Q$ and $\tau_R$.
+$\bbbeta^\ast=(\beta^\ast_i)_{0 \le i < mn}$ be the dual bases, with
+respect to respectively $\ang{.,.}_P$, $\ang{.,.}_Q$ and
+$\ang{.,.}_R$.
 
 Finally, we denote by $\vu_P \in k^m$ the vector of the coordinates of
 $1 \in k[x]/\ang{P}$ on the dual basis $\bgamma^\ast$; the vector
@@ -620,30 +698,30 @@ of the trace (the second equality is Lemma~\ref{lemma:traces:PQR1}).
 An easy consequence is that $\tau_R(z^i) =
 \tau_P(x^i)\tau_Q(y^i)$. From this, we immediately deduce
 Algorithm~\ref{algo:embed}, which computes the image in $k[z]/\ang{R}$
-of any element of $\Pi$, with inputs and outputs written on the dual
-basis.
+of any element of $\Pi$, with inputs and outputs written on dual
+bases.
 
-\begin{algorithm}[H]
-  \caption{Embed$(\vb,\vc,\ell)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\vb=(b_i)_{0 \le i < m} \in k^m$, $\vc=(c_i)_{0 \le i < n} \in k^n$\\
-    an optional integer $\ell \ge mn$ set to $\ell=mn$ by default
-    \ENSURE $\va=(a_i)_{0 \le i < \ell} \in k^{\ell}$
-    \STATE $(t_i)_{0\le i<\ell} = \rem^t(\vb,P,\ell)$
-    \STATE $(u_i)_{0\le i<\ell} = \rem^t(\vc,Q,\ell)$
-    \RETURN $(t_i u_i)_{0 \le i <\ell}$
-  \end{algorithmic}
-  \label{algo:embed}
-\end{algorithm}
+
+\vspace{-5pt}
+
+\begin{algorithm_endline}
+{Embed$(\vb,\vc,\ell)$}
+{$\vb=(b_i)_{0 \le i < m} \in k^m$, $\vc=(c_i)_{0 \le i < n} \in k^n$\\
+    an optional integer $\ell \ge mn$ set to $\ell=mn$ by default}
+{$\va=(a_i)_{0 \le i < \ell} \in k^{\ell}$}
+{algo:embed}
+\item $(t_i)_{0\le i<\ell} = \rem^t(\vb,P,\ell)$
+\item $(u_i)_{0\le i<\ell} = \rem^t(\vc,Q,\ell)$
+\item {\bf return}$(t_i u_i)_{0 \le i <\ell}$
+\end{algorithm_endline}
 
 \begin{Lemma}\label{lemma:algo:embed}
-  Given $\vb=(b_i)_{0 \le i < m}$ and $\vc = (c_i)_{0 \le i < n}$,
-  define $b=\sum_{0 \le i<m} b_i \gamma^\ast_i$ and $c=\sum_{0 \le j
-    <n} c_i \eta^\ast_i$. Then, calling {\em Embed}$(\vb,\vc,\ell)$
-  computes $(a_i)_{0 \le i < \ell}=(\tau_R(\Phi(bc)z^i)_{0 \le i <
-    \ell}$ using $O(\M(\ell))$ operations in $k$. In particular, if
-  $\ell=mn$, the equality $\sum_{0 \le i < mn} a_i \beta^\ast_i =
-  \Phi(bc)$ holds.
+  Let $b \in k[x]/\ang{P}$ and $c \in k[y]/\ang{Q}$.  Given the
+  coefficients $\vb$ and $\vc$ of respectively $b$ and $c$ in the
+  bases $\bgamma^\ast$ and $\bbeta^\ast$, {\em Embed}$(\vb,\vc,\ell)$
+  computes $a_i=\tau_R(\Phi(bc)z^i$ for $0 \le i < \ell$ in time
+  $O(\ell(\M(m)/m+\M(n)/n))$. If $\ell=mn$, $(a_i)_{0 \le i < mn}$ are
+  the coefficients of $\Phi(bc)$ in the basis~$\bbbeta^\ast$.
 \end{Lemma}
 \begin{proof}
   Recall that for $0 \le i <m$, $b_i = \tau_P(bx^i)$, and that for $0
@@ -656,99 +734,95 @@ basis.
     &=&  \bigl(\tau_R(\Phi(bc) z^i))\bigr)_{i<\ell},
   \end{eqnarray*}
   as claimed; for $\ell=mn$, this is exactly the representation of
-  $\Phi(bc)$ on the dual basis of $k[z]/\ang{R}$. As explained in
-  Section~\ref{sec:algor-dual-basis}, the two calls to $\rem^t$ take
-  time $O(\M(\ell))$. Then, the last step takes $\ell$
+  $\Phi(bc)$ on the dual basis $\bbbeta^\ast$ of $k[z]/\ang{R}$. The
+  cost of the two calls to $\rem^t$ is given in
+  Section~\ref{sec:algor-dual-basis}; the last step takes $\ell$
   multiplications in $k$.
 \end{proof}
 
 In particular, the map $\varphi_x$ is computed as
 Embed$(\cdot,\vu_Q)$, and the map $\varphi_y$ as
 Embed$(\vu_P,\cdot)$. Another interesting consequence is that, when
-$A$ is known to be a field, Algorithm Embed allows us to compute $R$,
-using the Berlekamp-Massey algorithm.
+$A$ is known to be a field, Embed allows us to compute $R$, using the
+Berlekamp-Massey algorithm.
 
-\begin{algorithm}[H]
-  \caption{ComputeR$(P,Q)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $P$ in $k[x]$, $Q$ in $k[y]$
-    \ENSURE $R$ in $k[z]$
-    \STATE $(t_i)_{0 \le i < 2mn}={\rm Embed}(\vu_P,\vu_Q,2mn)$,
-    \RETURN BerlekampMassey$((t_i)_{0 \le i < 2mn})$
-  \end{algorithmic}
-  \label{algo:R}
-\end{algorithm}
+\begin{algorithm_endline}
+{Compute$R(P,Q)$}
+{$P$ in $k[x]$, $Q$ in $k[y]$}
+{$R$ in $k[z]$}
+{algo:R}
+\item $(t_i)_{0 \le i < 2mn}={\rm Embed}(\vu_P,\vu_Q,2mn)$,
+\item {\bf return} BerlekampMassey$((t_i)_{0 \le i < 2mn})$
+\end{algorithm_endline}
 
 Indeed, in this case, Embed$(\vu_P,\vu_Q,2mn)$ computes the sequence
 $(\tau_R(z^i))_{0\le i < 2mn}$. If we know that $A$ is a field, $R$ is
-irreducible, so the minimal polynomial of this sequence (which is the
-output of our call to the Berlekamp-Massey algorithm) is precisely
-$R$; the running time of this process is $O(\M(mn)\log(mn))$
-operations in $k$. This algorithm for computing $R$ is well-known; see
-for instance~\cite{BoFlSaSc06} for a variation using power series
-exponentials instead of Berlekamp-Massey's algorithm (that applies in
-large enough characteristic) and~\cite{BGPS05} for the specific case
-of finite fields of small characteristic.
+irreducible, so the minimal polynomial of this sequence (which is
+computed by the Berlekamp-Massey algorithm) is precisely $R$; the
+running time is $O(\M(mn)\log(mn))$ operations in $k$. This algorithm
+for computing $R$ is well-known; see for instance~\cite{BoFlSaSc06}
+for a variant using power series exponentials instead of
+Berlekamp-Massey's algorithm (that applies in large enough
+characteristic) and~\cite{BGPS05} for the specific case of finite
+fields of small characteristic.
 
 
 For the inverse of $\varphi_x$, we take $a$ in $k[z]/\langle R
 \rangle$ of the form $a=\varphi_x(b)$, and compute $b$. Using the
 equality of Lemma~\ref{lemma:traces:PQR} in the form $\tau_P(b x^i)
 =\tau_R(a z^i)/\tau_Q(y^i)$ would lead to a simple algorithm, but some
-traces $\tau_Q(y^i)$ may vanish. We take a different path, instead.
+traces $\tau_Q(y^i)$ may vanish. 
 
-Let $c$ be a fixed element in $k[y]/\ang{Q}$ such that $\tau_Q(c)=1$;
-a natural choice for $c$ is the first element $\eta^\ast_0$ of the
-dual basis of $k[y]/\ang{Q}$, but this is not necessary.
-
-Let us denote by $\epsilon: k[x]/\ang{P} \to k[z]/\ang{R}$ the mapping
-defined by $\epsilon(b) = \Phi(b c)$, and let $\epsilon^t:
+We take a different path. Let $c$ be a fixed element in $k[y]/\ang{Q}$
+such that $\tau_Q(c)=1$; we will take $c$ the first element
+$\eta^\ast_0$ of the dual basis of $k[y]/\ang{Q}$, but this is not
+necessary. Let us denote by $\epsilon: k[x]/\ang{P} \to k[z]/\ang{R}$
+the mapping defined by $\epsilon(b) = \Phi(b c)$, and let $\epsilon^t:
 k[z]/\ang{R} \to k[x]/\ang{P}$ be its dual map with respect to the
-bilinear forms $\tau_R$ and $\tau_P$. Then, for any $b$ and $b'$ in 
-$k[x]/\ang{P}$, we have
+bilinear forms $\ang{.,.}_R$ and $\ang{.,.}_P$. Then, for $b$ and $b'$
+in $k[x]/\ang{P}$, we have
 \begin{eqnarray*}
-\tau_P(b b') &=&  \tau_P(b b')\tau_Q(c) \\
+\ang{b,b'}_P = \tau_P(b b') &=&  \tau_P(b b')\tau_Q(c) \\
 &=& \tau_R( \Phi(b b' c))\\
-&=& \tau_R( \epsilon(b) \Phi(b')) \\
-&=& \tau_P(b \epsilon^t(\Phi(b'))),
+&=& \ang{\epsilon(b), \Phi(b')}_R \\
+&=& \ang{b, \epsilon^t(\Phi(b'))}_P,
 \end{eqnarray*}
-where the second equality comes from
-Lemma~\ref{lemma:traces:PQR}. Hence, using the non-degeneracy of
-$\tau_P$, we deduce $\epsilon^t(\Phi(b')) = b'$, or equivalently
-$\epsilon^t(\varphi_x(b')) = b'$. Thus, $\epsilon^t$ gives an 
-inverse of $\varphi_x$ on its image.
+where the third equality comes from
+Lemma~\ref{lemma:traces:PQR}. Using the non-degeneracy of
+$\ang{.,.}_P$, we get $\epsilon^t(\Phi(b')) = b'$, that is,
+$\epsilon^t(\varphi_x(b')) = b'$. Thus, $\epsilon^t$ is an inverse of
+$\varphi_x$ on its image.
 
-In what follows, we take for $c$ the first element of the dual basis
-of $k[y]/\ang{Q}$. Keeping $c$ fixed, we see that Algorithm Embed
-precisely computes the mapping $b\mapsto \epsilon(b)$. Since Embed is
-written in the dual bases, the discussion of
-Section~\ref{ssec:duality} shows that transposing this algorithm (with
-respect to $b$) yields an algorithm for $\epsilon^t$ written in the
-monomial bases. This leads to Algorithm~\ref{algo:inverseEmbed}.
+Writing $\vc=(1,0,\dots,0)$, we remark that Embed$(.,\vc)$ precisely
+computes the mapping $b\mapsto \epsilon(b)$. Since Embed is written in
+the dual bases, the discussion of Section~\ref{ssec:duality} shows
+that transposing this algorithm (with respect to $b$) yields an
+algorithm for $\epsilon^t$ written in the monomial bases. 
 
-\begin{algorithm}[H]
-  \caption{Project$(\va)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\va=(a_i)_{0 \le i < mn} \in k^{mn}$
-    \ENSURE $\vb=(b_i)_{0 \le i < m} \in k^m$
-    \STATE $\vc=(1,0,\dots,0)$ 
-    \STATE $(u_i)_{0\le i<mn} = \rem^t(\vc,Q,mn)$
-    \STATE\label{algo:inverseEmbed:dotprod} $d = \sum_{i=0}^{mn-1} a_i u_i x^i  \bmod P$
-    \RETURN\label{algo:inverseEmbed:mod} $(\coeff(d,i))_{0 \le i < m}$
-  \end{algorithmic}\label{algo:inverseEmbed}
-\end{algorithm}
+\vspace{-5pt}
 
-\begin{Lemma}
-  Given $\va=(a_i)_{0 \le i < mn}$, define $a=\sum_{0 \le i < mn} a_i
-  z^i$. If $a$ is in the image of $\varphi_x$, then calling {\em
-    Project}$(\va)$ computes $(b_i)_{0 \le i < m}$ such that
-  $a=\varphi_x(\sum_{0 \le i < m} b_i x^i)$ using $O(\M(mn))$
+\begin{algorithm_endline}
+{Project$(\va)$}
+{$\va=(a_i)_{0 \le i < mn} \in k^{mn}$}
+{$\vb=(b_i)_{0 \le i < m} \in k^m$}
+{algo:inverseEmbed}
+\item $\vc=(1,0,\dots,0)$ 
+\item  $(u_i)_{0\le i<mn} = \rem^t(\vc,Q,mn)$
+\item \label{algo:inverseEmbed:dotprod} $d = \sum_{i=0}^{mn-1} a_i u_i x^i  \bmod P$
+\item {\bf return} \label{algo:inverseEmbed:mod} $(\coeff(d,i))_{0 \le i < m}$
+\end{algorithm_endline}
+
+\begin{Lemma}\label{lemma:project}
+  Let $b \in k[x]/\ang{P}$ and $a=\varphi_x(b)$. Given the
+  coefficients $\va$ of $a$ in the basis $\bbbeta=(z^i)_{0 \le i
+    < mn}$, {\em Project}$(\va)$ computes the coefficients of $b$ in
+  the basis $\bgamma=(x^i)_{0 \le i < m}$ using $O(n\M(m) + n\M(n))$
   operations in $k$.
 \end{Lemma}
 \begin{proof}
   We show correctness using transposition techniques as
-  in~\cite{bostan+lecerf+schost:tellegen}. Observe that for fixed
-  $\vc$, Embed$(\vb,\vc)$ is linear in $\vb$ and can be written as
+  in~\cite{bostan+lecerf+schost:tellegen}. For fixed $\vc$,
+  Embed$(\vb,\vc)$ is linear in $\vb$ and can be written as
   $\pi_\vc\circ\rem^t$, where $\pi_\vc$ is the map that multiplies a
   vector in $k^{mn}$ coefficient-wise by $(\tau_Q(c y^i))_{i<mn}$, for
   $c=\sum_{0 \le i < n} c_i \eta^\ast_i$.  Hence, its transpose is
@@ -765,261 +839,276 @@ monomial bases. This leads to Algorithm~\ref{algo:inverseEmbed}.
 
 \subsection{Isomorphism} 
 
-We continue with algorithms for computing the isomorphism $\Phi$.  We
-are not able to give an algorithm for $\Phi$ that would be as
-efficient as those for embedding; instead, we provide two such
-algorithms, with different domains of applicability. In all that
-follows, without loss of generality, {\em we assume that $n\le m$}.
+We are not able to give an algorithm for $\Phi$ that would be as
+efficient as those for embedding; instead, we provide two algorithms,
+with different domains of applicability. In what follows, without
+loss of generality, {\em we assume that $m\le n$}.
 
-Recall that $\bgamma \cdot \bbeta$,\ $\bgamma^\ast \cdot
-\bbeta$,\ $\bgamma \cdot \bbeta^\ast$ and $\bgamma^\ast \cdot
-\bbeta^\ast$ are four possible bases of $A$, with $(\bgamma \cdot
-\bbeta, \bgamma^\ast \cdot \bbeta^\ast)$ and $(\bgamma^\ast \cdot
-\bbeta, \bgamma \cdot \bbeta^\ast)$ being two pairs of dual bases with
-respect to $\tau_I$. Our algorithms will exploit all these bases; this
-is harmless, since conversions between these bases have quasi-linear
-complexity.
+Recall that $\bgamma \otimes \bbeta$,\ $\bgamma^\ast \otimes
+\bbeta$,\ $\bgamma \otimes \bbeta^\ast$ and $\bgamma^\ast \otimes
+\bbeta^\ast$ are four bases of $A$, with $(\bgamma \otimes \bbeta,
+\bgamma^\ast \otimes \bbeta^\ast)$ and $(\bgamma^\ast \otimes \bbeta,
+\bgamma \otimes \bbeta^\ast)$ being two pairs of dual bases with
+respect to $\ang{.,.}_I$. Our algorithms will exploit all these bases;
+this is harmless, since conversions between these bases have
+quasi-linear complexity.
 
-Before giving the details of the algorithms, we make the following
-further observation, similar to the one we did regarding the transpose
-of Embed above. Let $\Phi^t$ be the dual map of $\Phi$ with respect to
-$\tau_R$ and $\tau_I$. Then, for any $b,b' \in k[z]/\ang{R}$, we have:
+Before giving the details of the algorithms, we make an observation
+similar to the one we did regarding the transpose of Embed. Let
+$\Phi^t$ be the dual map of $\Phi$ with respect to $\ang{.,}_R$ and
+$\ang{.,.}_I$. Then, for any $b,b' \in k[z]/\ang{R}$, we have:
 \begin{eqnarray*}
-\tau_I(b b') &=&  \tau_R(\Phi(b b'))\\
-&=& \tau_R( \Phi(b) \Phi(b')) \\
-&=& \tau_I(b\, \Phi^t(\Phi(b')));
+\ang{b,b'}_I=\tau_I(b b') &=&  \tau_R(\Phi(b b'))\\
+&=& \ang{\Phi(b), \Phi(b')}_R \\
+&=& \ang{b, \Phi^t(\Phi(b'))}_I;
 \end{eqnarray*}
-hence, $\Phi^t = \Phi^{-1}$. Let then ${\bf b}$ and ${\bf b}^\ast$ be
-two bases of $A=k[x,y]/I$, dual with respect to $\tau_I$ (such as the
-ones seen above); let as well ${\bf c}$ and ${\bf c}^\ast$ be two
-bases of $k[z]/\ang{R}$, dual with respect to $\tau_R$. The previous
+hence, $\Phi^t = \Phi^{-1}$. If ${\bf b}$ and ${\bf b}^\ast$ are two
+bases of $A=k[x,y]/I$, dual with respect to $\ang{.,.}_I$ (such as the
+ones seen above) and if ${\bf c}$ and ${\bf c}^\ast$ are two bases of
+$k[z]/\ang{R}$, dual with respect to $\ang{.,.}_R$, the previous
 equality, together with the transposition principle, shows the
 following: if we have an algorithm for $\Phi$, expressed in the bases
-${\bf b}$ and ${\bf c}$, transposing it yields an algorithm for
-$\Phi^{-1}$, expressed in the bases ${\bf c}^\ast$ and~${\bf b}^\ast$.
+(${\bf b}$, ${\bf c}$), transposing it yields an algorithm for
+$\Phi^{-1}$, expressed in the bases $({\bf c}^\ast,{\bf b}^\ast)$.
 
-\paragraph*{{\bf \rm First case: $n$ is small}}
+\smallskip\noindent{{\bf \rm First case: $m$ is small.}}
 We start by a direct application of the results in the previous
-subsection, which is well-suited to situations where $n$ is small
-compared to $m$.
+subsection, which is well-suited to situations where $m$ is small
+compared to $n$.
 
 Let $b$ be in $k[x,y]/I$ and let $a=\Phi(b)$. Writing $b=\sum_{0 \le i
-  < n} b_i y^i$, with all $b_i$ in $k[x]/\ang{P}$, we obtain a
-straightforward algorithm to compute $a$: compute all $\Phi(b_iy^i)$,
+  < m} b_i x^i$, with all $b_i$ in $k[y]/\ang{Q}$, we obtain a
+straightforward algorithm to compute $a$: compute all $\Phi(b_i x^i)$,
 using Algorithm~\ref{algo:embed}, then sum.
 
 Since Algorithm~\ref{algo:embed} takes its inputs written on the dual
-basis of $k[x]/\ang{P}$, the following algorithm requires all $b_i$ be
-written this way (equivalently, the input is given on the basis
-$\bgamma^\ast \cdot \bbeta$ of $A$). We use the further observation
-that the expression of $y^i$ on the dual basis $\bbeta^\star$ is
-$\vu_Q$ shifted by $i$ positions to give a slightly more compact
-algorithm.
+bases, the following algorithm requires all $b_i$ be written on the
+dual basis of $k[y]/\ang{Q}$ (equivalently, the input is given on the
+basis $\bgamma \otimes \bbeta^\ast$ of $A$). We use the further
+observation that the expression of $x^i$ on the dual basis
+$\bgamma^\ast$ is $\vu_P$ shifted by $i$ positions to give a slightly
+more compact algorithm.
 
-\begin{algorithm}[H]
-  \caption{Phi1$(\vb)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$
-    \ENSURE $\va = (a_{i})_{0 \le i < mn} \in k^{m n}$
-    \STATE $(u_i)_{0\le i < (m+1)n-1} = \rem^t(\vu_Q,Q,(m+1)n-1)$
-    \STATE $(a_i)_{0\le i < mn} = (0,\dots,0)$
-    \FOR {$0\le j < n$}
-    \STATE $(t_i)_{0\le i < mn} = \rem^t( (b_{i,j})_{0 \le i <m}  ,P,mn)$
-    \STATE $(a_i)_{0\le i < mn} = (a_i + t_iu_{i+j})_{0\le i < mn}$
-    \ENDFOR
-    \RETURN $(a_i)_{0\le i <mn}$
-  \end{algorithmic}
-  \label{algo:iso1}
-\end{algorithm}
+\vspace{-10pt}
+
+\begin{algorithm_endline}
+{Phi1$(\vb)$}
+{$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
+{$\va = (a_{i})_{0 \le i < mn} \in k^{m n}$}
+{algo:iso1}
+\item $(u_i)_{0\le i < m(n+1)-1} = \rem^t(\vu_P,P,m(n+1)-1)$
+\item  $(a_i)_{0\le i < mn} = (0,\dots,0)$
+\item {\bf for} {$0\le i < m$}
+\item \hspace{7mm} $(t_j)_{0\le j < mn} = \rem^t( (b_{i,j})_{0 \le j <n},Q,mn)$
+\item \hspace{7mm} $(a_j)_{0\le j < mn} = (a_j + t_ju_{i+j})_{0\le j < mn}$
+\item {\bf return} $(a_i)_{0\le i <mn}$
+\end{algorithm_endline}
 
 \begin{Lemma}
-  Given $\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n}$ in $k^{m \times
-    n}$, define $b=\sum_{0 \le i<m, 0 \le j < n} b_{i,j} \gamma^\ast_i
-  y^j$. Then, calling {\em Phi1}$(\vb)$ computes $(a_i)_{0 \le
-    i < mn}$ such that $\sum_{0 \le i < mn} a_i \beta^\ast_i =
-  \Phi(b)$ holds using $O(n^2\M(m))$ operations in~$k$.
+  Let $b \in k[x,y]/I$. Given the coefficients $\vb$ of $b$ in the
+  basis $\bgamma \otimes \bbeta^\ast$, {\em Phi1}$(\vb)$ computes the
+  coefficients of $\Phi(b)$ in the basis $\bbbeta^\ast$ using
+  $O(m^2\M(n))$ operations in~$k$.
 \end{Lemma}
 \begin{proof}
-  \todo{The analysis can be improved to $O(n^2\M(m))$ by observing
-    that $\rem$ and $\rem^t$ can use unbalanced multiplication.}
+  Correctness follows from the previous discussion. The most expensive
+  step is $m$ calls to $\rem^t$, for a cumulated cost of
+  $O(m^2\M(n))$.
 \end{proof}
 
-Transposing the previous algorithm, we obtain an algorithm for
-$\Phi^{-1}$. The input is now expressed on the monomial basis
-$(z^i)_{0 \le i < mn}$ of $k[z]/\ang{R}$, and the output is expressed
-on the basis $\bgamma \cdot \bbeta^\ast$ of $A$.
+Transposing this algorithm gives an algorithm for $\Phi^{-1}$. Its
+input is given on the monomial basis $(z^i)_{0 \le i < mn}$ of
+$k[z]/\ang{R}$; the output is written on the basis $\bgamma^\ast
+\otimes \bbeta$ of $A$.
 
-\begin{algorithm}[H]
-  \caption{InversePhi1$(\va)$}
-  \begin{algorithmic}[1]
-    \REQUIRE $\va = (a_{i})_{0 \le i < mn} \in k^{m n}$
-    \ENSURE  $\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$
-    \STATE $(u_i)_{0\le i < (m+1)n-1} = \rem^t(\vu_Q,Q,(m+1)n-1)$
-    \STATE $(b_{i,j}) = (0)_{0\le i < m, 0 \le j < n}$
-    \FOR {$j = n-1,\dots,0$}
-    \STATE $d=\sum_{0 \le i < mn} a_i u_{i+j} x^i \bmod P$
-    \STATE $(b_{i,j})_{0 \le i < m} = (\coeff(d,i))_{0 \le i < m}$
-    \ENDFOR
-    \RETURN $(b_{i,j})_{0 \le i < m, 0 \le j < n}$
-  \end{algorithmic}
-  \label{algo:iso1}
-\end{algorithm}
+\begin{algorithm_endline}
+{InversePhi1$(\va)$}
+{$\va = (a_{i})_{0 \le i < mn} \in k^{m n}$}
+{$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
+{algo:tiso1}
+\item $(u_i)_{0\le i < m(n+1)-1} = \rem^t(\vu_P,P,m(n+1)-1)$
+\item $(b_{i,j}) = (0)_{0\le i < m, 0 \le j < n}$
+\item {\bf for} {$i = m-1,\dots,0$}
+\item \hspace{7mm} $d=\sum_{0 \le j < mn} a_j u_{i+j} y^j \bmod Q$
+\item \hspace{7mm}  $(b_{i,j})_{0 \le j < n} = (\coeff(d,j))_{0 \le j < n}$
+\item {\bf return} $(b_{i,j})_{0 \le i < m, 0 \le j < n}$
+\end{algorithm_endline}
 
 \begin{Lemma}
-  Given $\va = (a_{i})_{0 \le i < mn}$ in $k^{m n}$, define $a=\sum_{0
-    \le i<mn} a_i z^i$. Then, calling {\em InversePhi1}$(\va)$
-  computes coefficients $(b_{i,j})_{0 \le i < m, 0 \le j < n}$ such
-  that $\sum_{0 \le i < m, 0 \le j < n} b_{i,j} x^i \eta^\ast_j =
-  \Phi^{-1}(a)$ using $O(n^2\M(m))$ operations in~$k$.
+   Let $a\in k[z]/\ang{R}$. Given the coefficients $\va$ of $a$ in the
+  basis $\bbbeta=(z^i)_{0 \le i < mn}$, {\em InversePhi1}$(\va)$
+  computes the coefficients of $\Phi^{-1}(a)$ in the basis $\bgamma
+  \otimes \bbeta^\ast$ using $O(m^2\M(n))$ operations in~$k$.
 \end{Lemma}
+\begin{proof}
+  The correctness of this algorithm is proved as in
+  Lemma~\ref{lemma:project}, observing that it consists in the
+  line-by-line transposition of Phi1. The running time analysis is
+  straightforward: the dominant cost is that of $m$ remainders, each
+  of which costs $O(m\M(n))$.
+\end{proof}
 
-\paragraph*{{\bf \rm First case: $n$ is not small}}
-The previous algorithm is most efficient when $n$ is small; now, we
-propose an alternative solution that does better when $m$ and $n$ are
-of the same order of magnitude.
+\noindent{{\bf \rm Second case: $m$ is not small.}}  The previous
+algorithm is most efficient when $m$ is small; now, we propose an
+alternative solution that does better when $m$ and $n$ are of the same
+order of magnitude (with still $m \le n$)
 
 This approach is based on baby steps / giant steps techniques, as in
 Brent and Kung's modular composition algorithm, but uses the fact that
-$Z=\Phi(XY)$ to reduce the cost. Given $F$ in $\F[X,Y]/\langle
-P,Q\rangle$, let us write
+$z=\Phi(xy)$ to reduce the cost. Given $b$ in $A=k[x,y]/\ang{P,Q}$,
+let us write
 \begin{eqnarray*}
-F&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} f_{i,j}X^i Y^j\\
-&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} f_{i,j}X^i Y^i Y^{j-i}\\
-&=&\sum_{k=-m+1}^{n-1}\sum_{i=0}^{m-1} f_{i,i+k}(XY)^i Y^k\\
-&=&\frac{1}{Y^{m-1}} \sum_{k=0}^{m+n-2} H_k(XY) Y^k,
+b&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} b_{i,j}x^i y^j\\
+&=&\sum_{i=0}^{m-1}\sum_{j=0}^{n-1} b_{i,j}x^i y^i y^{j-i}\\
+&=&\sum_{\ell=-m+1}^{n-1}\sum_{i=0}^{m-1} b_{i,i+\ell}(xy)^i y^\ell\\
+&=&\frac{1}{y^{m-1}} \sum_{\ell=0}^{m+n-2} h_\ell(xy) y^\ell,
 \end{eqnarray*}
-with $H_k(Z)=\sum_{0 \le i < m-1} f_{i,i+k-m+1} Z^i$ for all $k$.
-This implies that $G=\Phi(F)$ has the form
-$$G = \frac{1}{T^{m-1}}\widetilde{G} \mod R\quad\text{with}\quad
-\widetilde{G}=\sum_{k=0}^{m+n-2} H_k T^k.$$ We use baby steps / giant
-steps techniques from~\cite{LeMeSc13} (inspired by Brent and Kung's
-algorithm) to compute $G$, reducing the problem to polynomial matrix
-multiplication. Let
+with $h_\ell(z)=\sum_{0 \le i < m-1} b_{i,i+\ell-m+1} z^i$ for all
+$\ell$ (undefined indices are set to zero); since $m \le n$, all
+$h_\ell$ have indeed degree less than $m$. This implies that
+$a=\Phi(b)$ has the form
+$$a = \frac{1}{T^{m-1}}\widetilde{a} \mod R\quad\text{with}\quad
+\widetilde{a}=\sum_{\ell=0}^{m+n-2} h_\ell T^\ell,$$ where $T=\varphi_y(y)$.
+We use baby steps / giant steps techniques from~\cite{LeMeSc13}
+(inspired by Brent and Kung's algorithm) to compute $a$, reducing the
+problem to polynomial matrix multiplication. Let
 $$n'=m+n-1,\quad p=\lceil \sqrt {n'} \rceil,\quad q=\lceil
 n'/p\rceil,$$ so that $n \le n' \le 2n-1$ and $p\simeq q \simeq
 \sqrt{n}$.  For baby steps, we compute the polynomials $T_i=T^i \bmod
 R$, which have degree at most $mn-1$; we write $T_i = \sum_{0 \le j <
-  n} T'_{i,j} Z^{jm}$, with $T'_{i,j}$ of degree less than $m$, and
+  n} T'_{i,j} z^{jm}$, with $T'_{i,j}$ of degree less than $m$, and
 build the polynomial matrix $M_{T'}$ with entries $T'_{i,j}$.  We also
-define the matrix $M_H=[H_{iq+j}]_{0 \le i <p, 0 \le j < q}$
-containing the polynomials $H_k$ organized in a row-major fashion, and
+define the matrix $M_H=[h_{iq+j}]_{0 \le i <p, 0 \le j < q}$
+containing the polynomials $h_\ell$ organized in a row-major fashion, and
 compute the product $M_V=M_H M_T$. We can then recompose polynomials
 from the rows of $M_V$, and conclude with giant steps, using Horner's
 scheme to obtain $G$.
-\begin{algorithm}[H]
-  \caption{ChangeBasis2$(F,P,Q,R)$}
-  \begin{algorithmic}[1]
-    \STATE $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
-    \STATE\label{iso2:2} $T={\rm Embed}(Y,Q,R)$
-    \STATE\label{iso2:3} $U=1/T \bmod R$
-    \STATE\label{iso2:4} $T'=[T^i \bmod R]_{0 \le i < q}$
-    \STATE $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
-    \STATE $M_H=[H_{iq+j}]_{0 \le i <p, 0 \le j < q}$ \hfill $H_k$ as defined above
-    \STATE\label{iso2:7} $M_V = M_H M_{T'}$
-    \STATE $V=[\sum_{0 \le j <n} {M_V}_{i,j} Z^{jm} ]_{0 \le i <p}$
-    \STATE $V^*=[V_i \bmod R]_{0 \le i <p}$
-    \STATE $G=0$
-    \FOR{$i=p-1,\dots,0$}\label{iso2:11}
-    \STATE $G=T^qG+V^*_i \bmod R$
-    \ENDFOR
-    \STATE\label{iso2:14} $G=G U^{m-1} \bmod R$
-    \RETURN $G$
-  \end{algorithmic}
-  \label{algo:iso2}
-\end{algorithm}
+
+The previous discussion leads to Algorithm~\ref{algo:iso2}. Remark
+that inputs {\em and} output are written on the monomial bases.
+
+\begin{algofloat}
+  \begin{algorithm_endline}
+{Phi2$(\vb)$}      
+{$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
+{$\va = (a_{i})_{0 \le i < mn} \in k^{m n}$}
+{algo:iso2}
+\item $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
+\item $\vy={\rm MonomialToDual}((0,1,0,\dots,0),Q)$ 
+\item \label{iso2:2} $T={\rm DualToMonomial}({\rm Embed}(\vu_P, \vy), R)$
+\item \label{iso2:3} $U=1/T \bmod R$
+\item \label{iso2:4} $T'=[T^i \bmod R]_{0 \le i \le q}$
+\item $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
+\item $M_H=[h_{iq+j}]_{0 \le i <p, 0 \le j < q}$ \hfill $h_\ell$ as defined above
+\item \label{iso2:7} $M_V = M_H M_{T'}$
+\item $V=[\sum_{0 \le j <n} {M_V}_{i,j} z^{jm} ]_{0 \le i <p}$
+\item $V'=[V_i \bmod R]_{0 \le i <p}$
+\item $a=0$
+\item {\bf for} {$i=p-1,\dots,0$}\label{iso2:11}
+\item \hspace{7mm} $a=T'_q\, a+V'_i \bmod R$
+\item \label{iso2:14} $a=a\, U^{m-1} \bmod R$
+\item {\bf return} $(\coeff(a,i))_{0 \le i < mn}$
+  \end{algorithm_endline}
+\vspace{-5ex}
+\end{algofloat}
 
 \begin{Lemma}
-  Algorithm~\ref{algo:iso2} correctly computes $\Phi(F)$ using
-  $O(\M(m) n^{(\omega+1)/2} )$ operations in~$\F$.
+  Let $b \in k[x,y]/I$. Given the coefficients $\vb$ of $b$ in the
+  basis $\bgamma \otimes \bbeta=(x^i y^j)_{0 \le i < m, 0 \le j < n}$,
+  {\em Phi1}$(\vb)$ computes the coefficients of $\Phi(b)$ in the
+  basis $\bbbeta=(z^i)_{0 \le i < mn}$ using $O(\M(mn)n^{1/2}+\M(m)
+  n^{(\omega+1)/2} )$ operations in~$k$.
 \end{Lemma}
 \begin{proof}
-  Remark first that $n'=O(n)$, and that $p$ and $q$ are both
-  $O(\sqrt{n})$. Steps~\ref{iso2:2},~\ref{iso2:3} and~\ref{iso2:14}
+  Correctness follows from the discussion prior to the algorithm.  As
+  to the cost analysis, remark first that $n'=O(n)$, and that $p$ and
+  $q$ are both $O(\sqrt{n})$. Steps~\ref{iso2:3} and~\ref{iso2:14}
   cost $O(\M(mn)\log(mn))$ operations. Steps~\ref{iso2:4} (the baby
   steps) and the loop at Step~\ref{iso2:11} (the giant steps) cost
   $O(\sqrt{n}\M(mn))$. The dominant cost is the matrix product at
   Step~\ref{iso2:7}, which involves matrices of size $O(\sqrt{n})
   \times O(\sqrt{n})$ and $O(\sqrt{n}) \times O(n)$, with polynomial
-  entries of degree $m$: this takes $O(\M(m) n^{(\omega+1)/2})$ 
-  operations in $\F$.
+  entries of degree $m$: using block matrix multiplication in size
+  $O(\sqrt{n})$, this takes $O(\M(m) n^{(\omega+1)/2})$ operations in
+  $k$.
 \end{proof}
 
-As before, we will need the transpose of this algorithm (todo: more
-explanations).
-\begin{algorithm}[H]
-  \caption{ChangeBasis2$^t(\gamma,P,Q,R)$}
-  \begin{algorithmic}[1]
-    \STATE $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
-    \STATE $T={\rm Embed}(Y,Q,R)$
-    \STATE $U=1/T \bmod R$
-    \STATE $T'=[T^i \bmod R]_{0 \le i < q}$
-    \STATE $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
-    \STATE $\gamma = \mulmod^t(\gamma, U^{m-1}, R)$
-    \STATE $V^*=[\ ]_{0 \le i < p}$
-    \FOR{$i=0,\dots,p-1$}
-    \STATE $V^*_i = \gamma$
-    \STATE $\gamma = \mulmod^t(\gamma,T^q,R)$
-    \ENDFOR
-    \STATE $V = [\rem^t(V^*_i,R,mn+m-1)]_{0 \le i < p}$
-    \STATE $M_V = [(V_{i})_{jm,\dots,jm+2m-1}]_{0 \le i < p, 0 \le j < n}$
-    \STATE $M_H = \mul^t(M_V, M_{T'})$
-    \STATE $H=[{M_H}_{0,0},\dots,{M_H}_{0,q-1},\dots,{M_H}_{p-1,q-1}]$
-    \STATE $\ell=[\coeff(H_{i-j+m-1},i)]_{0 \le i < m, 0 \le j < n}$
-    \RETURN $\ell$
-  \end{algorithmic}
-  \label{algo:tiso2}
-\end{algorithm}
+As before, writing the transpose of this algorithm gives us an
+algorithm for $\Phi^{-1}$, this time written in the dual bases.  The
+process is the same for the previous transposed algorithms we saw,
+involving line-by-line transposition. The only point that deserves
+mention is Step~\ref{step:tmatmul}, where we transpose polynomial
+matrix multiplication; it becomes a similar matrix product, but this
+time involving transposed polynomial multiplications (with degree
+parameters $m-1$ and $m$). The cost then remains the same, and leas to
+Lemma~\ref{lemma:tiso2}.
 
+\begin{Lemma}\label{lemma:tiso2}
+  Let $a\in k[z]/\ang{R}$. Given the coefficients $\va$ of $a$ in the
+  basis $\bbbeta^\ast$, {\em InversePhi2}$(\va)$ computes the
+  coefficients of $\Phi^{-1}(a)$ in the basis $\bgamma^\ast \otimes
+  \bbeta^\ast$ using $O(\M(mn)n^{1/2}+\M(m) n^{(\omega+1)/2} )$
+  operations in~$k$.
+\end{Lemma}
 
-\paragraph{Summary.} For $m \le n$, and neglecting logarithmic factors,
-our two solutions for $\Phi$ (or its inverse) have respective costs
-$O\tilde{~}(m^2 n)$ and $O\tilde{~}(m n^{(\omega+1)/2})$. Writing
-$\delta=mn$, the minimum of the two is
-$O\tilde{~}(\delta^{2\omega/(\omega+1)})$.
+\begin{algofloat}
+  \begin{algorithm_endline}
+{InversePhi2$(\va)$}
+{$\va = (a_{i})_{0 \le i < mn} \in k^{m n}$}
+{$\vb = (b_{i,j})_{0 \le i < m, 0 \le j < n} \in k^{m \times n}$}
+{algo:tiso2}
+\item $n'=m+n-1$, $p=\lceil \sqrt {n'} \rceil$, $q=\lceil n'/p\rceil$
+\item $\vy={\rm MonomialToDual}((0,1,0,\dots,0),Q)$ 
+\item $T={\rm DualToMonomial}({\rm Embed}(\vu_P, \vy), R)$
+\item $U=1/T \bmod R$
+\item $T'=[T^i \bmod R]_{0 \le i \le q}$
+\item $M_{T'}=[T'_{i,j}]_{0\le i < q, 0, \le j < n}$ \hfill $T'_{i,j}$ as defined above
+\item $\va = \mulmod^t(\va, U^{m-1}, R)$
+\item $V'=[\ ]_{0 \le i < p}$
+\item {\bf for} {$i=0,\dots,p-1$}
+\item \hspace{7mm} $V'_i = \va$
+\item \hspace{7mm} $\va = \mulmod^t(\va,T'_q,R)$
+\item $V = [\rem^t(V'_i,R,mn+m-1)]_{0 \le i < p}$
+\item $M_V = [(V_{i})_{jm,\dots,jm+2m-1}]_{0 \le i < p, 0 \le j < n}$
+\item\label{step:tmatmul} $M_H = \mul^t(M_V, M_{T'},m-1,m)$
+\item $H=[{M_H}_{0,0},\dots,{M_H}_{0,q-1},\dots,{M_H}_{p-1,q-1}]$
+\item {\bf return} $[\coeff(h_{i-j+m-1},i)]_{0 \le i < m, 0 \le j < n}$
+  \end{algorithm_endline}
+\vspace{-5ex}
+\end{algofloat}
+
+\noindent{{\bf \rm Summary.}} Lemmas~\ref{lemma:algo:embed}
+to~\ref{lemma:tiso2} prove Theorem~\ref{theo:main}. Indeed, for $m \le
+n$, and using the $O\tilde{~}$ notation to neglect polylogarithmic
+factors, our two solutions for $\Phi$ (or its inverse) have respective
+costs $O\tilde{~}(m^2 n)$ and $O\tilde{~}(m
+n^{(\omega+1)/2})$. Writing $\delta=mn$, the minimum of the two is
+seen to be $O\tilde{~}(\delta^{2\omega/(\omega+1)})$; for $\omega \in
+(2,3]$, the resulting exponent lies in $(1.333\dots, 1.5]$.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Computing in the algebraic closure of $\F_p$}
+\section{The algebraic closure of $\F_p$}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In this section, we explain how the algorithms of
+Section~\ref{sec:emb-iso} can be used in order to construct and work
+in arbitrary extensions of $\F_p$, when used in conjunction with 
+algorithms for defining {\em towers} over $\F_p$.
 
-\subsection{Prerequisites}
 
-\paragraph{Towers}
-Suppose that for any prime $\ell$, an $\ell$-adic tower over $\F_p$ is
-known. By this, we mean a family of polynomials $(T_{\ell,i})_{i \ge
-  1}$, with $T_{\ell,i} \in \F_p[X_1,\dots,X_i]$, monic of degree
-$\ell$ in $X_i$, such that the ideal $\langle
-T_{\ell,1},\dots,T_{\ell,i} \rangle$ is prime in
-$\F_p[X_1,\dots,X_i]$. From these polynomials, we can in particular
-deduce further families of polynomial $Q_{\ell,i}$ monic, irreducible
-of degree $\ell^i$ in $\F_p[X_j]$ and for $j > i$, $Q_{\ell,i,j}
-\in\F_p[X_i,X_j]$, monic of degree $\ell^{j-i}$ in $X_j$, irreducible
-in $\F_p[X_i]/\langle Q_{\ell,i}\rangle[X_j]$. We assume that all
-these polynomials are known free of cost.
+%% \paragraph{Composed products} In addition, we assume that given a finite field
+%% $\K$, and irreducible polynomials $P$ and $Q$ in $\K[x]$, we can
+%% compute the composed product $R = P \otimes Q$, and perform the
+%% related embedding and change of basis operations, as in the previous
+%% section.
 
-For $i,j$ as above, $\F_p[X_i]/\langle Q_{\ell,i} \rangle$ is a field
-with $p^{\ell^i}$ elements, which will be our model for
-$\F_{p^{\ell^i}}$. Similarly, $\F_p[X_j]/\langle Q_{\ell,j}\rangle$ is
-our model for the field with $p^{\ell^j}$ elements; another model is
-$\F_p[X_i,X_j]/\langle Q_{\ell,i}, Q_{\ell,i,j}\rangle$.
-
-\paragraph{Composed products.} In addition, we assume that given a finite field
-$\K$, and irreducible polynomials $P$ and $Q$ in $\K[X]$, we can
-compute the composed product $R = P \otimes Q$, and perform the
-related embedding and change of basis operations, as in the previous
-section.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsection{The general construction}
-
-\paragraph{Setup.} For $\ell$ prime and $i \ge 1$, define
-$\K_{\ell^i}=\F_p[X_1,\dots,X_i]/\langle
+\paragraph*{{\bf \rm Setup}} For $\ell$ prime and $i \ge 1$, define
+$\K_{\ell^i}=\F_p[x_1,\dots,x_i]/\langle
 T_{\ell,1},\dots,T_{\ell,i}\rangle$. This is a field with $\ell^i$
-elements.  The residue class of $X_i$ in $\K_{\ell^i}$ will be written
+elements.  The residue class of $x_i$ in $\K_{\ell^i}$ will be written
 $x_{\ell^i}$.
 
 Fix a positive integer $m=\ell_1^{e_1}\cdots \ell_r^{e_r}$, with
@@ -1035,9 +1124,7 @@ For any integer $n$ of the form $n=\ell_1^{c_1}\cdots \ell_s^{c_s}$
 with $\ell_i$ pairwise distinct primes, we write $x_n =
 x_{\ell_1^{c_1}} \cdots x_{\ell_s^{c_s}} \in \K$.
 
-
-
-\paragraph{Minimal polynomials.}
+\paragraph*{{\bf \rm Minimal polynomials}}
 First, we discuss minimal polynomials of (residue classes of)
 monomials, either over $\F_p$ or over an intermediate field.
 
@@ -1069,8 +1156,9 @@ x_{\ell_r^{g_r}}$ over $\F_p(x_m)$ is $Q_{m,n}=Q_{\ell_1,c_1,g_i}
 \otimes \cdots \otimes Q_{\ell_r,c_r,g_r}.$ It has degree
 $n/m=\ell_1^{g_1-c_1}\cdots \ell_r^{g_r-c_r}$.
 
-\paragraph{Embedding and change of basis.} Consider a sequence $d=(d_1,\dots,d_s)$ 
-of positive integers, and let $m=d_1 \cdots d_s$. The set
+\paragraph*{\bf \rm {Embedding and change of basis}}
+Consider a sequence $d=(d_1,\dots,d_s)$ of positive integers, and let
+$m=d_1 \cdots d_s$. The set
 $$B_d = \{ x_{d_1}^{e_1} x_{d_1 d_2}^{e_2} \cdots x_{d_1 \cdots
   d_s}^{e_1} \mid 0 \le e_i < d_i \}$$ is a basis of $\F(x_m)$. Our
 main examples are sequences of the form $d=(d_1)$, with thus $m=d_1$,
@@ -1085,7 +1173,7 @@ isomorphism, with inverse $\Phi_{d,e}$.
 As soon as this expression makes sense, we have $\Phi_{f,d} =
 \Phi_{f,e}\circ \Phi_{e,d}$.
 
-\paragraph{Basic algorithms.}
+\paragraph*{\bf \rm {Basic algorithms}}
 Let us now examine how to apply mappings such as $\Phi_{e,d}$.
 Suppose that $d=(d_1,\dots,d_s)$. Then, the following operations are
 available to us:
@@ -1113,7 +1201,7 @@ available to us:
   $\ell$-adic embedding algorithm, or its inverse. 
 \end{itemize}
 
-\paragraph{Concrete procedures.} Suppose that $m$ divides $n$. We 
+\paragraph*{{\bf \rm Concrete procedures}} Suppose that $m$ divides $n$. We 
 describe here how to embed $\F_p(x_m)$ in $\F_p(x_n)$, that is, how to
 compute $\Phi_{(n),(m)}$. Write $m= \ell_1^{f_1}\cdots \ell_r^{f_r}$
 and $n = n' \ell_1^{e_1}\cdots \ell_r^{e_r}$, where all $\ell_i$ are
@@ -1151,6 +1239,7 @@ polynomials (and thus traces and norms), and probably most other
 required operations.
 
 
+\scriptsize
 \bibliographystyle{plain} \bibliography{defeo}
 
 \end{document}
