@@ -164,14 +164,6 @@ void nmod_poly_convert_from_trace(nmod_poly_t C, mp_srcptr t, const nmod_poly_t 
 void nmod_poly_convert_from_trace_bi(mp_ptr C, mp_srcptr t, 
 				     const nmod_poly_t M, const nmod_poly_t iM, const nmod_poly_t N, const nmod_poly_t iN);
 
-/*------------------------------------------------------------------------*/
-/* sets iA to 1/A mod M                                                   */
-/* there is no check that the inverse exists!                             */
-/*------------------------------------------------------------------------*/
-void nmod_poly_invmod(nmod_poly_t iA, const nmod_poly_t A, const nmod_poly_t M);
-
-
-
 
 /*------------------------------------------------------------------------*/
 /*------------------------------------------------------------------------*/
