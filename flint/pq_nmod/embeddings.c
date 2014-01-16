@@ -59,9 +59,9 @@ void pq_nmod_embed(pq_nmod_elt_t res,
   y. x is in monomial form, y is in dual form. Result is in monomial
   form.
  */
-void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t x,
-		      mp_srcptr y, const nmod_poly_t Q,  
-		      const nmod_poly_t P) {
+void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t P,
+		      const nmod_poly_t x,
+		      mp_srcptr y, const nmod_poly_t Q) {
   slong
     m = nmod_poly_degree(P),
     n = nmod_poly_degree(Q),
@@ -78,27 +78,26 @@ void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t x,
   nmod_poly_rem(res, res, P);
 }
 
-void pq_nmod_project(pq_nmod_elt_t res,
+void pq_nmod_project(pq_nmod_elt_t res, const pq_nmod_t A,
 		     const pq_nmod_elt_t x, const pq_nmod_t AB,
-		     const pq_nmod_elt_t y, const pq_nmod_t B,
-		     const pq_nmod_t A) {
+		     const pq_nmod_elt_t y, const pq_nmod_t B) {
   _pq_nmod_insure_mono(x, AB);
   _pq_nmod_insure_dual(y, B);
   if (!nmod_poly_is_zero(y->dual) &&
       !nmod_poly_is_zero(x->mono))
-    _pq_nmod_project(res->mono, x->mono, y->dual->coeffs, B->M, A->M);
+    _pq_nmod_project(res->mono, A->M, x->mono, y->dual->coeffs, B->M);
   else
     nmod_poly_zero(res->mono);
   nmod_poly_zero(res->dual);
 }
 
 /* Relative trace of AB/A */
-void pq_nmod_trace(pq_nmod_elt_t res,
+void pq_nmod_trace(pq_nmod_elt_t res, const pq_nmod_t A,
 		   const pq_nmod_elt_t x, const pq_nmod_t AB,
-		   const pq_nmod_t B, const pq_nmod_t A) {
+		   const pq_nmod_t B) {
   _pq_nmod_insure_mono(x, AB);
   if (!nmod_poly_is_zero(x->mono))
-    _pq_nmod_project(res->mono, x->mono, B->newton->coeffs, B->M, A->M);
+    _pq_nmod_project(res->mono, A->M, x->mono, B->newton->coeffs, B->M);
   else
     nmod_poly_zero(res->mono);
   nmod_poly_zero(res->dual);

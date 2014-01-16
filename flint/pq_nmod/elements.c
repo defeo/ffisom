@@ -17,9 +17,24 @@ void pq_nmod_elt_set_mono(pq_nmod_elt_t x, const nmod_poly_t val) {
   nmod_poly_zero(x->dual);
 }
 
-void pq_nmod_elt_set_dual(pq_nmod_elt_t x, const nmod_poly_t val) {
+void _pq_nmod_elt_set_dual(pq_nmod_elt_t x, const nmod_poly_t val) {
   nmod_poly_zero(x->mono);
   nmod_poly_set(x->dual, val);
+}
+
+void pq_nmod_elt_zero(pq_nmod_elt_t x) {
+  nmod_poly_zero(x->mono);
+  nmod_poly_zero(x->dual);
+}
+
+int pq_nmod_elt_equal(const pq_nmod_elt_t x, const pq_nmod_elt_t y, const pq_nmod_t A) {
+  if ((nmod_poly_is_zero(x->mono) ^ nmod_poly_is_zero(y->mono)) &&
+      (nmod_poly_is_zero(x->dual) ^ nmod_poly_is_zero(y->dual))) {
+    _pq_nmod_insure_mono(x, A);
+    _pq_nmod_insure_mono(y, A);
+  }
+  return (nmod_poly_is_zero(x->mono) && nmod_poly_is_zero(y->mono)) ||
+    nmod_poly_equal(x->mono, y->mono) || nmod_poly_equal(x->dual, y->dual);
 }
 
 void _pq_nmod_insure_mono(const pq_nmod_elt_t x, const pq_nmod_t A) {

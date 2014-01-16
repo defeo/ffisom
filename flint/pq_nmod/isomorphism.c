@@ -38,9 +38,9 @@ void pq_nmod_iso_from_mono(pq_nmod_elt_t res,
 /*
   x must not alias any res[i]
 */
-void pq_nmod_iso_to_dual(pq_nmod_elt_t* res,
+void pq_nmod_iso_to_dual(pq_nmod_elt_t* res, const pq_nmod_t A,
 			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A) {
+			 const pq_nmod_t B) {
   slong
     n = nmod_poly_degree(B->M),
     M = nmod_poly_degree(AB->M);
@@ -60,9 +60,9 @@ void pq_nmod_iso_to_dual(pq_nmod_elt_t* res,
 /*
   x must not alias any res[i]
 */
-void pq_nmod_iso_to_mono(pq_nmod_elt_t* res,
+void pq_nmod_iso_to_mono(pq_nmod_elt_t* res, const pq_nmod_t A,
 			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A) {
+			 const pq_nmod_t B) {
   slong
     n = nmod_poly_degree(B->M),
     M = nmod_poly_degree(AB->M);
@@ -80,17 +80,3 @@ void pq_nmod_iso_to_mono(pq_nmod_elt_t* res,
   }
   _nmod_vec_clear(y);
 }
-
-void pq_nmod_iso_from_BSGS(pq_nmod_elt_t res,
-			   const pq_nmod_elt_t* x, const pq_nmod_t A, 
-			   const pq_nmod_t B) {
-  //TODO
-}
-
-void pq_nmod_iso_to_BSGS(pq_nmod_elt_t* res,
-			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A) {
-  //TODO
-}
-
-

@@ -43,7 +43,9 @@ void pq_nmod_clear(pq_nmod_t A);
 void pq_nmod_elt_init(pq_nmod_elt_t x, mp_limb_t n);
 void pq_nmod_elt_set(pq_nmod_elt_t x, const pq_nmod_elt_t y);
 void pq_nmod_elt_set_mono(pq_nmod_elt_t x, const nmod_poly_t val);
-void pq_nmod_elt_set_dual(pq_nmod_elt_t x, const nmod_poly_t val);
+void _pq_nmod_elt_set_dual(pq_nmod_elt_t x, const nmod_poly_t val);
+void pq_nmod_elt_zero(pq_nmod_elt_t x);
+int pq_nmod_elt_equal(const pq_nmod_elt_t x, const pq_nmod_elt_t y, const pq_nmod_t A);
 void _pq_nmod_insure_mono(const pq_nmod_elt_t x, const pq_nmod_t A);
 void _pq_nmod_insure_dual(const pq_nmod_elt_t x, const pq_nmod_t A);
 void pq_nmod_add(pq_nmod_elt_t res, const pq_nmod_elt_t x, const pq_nmod_elt_t y);
@@ -85,16 +87,16 @@ void pq_nmod_embed(pq_nmod_elt_t res,
   y. x is in monomial form, y is in dual form. Result is in monomial
   form.
  */
-void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t x,
-		      mp_srcptr y, const nmod_poly_t Q,  
-		      const nmod_poly_t P);
-void pq_nmod_project(pq_nmod_elt_t res,
-		     const pq_nmod_elt_t x, const pq_nmod_t R,
-		     const pq_nmod_elt_t y, const pq_nmod_t Q,
-		     const pq_nmod_t P);
-void pq_nmod_trace(pq_nmod_elt_t res,
+void _pq_nmod_project(nmod_poly_t res, const nmod_poly_t P,
+		      const nmod_poly_t x,
+		      mp_srcptr y, const nmod_poly_t Q);
+void pq_nmod_project(pq_nmod_elt_t res, const pq_nmod_t A,
+		     const pq_nmod_elt_t x, const pq_nmod_t AB,
+		     const pq_nmod_elt_t y, const pq_nmod_t B);
+/* Relative trace of AB/A */
+void pq_nmod_trace(pq_nmod_elt_t res, const pq_nmod_t A,
 		   const pq_nmod_elt_t x, const pq_nmod_t AB,
-		   const pq_nmod_t B, const pq_nmod_t A);
+		   const pq_nmod_t B);
 
 /************** ISOMORPHISM *****************/
 
@@ -107,19 +109,12 @@ void pq_nmod_iso_from_mono(pq_nmod_elt_t res,
 /*
   x must not alias any res[i]
 */
-void pq_nmod_iso_to_dual(pq_nmod_elt_t* res,
+void pq_nmod_iso_to_dual(pq_nmod_elt_t* res, const pq_nmod_t A,
 			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A);
-void pq_nmod_iso_to_mono(pq_nmod_elt_t* res,
+			 const pq_nmod_t B);
+void pq_nmod_iso_to_mono(pq_nmod_elt_t* res, const pq_nmod_t A,
 			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A);
-void pq_nmod_iso_from_BSGS(pq_nmod_elt_t res,
-			   const pq_nmod_elt_t* x, const pq_nmod_t A, 
-			   const pq_nmod_t B);
-void pq_nmod_iso_to_BSGS(pq_nmod_elt_t* res,
-			 const pq_nmod_elt_t x, const pq_nmod_t AB,
-			 const pq_nmod_t B, const pq_nmod_t A);
-
+			 const pq_nmod_t B);
 
 
 
