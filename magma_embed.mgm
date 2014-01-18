@@ -1,0 +1,306 @@
+/*----------------------------------------------------------*/
+/* Chebyshev towers                                         */
+/*----------------------------------------------------------*/
+function digits(n)
+    if n eq 0 then return []; end if;
+    return [n mod 2] cat $$(n div 2);
+end function;
+
+function torsion_poly(p, ell)
+    K:=GF(p);
+    U<x>:=PolynomialRing(K);
+    
+    t := [U!1, 0];
+    for k in [1..ell div 2] do
+	m := K!(ell - 2*k + 2) * (ell - 2*k + 1) / ((ell - k) * (k));
+        Append(~t, -t[#t-1] * m);
+        Append(~t, 0);
+    end for;
+
+    return U!Reverse(t);
+end function;
+
+function pellmul(x, n)
+    A:=2;
+    B:=x;
+    for c in Reverse(digits(n)) do
+	if c eq 0 then
+	    A2:=A^2 - 2;
+	    B:=A*B-x;
+	    A:=A2;
+	else
+	    A2:=A*B - x;
+	    B:=B^2-2;
+	    A:=A2;
+	end if;
+    end for;
+    return A;
+end function;
+
+function chebyshev(p, ell, level)
+    if (p+1) mod ell ne 0 or IsEven(ell) then
+	error "wrong parameters for Chebyshev polynomials";
+    end if;
+
+    K:=GF(p);
+    eta := K!1;
+    o := (p + 1) div ell;
+    while IsSquare(eta^2 - 4) or pellmul(eta, o) eq 2 do
+	eta := eta+1;
+    end while;
+
+    return torsion_poly(p, ell^level)-eta;
+end function;
+
+
+/*----------------------------------------------------------*/
+/* Kummer towers                                            */
+/*----------------------------------------------------------*/
+function kummer(p, ell, level)
+    if (p-1) mod ell ne 0 or IsEven(ell) then
+	error "wrong parameters for Chebyshev polynomials";
+    end if;
+    
+    K:=GF(p);
+    eta := K!1;
+    while IsPower(eta, ell) do
+	eta:=eta+1;
+    end while;
+    
+    return PolynomialRing(GF(p)).1^(ell^level)-eta;
+end function;
+
+
+/*----------------------------------------------------------*/
+/* Composed product                                         */
+/*----------------------------------------------------------*/
+function composed_product(f1, f2)
+    U<x>:=Parent(f1);
+    M<x,y,z>:=PolynomialRing(BaseRing(U), 3);
+    GB:=GroebnerBasis([Evaluate(f1, x), Evaluate(f2, y), z-x*y]);
+    tmp:=UnivariatePolynomial(GB[3]);
+    return tmp;
+end function;
+
+function composed_product_sequence(L)
+    if #L eq 1 then return L[1]; end if;
+    return composed_product(L[1], $$(L[2..#L]));
+end function;
+
+
+/*----------------------------------------------------------*/
+/* builds irreducible polynomial over GF(p) of degree ell   */
+/* if a tower is available, uses it                         */
+/*----------------------------------------------------------*/
+function irreducible_polynomial(p, ell)
+    fact:=Factorization(ell);
+    L:=[];
+    
+    for ell_i in fact do
+	if ell eq 2 then
+	    Append(~L, RandomIrreduciblePolynomial(GF(p), ell_i[1]^ell_i[2]));
+	elif (p-1) mod ell eq 0 then
+	    Append(~L, kummer(p, ell_i[1], ell_i[2]));
+	elif (p+1) mod ell eq 0 then
+	    Append(~L, chebyshev(p, ell_i[1], ell_i[2]));
+	else
+	    Append(~L, RandomIrreduciblePolynomial(GF(p), ell_i[1]^ell_i[2]));
+	end if;
+    end for;
+    
+    return composed_product_sequence(L);
+end function;
+
+
+/*-----------------------------------------------------------*/
+/* tests:                                                    */
+/* uses the construction above to contruct irreducible polys */
+/* embeds GF(p^i1) into GF(p^(i1 i2)                         */
+/* does $trials embeddings and averages the time             */
+/*-----------------------------------------------------------*/
+procedure test_embed_irred(p, i1, i2, trials)
+
+    k:=GF(p);
+    U<x>:=PolynomialRing(k);
+
+    tpoly:=Cputime();
+    P1:=irreducible_polynomial(p, i1);
+    P2:=irreducible_polynomial(p, i2);
+    P3:=composed_product(P1, P2);
+    tpoly:=Cputime(tpoly);
+
+    "#poly";
+    
+    text:=Cputime();
+    K1:=ext<k|P1>;
+    K3:=ext<k|P3>;
+    text:=Cputime(text);
+    
+    "#ext";
+    
+    tembed:=Cputime();
+    Embed(K1, K3);
+    tembed:=Cputime(tembed);
+
+    "#embed";
+    
+    tconvert:=0;
+    for n in [1..trials] do
+	a:=Random(K1);
+	t:=Cputime();
+	b:=K3!a;
+	tconvert+:=Cputime()-t;
+    end for;
+
+    "#convert";
+
+    p, i1, i2, i1*i2, tpoly, text, tembed, tconvert/trials;
+end procedure;
+
+
+/*-----------------------------------------------------------*/
+/* tests:                                                    */
+/* uses ext to build GF(p^i1) and GF(p^(i1 i2))              */
+/* embeds GF(p^i1) into GF(p^(i1 i2)                         */
+/* does $trials embeddings and averages the time             */
+/*-----------------------------------------------------------*/
+procedure test_embed_ext(p, i1, i2, trials)
+
+    k:=GF(p);
+    U<x>:=PolynomialRing(k);
+
+    text:=Cputime();
+    K1:=ext<k|i1>;
+    K3:=ext<k|i1*i2>;
+    text:=Cputime(text);
+    
+    "#ext";
+    
+    tembed:=Cputime();
+    Embed(K1, K3);
+    tembed:=Cputime(tembed);
+
+    "#embed";
+    
+    tconvert:=0;
+    for n in [1..trials] do
+	a:=Random(K1);
+	t:=Cputime();
+	b:=K3!a;
+	tconvert+:=Cputime()-t;
+    end for;
+
+    "#convert";
+
+    p, i1, i2, i1*i2, text, tembed, tconvert/trials;
+end procedure;
+
+
+
+/*-----------------------------------------------------------*/
+/* tests:                                                    */
+/* uses compositum to build GF(p^i1) and GF(p^(i1 i2))       */
+/* embeds GF(p^i1) into GF(p^(i1 i2)                         */
+/* does $trials embeddings and averages the time             */
+/*-----------------------------------------------------------*/
+procedure test_embed_compositum(p, i1, i2, trials)
+
+    k:=GF(p);
+    U<x>:=PolynomialRing(k);
+
+    text:=Cputime();
+    K2:=ext<k|i2>;
+    K1:=ext<k|i1>;
+    text:=Cputime(text);
+    
+    "#ext";
+
+    tcomp:=Cputime();
+    K3:=Parent(K2!0 + K1!0);
+    tcomp:=Cputime(tcomp);
+
+    "#compositum";
+    
+    tembed:=Cputime();
+    Embed(K1, K3);
+    tembed:=Cputime(tembed);
+
+    "#embed";
+    
+    tconvert:=0;
+    for n in [1..trials] do
+	a:=Random(K1);
+	t:=Cputime();
+	b:=K3!a;
+	tconvert+:=Cputime()-t;
+    end for;
+
+    "#convert";
+
+    p, i1, i2, i1*i2, text, tcomp, tembed, tconvert/trials;
+end procedure;
+
+
+/*-----------------------------------------------------------*/
+/* tests:                                                    */
+/* uses ext of ext to build GF(p^i1) and GF(p^(i1 i2))       */
+/* embeds GF(p^i1) into GF(p^(i1 i2)                         */
+/* does $trials embeddings and averages the time             */
+/*-----------------------------------------------------------*/
+procedure test_embed_relative(p, i1, i2, trials)
+
+    k:=GF(p);
+    U<x>:=PolynomialRing(k);
+
+    text:=Cputime();
+    K1:=ext<k|i1>;
+    K3:=ext<K1|i2>;
+    text:=Cputime(text);
+    
+    "#ext";
+
+    tembed:=Cputime();
+    Embed(K1, K3);
+    tembed:=Cputime(tembed);
+
+    "#embed";
+    
+    tconvert:=0;
+    for n in [1..trials] do
+	a:=Random(K1);
+	t:=Cputime();
+	b:=K3!a;
+	tconvert+:=Cputime()-t;
+    end for;
+
+    "#convert";
+
+    p, i1, i2, i1*i2, text, tembed, tconvert/trials;
+end procedure;
+
+/*-----------------------------------------------------------*/
+/* all tests                                                 */
+/*-----------------------------------------------------------*/
+procedure test_all(p, i1, i2, trials)
+    test_embed_irred(p, i1, i2, trials);
+    test_embed_ext(p, i1, i2, trials);
+    test_embed_compositum(p, i1, i2, trials);
+    test_embed_relative(p, i1, i2, trials);
+end procedure;
+
+    
+if false then 
+    test_all(5, 3^4, 49, 1000);
+    test_all(9001, 3^4, 49, 1000);
+    test_all(9001, 25, 49, 1000);
+    test_all(9001, 1225, 2, 1000);
+    test_all(9001, 2, 1225, 1000);
+end if;
+
+if false then
+    p:=5;
+    i1:=81;
+    i2:=49;
+    trials:=1000;
+    test_embed_relative(p, i1, i2, trials);
+end if;
