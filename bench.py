@@ -156,10 +156,13 @@ def bench(p, start=2, stop=200):
     l = []
     i = start
     while i < stop:
+	print i,
         try:
             l.append((i, test_irred(p, i, i+1)))
         except:
-            print "%d failed" % i
+            print "failed"
+	else:
+	    print sum(l[-1][1])
         i += ceil(i/10)
     return l
 
