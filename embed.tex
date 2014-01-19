@@ -1224,6 +1224,91 @@ converting to the target basis $(x_m^i x_{mn}^j)_{0 \le i < m, 0 \le j
 $x_{\ell_\kappa^{e_\kappa+g_\kappa}}$ over $\F_p(x_m)$;
 they were given in the previous paragraph.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Implementation}\label{sec:implem}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.5\textwidth]{creat}
+  \caption{Timings in seconds for $p=5$, $n=m+1$, $m$ increasing}
+  \label{fig:bench}
+\end{figure}
+
+To demonstrate the practicality of our algorithms, we made a C
+implementation and compared it to various ways of constructing the
+same fields in Magma.
+
+Our implementation is restricted to finite fields of word-sized
+characteristic.  It is based on the C library Flint, and we make it
+available as a Sage module in an experimental fork at
+\url{https://github.com/defeo/sage/tree/ff_compositum}. We plan to
+make it available as a standard Sage module, as well as a separate C
+library, when the code will have stabilized.
+
+Based on the observation that algorithms {\sf Embed} and {\sf Project}
+are simpler than those to change between monomial and dual bases, we
+chose to implement a \emph{lazy change of basis} strategy. By this we
+mean that our Sage module (rather than the C library itself)
+represents elements on both the monomial and the dual basis, with one
+representation computed from the other only when it is needed the
+algorithms. For example, two elements of the same field can be summed
+if both have a monomial or else if both have a dual
+representation. Similarly, two elements can be multiplied using
+standard multiplication if both have a monomial representation, or
+using transposed multiplication if one of the two has a monomial
+representation. In all other cases, the required representation is
+computed and stored at the moment the user asks to compute an
+operation. To implement this strategy efficiently, our Sage module is
+written in the compiled language Cython.
+
+We focus our benchmarks on the setting of Section \ref{sec:emb-iso}:
+$P$ and $Q$ are two irreducible polynomials of coprime degrees $m$ and
+$n$, and $R=P\odot Q$. We fix the base field $\F_p$ and make $m$ and
+$n$ grow together with $n=m+1$. We measure the time to compute $R$, to
+apply the algorithms {\sf Embed}, {\sf Phi1}, etc., and to compute the
+changes of bases. We noticed no major difference between different
+characteristics, so we chose $p=5$ for our demonstration. As shown in
+Figure~\ref{fig:bench}, the dominating phase is the computation of $R$
+(line labeled {\sf R}). Surprisingly, transposed modular
+multiplication is slightly faster than ordinary modular
+multiplication, this might be due to a poor tuning of Flint. The cost
+of {\sf Embed} is about the same as that of multiplication, while {\sf
+  DualToMonomial} is about 50\% slower. {\sf Project} and {\sf
+  MonomialToDual} have, respectively, similar performances (only
+slightly faster) hence they are not reported on the graph. This
+justifies our design choice for \emph{lazy change of basis}.
+Unsurprisingly, the isomorphism algorithms take significantly more
+time than the computation of $R$; {\sf Phi2} is asymptotically faster
+than {\sf Phi1} and the switch between the two happens around
+$m=70$. In view of this, it might be interesting to use these
+algorithms to compute the matrices of $\Phi$ and $\Phi^{-1}$, when
+memory is not a concern.
+
+We compare our implementation to four different strategies available
+in Magma. For each of them we measure the time to construct the finite
+fields together with the embeddings, and the time to do the operation
+equivalent to {\sf Embed}.
+\begin{itemize}
+\item In \verb+irred+ we supply directly $P$, $Q$ and $R$ to Magma's
+  finite field constructor, then we call the \verb+Embed+ routine to
+  compute the embeddings.
+\item In \verb+P_R+ we use Magma's default constructor to compute $P$
+  and $R$ (Magma chooses its own polynomials), then we call the
+  \verb+Embed+ routine to compute the embedding.
+\item In \verb+P_Q+ we use Magma's default constructor to compute $P$
+  and $Q$ (Magma chooses its own polynomials), then use the
+  \verb+CommonOverfield+ routine to compute $R$, then \verb+Embed+ to
+  compute the embeddings.
+\item In \verb+ext+ we use Magma's default constructor to compute $P$,
+  then the \verb+ext+ operator to compute an extension of degree $n$
+  of $\F_p[x]/\ang{P}$ (Magma chooses its own polynomials).
+\end{itemize}
+
+
 \scriptsize
 \bibliographystyle{plain} \bibliography{defeo}
 
