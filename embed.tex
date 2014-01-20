@@ -34,12 +34,12 @@
 \def\vb {\ensuremath{\mathsf{b}}}
 \def\vc {\ensuremath{\mathsf{c}}}
 
-\def\mul {\ensuremath{\mathrm{mul}}}
-\def\rem {\ensuremath{\mathrm{rem}}}
-\def\cat {\ensuremath{\mathrm{cat}}}
-\def\coeff {\ensuremath{\mathrm{coefficient}}}
-\def\mulmod {\ensuremath{\mathrm{mulmod}}}
-\def\rev {\ensuremath{\mathrm{rev}}}
+\def\mul {\ensuremath{\mathsf{mul}}}
+\def\rem {\ensuremath{\mathsf{rem}}}
+\def\cat {\ensuremath{\mathsf{cat}}}
+\def\coeff {\ensuremath{\mathsf{coefficient}}}
+\def\mulmod {\ensuremath{\mathsf{mulmod}}}
+\def\rev {\ensuremath{\mathsf{rev}}}
 \def\x {\ensuremath{\mathbf{x}}}
 \def\Tr {\ensuremath{\mathrm{Tr}}}
 \DeclareBoldMathCommand{\bxi}{\xi}
@@ -185,10 +185,10 @@ Euclidean division and extended GCD, operations $(+,\times,\div)$ in
 $\F_p[x]/\ang{Q_n}$ all take quasi-linear time in~$n$.
 
 However, this is not sufficient, as we also want mechanisms to perform
-(for instance) field embeddings. Given irreducible polynomials $Q_n$
-and $Q_m$ over $\F_p$, with $\deg(Q_n)=n$ dividing $\deg(Q_m)=m$,
+(for instance) field embeddings. Given irreducible polynomials $Q_m$
+and $Q_n$ over $\F_p$, with $\deg(Q_m)=m$ dividing $\deg(Q_n)=n$,
 there certainly exist algorithms that determine an embedding
-$\F_p[x]/\ang{Q_n} \to \F_p[x]/\ang{Q_m}$. However, as said above,
+$\F_p[x]/\ang{Q_m} \to \F_p[x]/\ang{Q_n}$. However, as said above,
 most algorithms use linear algebra techniques. In order for the system
 to be consistent, note that these embeddings must be {\em
   compatible}~\cite{bosma+cannon+steel97}.
@@ -241,35 +241,36 @@ different values of $\ell$. This is the purpose of this paper.
 in the constructions of the towers are inspired by those used
 in~\cite{Shoup90,shoup94,couveignes+lercier11} to construct
 irreducible polynomials. Also used in these references is the
-following idea: if $Q_n(x)$ and $Q_m(y)$ are irreducible polynomials
-over $\F_p$, with coprime degrees $n$ and $m$, their {\em composed
-  product} $Q_{nm} = \prod_{1 \le i \le n, 1 \le j \le m} (z- a_i
-b_j)$ is irreducible of degree $mn$ in $\F_p[z]$ ($(a_i)_{1 \le
-  i \le n}$ and $(b_j)_{1 \le j \le m}$ are the roots of $Q_n$ and
-$Q_m$ in an algebraic closure of $\F_p$).
+following idea: let $Q_m(x)$ and $Q_n(y)$ be irreducible polynomials
+over $\F_p$, with coprime degrees $m$ and $n$, and having respectively
+$(a_i)_{1 \le i \le m}$ and $(b_j)_{1 \le j \le n}$ as roots in an
+algebraic closure of $\F_p$. Then their {\em composed product}
+$Q_{mn} = \prod_{1 \le i \le m, 1 \le j \le n} (z- a_i b_j)$ is
+irreducible of degree $mn$ in $\F_p[z]$
 
-If the goal is building irreducible polynomials, computing $Q_{nm}$ is
-enough; an algorithm given in~\cite{BoFlSaSc06} has quasi-linear cost
-in $mn$ (in this paper, we use an {\em algebraic complexity model},
-where the cost of an algorithm is counted in terms of the number of
-operations $(+,\times,\div)$ in $\F_p$). Our goal here is to give
-algorithms for further operations: computing embeddings of the form
-$\varphi_x: \F_p[x]/\ang{Q_n}\to \F_p[z]/\ang{Q_{nm}}$ or $\varphi_y:
-\F_p[y]/\ang{Q_m}\to \F_p[z]/\ang{Q_{nm}}$, and the isomorphism $\Phi:
-\F_p[x,y]/\ang{Q_n,Q_m}\to \F_p[z]/\ang{Q_{nm}}$ or its inverse.
+In this paper, we use an {\em algebraic complexity model}, where the
+cost of an algorithm is counted in terms of the number of operations
+$(+,\times,\div)$ in $\F_p$.  If the goal is building irreducible
+polynomials, then computing $Q_{mn}$ is enough: an algorithm given
+in~\cite{BoFlSaSc06} has quasi-linear cost in $mn$. Our goal here is
+to give algorithms for further operations: computing embeddings of the
+form $\varphi_x: \F_p[x]/\ang{Q_m}\to \F_p[z]/\ang{Q_{mn}}$ or
+$\varphi_y: \F_p[y]/\ang{Q_n}\to \F_p[z]/\ang{Q_{mn}}$, and the
+isomorphism $\Phi: \F_p[x,y]/\ang{Q_m,Q_n}\to \F_p[z]/\ang{Q_{mn}}$ or
+its inverse.
 
 Standard solutions to these questions exist, using {\em modular
   composition} techniques: once the image $S=\Phi(x)$ is known,
-computing $\varphi_x(a)$ amounts to computing $a(S) \bmod Q_{nm}$;
-similarly, computing $\Phi(b)$, for $b$ in $k[x,y]/\ang{Q_n,Q_m}$,
-amounts to computing $b(S,T) \bmod Q_{nm}$, with $T=\Phi(y)$.  This
+computing $\varphi_x(a)$ amounts to computing $a(S) \bmod Q_{mn}$;
+similarly, computing $\Phi(b)$, for $b$ in $\F_p[x,y]/\ang{Q_m,Q_n}$,
+amounts to computing $b(S,T) \bmod Q_{mn}$, with $T=\Phi(y)$.  This
 can be done using the Brent and Kung algorithm~\cite{brent+kung}: the
-resulting cost is $O(n m^{(\omega+1)/2}) \subset O(n m^{1.69})$ for
-$\varphi_x$ (see the analysis in~\cite{shoup94}) and $O((n
-m)^{(\omega+1)/2}) \subset O(n^{1.69} m^{1.69})$ for $\Phi$ or its
+resulting cost is $O(m n^{(\omega+1)/2}) \subset O(m n^{1.69})$ for
+$\varphi_x$ (see the analysis in~\cite{shoup94}) and $O((m
+n)^{(\omega+1)/2}) \subset O(m^{1.69} n^{1.69})$ for $\Phi$ or its
 inverse~\cite{PoSc13b}. Here, we denote by $\omega$ a constant in
-$(2,3]$ such that one can multiply matrices of size $n$ over any ring
-  $A$ using $O(n^\omega)$ operations $(+,\times)$ in~$A$; using the
+$(2,3]$ such that one can multiply matrices of size $m$ over any ring
+  $A$ using $O(m^\omega)$ operations $(+,\times)$ in~$A$; using the
   algorithms of~\cite{coppersmith+winograd,Williams12}, we can take
   $\omega \le 2.38$.
 
@@ -280,11 +281,11 @@ $(+,\times)$ in $A$, and we make the usual super-linearity assumptions
 on $\M$~\cite[Chapter~8]{vzGG}.
 \begin{Theo}\label{theo:main}
   One can apply $\varphi_x$ (resp.\ $\varphi_y$) to an element of
-  $k[x]/\ang{Q_n}$ (resp.\ $k[x]/\ang{Q_n}$), or invert it on its
+  $\F_p[x]/\ang{Q_m}$ (resp.\ $\F_p[x]/\ang{Q_n}$), or invert it on its
   image, using $O(n\M(m)+m\M(n))$ operations in $\F_p$.
 
   Suppose without loss of generality that $m \le n$. Then one can
-  apply $\Phi$ to an element of $k[x,y]/\ang{Q_n, Q_m}$, or invert it, using either
+  apply $\Phi$ to an element of $\F_p[x,y]/\ang{Q_m, Q_n}$, or invert it, using either
   $O(m^2 \M(n))$ or $O(\M(mn)n^{1/2}+\M(m) n^{(\omega+1)/2} )$
   operations in $\F_p$.
 \end{Theo}
@@ -294,19 +295,20 @@ can take $\M(n) \in O\tilde{~}(n)$.  Then, our algorithm for
 embeddings and their inverses has quasi-linear complexity
 $O\tilde{~}(mn)$. Our two solutions for $\Phi$ or its inverse have
 respective costs $O\tilde{~}(m^2 n)$ and $O\tilde{~}(m
-n^{(\omega+1)/2})$. The minimum of the two is seen to be $O\tilde{~}(
-(mn)^{2\omega/(\omega+1)})$; for $\omega \in (2,3]$, the resulting
-  exponent lies in $(1.333\dots, 1.5]$.  Thus, although our algorithm
-    for embedding is essentially optimal, our algorithm for
-    isomorphism is not (but it improves on previous results).
+n^{(\omega+1)/2})$. The minimum of the two is seen to lie in
+$O\tilde{~}( (mn)^{2\omega/(\omega+1)})$; for $\omega \in (2,3]$, the
+resulting exponent lies in $(1.333\dots, 1.5]$.  Thus, although our
+algorithm for embedding is essentially optimal, our algorithm for
+isomorphism is not (but it improves on previous results).
 
-We point out that if $S=\Phi(x)$ and $T=\Phi(y)$ are known, and if we
-are working in a {\em boolean model} (on a RAM), using a result by
-Kedlaya and Umans~\cite{KeUm11} for modular composition and its
-extension in~\cite{PoSc13a} would yield an algorithm with running time
-essentially linear in $mn$ and $\log(p)$. By contrast, our algorithms
-apply in a more general setting than finite fields (mild assumptions
-are required).
+We point out that if $S=\Phi(x)$ and $T=\Phi(y)$ are known, a result
+by Kedlaya and Umans~\cite{KeUm11} for modular composition, and its
+extension in~\cite{PoSc13a}, yield an algorithm with {\em boolean
+  complexity} essentially linear in $mn$ and $\log(p)$ (on a
+RAM). Unfortunately, these algorithms seem to be unfeasible for the
+moment, indeed we are not aware of any implementation. It is also
+worth noting that our algorithms apply in a more general setting than
+finite fields (mild assumptions are required).
 
 \noindent{\bf Outline.}  Section~\ref{sec:prelim} presents basic
 algorithms for polynomials, as well as their {\em transposes}.  In
@@ -326,10 +328,10 @@ experimental results.
 \section{Preliminaries}\label{sec:prelim}
 
 We recall first previous results concerning polynomial arithmetic and
-transposition of algorithms. In all this section, a ground field $k$ is
-fixed. For integers $m,n$, we denote by $k[x]_m$
-(resp.\ $k[x,y]_{m,n}$) the set of polynomials $P$ in $k[x]$ with
-$\deg(P) <m$ (resp.\ $P$ in $k[x,y]$ with $\deg(P,x) <m$ and
+transposition of algorithms. In all this section, a ground field $k$,
+non necessarily finite, is fixed. For integers $m,n$, we denote by
+$k[x]_m$ (resp.\ $k[x,y]_{m,n}$) the set of polynomials $P$ in $k[x]$
+with $\deg(P) <m$ (resp.\ $P$ in $k[x,y]$ with $\deg(P,x) <m$ and
 $\deg(P,y)<n$).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -388,14 +390,16 @@ Let us briefly review the transposes of operations described in the
 previous subsection. The transpose of polynomial multiplication is
 described in~\cite{bostan+lecerf+schost:tellegen}; it is closely
 related to the {\em middle product}~\cite{hanrot+quercia+zimmermann}.
-Let next $P$ be monic of degree $m$, and define $A=k[x]/\ang{P}$; we
-can then discuss the transposes of $\rem$ and $\mulmod$. As shown
+Let next $P$ be monic of degree $m$, and define
+$A=k[x]/\ang{P}$. Denote by $A^\ast$ the dual space of $A$, i.e.\ the
+$k$-linear forms on $A$, then we can then discuss the transposes of
+$\rem$ and $\mulmod$. As shown
 in~\cite{bostan+lecerf+schost:tellegen}, the dual map
 $$
 \begin{array}{cccc}
 \rem^t(.,P,n): &k^m& \to &k^n
 \end{array}$$ 
-takes as input a linear form $\ell\in A^\ast$ given by the values
+takes as input a form $\ell\in A^\ast$ given by the values
 $(\ell(x^i))_{0 \le i < m}$; the output is then the values
 $(\ell(x^i))_{0 \le i < n}$. For $n < m$, there is nothing to do. For
 greater values of $n$, $\rem^t$ is \emph{linear sequence extension}:
@@ -436,8 +440,8 @@ section, $k$ is a perfect field.
 A general reference for what follows
 is~\cite[Ch.~IX.1.8]{BourbakiAlgCom9}. Let $E$ and $F$ be $k$-vector
 spaces, with $\dim(E)=\dim(F) < \infty$; suppose further that
-$\ang{.,.}: E\times F \to k$ is a non-degenerate $k$-bilinear form.
-Then, to any $k$-vector space basis $\bxi=(\xi_i)_i$ of $E$, we
+$\ang{.,.}: E\times F \to k$ is a non-degenerate bilinear form.
+Then, to any vector space basis $\bxi=(\xi_i)_i$ of $E$, we
 can associate a unique \emph{dual basis}
 $\bxi^\ast=(\xi_i^\ast)_i$ of $F$ such that $
 \ang{\xi_i,\xi^\ast_j} = \delta_{i,j}$ (the Kronecker symbol).
@@ -450,9 +454,9 @@ all $v\in E$ and $\ell \in E^*$; we will see in the next subsection
 another family of examples, with $E=F$.
 
 Let $E',F'$ be two further vector spaces, with $\dim(E')=\dim(F')$ and
-let $\ang{.,.}'$ be a $k$-bilinear form $E'\times F' \to k$. Then, to
-any $k$-linear mapping $u:E\to E'$, one associates its {\em dual}
-(with respect to $\ang{.,.}$ and $\ang{.,.}'$), which is a $k$-linear
+let $\ang{.,.}'$ be a bilinear form $E'\times F' \to k$. Then, to
+any linear mapping $u:E\to E'$, one associates its {\em dual}
+(with respect to $\ang{.,.}$ and $\ang{.,.}'$), which is a linear
 mapping $u^t: F' \to F$ characterized by the equality
 $\ang{u(a),b'}'=\ang{a,u^t(b')}$, for all $a\in E$ and $b'$ in $F'$.
 
@@ -471,9 +475,9 @@ bases $(\bupsilon^\ast,\bxi^\ast)$, with essentially the same cost.
 \subsection{Traces in reduced algebras}
 
 General reference for the following
-are~\cite{Kunz86,Cox-Little-OShea:UAG2005}. Suppose now that $s$ a
+are~\cite{Kunz86,Cox-Little-OShea:UAG2005}. Suppose now that $s$ is a
 positive integer, and $I$ a zero dimensional radical ideal in
-$k[x_1,\dots,x_s]$; thus, $A=k[x_1,\dots,x_s]/I$ is a reduced
+$k[x_1,\dots,x_s]$. Thus, $A=k[x_1,\dots,x_s]/I$ is a reduced
 $k$-algebra of finite dimension $d$, where $d$ is the cardinality of
 $V=V(I) \subset\overline{k}^s$ (but in general, $A$ is not a field).
 
@@ -510,16 +514,13 @@ Let $P$ be monic of degree $m$ and squarefree in $k[x]$, and define
 $A=k[x]/\ang{P}$. We denote by $\tau_P$ the trace modulo the ideal $\ang{P}$.
 
 The $k$-algebra $A$ is endowed with the canonical monomial basis
-$\bxi=(x^i)_{0 \le i < m}$.  In this case, conversion algorithms
-between the monomial basis and its dual $\bxi^\ast$ are essentially
-well-known (though usually not stated in these terms). Indeed, in view
-of what was said in the previous subsection, the coefficients of an
-element $a \in A$ on the dual basis are the traces $\tau_P(ax^i)_{0
-  \le i < m}$.  The following lemma shows that the generating series
-of these traces is rational, with a known denominator; this will be
-the key to the conversion algorithm. This is a restatement of
-well-known results, see for instance the proof
-of~\cite[Theorem~3.1]{rouiller99}.
+$\bxi=(x^i)_{0 \le i < m}$. In view of what was said in the previous
+subsection, the coefficients of an element $a \in A$ on the dual basis
+$\bxi^\ast$ are the traces $\tau_P(ax^i)_{0 \le i < m}$. The following
+lemma shows that the generating series of these traces is rational,
+with a known denominator; this will be the key to the conversion
+algorithm. This is a restatement of well-known results, see for
+instance the proof of~\cite[Theorem~3.1]{rouiller99}.
 
 \begin{Lemma}\label{lemma:trace:1}
   For $a=\sum_{0 \le i < m} a_i x^i$ in $A$, the following equality
@@ -527,8 +528,9 @@ of~\cite[Theorem~3.1]{rouiller99}.
   $$\sum_{i \ge 0} \tau_P(a x^i) x^i = \frac{\rev( P' a \bmod P,m)}{\rev(P,m+1)}.$$
 \end{Lemma}
 
-The conversion algorithms follow easily. In these algorithms, and all
-that follows, input and outputs are vectors (written in {\sf sans
+From the lemma, a pair of well known algorithms to convert between
+$\bxi$ and $\bxi^\ast$ follows easily. In these algorithms, and all
+that follows, input and output are vectors (written in {\sf sans
   serif} font).
 
 \begin{algorithm_noendline}
@@ -647,8 +649,7 @@ $$\begin{array}{cccc}
 &  xy & \mapsfrom & z.
 \end{array}$$
 In this section, we give algorithms for computing $R$, applying
-$\varphi_x$ and $\varphi_y$ as well as their inverses (when
-well-defined), as well as $\Phi$ and its inverse. Except from the
+$\varphi_x$, $\varphi_y$ and their sections, and finally $\Phi$ and its inverse. Except from the
 computation of $R$, these are all linear algebra problems. If $R$ and
 the images $S=\Phi(x),T=\Phi(y)$ are known, then as was explained in
 the introduction, direct solutions are available for both $\varphi_x$
@@ -657,7 +658,7 @@ these approaches has a quasi-linear running time.
 
 We take a different path. Our algorithms have quasi-linear running
 time for $\varphi_x$ and $\varphi_y$ and improve on the Brent-Kung
-algorithm for $\Phi$; put together, Lemmas~\ref{lemma:algo:embed}
+algorithm for $\Phi$. Put together, Lemmas~\ref{lemma:algo:embed}
 to~\ref{lemma:tiso2} below prove Theorem~\ref{theo:main}. One of the
 key aspects of these algorithms is that some are written in the usual
 monomial bases, whereas others are naturally expressed in the
@@ -991,7 +992,7 @@ polynomials from the rows of $M_V$, and conclude with giant steps,
 using Horner's scheme.
 
 The previous discussion leads to Algorithm~\ref{algo:iso2}. Remark
-that inputs {\em and} output are written on the monomial bases.
+that input {\em and} output are written on the monomial bases.
 
 \begin{algofloat}[t]
   \begin{algorithm_noendline}
@@ -1083,7 +1084,7 @@ Lemma~\ref{lemma:tiso2}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{The algebraic closure of $\F_p$}\label{sec:fpbar}
+\section{The algebraic closure of $\large\F_p$}\label{sec:fpbar}
 
 In this section, we explain how the algorithms of
 Section~\ref{sec:emb-iso} can be used in order to construct and work
@@ -1209,7 +1210,8 @@ polynomials of arbitrary elements of $\F_{p^{mn}}$ over $\F_{p^m}$.
 To demonstrate the practicality of our algorithms, we made a C
 implementation and compared it to various ways of constructing the
 same fields in Magma. All timings in this section are obtained on an
-Intel Xeon E5620 CPU at 2.40GHz, using Magma V2.18-12 and Flint 2.4.1.
+Intel Xeon E5620 CPU at 2.40GHz, using Magma V2.18-12, Flint 2.4.1 and
+Sage 6.
 
 Our implementation is limited to finite fields of word-sized
 characteristic.  It is based on the C library
