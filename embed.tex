@@ -1138,7 +1138,7 @@ Consider a sequence $d=(d_1,\dots,d_s)$ of positive integers, and let
 $m=d_1 \cdots d_s$. The set
 $$B_d = \{ x_{d_1}^{e_1} x_{d_1 d_2}^{e_2} \cdots x_{d_1 \cdots
   d_s}^{e_s} \mid 0 \le e_i < d_i \text{~for all $i$}\}$$ is a basis
-of $\F(x_m)$. Important examples are sequences of the form $d=(d_1)$,
+of $\F_p(x_m)$. Important examples are sequences of the form $d=(d_1)$,
 with thus $m=d_1$, for which $B_d$ is the univariate basis $(x_m^i)_{0
   \le i < m}$. Also useful for us are sequences $d=(d_1,d_2)$; letting
 $n=d_1$ and $m=d_1 d_2$, $B_d$ is the bivariate basis $(x_n^i
@@ -1177,53 +1177,20 @@ x_{\ell^{k+1}}^j)_{0 \le i < m', 0 \le j < \ell^{k+1}}$; applying our
 isomorphism algorithm, we end up on the basis $(x_{m\ell}^i)_{0 \le i
   < m \ell}$, since $x_{m \ell} = x_{m'} x_{\ell^{k+1}}$.
 
-\smallskip\noindent{{\bf \rm Relative minimal polynomials.}}  For
-arbitrary integers $m$ and $n$, we now describe the minimal polynomial
-of $x_{mn}$ over $\F_p(x_m)$. Write $m=\ell_1^{e_1}\cdots
-\ell_r^{e_r}$ and $n=\ell_1^{g_1}\cdots\ell_r^{g_r}$, with $\ell_i$'s
-primes. The minimal polynomial of $x_{\ell_i^{e_i+g_i}}$ over
-$\F_p(x_{\ell_i^{e_i}})$ is $Q_{\ell_i,e_i,g_i}(x_{\ell_i^{e_i}},z)$.
-Since $\F_p(x_m)$ is an extension of $\F_p(x_{\ell_i^{e_i}})$ of
-degree coprime to $\ell_i$, and since the former polynomial has degree
-$\ell_i^{g_i}$, it remains irreducible in $\F_p(x_m)[z]$; using the
-embedding $\F_p(x_{\ell_i^{e_i}}) \to \F_p(x_m)$ coefficient-wise
-allows us to rewrite it on the monomial basis of $\F_p(x_m)$. Then,
-the minimal polynomial of $x_{mn} = x_{\ell_1^{e_1+g_1}}\cdots
-x_{\ell_r^{e_r+g_r}}$ over $\F_p(x_m)$ is $Q_{\ell_1,e_1,g_1} \odot
-\cdots \odot Q_{\ell_r,e_r,g_r}$.
+\smallskip\noindent{{\bf \rm Further operations.}}  Without entering
+into details, let us mention that further operations are feasible, in
+the same spirit as the embedding algorithm we just described.
 
-\smallskip\noindent{{\bf \rm Change of basis.}} For $m,n$ as above,
-consider finally the question of computing $\Phi_{(m,n),(mn)}$, that
-is, going from the univariate basis $(x_{mn}^i)_{0 \le i < mn}$ to the
-bivariate basis \sloppy $(x_m^i x_{mn}^j)_{0 \le i < m, 0 \le j < n}$. This is
-useful to compute e.g.  relative minimal polynomials of elements of
-$\F_{p^{mn}}$ over $\F_{p^m}$.
+For instance, for arbitrary integers $m$ and $n$, it is possible to
+compute the relative minimal polynomials $x_{mn}$ over $\F_p(x_m)$; it
+is obtained as a composed product, with factors deduced from the
+decomposition of $m$ and $n$ into primes.
 
-We use the factorizations of $m$ and $n$ seen above, so that $mn =
-\ell_1^{e_1+g_1} \cdots \ell_r^{e_r + g_r}$. Applying one of our
-inverse isomorphism algorithms repeatedly, we can convert
-from the univariate basis $(x_{mn}^i)_{0 \le i < mn}$ to
-the multivariate basis 
-$$(x^{i_1}_{\ell_1^{e_1+g_1}}\cdots x^{i_r}_{\ell_r^{e_r+g_r}})_{ 0\le i_\kappa < \ell_\kappa^{e_\kappa+g_\kappa}  \text{~for all $\kappa$}}.$$
-Because all primes $\ell_i$ are pairwise distinct, we can use 
-change-of-basis algorithms in all these $\ell$-adic towers independently, in
-order to convert from this basis to
-$$(x^{i_1}_{\ell_1^{e_1}} x^{j_1}_{\ell_1^{e_1+g_1}} 
-\cdots x^{i_r}_{\ell_r^{e_r}} x^{j_r}_{\ell_r^{e_r+g_r}})_{ 
-  0\le i_\kappa < \ell_\kappa^{e_\kappa},   0\le j_\kappa < \ell_\kappa^{g_\kappa} \text{~for all $\kappa$}}.$$
-Now, apply our isomorphism algorithms in order to
-gather all terms in $x_{\ell_\kappa^{e_\kappa}}$, converting
-to the basis
-$$(x_m^i x^{j_1}_{\ell_1^{e_1+g_1}} \cdots
-x^{j_r}_{\ell_r^{e_r+g_r}})_{ 0\le i < m, 0\le j_\kappa <
-  \ell_\kappa^{g_\kappa} \text{~for all $\kappa$}}.$$ Finally, apply
-our isomorphism algorithms {\em with coefficients in $\F_p(x_m)$}, in
-order to gather all terms in $x_{\ell_\kappa^{e_\kappa+g_\kappa}}$,
-converting to the target basis $(x_m^i x_{mn}^j)_{0 \le i < m, 0 \le j
-  < n}$.  For this, we need the minimal polynomials of elements
-$x_{\ell_\kappa^{e_\kappa+g_\kappa}}$ over $\F_p(x_m)$;
-they were given in the previous paragraph.
-
+As another example, we can compute $\Phi_{(m,n),(mn)}$, that is, go
+from the univariate basis $(x_{mn}^i)_{0 \le i < mn}$ to the bivariate
+basis \sloppy $(x_m^i x_{mn}^j)_{0 \le i < m, 0 \le j < n}$. This can
+be used to compute for instance relative traces, norms or minimal
+polynomials of arbitrary elements of $\F_{p^{mn}}$ over $\F_{p^m}$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
