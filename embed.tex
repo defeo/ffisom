@@ -238,15 +238,15 @@ Thus, it remains to give algorithms to ``glue'' towers defined for
 different values of $\ell$. This is the purpose of this paper.
 
 \smallskip\noindent{{\bf \rm Our contribution.}} The algorithms used
-in the constructions of the towers are inspired by those used
-in~\cite{Shoup90,shoup94,couveignes+lercier11} to construct
-irreducible polynomials. Also used in these references is the
-following idea: let $Q_m(x)$ and $Q_n(y)$ be irreducible polynomials
-over $\F_p$, with coprime degrees $m$ and $n$, and having respectively
-$(a_i)_{1 \le i \le m}$ and $(b_j)_{1 \le j \le n}$ as roots in an
-algebraic closure of $\F_p$. Then their {\em composed product}
-$Q_{mn} = \prod_{1 \le i \le m, 1 \le j \le n} (z- a_i b_j)$ is
-irreducible of degree $mn$ in $\F_p[z]$
+to construct towers are inspired by those used
+in~\cite{Shoup90,shoup94,couveignes+lercier11} to build irreducible
+polynomials. Also used in these references is the following idea: let
+$Q_m(x)$ and $Q_n(y)$ be irreducible polynomials over $\F_p$, with
+coprime degrees $m$ and $n$, and having respectively $(a_i)_{1 \le i
+  \le m}$ and $(b_j)_{1 \le j \le n}$ as roots in an algebraic closure
+of $\F_p$. Then their {\em composed product} $Q_{mn} = \prod_{1 \le i
+  \le m, 1 \le j \le n} (z- a_i b_j)$ is irreducible of degree $mn$ in
+$\F_p[z]$.
 
 In this paper, we use an {\em algebraic complexity model}, where the
 cost of an algorithm is counted in terms of the number of operations
@@ -305,10 +305,10 @@ We point out that if $S=\Phi(x)$ and $T=\Phi(y)$ are known, a result
 by Kedlaya and Umans~\cite{KeUm11} for modular composition, and its
 extension in~\cite{PoSc13a}, yield an algorithm with {\em boolean
   complexity} essentially linear in $mn$ and $\log(p)$ (on a
-RAM). Unfortunately, these algorithms seem to be unfeasible for the
-moment, indeed we are not aware of any implementation. It is also
-worth noting that our algorithms apply in a more general setting than
-finite fields (mild assumptions are required).
+RAM). Unfortunately, making these algorithms competitive in practice
+is challenging; indeed, we are not aware of any implementation of
+them. It is also worth noting that our algorithms apply in a more
+general setting than finite fields (mild assumptions are required).
 
 \noindent{\bf Outline.}  Section~\ref{sec:prelim} presents basic
 algorithms for polynomials, as well as their {\em transposes}.  In
