@@ -59,7 +59,7 @@ def find_gens_cyclotomic(k1, k2):
        additional constraints detailed below. This is done by
        `find_root_order`.
 
-    2. For each of k₁ and k₂, find an uniquely defined Galois orbit of
+    2. For each of k₁ and k₂, find a uniquely defined Galois orbit of
        m-th Gaussian periods. Return arbitrary elements of those
        orbits. This is done by `find_unique_orbit`.
 
@@ -473,7 +473,7 @@ def find_unique_orbit(k, G):
     for some coset xG where x = p^{o⋅i}. This gives a linear relation
     on 2⋅#G m-th roots of unity, something which I was trying to prove
     impossible. There is a good deal of literature on linear
-    dependencies of roots of unity in ℂ, but I haven't find any on
+    dependencies of roots of unity in ℂ, but I haven't found any on
     finite fields. An old result by Mann [1] tells that for such a
     relation to happen in ℂ, m needs to divide the product of all the
     primes up to 2⋅#G + 1 (which is unlikely to happen in our case). I
