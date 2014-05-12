@@ -18,7 +18,7 @@ using namespace std;
  * @param result	the minimal polynomial of {@code f}
  */
 
-void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly_t f, const fmpz_mod_poly_t modulus) {
+void NmodMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly_t f, const fmpz_mod_poly_t modulus) {
 
 	fmpz_mod_poly_t alpha;
 	fmpz_mod_poly_init(alpha, &modulus->p);
@@ -38,7 +38,7 @@ void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly
  * @param result			the minimal polynomial of {@code f}
  * @param modulus_inv_rev	1 / rev(d, modulus) mod x^{d - 1} where d = deg(modulus)
  */
-void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly_t f, const fmpz_mod_poly_t modulus,
+void NmodMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly_t f, const fmpz_mod_poly_t modulus,
 		const fmpz_mod_poly_t modulus_inv_rev) {
 	fmpz_mod_poly_t g;
 	fmpz_mod_poly_t temp_g;
@@ -97,7 +97,7 @@ void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_mod_poly
  * @param result	the minimal polynomial of degree <= degree
  * @param sequence	a sequence of length >= {@code 2 * degree}
  */
-void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_t *sequence, slong degree) {
+void NmodMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_t *sequence, slong degree) {
 	fmpz_mod_poly_t **R = bin_mat_init(&result->p);
 	fmpz_mod_poly_t a;
 	fmpz_mod_poly_t b;
@@ -130,7 +130,7 @@ void FmpzMinPoly::minimal_polynomial(fmpz_mod_poly_t result, const fmpz_t *seque
  * @return 		an integer h(k) depending on k such that the rows of R are the 
  * 				h-th and (h + 1)-th intermediate rows of the extended Euclidean algorithm 
  */
-slong FmpzMinPoly::halfgcd(fmpz_mod_poly_t **R, const fmpz_mod_poly_t r0, const fmpz_mod_poly_t r1, slong k) {
+slong NmodMinPoly::halfgcd(fmpz_mod_poly_t **R, const fmpz_mod_poly_t r0, const fmpz_mod_poly_t r1, slong k) {
 
 	slong temp = check_halfgcd_condition(R, r0, r1, k);
 	if (temp >= 0)
@@ -229,7 +229,7 @@ slong FmpzMinPoly::halfgcd(fmpz_mod_poly_t **R, const fmpz_mod_poly_t r0, const 
 /**
  * Checks the base case conditions for the recursive halfgcd algorithm. 
  */
-slong FmpzMinPoly::check_halfgcd_condition(fmpz_mod_poly_t **R, const fmpz_mod_poly_t r0, const fmpz_mod_poly_t r1,
+slong NmodMinPoly::check_halfgcd_condition(fmpz_mod_poly_t **R, const fmpz_mod_poly_t r0, const fmpz_mod_poly_t r1,
 slong k) {
 	slong n0 = fmpz_mod_poly_degree(r0);
 	slong n1 = fmpz_mod_poly_degree(r1);
@@ -272,7 +272,7 @@ slong k) {
 /**
  * Computes the matrix-matrix product $A = B \times C$.
  */
-void FmpzMinPoly::bin_mat_mul(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B, fmpz_mod_poly_t **C) {
+void NmodMinPoly::bin_mat_mul(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B, fmpz_mod_poly_t **C) {
 	fmpz_mod_poly_t **temp = bin_mat_init(&B[0][0]->p);
 	bin_mat_set(temp, C);
 	bin_mat_mul(B, temp[0][0], temp[1][0]);
@@ -285,7 +285,7 @@ void FmpzMinPoly::bin_mat_mul(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B, fmpz_mod
 /**
  * Frees the memory allocated to the matrix {@code A}
  */
-void FmpzMinPoly::bin_mat_clear(fmpz_mod_poly_t **A) {
+void NmodMinPoly::bin_mat_clear(fmpz_mod_poly_t **A) {
 	for (slong i = 0; i < 2; i++) {
 		for (slong j = 0; j < 2; j++)
 			fmpz_mod_poly_clear(A[i][j]);
@@ -298,7 +298,7 @@ void FmpzMinPoly::bin_mat_clear(fmpz_mod_poly_t **A) {
 /**
  * Allocates memory for a 2x2 matrix and initializes entries to zero. 
  */
-fmpz_mod_poly_t** FmpzMinPoly::bin_mat_init(const fmpz_t p) {
+fmpz_mod_poly_t** NmodMinPoly::bin_mat_init(const fmpz_t p) {
 	fmpz_mod_poly_t **bin_mat = new fmpz_mod_poly_t*[2];
 
 	for (slong i = 0; i < 2; i++) {
@@ -314,7 +314,7 @@ fmpz_mod_poly_t** FmpzMinPoly::bin_mat_init(const fmpz_t p) {
 /**
  * Computes the matrix-vector product [f, g]^T = R * [f, g]^T.
  */
-void FmpzMinPoly::bin_mat_mul(fmpz_mod_poly_t **R, fmpz_mod_poly_t f, fmpz_mod_poly_t g) {
+void NmodMinPoly::bin_mat_mul(fmpz_mod_poly_t **R, fmpz_mod_poly_t f, fmpz_mod_poly_t g) {
 	fmpz_mod_poly_t temp1;
 	fmpz_mod_poly_t temp2;
 	fmpz_mod_poly_init(temp1, &f->p);
@@ -338,7 +338,7 @@ void FmpzMinPoly::bin_mat_mul(fmpz_mod_poly_t **R, fmpz_mod_poly_t f, fmpz_mod_p
 /**
  * Sets {@code A} to a compy of {@code B}
  */
-void FmpzMinPoly::bin_mat_set(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B) {
+void NmodMinPoly::bin_mat_set(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B) {
 	for (slong i = 0; i < 2; i++)
 		for (slong j = 0; j < 2; j++)
 			fmpz_mod_poly_set(A[i][j], B[i][j]);
@@ -352,7 +352,7 @@ void FmpzMinPoly::bin_mat_set(fmpz_mod_poly_t **A, fmpz_mod_poly_t **B) {
  * 
  * @param modulus_inv_rev	1 / rev(m + 1, modulus) mod x^{m - 1} where m = deg(modulus)
  */
-void FmpzMinPoly::project_powers(fmpz_t *result, const fmpz_t *a, slong l, const fmpz_mod_poly_t h,
+void NmodMinPoly::project_powers(fmpz_t *result, const fmpz_t *a, slong l, const fmpz_mod_poly_t h,
 		const fmpz_mod_poly_t modulus, const fmpz_mod_poly_t modulus_inv_rev) {
 	slong k = n_sqrt(l);
 	slong m = (slong) ceil((double) l / (double) k);
@@ -401,7 +401,7 @@ void FmpzMinPoly::project_powers(fmpz_t *result, const fmpz_t *a, slong l, const
  * @param a			the modulus
  * @param alpha		1/rev(a, m) mod x^{m - 1} where m = deg(a)
  */
-void FmpzMinPoly::transposed_mulmod(fmpz_t *result, const fmpz_t *r, const fmpz_mod_poly_t b, const fmpz_mod_poly_t a,
+void NmodMinPoly::transposed_mulmod(fmpz_t *result, const fmpz_t *r, const fmpz_mod_poly_t b, const fmpz_mod_poly_t a,
 		const fmpz_mod_poly_t alpha) {
 
 	slong m = fmpz_mod_poly_degree(a);
@@ -428,7 +428,7 @@ void FmpzMinPoly::transposed_mulmod(fmpz_t *result, const fmpz_t *r, const fmpz_
  * 
  * @param result	the transposed product of degree <= n
  */
-void FmpzMinPoly::transposed_mul(fmpz_mod_poly_t result, const fmpz_mod_poly_t c, const fmpz_mod_poly_t a,
+void NmodMinPoly::transposed_mul(fmpz_mod_poly_t result, const fmpz_mod_poly_t c, const fmpz_mod_poly_t a,
 slong n) {
 
 	slong m = fmpz_mod_poly_degree(a);
@@ -450,7 +450,7 @@ slong n) {
  * @param alpha		1/rev(a, m) mod x^{n - m + 1} where m = deg(a)
  * @param result	the transposed remainder
  */
-void FmpzMinPoly::transposed_rem(fmpz_mod_poly_t result, const fmpz_mod_poly_t r, const fmpz_mod_poly_t a,
+void NmodMinPoly::transposed_rem(fmpz_mod_poly_t result, const fmpz_mod_poly_t r, const fmpz_mod_poly_t a,
 		const fmpz_mod_poly_t alpha,
 		slong n) {
 
@@ -472,7 +472,7 @@ void FmpzMinPoly::transposed_rem(fmpz_mod_poly_t result, const fmpz_mod_poly_t r
 /**
  * Computes the inner product of {@code a} and the coefficient vector of {@code f} 
  */
-void FmpzMinPoly::inner_product(fmpz_t result, const fmpz_t *a, const fmpz_mod_poly_t f) {
+void NmodMinPoly::inner_product(fmpz_t result, const fmpz_t *a, const fmpz_mod_poly_t f) {
 	fmpz_t temp;
 	fmpz_init(temp);
 	fmpz_zero(result);

@@ -81,7 +81,7 @@ void FFIsomBaseChange::change_basis(fmpz_mod_poly_t result, const fmpz_mod_poly_
 	fmpz_mod_poly_inv_series_newton(modulus_inv_rev2, modulus_inv_rev2, degree - 1);
 	
 	// compute the minimal polynomial of f
-	FmpzMinPoly fmpzMinPoly;
+	NmodMinPoly fmpzMinPoly;
 	fmpzMinPoly.minimal_polynomial(min_poly, f, modulus, modulus_inv_rev2);
 	
 	fmpz_t *dual = new fmpz_t[degree];

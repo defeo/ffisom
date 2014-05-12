@@ -215,10 +215,7 @@ void FFIsomorphism::iterated_frobenius(fq_t *result, const fq_t alpha, const fq_
 	FqPolyEval fqPolyEval;
 
 	fq_poly_t temp;
-	fmpz_t temp_coeff;
-
 	fq_poly_init(temp, ctx);
-	fmpz_init(temp_coeff);
 
 	fq_zero(result[0], ctx);
 	// set result[0] to x
@@ -234,11 +231,7 @@ void FFIsomorphism::iterated_frobenius(fq_t *result, const fq_t alpha, const fq_
 		base = 1 << (i - 1);
 
 		// build the polynomial for multipoint evaluation
-		fq_poly_zero(temp, ctx);
-		for (slong j = 0; j <= fmpz_poly_degree(result[base]); j++) {
-			fmpz_poly_get_coeff_fmpz(temp_coeff, result[base], j);
-			fq_poly_set_coeff_fmpz(temp, j, temp_coeff, ctx);
-		}
+		convert(temp, result[base], ctx);
 
 		// make sure we stay in the bound
 		if (2 * base < fq_ctx_degree(ctx))
@@ -253,17 +246,12 @@ void FFIsomorphism::iterated_frobenius(fq_t *result, const fq_t alpha, const fq_
 	if (!fq_equal(result[0], alpha, ctx)) {
 		
 		// build the polynomial for multipoint evaluation of alpha
-		fq_poly_zero(temp, ctx);
-		for (slong j = 0; j <= fmpz_poly_degree(alpha); j++) {
-			fmpz_poly_get_coeff_fmpz(temp_coeff, alpha, j);
-			fq_poly_set_coeff_fmpz(temp, j, temp_coeff, ctx);
-		}
+		convert(temp, alpha, ctx);
 
 		fqPolyEval.multipoint_eval(result, temp, result, fq_ctx_degree(ctx), ctx);
 	}
 
 	fq_poly_clear(temp, ctx);
-	fmpz_clear(temp_coeff);
 }
 
 /**

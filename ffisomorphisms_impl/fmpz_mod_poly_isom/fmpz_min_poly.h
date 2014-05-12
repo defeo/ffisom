@@ -11,7 +11,7 @@
 #include <flint/fmpz_vec.h>
 #include <flint/fmpz_mod_poly.h>
 
-class FmpzMinPoly {
+class NmodMinPoly {
 
 public:
 	void inner_product(fmpz_t result, const fmpz_t *a, const fmpz_mod_poly_t f);

@@ -22,7 +22,7 @@ void test_minpoly(slong degree) {
 	timeit_t time;
 	timeit_start(time);
 	
-	FmpzMinPoly fmpzMinPoly;
+	NmodMinPoly fmpzMinPoly;
 	fmpzMinPoly.minimal_polynomial(minpoly, f, modulus);
 	
 	timeit_stop(time);
