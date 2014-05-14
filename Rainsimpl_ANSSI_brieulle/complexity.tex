@@ -103,7 +103,7 @@ L'opération $\cdot$ représentera la multiplication par un scalaire de $\GF{q}$
 
 \subsubsection*{Esquisse de calcul de complexité pour l'algorithme 1}
 De la ligne 1 à 3, il s'agit de mettre à un puissance $q$ plusieurs polynômes, de les multiplier par un autre polynôme et enfin de calculer la trace de chacun de ces produits; on effectue alors $n$ fois cette opération, d'où un $O(nM(n)\textup{log}\,q) + O(nM(n)) + n\textup{T}(n) = O(nM(n)\textup{log}\,q) + O(nM(n))$, où $\textup{T}(n)$ est la complexité du calcul de la trace d'un élément de $\GF{q^n}$ et $\textup{T}(n) = O(M(n))$.\par
-Pour la ligne 4, si on estime que les puissances de $\omega$ sont déjà calculée, alors il s'agit dans un premier temps de la muliplication par un scalaire d'éléments de $\mathcal{R}_n$ puis de $n$ sommes de polynômes. Ensuite, on inverse le polynôme et on prend la trace de l'élément qu'il représente; ce qui nous donne $O(n) + O(M(n).\textup{log }n)$.\par 
+Pour la ligne 4, si on estime que les puissances de $\omega$ sont déjà calculée, alors il s'agit dans un premier temps de la muliplication par un scalaire d'éléments de $\mathbb{F}_p[\omega]/(\omega^n - 1)$ puis de $n$ sommes de polynômes. Ensuite, on inverse le polynôme et on prend la trace de l'élément qu'il représente; ce qui nous donne $O(n) + O(M(n).\textup{log }n)$.\par 
 De la ligne 5 à 7, il s'agit de la même complexité de la ligne 1 à 3, d'où encore une complexité de $O(nM(n)\textup{log}\,q) + O(nM(n))$.\par
 La ligne 8 à 10, il s'agit de $n$ sommes de $n$ multiplications dans le corps de base $\GF{q}$; \textit{i.e.} un grand $O(n)$.\par
 Au final, la complexité de l'algorithme serait égal à:
