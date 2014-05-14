@@ -44,7 +44,7 @@
 Ci-dessous se trouve deux versions de l'algorithme \textit{convert}, implémenté en \bsc{sage} ici : \url{https://github.com/brieulle/Rains-pinch/blob/master/Rains\_isom\_normal.sage}.\\\par
 On considère $\GF{q^n}$ et on se donne un élément $z\in\GF{q^n}$ quelconque et un élément normal $v\in\GF{q^n}$. Le but va être de trouver les coefficients $c_i$ de $z$ dans la base normale $v^{q^i}$, \textit{i.e.} tels que :
 \[z = \sum_{i=0}^{n-1}{c_i.v^{q^i}}\]
-Pour cela nous aurons besoin de passer par l'anneau quotient $\mathcal{R}_n := \mathbb{F}_p[\omega]/(\omega^n - 1)$.\\\par
+Pour cela nous aurons besoin de passer par l'anneau quotient $\mathbb{F}_p[\omega]/(\omega^n - 1)$.\\\par
 L'algorithme se place dans le cadre du calcul de l'isomorphisme entre deux corps finis de même cardinal. Après avoir trouvé deux éléments normaux $v$ et $w$ qui coïncident \textit{via} un isomorphisme $\phi$ (\textit{i.e.} tel que $f(\phi(v)) = 0$ et $\phi(v) = w$ pour $f$ le polynome minimal de $v$), on cherche à déterminer celui-ci en calculant son image en $x$ la classe de $X$.\par
 
 Puisque $\phi(x^i) = \phi(x)^i$, pour déterminer l'image de la base polynomiale, on a besoin uniquement de l'image de $x$. Or, on a déjà à disposition un élément dont on connait l'image, alors si on exprime $x$ en fonction de cet élément, on pourra déterminer l'image de $x$ dans la base normale engendrée par $w$, il ne reste plus alors qu'à exprimer en fonction de la base $y^i$ :
