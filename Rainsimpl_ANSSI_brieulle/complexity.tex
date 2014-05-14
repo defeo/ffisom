@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This paper is far from complete and the coding style is inexistent.
+% I hope it would help to clarify some details, I will complete it 
+% later.
+%
+% Reviews, corrections and remarks are welcomed 
+% and to be sent to l.brieulle(at)gmail(dot)com
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper]{article} % papier A4
+\usepackage[utf8]{inputenc}      % accents dans le source
+\usepackage[T1]{fontenc}         % accents dans le pdf
+\usepackage{textcomp}            % symboles complémentaires (euro)
+\usepackage[frenchb]{babel}      % titres en français
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{enumerate}
+\usepackage{pgf}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{tikz}
+\usepackage{tikz-cd}
+\usetikzlibrary{matrix,arrows,decorations.pathmorphing}
+\numberwithin{equation}{section}
+\newcommand\nroot[1]{\textit{#1}\up{\textit{ième}}}
+\newcommand\zmodn[1]{\mathbb{Z}/#1\mathbb{Z}}
+\newcommand\GF[1]{\mathbb{F}_{#1}}
+\newcommand\Irr[2]{\textup{Irr}_{#1}(#2)}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Ouput:}}
+\newcommand\Tr[1]{\textup{Tr}(#1)}
+\begin{document}
+\newtheorem{thm}{Thèorème}[subsection]
+\newtheorem{lem}[thm]{Lemme}
+\newtheorem{cor}{Corollaire}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem*{defn}{Définition}
+\newtheorem*{ex}{Exemple}
+\theoremstyle{remark}
+\newtheorem{rem}{Remarque}[subsection]
+Ci-dessous se trouve deux versions de l'algorithme \textit{convert}, implémenté en \bsc{sage} ici : \url{https://github.com/brieulle/Rains-pinch/blob/master/Rains\_isom\_normal.sage}.\\\par
+On considère $\GF{q^n}$ et on se donne un élément $z\in\GF{q^n}$ quelconque et un élément normal $v\in\GF{q^n}$. Le but va être de trouver les coefficients $c_i$ de $z$ dans la base normale $v^{q^i}$, \textit{i.e.} tels que :
+\[z = \sum_{i=0}^{n-1}{c_i.v^{q^i}}\]
+Pour cela nous aurons besoin de passer par l'anneau quotient $\mathcal{R}_n := \mathbb{F}_p[\omega]/(\omega^n - 1)$.\\\par
+L'algorithme se place dans le cadre du calcul de l'isomorphisme entre deux corps finis de même cardinal. Après avoir trouvé deux éléments normaux $v$ et $w$ qui coïncident \textit{via} un isomorphisme $\phi$ (\textit{i.e.} tel que $f(\phi(v)) = 0$ et $\phi(v) = w$ pour $f$ le polynome minimal de $v$), on cherche à déterminer celui-ci en calculant son image en $x$ la classe de $X$.\par
+
+Puisque $\phi(x^i) = \phi(x)^i$, pour déterminer l'image de la base polynomiale, on a besoin uniquement de l'image de $x$. Or, on a déjà à disposition un élément dont on connait l'image, alors si on exprime $x$ en fonction de cet élément, on pourra déterminer l'image de $x$ dans la base normale engendrée par $w$, il ne reste plus alors qu'à exprimer en fonction de la base $y^i$ :
+\begin{align*}
+\phi(x) &= \phi(\sum_{i\in I}{c_iv^{p^i}})= \sum_{i\in I}{c_i\phi(v^{p^i})}\\
+&= \sum_{i\in I}{c_iw^{p^i}}\\
+&= \sum_{i\in I}{b_iy^i}\\
+\end{align*}
+On peut aussi résumer la situation de la manière suivante :
+
+\begin{center}
+\begin{tikzpicture}
+\matrix(m)[matrix of math nodes,
+row sep=3em, column sep=3em,
+text height=2ex, text depth=0ex]
+{\bigoplus\limits_{i\in I}{x^i\cdot\GF{q}} & \bigoplus\limits_{i\in I}{y^i\cdot\GF{q}}\\
+\bigoplus\limits_{i\in I}{v^{p^i}\cdot\GF{q}} & \bigoplus\limits_{i\in I}{w^{p^i}\cdot\GF{q}}\\};
+\path[->,font=\scriptsize,>=angle 90]
+(m-1-1) edge node[auto] {$\phi$} (m-1-2)
+(m-2-1) edge node[auto] {$\phi$} (m-2-2)
+(m-1-1) edge node[auto] {$\pi$} (m-2-1)
+(m-2-2) edge node[auto] {$\pi^{\prime}$} (m-1-2);
+\end{tikzpicture}
+\end{center}
+La fonction $\pi^{\prime}$ est plus ou moins gratuite, il suffit d'exprimer $w$ en fonction des $y^i$ mais en général les éléments sont déjà exprimés en fonction de la base polynomiale. La seule fonction qui pose un problème est la fonction $\pi$ qui permet d'exprimer $x$ en fonction des $v^{p^i}$. C'est elle que l'algorithme va calculer; ou plus exactement, l'algorithme va déterminer directement les coefficients $c_i$. Le morphisme $\phi$ se détermine alors simplement en calculant l'image de $x$.
+\begin{defn}
+L'opération $\cdot$ représentera la multiplication par un scalaire de $\GF{q}$; l'opération $\times$ représente un produit entre deux vecteurs de $\GF{q^n}$; si on ne met rien, il s'agit de la multiplication dans $\GF{q}$.
+\end{defn}
+
+\begin{algorithm}
+\label{alg1}
+\caption{Conversion de la base polynomiale vers la base normale}
+
+\begin{algorithmic}[1]
+\REQUIRE $z$, $v$, $n$, $p$, $\omega$ \COMMENT{$z\in\GF{q^n}$, $v$ élément normal, $n$ degré de l'extension, $p$ caractéristique, $\omega$ défini ci-dessus}
+\ENSURE $c$ \COMMENT{Tuple contenant les coefficients de $z$ dans la base normale engendrée par $v$}
+\bigskip
+\FOR{$i = 0$ \TO $n-1$}
+    \STATE $B_i = \textup{Tr}\big(v\times v^{q^{n-(i+1)}}\big)$
+\ENDFOR
+\medskip
+\STATE $I = (\sum_{i = 0}^{n-1}{B_i\cdot \omega^i})^{-1}$
+\medskip
+\FOR{$i = 0$ \TO $n-1$}
+    \STATE $T_i = \textup{Tr}(v\times z^{q^{n-i}})$
+\ENDFOR
+\medskip
+\FOR{$i = 0$ \TO $n-1$}
+    \STATE $c_i = \sum_{j=0}^{n-1}{I_{(j-i)\bmod n}T_j}$
+\ENDFOR
+\RETURN $c$
+
+\end{algorithmic}
+\end{algorithm}
+
+
+\subsubsection*{Esquisse de calcul de complexité pour l'algorithme 1}
+De la ligne 1 à 3, il s'agit de mettre à un puissance $q$ plusieurs polynômes, de les multiplier par un autre polynôme et enfin de calculer la trace de chacun de ces produits; on effectue alors $n$ fois cette opération, d'où un $O(nM(n)\textup{log}\,q) + O(nM(n)) + n\textup{T}(n) = O(nM(n)\textup{log}\,q) + O(nM(n))$, où $\textup{T}(n)$ est la complexité du calcul de la trace d'un élément de $\GF{q^n}$ et $\textup{T}(n) = O(M(n))$.\par
+Pour la ligne 4, si on estime que les puissances de $\omega$ sont déjà calculée, alors il s'agit dans un premier temps de la muliplication par un scalaire d'éléments de $\mathcal{R}_n$ puis de $n$ sommes de polynômes. Ensuite, on inverse le polynôme et on prend la trace de l'élément qu'il représente; ce qui nous donne $O(n) + O(M(n).\textup{log }n)$.\par 
+De la ligne 5 à 7, il s'agit de la même complexité de la ligne 1 à 3, d'où encore une complexité de $O(nM(n)\textup{log}\,q) + O(nM(n))$.\par
+La ligne 8 à 10, il s'agit de $n$ sommes de $n$ multiplications dans le corps de base $\GF{q}$; \textit{i.e.} un grand $O(n)$.\par
+Au final, la complexité de l'algorithme serait égal à:
+ \[2O(nM(n)) + 2O(nM(n)\textup{log }q) +  O(M(n)\textup{log }n) + 2n\textup{T}(n) + O(n)\] 
+ou de manière plus simple, elle est en $O(nM(n)\textup{log}\,q)$ qui domine le reste.
+
+\end{document}
+
+
+
+
+
+
+
