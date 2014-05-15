@@ -176,7 +176,7 @@ Maintenant, d'après la formule du produit de deux polynômes, on a :
 \end{align*}
 Mais $b_{0k-i} = b_{ik}$ puisque $0 -(k-i) \equiv i-k \bmod n$; en tenant compte du fait que $i$ parcourt tout $\zmodn{n}$, on arrive finalement à :
 \[\sum_{0\leq k < n}{\bigg(\sum_{0\leq i < n}{a_{0i}b_{ik}}\bigg)\omega^k} = \psi(AB)\]\par
-Comme les $\omega^k$ sont linéairement indépendants par définition, pour que l'image d'une matrice circulante soit égale à $0$, il faut que sa première ligne, et donc toutes les autres, soit nulle; d'où $\textup{Ker}\,\psi = \{0_n\}$. La surjectivité est immédiate, il suffit de prendre les coefficients d'un élément quelconque $u$ de $\GF{p}[\omega]/(\omega^n - 1)$ et de définir la matrice $A$ de coefficients $a_{ij} = u_{(i-j \bmod n)}$ pour $i,j\zmodn{n}$, où les $u_i$ sont les coefficients $u$; on aura alors $\psi(A) = u$.\\\par
+Comme les $\omega^k$ sont linéairement indépendants par définition, pour que l'image d'une matrice circulante soit égale à $0$, il faut que sa première ligne, et donc toutes les autres, soit nulle; d'où $\textup{Ker}\,\psi = \{0_n\}$. La surjectivité est immédiate, il suffit de prendre les coefficients d'un élément quelconque $u$ de $\GF{p}[\omega]/(\omega^n - 1)$ et de définir la matrice $A$ de coefficients $a_{ij} = u_{(i-j \bmod n)}$ pour $i,j\in\zmodn{n}$, où les $u_i$ sont les coefficients $u$; on aura alors $\psi(A) = u$.\\\par
 Ainsi, comme $\psi$ est un isomorphisme, on a bien :
 \[\psi(B^{-1}) = \psi(B)^{-1} = \sum_{0\leq k < n}{d_{0k}\omega^k}\]
 ce qui achève la démonstration.\\
