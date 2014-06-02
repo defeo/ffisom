@@ -1,0 +1,123 @@
+%% these.tex
+%% Copyright 2010 Luca De Feo
+%% All rights reserved
+
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mysymbols}[2010/09/28 Symbols for my PhD thesis, V1.0]
+
+\RequirePackage{amsmath}
+
+%% Basics
+\newcommand{\card}[1]{\# #1}  % cardinality
+\newcommand{\diffset}{\,\backslash\,}  % difference between sets
+\newcommand{\ndiv}{\nmid}  % does not divied
+\DeclareSymbolFont{mdsym}{OMS}{mdugm}{b}{n}
+\DeclareMathSymbol{\wrt}{\mathrel}{mdsym}{"32}  % strong membership, as in the ISSAC '09 paper
+\newcommand{\isom}{\cong}  % isomorphisms
+\newcommand{\eqdef}{\overset{\mathrm{def}}{\equiv}}  % equal by definition
+
+%% Some standard sets
+\newcommand{\N}{\mathbb{N}}  % natural numbers
+\newcommand{\Z}{\mathbb{Z}}  % integers
+\newcommand{\K}{\mathbb{K}}  % a field
+\newcommand{\F}{\mathbb{F}}  % a finite field
+\newcommand{\Q}{\mathbb{Q}}  % rational numbers
+\newcommand{\R}{\mathbb{R}}  % real numbers
+\newcommand{\C}{\mathbb{C}}  % complex numbers
+\newcommand{\LK}{\mathbb{L}}  % yet another field
+\newcommand{\U}{\mathbb{U}}  % yafield
+
+%% Algebra
+\newcommand{\trans}[1]{#1^\top}  % transposed
+\newcommand{\dual}[1]{#1^\ast}  % dual
+\newcommand{\clot}[1]{\bar{#1}}  % algebraic closure
+\newcommand{\frob}{\varphi}  % Frobenius isomorphism
+\newcommand{\euler}{\varphi}  % Euler totient function
+\newcommand{\Cyclo}{\Phi}  % cyclotomic polynomial
+\newcommand{\Proj}{\mathbb{P}}  % projective space
+\newcommand{\op}{\mathrm{op}}  % opposite
+\newcommand{\bra}[1]{\left\langle #1 \right\rvert}
+\newcommand{\ket}[1]{\left\lvert #1 \right\rangle}
+\newcommand{\braket}[2]{\left\langle #1 \middle| #2 \right\rangle}
+\newcommand{\braketop}[3]{\left\langle #1 \middle| #2 \middle| #3 \right\rangle}  % bra-ket notation
+\newcommand{\poinc}{\mathcal{H}}  % Poincaré half plane
+
+%% Curves
+\newcommand{\0}{\mathcal{O}}  % base point
+\newcommand{\ecpoint}[3]{[#1:#2:#3]}  % a projective point
+\newcommand{\isog}[1]{\mathcal{#1}}  % the font for isogenies
+\newcommand{\I}{\isog{I}}  % an isogeny I
+\newcommand{\frobisog}{\phi}  % Frobenius isogeny
+\newcommand{\Hasse}{H}  % Hasse invariant
+\newcommand{\divpol}{f}  % division polynomial
+\newcommand{\Modpol}{\Phi}  % modular polynomial
+
+%% Shorthands for arrows
+\newcommand{\la}{\leftarrow}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\La}{\Leftarrow}
+\newcommand{\Ra}{\Rightarrow}
+
+%% Languages
+\newcommand{\bom}{\perp}  % bottom _|_
+\newcommand{\al}{\prec}  % Haskell's -<
+\newcommand{\tALpy}{\textup{\texttt{transalpyne}}}  % transalpyne
+\newcommand{\Sbasis}{\mathcal{S}}  % standard basis
+\newcommand{\Tbasis}{\mathcal{L}}  % linear basis
+\newcommand{\lmul}[1]{{}_{#1}*}  % left multiplication node
+\newcommand{\rmul}[1]{*_{#1}}  % right multiplication node
+\newcommand{\pspace}{\mathcal{P}}  % parameter space
+\newcommand{\lap}{\overset{+}{\leftarrow}}
+\newcommand{\lat}{\overset{*}{\leftarrow}}  % self-increments
+
+%% Complexity
+\newcommand{\tildO}{\tilde{O}}  % soft Oh notation
+\newcommand{\Mult}{\mathsf{M}}  % multiplication function
+\newcommand{\Push}{\mathsf{P}}  % push-down
+\newcommand{\Lift}{\mathsf{L}}  % lift-up
+\newcommand{\Trace}{\mathsf{T}}  % trace
+\newcommand{\Frob}{\mathsf{F}}  % iterated Frobenius
+\newcommand{\Ptr}{\mathsf{PT}}  % pseudo-trace
+\newcommand{\ModComp}{\mathsf{C}}  % modular composition
+\newcommand{\sC}{\mathsf{K}}  % polynomial composition
+
+%% Fonts
+\newcommand{\basis}{\mathbold}  % bases of vector spaces and the like
+\newcommand{\lst}{\mathbold}  % lists (of variables and the like)
+\newcommand{\algeb}{\mathcal}  % algebras
+
+%%%%%%%% Operators
+
+%% Algebra
+\DeclareMathOperator{\im}{im}  % image
+\DeclareMathOperator{\End}{End}  % Endomorphism ring
+\DeclareMathOperator{\Aut}{Aut}  % Automorphism group
+\DeclareMathOperator{\Mat}{\mathcal{M}}  % Matrices
+\DeclareMathOperator{\GL}{GL}  % General linear group
+\DeclareMathOperator{\SL}{SL}  % Special linear group
+\DeclareMathOperator{\diff}{d}  % differential operator
+\DeclareMathOperator{\car}{char}  % characteristic
+\DeclareMathOperator{\Frac}{Frac}  % fraction field
+\DeclareMathOperator{\Gal}{Gal}  % Galois group
+\DeclareMathOperator{\Tr}{Tr}  % trace
+\DeclareMathOperator{\PTr}{T}  % pseudotrace
+\DeclareMathOperator{\Norm}{N} % norm
+\DeclareMathOperator{\ord}{ord}  % order of an element
+
+%% Some custom functions
+\DeclareMathOperator{\ev}{ev}  % evaluation
+\DeclareMathOperator{\proj}{proj}  % projection
+\DeclareMathOperator{\flip}{flip}  % flipper (it is a lambda term)
+
+%% Circuits
+\DeclareMathOperator{\inp}{in}
+\DeclareMathOperator{\outp}{out}  % input and output ports/nodes in circuits
+\DeclareMathOperator{\eval}{eval}
+\DeclareMathOperator{\lave}{coeval}  % (co)evaluation of an arithmetic circuit
+\DeclareMathOperator{\size}{size}
+\DeclareMathOperator{\depth}{depth}  % size and depth
+\DeclareMathOperator{\hub}{\&}  % hub nodes
+
+%% Complexity
+\DeclareMathOperator{\loglog}{loglog}  % loglog (thanks to Kaltofen <- Cantor)
