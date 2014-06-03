@@ -22,7 +22,7 @@ from sage.sets.set import Set
 from sage.combinat.set_partition import SetPartitions
 from sage.structure.factorization import Factorization
 from sage.combinat.cartesian_product import CartesianProduct as CProd
-from sage.misc.misc import cputime, walltime
+from sage.misc.misc import cputime, walltime, prod
 
 class FalseConjecture(Exception):
     pass
