@@ -78,7 +78,7 @@ def find_gens_cyclotomic(k1, k2):
     # Note: `find_unique_orbit` is horribly slow if k₁ and k₂ are not
     # fields. Some composita tricks would be welcome.
     P = None
-    if (ord > n):
+    if (o > 1):
         print "Using auxiliary extension, this might be slow"
         P = GF(p**o, 'z').polynomial()
         k1, k2 = [k.extension(P) for k in (k1, k2)]
