@@ -31,7 +31,7 @@ def convert(z, v, k, normal_basis = None):
     that the ring of circulant matrix of size n in GF(q) is isomorphic 
     to the ring R = GF(q)[U]/(U^n - 1), via :
     
-    (b_ij) -> sum_{i = 0 to n-1}{b_0j.U^i}
+    (b_ij) -> sum_{j = 0 to n-1}{b_0j.U^i}
     
     Thus, we compute the inverse in R and we "construct" B^(-1) from the 
     coefficient of that element. Each c_i is then equal to :
