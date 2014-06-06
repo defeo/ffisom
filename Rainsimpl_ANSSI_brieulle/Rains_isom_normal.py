@@ -36,7 +36,7 @@ def convert(z, v, k, normal_basis = None):
     Thus, we compute the inverse in R and we "construct" B^(-1) from the 
     coefficient of that element. Each c_i is then equal to :
     
-    c_i = d_ij*Z_j,
+    c_i = sum_{j = 0 to n-1}{d_ij*Z_j},
     
     if we wrote d_ij the coefficient of B^(-1).
      
