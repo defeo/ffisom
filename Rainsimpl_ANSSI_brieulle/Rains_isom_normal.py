@@ -41,7 +41,6 @@ def convert(z, v, k, normal_basis = None):
     if we wrote d_ij the coefficient of B^(-1).
      
     '''
-
     q = k.cardinality()
     n = v.parent().degree()
     R = PolynomialRing(GF(q), 'U')
@@ -56,7 +55,6 @@ def convert(z, v, k, normal_basis = None):
     B = []
     for i in range(n):              
         B.append((v*normal_basis[i]).trace())
-
 
     inv = R(B).inverse_mod(U**n - 1)    # We compute the inverse of the image of
                                         # the circulant matrix B in the cyclotomic ring 
@@ -74,11 +72,8 @@ def convert(z, v, k, normal_basis = None):
     for i in range(n):                
         c.append(sum(inv[(j-i)%n]*val_trz[j] for j in range(n)))
 
-    
     tuple(c)
     return (c, normal_basis, B, inv)
-
-
 
 def isom_normal(v, w, k1, k2, k, normal_basis_w = None, normal_basis_v = None):
     '''
@@ -125,7 +120,6 @@ def calcul_isom_normal(elem, k2, img_x):
     Function that given an element of k1 computes its image in k2 by the 
     isomorphism defined by the image of k1.gen() named img_x.
     '''
-
     n = k2.degree()
     elem_vector = elem.vector()
     puis_img = [1]
