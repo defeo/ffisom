@@ -65,7 +65,7 @@ def convert(z, v, k, normal_basis = None):
         val_trz.append((v*(z**q**(n-i))).trace())
     
     # We will now compute the coefficients c_i while keeping in mind that they 
-    # are computed from each rows of the matrix B. So we need to take that into 
+    # are computed from each rows of the matrix B^(-1). So we need to take that into 
     # account and push the coefficient of inv "to the right". Practically, we 
     # just need to index them with (j-i)%n.
     c = []
