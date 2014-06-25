@@ -508,7 +508,7 @@ def find_unique_orbit(k, G):
         
     # return the Gaussian period
     # ... lovely combinatorial iterators!
-    return sum(zeta**prod(g**e for (g, _), e in zip(G, exps))
+    return sum(zeta**prod(g**e for (g, _), e in zip(G, exps)).lift()
                for exps in CProd(*map(lambda (_,x): xrange(x),
                                       G)))
 
