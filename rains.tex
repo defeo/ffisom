@@ -68,7 +68,7 @@ $\eta_2$ will yield an isomorphism.
 
 Things get more complicated when $m$ is larger. In this case, indeed,
 one must chose $\eta_1$ and $\eta_2$ so that they are roots of the
-same factor of $\Phi_m$. Pinch's suggests picking random generators of
+same factor of $\Phi_m$. Pinch suggests picking random generators of
 $\mu_m$ until a successful pair is found. To test if a pair is good,
 Pinch advances to the second phase, then tests if the mapping induced
 on the \emph{default} generators of $k_1$ and $k_2$ is acceptable.
@@ -128,7 +128,7 @@ G\subset(\Z/m\Z)^\ast$ with orders
 \begin{equation} \# G/\langle q\rangle = s,\qquad \#\langle q\rangle =
 f = [K[\mu_m]:K]/s,
 \end{equation}
-where $r$ is the splitting degree and $f$ the inertia degree of
+where $s$ is the splitting degree and $f$ the inertia degree of
 $\frak{p}$ in $K[\mu_m]$.
 
 Pinch's algorithm performs better when $\langle q\rangle =
@@ -398,27 +398,42 @@ $\ord_\ell(\pi)$ of $\F_q$ is the smallest extension containing all of
 $E[\ell]$. By $\ell$-adic lifting, this is readily generalized to
 powers of Elkies primes.
 
+When trying to define elliptic periods, one must take into account a
+phenomenon that does not happen with Gaussian periods. Elliptic curves
+have non-trivial automorphisms which must be accounted for. We recall
+the following classical theorem.
+
+\begin{Prop}
+  Let $E$ be an elliptic curve defined over a field $k$ of order $q$,
+  and let $j$ be its $j$-invariant. The group of $k$-rational
+  automorphisms of $E$, denoted $\Aut_k(E)$ has order
+  \begin{itemize}
+  \item $24$ if $j=0$ and $q=4\mod 6$,
+  \item $12$ if $j=0$ and $q=9\mod 12$,
+  \item $6$ if $j=0$ and $q=1 \mod 6$,
+  \item $4$ if $j=1728$ and $q = 1,5 \mod 12$,
+  \item $2$ in any other case.
+  \end{itemize}
+\end{Prop}
+
 Now we can define the \emph{elliptic periods} in a similar way to the
 Gaussian periods defined above.
 
 \begin{Def}
-  Let $E/\F_q$ be an elliptic curve and let $m$ be a power of an
-  Elkies prime. Let $\alpha\in(\Z/m\Z)^\ast$ be an eigenvalue of
-  $\pi\bmod m$, and suppose that
-  $(\Z/m\Z)^\ast=\langle\alpha\rangle\times S$. For any primitive
-  $m$-torsion point $P$ in the eigenspace of $\alpha$, define the
-  elliptic period
+  Let $E/\F_q$ be an elliptic curve, with $j\ne0$ in characteristic
+  $2$ and $3$, and let $m$ be a power of an Elkies prime. Suppose that
+  $\#\Aut_{\F_q}(E)$ divides $\euler(m)$, and identify $\Aut_{\F_q}(E)$ to a
+  subgroup of $(\Z/m\Z)^\ast$. Let $\alpha\in(\Z/m\Z)^\ast$ be an
+  eigenvalue of $\pi\bmod m$, and suppose that
+  $(\Z/m\Z)^\ast/\Aut_{\F_q}(E)=\langle\alpha\rangle\times S$. For any
+  primitive $m$-torsion point $P$ in the eigenspace of $\alpha$,
+  define the elliptic period
   \begin{equation}
-    \eta_\alpha(P) = \sum_{\sigma\in S} ([\sigma]P)_Y,
+    \eta_\alpha(P) = \sum_{\sigma\in S} ([\sigma]P)_X^{\#\Aut_k(E)/2},
   \end{equation}
   where $[\sigma]P$ denotes scalar multiplication by $\sigma$, and
-  $P_Y$ denotes the ordinate of the point $P$.
+  $P_X$ denotes the abscissa of the point $P$.
 \end{Def}
-
-\todo{Is it worth to repeat the definition using the $X$-coordinates?
-  I think that taking a quadratic twist should have the same effect,
-  and with $Y$ coordinates we can catch an additional degree $2$, so
-  it seems useless to write definitions twice. To be checked...}
 
 The case of $m$ a power of $p$ is also easy to deal with, as shown
 below.
@@ -426,11 +441,11 @@ below.
 \begin{Def}
   Suppose $p\ne2$ \todo{is this really necessary?}, let $E/\F_q$ be an
   ordinary elliptic curve and let $k\ge1$. Let $t$ be the trace of
-  $E$, and suppose that $(\Z/p^k\Z)^\ast=\langle t\rangle\times
-  S$. For any primitive $p^k$-torsion point $P\in E$, define the
-  elliptic period
+  $E$, and suppose that $(\Z/p^k\Z)^\ast/\Aut_{\F_q}(E)=\langle
+  t\rangle\times S$. For any primitive $p^k$-torsion point $P\in E$,
+  define the elliptic period
   \begin{equation}
-    \eta_t(P) = \sum_{\sigma\in S} ([\sigma]P)_Y.
+    \eta_t(P) = \sum_{\sigma\in S} ([\sigma]P)_X.
   \end{equation}
 \end{Def}
 
