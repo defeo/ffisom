@@ -40,13 +40,13 @@ def routine_mp(p, borne_nbn, start_n = 3, leap = 1): #2
         k1 = GF(p**n, name = 'x', modulus =
                 PolynomialRing(GF(p), name='X').irreducible_element(n,
                     algorithm='random'))
-        c = cputime()
-        compteur = find_elliptic_curve(GF(p), k1, (m, S_t))[-1]
-        c_t = cputime(c)
+        w = cputime()
+        n_E = find_elliptic_curve(GF(p), k1, (m, S_t))[-1]
+        w_t = cputime(w)
         if i :
             #The degree, the value of m, the number of trace candidates,
             # time to find an E, number of elliptic curves tested.
-            print '%s %s %s %s %s' % (n, m, len(S_t), c_t, compteur)
+            print '%s %s %s %s %s' % (n, m, len(S_t), w_t, n_E)
 
         for j in range(leap):
             n = next_prime(n)
@@ -77,18 +77,18 @@ def routine_n(n, borne_nbp, start_p = 5, leap = 1): #3
 # Evolution of parameters with n fixed.
 def routine_mn(n, borne_nbp, start_p = 5, leap = 1): #4
     p = start_p
-    print '#p m len(S_t) t_E compteur'
+    print '#p m len(S_t) t_E n_E'
 
     for i in range(borne_nbp):
         m, S_t = find_m(n, GF(p))
         k1 = GF(p**n, name = 'x', modulus =
                 PolynomialRing(GF(p), name='X').irreducible_element(n,
                     algorithm='random'))
-        c = cputime()
-        compteur = find_elliptic_curve(GF(p), k1, (m, S_t))[-1]
-        c_t = cputime(c)
+        w = cputime()
+        n_E = find_elliptic_curve(GF(p), k1, (m, S_t))[-1]
+        w_E = cputime(c)
         if i :
-            print '%s %s %s %s %s' % (p, m, len(S_t), c_t, compteur)
+            print '%s %s %s %s %s' % (p, m, len(S_t), w_E, n_E)
 
         for j in range(leap):
             p = next_prime(p)
