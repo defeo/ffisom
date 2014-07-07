@@ -188,10 +188,6 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         # Looking for a generator of order exactly phi(m)/n in 
         # phi(m)/something.
         gen_G = Integers(m).unit_gens()[0]**n
-        # Note : à priori, l'ordre peut être le même en utilisant les X ou 
-        # les Y. Donc il faudrait quotienter par {+-1} même pour les Y. 
-        # Sauf si la puissance carré dans la somme équivaut au final à 
-        # quotienter par i.
         order = euler_phi(m)//(2*n)
 
         if not Y_coordinates:
