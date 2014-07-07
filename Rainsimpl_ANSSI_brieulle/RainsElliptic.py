@@ -436,9 +436,6 @@ def find_trace(n,m,k):
                 sol.append(g**(n*i))
 
         return set(sol)
-    # If m is prime (power), then we need to look at the roots
-    # Probably a temporary condition
-    #TODO : c'est de la merde, à revoir.
     else:
         sol = []
         g = Zm.unit_gens()[0]
