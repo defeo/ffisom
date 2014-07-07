@@ -438,35 +438,18 @@ def find_trace(n,m,k):
         return set(sol)
     else:
         sol = []
-        g = Zm.unit_gens()[0]
-        phi_m = euler_phi(m)
-        alpha = phi_m/n
-        q_m = Zm(q)
-        fact = phi_m.factor()
-        if q_m**n == 1 :
-            return []
-        else:
-            log_q = q_m.log(g)
+        g = Zm.unit_gens()[0]**(euler_phi(m)/(euler_phi(m).gcd(n)))
 
-        log_a = [Integers(phi_m)(i*alpha) for i in n.coprime_integers(n)]
-        L = [g**i for i in log_a]
-
-
-        # If q is of order n in (Z/m)* then q/a can never be of order greater
-        # than n; which is what we want.
-
-        for i in range(len(L)):
-            diff = log_q - log_a[i]
-            b = g**diff
-
-            ord_b = Integers(phi_m)(diff).order()
-
-            if ord_b < n:
+        for a in [g**(i) for i in n.coprime_integers(n)]:
+            ord_b = Zm(q/a).multiplicative_order()
+            if ord_b == n:
                 continue
-            elif ZZ(L[i] + b) > 2*sqrt(q):
+            elif ord_b < n:
+                continue
+            elif ZZ(a + q/a) > 2*sqrt(q):
                 continue
             else:
-                sol.append(L[i] + b)
+                sol.append(Zm(a + q/a))
 
         return set(sol)
 
