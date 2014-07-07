@@ -1,4 +1,6 @@
 #!/bin/bash
+#Usage : ./test.sh test_number fixed_parameters number_of_tests
+
 N=1
 
 if [[ "$1" == 1 ]];then
