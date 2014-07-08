@@ -496,4 +496,4 @@ def find_m(n, k, bound = None):
             if len(S_t) < 1:   # Some time in the future we'd like to have a 
                 continue       # better bound than just 1.
             else:
-                return m #S_t #sol.append((m, S_t))
+                return m, S_t #sol.append((m, S_t))
