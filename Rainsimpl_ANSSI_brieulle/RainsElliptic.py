@@ -177,12 +177,9 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
     n = E.base_ring().degree()
 
     # Searching for a point of order exactly m.
-    w = cputime()
     P = E(0)
     while any((m//i)*P == 0 for i in m.prime_divisors()):
         P = cofactor*E.random_point()
-    w_ordm = cputime(w)
-    w = cputime()
 
     if case == 0:
         # Looking for a generator of order exactly phi(m)/n in 
@@ -192,8 +189,6 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
 
         if not Y_coordinates:
             r = sum((ZZ(gen_G**i)*P)[0] for i in range(order))
-            w_period = cputime(w)
-            #return w_ordm, w_period
             return r
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**2 for i in range(order))
@@ -203,7 +198,6 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         
         if not Y_coordinates:
             r = sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
-            #return w_ordm, w_period
             return r
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**4 for i in range(order))
@@ -214,7 +208,6 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
 
         if not Y_coordinates:
             r = sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
-            #return w_ordm, w_period
             return r
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**6 for i in range(order))
@@ -325,7 +318,6 @@ def find_elliptic_curve(k, K, m_t):
     q = k.cardinality()
     m = m_t[0]
     S_t = m_t[1]
-    compteur = 0
 
     #We start by the special cases j = 1728, 0
     E_j1728 = EllipticCurve(j = k(1728))
@@ -336,7 +328,7 @@ def find_elliptic_curve(k, K, m_t):
         # have to test the only curve y² = x³ + x.
         compteur += 1
         if 0 in S_t:
-            return E_j1728, 0, compteur
+            return E_j1728, 0
     else:
         # If q = 1 mod 4, then the trace is not 0, and we have to try four
         # trace to see which is the best candidate.
@@ -346,10 +338,9 @@ def find_elliptic_curve(k, K, m_t):
         L = [(t*(c**i).lift(), g**i) for i in range(4)]
 
         for i in range(4):
-            compteur += 1
             if Integers(m)(L[i][0]) in S_t:
                 # E, case, t
-                return E_j1728.quartic_twist(L[i][1]), 1, compteur
+                return E_j1728.quartic_twist(L[i][1]), 1
 
     E_j0 = EllipticCurve(j = k(0))
 
@@ -357,9 +348,8 @@ def find_elliptic_curve(k, K, m_t):
         # Same as before, if q != 1 mod 6, there's no 6th root of unity in
         # GF(q) and the trace is 0 (that's pretty quick reasoning.. :D).
         # Justification will come later.
-        compteur += 1
         if 0 in S_t:
-            return E_j0, 0, compteur
+            return E_j0, 0
     else:
         g = k.unit_gens()[0]
         c = g**((q-1)/6)
@@ -368,7 +358,7 @@ def find_elliptic_curve(k, K, m_t):
 
         for l in L:
             if Integers(m)(l[0]) in S_t:
-                return E_j0.sextic_twist(l[1]), 2, compteur
+                return E_j0.sextic_twist(l[1]), 2
 
     # General case
     for j in k:
@@ -380,12 +370,11 @@ def find_elliptic_curve(k, K, m_t):
         L = [(t, E), (-t, E.quadratic_twist())]
 
         for l in L:
-            compteur +=1
             if Integers(m)(l[0]) in S_t:
-                return l[1], 0, compteur
+                return l[1], 0
 
     # If no elliptic curve has been found.
-    return None
+    return None, -1
 
 def find_trace(n,m,k):
     '''
