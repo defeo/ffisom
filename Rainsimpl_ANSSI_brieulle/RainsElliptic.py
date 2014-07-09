@@ -81,7 +81,7 @@ def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
         raise RuntimeError, 'No suitable m found, increase your bound.'
 
     # Finding the elliptic curve on which we can work. 
-    E, case, compteur = find_elliptic_curve(k, k1, m_t) 
+    E, case = find_elliptic_curve(k, k1, m_t) 
 
     if E is None:
         raise RuntimeError, 'No suitable elliptic curve found, check your \
@@ -90,9 +90,9 @@ def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
     Ek1 = E.change_ring(k1)
     Ek2 = E.change_ring(k2)
 
-    a,b = (find_unique_orbit_elliptic(Ek1, m_t[0], Y_coordinates, 
+    a, b = (find_unique_orbit_elliptic(Ek1, m_t[0], Y_coordinates, 
         case), find_unique_orbit_elliptic(Ek2, m_t[0], Y_coordinates, case))
-        
+
     return a, b
 
 def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
@@ -185,11 +185,14 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         # Looking for a generator of order exactly phi(m)/n in 
         # phi(m)/something.
         gen_G = Integers(m).unit_gens()[0]**n
+        # Note : à priori, l'ordre peut être le même en utilisant les X ou 
+        # les Y. Donc il faudrait quotienter par {+-1} même pour les Y. 
+        # Sauf si la puissance carré dans la somme équivaut au final à 
+        # quotienter par i.
         order = euler_phi(m)//(2*n)
 
         if not Y_coordinates:
-            r = sum((ZZ(gen_G**i)*P)[0] for i in range(order))
-            return r
+            return sum((ZZ(gen_G**i)*P)[0] for i in range(order))
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**2 for i in range(order))
     elif case == 1:
@@ -197,8 +200,7 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         order = euler_phi(m)/(4*n)
         
         if not Y_coordinates:
-            r = sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
-            return r
+            return sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**4 for i in range(order))
 
@@ -207,8 +209,7 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         order = euler_phi(m)/(6*n)
 
         if not Y_coordinates:
-            r = sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
-            return r
+            return sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
         else:
             return sum(((ZZ(gen_G**i)*P)[1])**6 for i in range(order))
 
@@ -316,6 +317,7 @@ def find_elliptic_curve(k, K, m_t):
     '''
     p = k.characteristic()
     q = k.cardinality()
+    n = K.degree()
     m = m_t[0]
     S_t = m_t[1]
 
@@ -326,7 +328,6 @@ def find_elliptic_curve(k, K, m_t):
         # If q != 1 mod 4, then there's no 4th root of unity, then magically
         # all the quartic twist are already in k and the trace is 0. We just
         # have to test the only curve y² = x³ + x.
-        compteur += 1
         if 0 in S_t:
             return E_j1728, 0
     else:
@@ -409,6 +410,8 @@ def find_trace(n,m,k):
     Zm = Integers(m)
     p = k.characteristic()
     q = k.cardinality()
+    sq = sqrt(float(2*q))
+    q_m = Zm(q)
 
     # If m is a multiple of p, then we just need the trace to be of order 
     #exactly n in (Z/m)*
@@ -416,33 +419,47 @@ def find_trace(n,m,k):
         raise NotImplementedError
     elif m%p == 0:
         sol = []
-        g = Zm.unit_gens()[0]**n
+        phi_m = euler_phi(m)
+        alpha = phi_m/n
+        g = Zm.unit_gens()[0]
 
-        for i in euler_phi(m).coprime_integers(euler_phi(m)):
-            if ZZ(g**(n*i)) > 2*sqrt(q):
+        log_t = [i*alpha for i in n.coprime_integers(n)]
+
+        for t in [g**i for i in log_t]:
+            if abs(t.centerlift()) > sq:
                 continue
             else:
-                sol.append(g**(n*i))
+                sol.append(t)
 
         return set(sol)
+    # We don't want q to be of order n or dividing n, then q/a would be of order
+    # n; which is unacceptable.
+    elif q_m**n == 1:
+        return []
     else:
         sol = []
-        g = Zm.unit_gens()[0]**(euler_phi(m)/(euler_phi(m).gcd(n)))
+        phi_m = euler_phi(m)
+        alpha = phi_m/phi_m.gcd(n)
+        g = Zm.unit_gens()[0]
+        Zphi_m = Integers(phi_m)
+        
+        log_a = [i*alpha for i in n.coprime_integers(n)]
+        a = [g**i for i in log_a]
+        log_q = q_m.log(g)
 
-        for a in [g**(i) for i in n.coprime_integers(n)]:
-            ord_b = Zm(q/a).multiplicative_order()
-            if ord_b == n:
+        for i in range(len(log_a)):
+            diff = log_q - log_a[i]
+            b = g**diff
+            ord_b = diff.order()
+
+            if ord_b <= n:
                 continue
-            elif ord_b < n:
-                continue
-            elif ZZ(a + q/a) > 2*sqrt(q):
+            elif abs((a[i] + b).centerlift()) > sq:
                 continue
             else:
-                sol.append(Zm(a + q/a))
+                sol.append(a[i] + b)
 
         return set(sol)
-
-
 def find_m(n, k, bound = None):
     '''
     INPUT : an integers n, a base field k, an integer bound
@@ -485,4 +502,4 @@ def find_m(n, k, bound = None):
             if len(S_t) < 1:   # Some time in the future we'd like to have a 
                 continue       # better bound than just 1.
             else:
-                return m, S_t #sol.append((m, S_t))
+                return m, S_t
