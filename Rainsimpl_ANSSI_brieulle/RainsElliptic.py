@@ -478,7 +478,7 @@ def find_m(n, k, bound = None):
         # m composite not implemented yet
         if not m.is_prime_power():
             continue 
-        elif (euler_phi(m)//n).gcd(n) != 1:
+        elif (euler_phi(m)/n).gcd(n) != 1:
             continue
         else:
             S_t = find_trace(n, m, k)
