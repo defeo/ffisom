@@ -1,3 +1,4 @@
+from sage.all import *
 from rainselliptictest import *
 import sys, getopt
 
@@ -93,14 +94,15 @@ def routine_mn(n, borne_nbp, start_p = 5, leap = 1): #4
         for j in range(leap):
             p = next_prime(p)
 
-test = int(sys.argv[1])
-if test == 1:
-    routine_p(ZZ(sys.argv[2]), int(sys.argv[3]))
-elif test == 2:
-    routine_mp(ZZ(sys.argv[2]), int(sys.argv[3]))
-elif test == 3:
-    routine_n(ZZ(sys.argv[2]), int(sys.argv[3]))
-elif test == 4:
-    routine_mn(ZZ(sys.argv[2]), int(sys.argv[3]))
-else:
-    raise RuntimeError, 'There\'s only four tests for now.'
+if __name__ == '__main__':
+    test = int(sys.argv[1])
+    if test == 1:
+        routine_p(ZZ(sys.argv[2]), int(sys.argv[3]))
+    elif test == 2:
+        routine_mp(ZZ(sys.argv[2]), int(sys.argv[3]))
+    elif test == 3:
+        routine_n(ZZ(sys.argv[2]), int(sys.argv[3]))
+    elif test == 4:
+        routine_mn(ZZ(sys.argv[2]), int(sys.argv[3]))
+    else:
+        raise RuntimeError, 'There\'s only four tests for now.'

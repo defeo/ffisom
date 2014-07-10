@@ -2,6 +2,10 @@
 #Usage : ./test.sh test_number fixed_parameters number_of_tests
 
 N=1
+SAGE=${SAGE:-sage}
+GNUPLOT=${GNUPLOT:-gnuplot}
+CMD=batch.py
+
 
 if [[ "$1" == 1 ]];then
     while [ -f "data_test1_p_fixed${N}.txt"  ]
@@ -12,7 +16,7 @@ if [[ "$1" == 1 ]];then
     NAMEFILE="data_test1_p_fixed${N}"
 
     echo 'Generating the data file...'
-    sage print.sage $1 $2 $3 > ${NAMEFILE}.txt
+    $SAGE $CMD $1 $2 $3 > ${NAMEFILE}.txt
 
     echo 'Generating the graph...'
 
@@ -23,7 +27,7 @@ if [[ "$1" == 1 ]];then
     plot \"${NAMEFILE}.txt\" using 1:2 title 'time_m' with lines,\
      \"${NAMEFILE}.txt\" using 1:3 title 'time_E' with lines,\
      \"${NAMEFILE}.txt\" using 1:4 title 'time_ordm' with lines,\
-     \"${NAMEFILE}.txt\" using 1:5 title 'time_period' with lines"| gnuplot
+     \"${NAMEFILE}.txt\" using 1:5 title 'time_period' with lines"| $GNUPLOT
 
 elif [[ "$1" == 2 ]];then
     while [ -f "data_test2_p_fixed${N}.txt"  ]
@@ -45,7 +49,7 @@ elif [[ "$1" == 3 ]];then
     NAMEFILE="data_test3_n_fixed${N}"
 
     echo 'Generating the data file...'
-    sage print.sage $1 $2 $3 > ${NAMEFILE}.txt
+    SAGE $CMD $1 $2 $3 > ${NAMEFILE}.txt
 
     echo 'Generating the graph...'
 
@@ -56,7 +60,7 @@ elif [[ "$1" == 3 ]];then
     plot \"${NAMEFILE}.txt\" using 1:2 title 'time_m' with lines,\
      \"${NAMEFILE}.txt\" using 1:3 title 'time_E' with lines,\
      \"${NAMEFILE}.txt\" using 1:4 title 'time_ordm' with lines,\
-     \"${NAMEFILE}.txt\" using 1:5 title 'time_period' with lines"| gnuplot
+     \"${NAMEFILE}.txt\" using 1:5 title 'time_period' with lines"| $GNUPLOT
 
 
 elif [[ "$1" == 4 ]];then
