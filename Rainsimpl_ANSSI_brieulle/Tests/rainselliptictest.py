@@ -5,6 +5,7 @@ from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.rings.integer_ring import ZZ
 from sage.functions.other import sqrt
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
+import XZ
 
 
 def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
@@ -180,14 +181,11 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
     ALGORITHM:
     TODO
     '''
-    cofactor = E.cardinality()//m
     n = E.base_ring().degree()
 
     # Searching for a point of order exactly m.
     w = cputime()
-    P = E(0)
-    while any((m//i)*P == 0 for i in m.prime_divisors()):
-        P = cofactor*E.random_point()
+    P = XZ.find_ordm(E, m)
     w_ordm = cputime(w)
     w = cputime()
 
@@ -340,7 +338,7 @@ def find_elliptic_curve(k, K, m_t):
     if q%4 != 1:
         # If q != 1 mod 4, then there's no 4th root of unity, then magically
         # all the quartic twist are already in k and the trace is 0. We just
-        # have to test the only curve y² = x³ + x.
+        # have to test the only curve y\B2 = x\B3 + x.
         compteur += 1
         if 0 in S_t:
             return E_j1728, 0, compteur
@@ -360,7 +358,7 @@ def find_elliptic_curve(k, K, m_t):
 
     E_j0 = EllipticCurve(j = k(0))
 
-    if q%6 != 1:
+    if q%3 != 1:
         # Same as before, if q != 1 mod 6, there's no 6th root of unity in
         # GF(q) and the trace is 0 (that's pretty quick reasoning.. :D).
         # Justification will come later.
@@ -392,7 +390,7 @@ def find_elliptic_curve(k, K, m_t):
                 return l[1], 0, compteur
 
     # If no elliptic curve has been found.
-    return None, -1
+    return None, -1, -1
 
 def find_trace(n,m,k):
     '''
@@ -521,4 +519,4 @@ def find_m(n, k, bound = None):
             if len(S_t) < 1:   # Some time in the future we'd like to have a 
                 continue       # better bound than just 1.
             else:
-                return m, S_t
+                return m, S_t 
