@@ -8,7 +8,7 @@ from sage.schemes.elliptic_curves.constructor import EllipticCurve
 import XZ
 
 
-def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
+def isom_elliptic(k1, k2, k = None, bound = None):
     '''
     INPUT : 
     - ``k1`` -- a finite field, extension of degree n of k.
@@ -90,12 +90,12 @@ def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
     Ek1 = E.change_ring(k1)
     Ek2 = E.change_ring(k2)
 
-    a, b = (find_unique_orbit_elliptic(Ek1, m_t[0], Y_coordinates, 
-        case), find_unique_orbit_elliptic(Ek2, m_t[0], Y_coordinates, case))
+    a, b = (find_unique_orbit_elliptic(Ek1, m_t[0], 
+        case), find_unique_orbit_elliptic(Ek2, m_t[0], case))
 
     return a, b
 
-def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
+def find_unique_orbit_elliptic(E, m, case = 0):
     '''
     INPUT : 
     
@@ -184,27 +184,18 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)//(2*n)
 
-        if not Y_coordinates:
-            return sum((ZZ(gen_G**i)*P)[0] for i in range(order))
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**2 for i in range(order))
+        return sum((ZZ(gen_G**i)*P)[0] for i in range(order))
     elif case == 1:
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)/(4*n)
         
-        if not Y_coordinates:
-            return sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**4 for i in range(order))
+        return sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
 
     elif case == 2:
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)/(6*n)
 
-        if not Y_coordinates:
-            return sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**6 for i in range(order))
+        return sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
 
 
 

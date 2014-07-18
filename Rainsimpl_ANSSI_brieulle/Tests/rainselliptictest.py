@@ -8,7 +8,7 @@ from sage.schemes.elliptic_curves.constructor import EllipticCurve
 import XZ
 
 
-def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
+def isom_elliptic(k1, k2, k = None, bound = None):
     '''
     INPUT : 
     
@@ -95,15 +95,15 @@ def isom_elliptic(k1, k2, k = None, Y_coordinates = False, bound = None):
     Ek1 = E.change_ring(k1)
     Ek2 = E.change_ring(k2)
 
-    liste = (find_unique_orbit_elliptic(Ek1, m_t[0], Y_coordinates, 
-        case), find_unique_orbit_elliptic(Ek2, m_t[0], Y_coordinates, case))
+    liste = (find_unique_orbit_elliptic(Ek1, m_t[0], case), 
+        find_unique_orbit_elliptic(Ek2, m_t[0], case))
 
     w_ordm = liste[0][0]
     w_period = liste[0][1]
     return w_m, w_E, w_ordm, w_period, m_t[0]
     #return a, b
 
-def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
+def find_unique_orbit_elliptic(E, m, case = 0):
     '''
     INPUT : 
     
@@ -195,34 +195,25 @@ def find_unique_orbit_elliptic(E, m, Y_coordinates = False, case = 0):
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)//(2*n)
 
-        if not Y_coordinates:
-            r = sum((ZZ(gen_G**i)*P)[0] for i in range(order))
-            w_period = cputime(w)
-            return w_ordm, w_period
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**2 for i in range(order))
+        r = sum((ZZ(gen_G**i)*P)[0] for i in range(order))
+        w_period = cputime(w)
+        return w_ordm, w_period
+
     elif case == 1:
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)/(4*n)
         
-        if not Y_coordinates:
-            r = sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
-            w_period = cputime(w)
-            return w_ordm, w_period
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**4 for i in range(order))
+        r = sum(((ZZ(gen_G**i)*P)[0])**2 for i in range(order))
+        w_period = cputime(w)
+        return w_ordm, w_period
 
     elif case == 2:
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)/(6*n)
 
-        if not Y_coordinates:
-            r = sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
-            w_period = cputime(w)
-            return w_ordm, w_period
-        else:
-            return sum(((ZZ(gen_G**i)*P)[1])**6 for i in range(order))
-
+        r = sum(((ZZ(gen_G**i)*P)[0])**3 for i in range(order))
+        w_period = cputime(w)
+        return w_ordm, w_period
 
 
 
