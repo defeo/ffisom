@@ -468,7 +468,7 @@ def find_m(n, k, bound = None):
     that it is actually the case.
 
     It still works fine, theoratically, if an + 1 is a prime power and d isn't 
-    divisble by n. Though, we almost get to pick a m that is prime.
+    divisble by n. Though, we almost always get to pick a m that is prime.
     
     Once we have that integer, we try to compute good candidates for the 
     traces and see how many works. If less than a certain number works (this 
