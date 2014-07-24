@@ -247,7 +247,7 @@ def find_elliptic_curve(k, K, m_t):
     of a point of order m will span GF(q^n) and we'll be able to compute the 
     elliptic periods as it was planned.
 
-    We start by looking at the two special cases j = 0 and 1728. If q is not 1 
+    We start by looking at the two special cases j = 1728 or 0. If q is not 1 
     modulo 4 and 3 respectively, then the curves are supersingular (t = 0) and 
     if 0 is among the good traces, they are to be treated like the other 
     curves.
