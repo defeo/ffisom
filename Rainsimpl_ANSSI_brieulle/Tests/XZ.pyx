@@ -43,7 +43,7 @@ cdef dadd(object P, object Q, object diff, object a, object b):
 
         return X5, Z5
 
-cdef ladder(object P, object m, object a, object b, object E = None):
+cpdef ladder(object P, object m, object a, object b, object E = None):
     if E is None:
         S = (0, 0)
     else:
@@ -67,11 +67,13 @@ cpdef find_ordm(object E, object m):
     coprime = m.prime_divisors()
     size = len(coprime)
 
+    P = (0,0)
+
     while(1):
         count = 0
         for a in coprime:
             m_a = m//a
-            if ladder((0,0), m_a, E.a4(), E.a6())[1] == 0:
+            if ladder(P, m_a, E.a4(), E.a6())[1] == 0:
                 continue
             else:
                 count += 1
