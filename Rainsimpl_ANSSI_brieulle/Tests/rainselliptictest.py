@@ -342,7 +342,7 @@ def find_elliptic_curve(k, K, m_t):
         g = k.unit_gens()[0]
         c = g**((q-1)/4)
         t = E_j1728.trace_of_frobenius()
-        L = [(t*(c**i).lift(), g**i) for i in range(4)]
+        L = [(t*(c**i).centerlift(), g**i) for i in range(4)]
 
         for i in range(4):
             compteur += 1
@@ -363,7 +363,7 @@ def find_elliptic_curve(k, K, m_t):
         g = k.unit_gens()[0]
         c = g**((q-1)/6)
         t = E_j0.trace_of_frobenius()
-        L = [(t*(c**i).lift(), g**i) for i in range(6)]
+        L = [(t*(c**i).centerlift(), g**i) for i in range(6)]
 
         for l in L:
             if Integers(m)(l[0]) in S_t:

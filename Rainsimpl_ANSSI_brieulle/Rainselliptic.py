@@ -10,6 +10,7 @@ import XZ
 def isom_elliptic(k1, k2, k = None, bound = None):
     '''
     INPUT : 
+
     - ``k1`` -- a finite field, extension of degree n of k.
 
     - ``k2`` -- a finite field, extension of degree n of k; k1 != k2.
@@ -200,7 +201,7 @@ def find_unique_orbit_elliptic(E, m, case = 0):
         gen_G = Integers(m).unit_gens()[0]**n
         order = euler_phi(m)/(4*n)
         
-        return sum((XZ.ladder(P, ZZ(gen_G**i), E.a4(), E.a6())[0])**2 for i in
+        return sum((XZ.ladder(P, ZZ(gen_G**i), E.a4(), E.a6())[0])**2 for i in 
                 range(order))
 
     elif case == 2:
@@ -272,7 +273,6 @@ def find_elliptic_curve(k, K, m_t):
     '''
     p = k.characteristic()
     q = k.cardinality()
-    n = K.degree()
     m = m_t[0]
     S_t = m_t[1]
 
@@ -291,7 +291,7 @@ def find_elliptic_curve(k, K, m_t):
         g = k.unit_gens()[0]
         c = g**((q-1)/4)
         t = E_j1728.trace_of_frobenius()
-        L = [(t*(c**i).lift(), g**i) for i in range(4)]
+        L = [(t*(c**i).centerlift(), g**i) for i in range(4)]
 
         for i in range(4):
             if Integers(m)(L[i][0]) in S_t:
@@ -311,7 +311,7 @@ def find_elliptic_curve(k, K, m_t):
         g = k.unit_gens()[0]
         c = g**((q-1)/6)
         t = E_j0.trace_of_frobenius()
-        L = [(t*(c**i).lift(), g**i) for i in range(6)]
+        L = [(t*(c**i).centerlift(), g**i) for i in range(6)]
 
         for l in L:
             if Integers(m)(l[0]) in S_t:
