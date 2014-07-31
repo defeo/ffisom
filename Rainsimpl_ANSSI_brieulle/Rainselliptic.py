@@ -50,28 +50,26 @@ def isom_elliptic(k1, k2, k = None, bound = None):
     with an unique orbit under the action of the Galois group. The algorithm is
     as follows :
 
-        - First we have to find an integer m with the following properties :
-
-            - We want to have n | phi(m) and (phi(m)/n, n) = 1.
-            - We need m such that there exist an eigenvalue of the Frobenius of
-              order n in (Z/m)* and for that egeinvalue to be of minimal order. 
-              From there we can construct a good class for the trace of the 
-              Frobenius, if we have one or more of those classes, we select 
-              this m (note : for now, m is just a prime or a prime power).
-
-          This is done by the function find_m.
+    #. First we have to find an integer m with the following properties :
+        #. We want to have n | phi(m) and (phi(m)/n, n) = 1.
+        #. We need m such that there exist an eigenvalue of the Frobenius of
+           order n in (Z/m)* and for that egeinvalue to be of minimal order. 
+           From there we can construct a good class for the trace of the 
+           Frobenius, if we have one or more of those classes, we select 
+           this m (note : for now, m is just a prime or a prime power).
+       This is done by the function find_m.
     
-        - After that, we need to pick a good elliptic curve. Which is an 
-          elliptic curve defined over GF(q) with its trace of Frobenius has its 
-          class modulo m equal to one of the good candidates, the one returned 
-          by the function find_m. The properties on m ensure that the elliptic 
-          curve over GF(q^n) has points of order m and that the abscissas of 
-          such points span GF(q^n). The function doing that is 
-          find_elliptic_curve.
+    #. After that, we need to pick a good elliptic curve. Which is an 
+       elliptic curve defined over GF(q) with its trace of Frobenius has its 
+       class modulo m equal to one of the good candidates, the one returned 
+       by the function find_m. The properties on m ensure that the elliptic 
+       curve over GF(q^n) has points of order m and that the abscissas of 
+       such points span GF(q^n). The function doing that is 
+       find_elliptic_curve.
 
-        - Finally, we compute the elliptic periods u1 and u2 on both E/k1 and 
-          E/k2 using the abscissas of a point of order m on each curves, 
-          the isomorphism we are looking for is the one sending u1 on u2. 
+    #. Finally, we compute the elliptic periods u1 and u2 on both E/k1 and 
+       E/k2 using the abscissas of a point of order m on each curves, 
+       the isomorphism we are looking for is the one sending u1 on u2. 
     '''
     if k is None:
 	    k = k1.base_ring()
@@ -246,7 +244,7 @@ def find_elliptic_curve(k, K, m_t):
     ALGORITHM:
 
     The goal is to pick an elliptic curve of which the trace of its Frobenius 
-    t is among the right class modulo m, the ones in S_t. We do that in order to 
+    t is among the right class modulo m, the ones in S_t. We do that in order to
     have point of order m only on E/GF(q^n) or above, since then the abscissas 
     of a point of order m will span GF(q^n) and we'll be able to compute the 
     elliptic periods as it was planned.

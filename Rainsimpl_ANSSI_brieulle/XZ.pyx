@@ -43,11 +43,8 @@ cdef dadd(object P, object Q, object diff, object a, object b):
 
         return X5, Z5
 
-cpdef ladder(object P, object m, object a, object b, object E = None):
-    if E is None:
-        S = (0, 0)
-    else:
-        S = E(0)
+cpdef ladder(object P, object m, object a, object b):
+    S = (0, 0)
 
     R = P
     bits = m.binary()
