@@ -16,7 +16,6 @@ class FFIsomorphism {
 
 	fq_ctx_t ctx_1;
 	fq_ctx_t ctx_2;
-	fmpz_mod_poly_t x_image;
 
 	fq_poly_t delta_init;
 	fq_t xi_init;
@@ -40,6 +39,7 @@ class FFIsomorphism {
 public:
 
 	FFIsomorphism(const fmpz_mod_poly_t f1, const fmpz_mod_poly_t f2);
+	fmpz_mod_poly_t x_image;
 	void compute_image(fmpz_mod_poly_t image, const fmpz_mod_poly_t f);
 	~FFIsomorphism();
 };
