@@ -1,6 +1,6 @@
 SUBDIRS=fmpz_mod_poly_isom nmod_poly_isom
 GCC = g++
-GCCFLAGS="-O3 -I$(INC_DIR)/include"
+GCCFLAGS="-O3 -fPIC -I$(INC_DIR)/include"
 export
 
 all: libjavad_nmod.so libjavad_fmpz_mod.so
