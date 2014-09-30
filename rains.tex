@@ -460,9 +460,8 @@ Given $E$ and its trace, it is relatively easy to compute a basis for
 $E[m]$, and then compute the eigenspaces of $\pi\bmod m$. However this
 is a costly operation compared to other steps in Rains' algorithm,
 thus we shall prefer to work with curves for which only one eigenspace
-is defined over $\F_{q^n}$, while all other $m$-torsion points are
-defined in a higher extension. Hence, we shall look for curves such
-that $\ord_m(\alpha)<\ord_m(\beta)$.
+is defined over $\F_{q^n}$. Hence, we shall look for curves such
+that $\ord_m(\beta)$ does not divide $\ord_m(\alpha)$.
 
 Now we can formulate the main conjecture about elliptic periods.
 
@@ -473,7 +472,7 @@ Now we can formulate the main conjecture about elliptic periods.
   \item $|t|<2\sqrt{q}$,
   \item $x^2-tx+q = (x-\alpha)(x-\beta) \mod m$,
   \item $(\Z/m\Z)^\ast = \langle\alpha\rangle \times S$,
-  \item $\ord_m(\alpha)<\ord_m(\beta)$.
+  \item $\ord_m(\beta) \not| \ord_m(\alpha)$.
   \end{enumerate}
   Let $E/\F_q$ be an elliptic curve of trace $t$. Let $k$ be the
   smallest extension of $\F_q$ containing a point of order $m$. Then
@@ -528,6 +527,36 @@ To summarize, here is the elliptic variant of Rains' algorithm.
 
 \todo{When $\F_q$ is too small, there are not enough curves to play
   with. We should start by taking a small extension.}
+
+\paragraph{Example.}  Let $p=24571$ and consider the extension
+$\F_{p^3}/\F_p$. We have seen before that the cyclotomic method
+requires working in a degree $3$ extension. Using the elliptic method,
+we can pick $m=31$, indeed $\ord_{31}(p)=15$, and we have a
+decomposition
+\begin{equation} 
+  (\Z/31\Z)^\ast/\langle\pm1\rangle =
+  \langle\alpha\rangle\times\langle16\rangle
+\end{equation} 
+for $\alpha=5,25$. To the two possible values for $\alpha$, are
+associated two values for the trace $t=15,-4\mod m$. By counting the
+points of the $2p+4$ curves defined over $\F_p$, we find that $3226$
+of them (about $6.5\%$) have trace congruent to $15,-4$ modulo $31$,
+which is consistent with the ratio $2/31$.
+
+For example, Sage/Pari finds in about 10ms the curve
+\begin{equation}
+  E \;:\; y^2 = x^3 + 1274x - 5522
+\end{equation}
+of $j$-invariant $5$ and trace $232=15 \mod 31$. The curve has exactly
+$31$ points of $31$-torsion in $\F_{p^3}$, and the periods
+\begin{equation}
+  \eta_\alpha(P_m) = \sum_{i=0}^{5-1}([16^i]P_m)_X
+\end{equation}
+form a normal basis of $\F_{p^3}/\F_p$, whose minimal polynomial is
+\begin{equation}
+  x^3 + 756x^2 + 687x + 8402.
+\end{equation}
+
 
 \section{Finding a suitable $m$}
 
