@@ -18,9 +18,11 @@ void test_build_isom(slong degree, slong prime) {
 	flint_rand_t state;
 	flint_randinit(state);
 
-	nmod_poly_t f1, f2;
+	nmod_poly_t f1, f2, g1, g2;
 	nmod_poly_init(f1, p);
 	nmod_poly_init(f2, p);
+	nmod_poly_init(g1, p);
+	nmod_poly_init(g2, p);
 
 	cout << "building finite fields...\n";
 	nmod_poly_randtest_monic_irreducible(f1, state, degree + 1);
@@ -34,6 +36,8 @@ void test_build_isom(slong degree, slong prime) {
 	timeit_t time;
 	timeit_start(time);
 	FFIsomorphism ffIsomorphism(f1, f2);
+	ffIsomorphism.compute_generators(g1, g2);
+	ffIsomorphism.build_isomorphism(g1, g2);
 	timeit_stop(time);
 	cout << "time: " << (double) time->wall / 1000.0 << "\n";
 
@@ -43,8 +47,9 @@ void test_build_isom(slong degree, slong prime) {
 	// set temp = x
 	nmod_poly_set_coeff_ui(temp, 1, 1);
 	// compute the image of x
-	ffIsomorphism.compute_image(temp, temp);
-
+	ffIsomorphism.compute_isom_matrix();
+	ffIsomorphism.compute_image_using_matrix(temp, temp);
+	
 	// the image of x should be a root of f1 in F_p[X]/<f2>
 	nmod_poly_compose_mod(temp, f1, temp, f2);
 	if (nmod_poly_is_zero(temp))
@@ -55,6 +60,8 @@ void test_build_isom(slong degree, slong prime) {
 	flint_randclear(state);
 	nmod_poly_clear(f1);
 	nmod_poly_clear(f2);
+	nmod_poly_clear(g1);
+	nmod_poly_clear(g2);
 	nmod_poly_clear(temp);
 }
 
@@ -65,9 +72,11 @@ double test_build_isom1(slong degree, slong prime) {
 	flint_rand_t state;
 	flint_randinit(state);
 
-	nmod_poly_t f1, f2;
+	nmod_poly_t f1, f2, g1, g2;
 	nmod_poly_init(f1, p);
 	nmod_poly_init(f2, p);
+	nmod_poly_init(g1, p);
+	nmod_poly_init(g2, p);
 
 	nmod_poly_randtest_monic_irreducible(f1, state, degree + 1);
 	NmodMinPoly fmpzMinPoly;
@@ -79,12 +88,15 @@ double test_build_isom1(slong degree, slong prime) {
 	timeit_t time;
 	timeit_start(time);
 	FFIsomorphism ffIsomorphism(f1, f2);
+	ffIsomorphism.compute_generators(g1, g2);
+	ffIsomorphism.build_isomorphism(g1, g2);
 	timeit_stop(time);
 
 	flint_randclear(state);
 	nmod_poly_clear(f1);
 	nmod_poly_clear(f2);
-
+	nmod_poly_clear(g1);
+	nmod_poly_clear(g2);
 	return (double) time->wall / 1000.0;
 }
 
@@ -92,27 +104,34 @@ int main() {
 
 	flint_rand_t state;
 	flint_randinit(state);
+	
 
 	cout << "\n/////////////////////// random case //////////////////////////\n\n";
 	cout << "prime  extDegree  time \n";	
-	for (slong i = 30; i < 60; i++) {
+	for (slong i = 30; i < 50; i++) {
 		slong prime = n_nth_prime(5 + n_randint(state, i));
 		slong degree = n_nth_prime(5 + n_randint(state, i));
-		double time = test_build_isom1(degree, prime);
-		cout << prime << "  " << degree << "  " << time << "\n";
+		
+		test_build_isom(degree, prime);
+		
+//		double time = test_build_isom1(degree, prime);
+//		cout << prime << "  " << degree << "  " << time << "\n";
 	}
 	flint_randclear(state);
 	
 	cout << "\n/////////////////////// no cyclotomic extension //////////////////////////\n\n";
 	cout << "prime  extDegree  time \n";
 	n_factor_t factors;
-	for (slong i = 100; i < 120; i++) {
+	for (slong i = 100; i < 120; i++) {//1048576
 		slong prime = n_nth_prime(i);
 		n_factor_init(&factors);
 		n_factor(&factors, prime - 1, 1);
 		slong degree = factors.p[factors.num - 1];
-		double time = test_build_isom1(degree, prime);
-		cout << prime << "  " << degree << "  " << time << "\n";
+		
+		test_build_isom(degree, prime);
+		
+//		double time = test_build_isom1(degree, prime);
+//		cout << prime << "  " << degree << "  " << time << "\n";
 	}
 
 	Util util;
@@ -122,8 +141,11 @@ int main() {
 		slong prime = n_nth_prime(i);
 		slong degree = n_nth_prime(i - 5);
 		if (util.compute_multiplicative_order(prime, degree) == degree - 1) {
-			double time = test_build_isom1(degree, prime);
-			cout << prime << "  " << degree << "  " << time << "\n";
+			
+			test_build_isom(degree, prime);
+			
+//			double time = test_build_isom1(degree, prime);
+//			cout << prime << "  " << degree << "  " << time << "\n";
 		}
 	}
 

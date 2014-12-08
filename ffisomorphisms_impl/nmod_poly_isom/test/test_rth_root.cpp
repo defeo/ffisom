@@ -62,16 +62,47 @@ void test_rth_root(slong degree, slong prime) {
 	fq_nmod_ctx_clear(ctx);
 }
 
+void test_rth_root_simple(slong degree, slong prime) {
+
+	cout << "degree: " << degree << "\n";
+	cout << "prime: " << prime << "\n";
+	
+	mp_limb_t p = prime;
+
+	flint_rand_t state;
+	flint_randinit(state);
+
+	mp_limb_t rth_power = n_randlimb(state) % p;
+	rth_power = n_powmod(rth_power, degree, p);
+
+	timeit_t time;
+	timeit_start(time);
+
+	CyclotomicExtRthRoot cyclotomicExtRthRoot;
+	mp_limb_t root = cyclotomicExtRthRoot.compute_rth_root(rth_power, degree, p);
+
+	timeit_stop(time);
+	cout << "time: " << (double) time->wall / 1000.0 << "\n";
+
+	root = n_powmod(root, degree, p);
+	if (root == rth_power)
+		cout << "ok" << "\n";
+	else
+		cout << "oops" << "\n";
+
+	flint_randclear(state);
+}
 
 int main() {
 	
+//	test_rth_root_simple(13, 53);
 	n_factor_t factors;
 	
 	for (slong i = 10; i < 30; i++) {
 		slong p = n_nth_prime(i);
 		n_factor_init(&factors);
 		n_factor(&factors, p - 1, 1);
-		test_rth_root(factors.p[factors.num - 1], p);
+		test_rth_root_simple(factors.p[factors.num - 1], p);
 		cout << "\n---------------------------------------\n";
 	}
 
@@ -80,7 +111,7 @@ int main() {
 	for (slong i = 10; i < 30; i++) {
 		slong p = n_nth_prime(i);
 		slong degree = n_nth_prime(i + 5);
-		test_rth_root(degree, p);
+		test_rth_root_simple(degree, p);
 		cout << "\n---------------------------------------\n";
 	}
 

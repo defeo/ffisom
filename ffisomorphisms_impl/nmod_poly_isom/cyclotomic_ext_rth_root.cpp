@@ -334,13 +334,13 @@ void CyclotomicExtRthRoot::compute_initials(const fq_nmod_poly_t alpha, const fq
 
 /**
  * Given a proper factor of y^r - a, computes an rth root of a. Let d = deg(factor), 
- * and let b be constent term of factor. Then (d, r) = 1, so there are integers u, v
+ * and let b be constant term of the factor. Then (d, r) = 1, so there are integers u, v
  * such that ud + vr = 1. This method computes (-1)^{du}b^u*a^v which is an rth root of a. 
  */
 void CyclotomicExtRthRoot::compute_rth_root_from_factor(fq_nmod_t root, const fq_nmod_poly_t factor) {
 	slong d = fq_nmod_poly_degree(factor, ctx);
-	ulong u = 0;
-	ulong v = 0;
+	mp_limb_t u = 0;
+	mp_limb_t v = 0;
 
 	// compute u, v such that ud - vr = 1
 	n_xgcd(&u, &v, d, r);
@@ -365,7 +365,33 @@ void CyclotomicExtRthRoot::compute_rth_root_from_factor(fq_nmod_t root, const fq
 	fq_nmod_clear(a_inv_pow, ctx);
 }
 
-void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, fq_nmod_poly_t f) {
+/**
+ * Given a proper factor of y^r - a, computes an rth root of a. Let d = deg(factor), 
+ * and let b be the constant term of factor. Then (d, r) = 1, so there are integers u, v
+ * such that ud + vr = 1. This method computes (-1)^{du}b^u*a^v which is an rth root of a. 
+ */
+mp_limb_t CyclotomicExtRthRoot::compute_rth_root_from_factor(const mp_limb_t a, const nmod_poly_t factor, slong r) {
+	slong d = nmod_poly_degree(factor);
+	mp_limb_t u = 0;
+	mp_limb_t v = 0;
+	
+	// compute u, v such that ud - vr = 1
+	n_xgcd(&u, &v, d, r);
+	
+	mp_limb_t b = nmod_poly_get_coeff_ui(factor, 0);
+	b = nmod_pow_ui(b, u, factor->mod);
+	mp_limb_t a_inv = nmod_inv(a, factor->mod);
+	a_inv = nmod_pow_ui(a_inv, v, factor->mod);
+	b = nmod_mul(b, a_inv, factor->mod);
+	
+	if ((d % 2) && (u % 2))
+		b = factor->mod.n - b;
+	
+	return b;
+}
+
+
+void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t f) {
 
 	fq_nmod_poly_t alpha;
 	fq_nmod_poly_t trace;
@@ -417,6 +443,57 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, fq_nmod_poly_t f) {
 	flint_randclear(state);
 }
 
+mp_limb_t CyclotomicExtRthRoot::compute_rth_root(const nmod_poly_t f) {
+	
+	flint_rand_t state;
+	flint_randinit(state);
+
+	nmod_poly_t a;
+	nmod_poly_t b;
+	
+	mp_limb_t root;
+
+	nmod_poly_init(a, f->mod.n);
+	nmod_poly_init(b, f->mod.n);
+	
+	while(true) {
+		
+		nmod_poly_zero(a);
+		
+		// choose a random a that is not in F_p
+		while (nmod_poly_degree(a) < 1)
+			nmod_poly_randtest(a, state, nmod_poly_degree(f));
+		
+		nmod_poly_gcd(b, a, f);
+		if (!nmod_poly_is_one(b)) {
+			root = compute_rth_root_from_factor(f->mod.n - nmod_poly_get_coeff_ui(f, 0), b, nmod_poly_degree(f));
+			break;
+		}
+		
+		nmod_poly_powmod_ui_binexp(b, a, (f->mod.n - 1) / 2, f);
+		
+		// compute b - 1
+		mp_limb_t c = nmod_poly_get_coeff_ui(b, 0);
+		if (c == 0)
+			c = f->mod.n - 1;
+		else
+			c--;
+		nmod_poly_set_coeff_ui(b, 0, c);
+		
+		nmod_poly_gcd(b, b, f);
+		if (!nmod_poly_is_one(b) && !nmod_poly_equal(b, f)) {
+			root = compute_rth_root_from_factor(f->mod.n - nmod_poly_get_coeff_ui(f, 0), b, nmod_poly_degree(f));
+			break;
+		}
+	}
+	
+	flint_randclear(state);
+	nmod_poly_clear(a);
+	nmod_poly_clear(b);
+	
+	return root;
+}
+
 /**
  * Supports aliasing.
  */
@@ -448,4 +525,18 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_t a, s
 	fq_nmod_poly_clear(beta_init, ctx);
 	fq_nmod_poly_clear(xi_init, ctx);
 	this->ctx = NULL;
+}
+
+mp_limb_t CyclotomicExtRthRoot::compute_rth_root(const mp_limb_t c, slong r, slong p) {
+	nmod_poly_t f;
+	nmod_poly_init(f, p);
+	
+	nmod_poly_set_coeff_ui(f, 0, p - c);
+	nmod_poly_set_coeff_ui(f, r, 1);
+	
+	mp_limb_t root = compute_rth_root(f);
+	
+	nmod_poly_clear(f);
+	
+	return root;
 }

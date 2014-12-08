@@ -35,7 +35,9 @@ class CyclotomicExtRthRoot {
 	void compute_simple_compose(fq_nmod_poly_t f, slong x_power, const fq_nmod_poly_t modulus);
 	void compute_initials(const fq_nmod_poly_t alpha, const fq_nmod_poly_t modulus);
 	void compute_rth_root_from_factor(fq_nmod_t root, const fq_nmod_poly_t factor);
-	void compute_rth_root(fq_nmod_t root, fq_nmod_poly_t f);
+	void compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t f);
+	mp_limb_t compute_rth_root_from_factor(const mp_limb_t a, const nmod_poly_t factor, slong r);
+	mp_limb_t compute_rth_root(const nmod_poly_t f);
 	
 public:
 	
@@ -52,6 +54,7 @@ public:
 	 * @param ctx	a representation of the cyclotomic field
 	 */
 	void compute_rth_root(fq_nmod_t root, const fq_nmod_t a, slong r, const fq_nmod_ctx_t ctx);
+	mp_limb_t compute_rth_root(const mp_limb_t c, slong r, slong p);
 	
 };
 
