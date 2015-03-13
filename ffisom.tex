@@ -1,0 +1,171 @@
+\documentclass{article}
+
+\usepackage{bm, bbm, amsmath}
+\usepackage{amssymb,stmaryrd}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[OT1]{fontenc}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\def\Q {\ensuremath{\mathbb{Q}}}
+\def\Z {\ensuremath{\mathbb{Z}}}
+\def\F {\ensuremath{\mathbb{F}}}
+\def\Tr {\ensuremath{\mathrm{Tr}}}
+
+\def\M {\ensuremath{\mathsf{M}}}
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+\newtheorem{Def}{Definition}
+\newtheorem{Theo}{Theorem}
+\newtheorem{Prop}{Proposition}
+\newtheorem{Lemma}{Lemma}
+
+\title{Computing isomorphisms and embeddings of finite fields}
+\author{Ludovic Brieulle, Luca De Feo, Javad Doliskani,\\ Jean Pierre
+  Flori and Éric Schost}
+
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+  Let $\F_q$ be a finite field.  The finite field isomorphism problem
+  asks, given two irreducible polynomials $f,g$ in $\F_q[X]$ with
+  $\deg f$ dividing $\deg g$, to compute an explicit description of a
+  field embedding of $\F_q[X]/f$ into $\F_q[X]/g$. When $\deg f = \deg
+  g$, this is also known as the isomorphism problem.
+  
+  We review classical algorithms for the two problems, and compare
+  their asymptotic complexities. We also propose new improvements and
+  generalizations to the algorithms, implement them, and compare them
+  with the state of the art.
+\end{abstract}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Introduction}
+
+Let $q$ be a prime power and let $\F_q$ be a field with $q$
+elements. Let $f$ and $g$ be irreducible polynomials in $\F_q[X]$,
+with $\deg f$ dividing $\deg g$. Define $k=\F_q[X]/f$ and
+$K=\F_q[X]/g$, then there is an embedding $\varphi:k\hookrightarrow
+K$, unique up to $\F_q$-automorphisms of $k$. The goal of this paper
+is to describe algorithms to efficiently represent and evaluate one
+such embedding.
+
+\todo{Motivation, previous work.}
+
+All the algorithms we are aware of, split the embedding problem in two
+sub-problems:
+\begin{enumerate}
+\item Determine elements $\alpha\in k$ and $\beta\in K$ such that
+  $k=\F_q[\alpha]$, $K=\F_q[\beta]$, and such that there exists an
+  embedding $\varphi$ mapping $\alpha\mapsto\beta$. We refer to this
+  problem as the \emph{Embedding description}.
+\item Given elements $\alpha$ and $\beta$ as above, given $\gamma\in
+  k$ and $\delta\in K$, solve the following problems:
+  \begin{itemize}
+  \item Compute $\varphi(\gamma)\in K$.
+  \item Test if $\delta\in\varphi(k)$.
+  \item If $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)\in K$.
+  \end{itemize}
+  We refer collectively to these problems as the \emph{Embedding
+    evaluation}.
+\end{enumerate}
+
+\paragraph{Complexity notation} We measure all complexities in number
+of operations $+$, $\times$, $\div$ in $\F_q$. We write $\M(n)$ for
+the cost of multiplying two polynomials in $\F_q[X]$ of degree at most
+$n$.
+
+
+\subsection{Naive algorithms}
+
+\todo{Describe polynomial factorization}
+
+\todo{Describe linear algebra}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part{Embedding description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Lenstra's and Allombert's algorithms}
+
+\subsection{Faster variant}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Rains' algorithm}
+
+\subsection{Gaussian periods}
+
+\subsection{Rains' special algorithm}
+
+\subsection{Rains' cyclotomic algorithm}
+
+\subsection{Complexity analysis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Elliptic Rains' algorithm}
+
+\subsection{Elliptic periods}
+
+\subsection{Elliptic algorithm}
+
+\subsection{Complexity analysis}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Experimental results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part{Embedding evaluation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Algorithms specific to normal bases}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Monomial-dual bases pairs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Experimental results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliographystyle{plain}
+\bibliography{defeo}
+
+\end{document}
+
+
+% Local Variables:
+% ispell-local-dictionary:"american"
+% End:
+
+%  LocalWords:  isomorphism
