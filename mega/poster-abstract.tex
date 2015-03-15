@@ -1,0 +1,128 @@
+\documentclass{article}
+
+\usepackage{bm, bbm, amsmath}
+\usepackage{amssymb,stmaryrd}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[OT1]{fontenc}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\def\Q {\ensuremath{\mathbb{Q}}}
+\def\Z {\ensuremath{\mathbb{Z}}}
+\def\F {\ensuremath{\mathbb{F}}}
+\def\Tr {\ensuremath{\mathrm{Tr}}}
+
+\def\M {\ensuremath{\mathsf{M}}}
+
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+
+\newtheorem{Def}{Definition}
+\newtheorem{Theo}{Theorem}
+\newtheorem{Prop}{Proposition}
+\newtheorem{Lemma}{Lemma}
+
+\title{Computing isomorphisms and embeddings of finite fields}
+\author{Ludovic Brieulle, Luca De Feo, Javad Doliskani,\\ Jean Pierre
+  Flori and Éric Schost}
+
+
+\begin{document}
+
+\maketitle
+
+Let $q$ be a prime power and let $\F_q$ be a field with $q$
+elements. Let $f$ and $g$ be irreducible polynomials in $\F_q[X]$,
+with $\deg f$ dividing $\deg g$. Define $k=\F_q[X]/f$ and
+$K=\F_q[X]/g$, then there is an embedding $\varphi:k\hookrightarrow
+K$, unique up to \mbox{$\F_q$-auto}morphisms of $k$. Our goal is to
+describe algorithms to efficiently represent and evaluate one such
+embedding.
+
+The special case where $\deg f = \deg g$ is also called the
+\emph{isomorphism problem}. These algorithms have important
+applications in the representation of finite fields and their
+extensions. Consequently, they are widely applied in cryptography and
+coding theory. In particular, they are useful for representing the
+algebraic closure $\bar{\F}_q$, as described
+in~\cite{bosma+cannon+steel97}. They are fundamental building blocks
+of most computer algebra systems, including Magma\cite{MAGMA},
+Pari\cite{Pari}, Sage\cite{Sage}, ...
+
+All the algorithms we are aware of, split the embedding problem in two
+sub-problems:
+\begin{enumerate}
+\item Determine elements $\alpha\in k$ and $\beta\in K$ such that
+  $k=\F_q[\alpha]$, $K=\F_q[\beta]$, and such that there exists a
+  uniquely defined embedding $\varphi$ mapping
+  $\alpha\mapsto\beta$. We refer to this problem as the
+  \emph{Embedding description}.
+\item Given elements $\alpha$ and $\beta$ as above, given $\gamma\in
+  k$ and $\delta\in K$, solve the following problems:
+  \begin{itemize}
+  \item Compute $\varphi(\gamma)$ in $K$.
+  \item Test if $\delta\in\varphi(k)$.
+  \item Supposing $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)$ in $K$.
+  \end{itemize}
+  We refer collectively to these problems as the \emph{Embedding
+    evaluation}.
+\end{enumerate}
+
+Arguably, the hardest problem among the two is the embedding
+description. To tackle it, we review two families of algorithms:
+\begin{itemize}
+\item Kummer-type algorithms, which exploit the properties of $n$-th
+  roots of unity, with $n=\deg f$.
+\item Group-based algorithms, which exploit the properties of some
+  algebraic group $G/\F_q$.
+\end{itemize}
+
+In the first category fall Lenstra's deterministic isomorphism
+algorithm\cite{LenstraJr91}, and Allombert's
+variant\cite{Allombert02}. We present these two algorithms, and give
+an asymptotic improvement to the latter.
+
+In the second category fall Pinch's elliptic curve
+algorithm~\cite{Pinch}, and Rains' cyclotomic
+algorithm~\cite{rains2008}. We review those algorithms and introduce
+the elliptic curve version of Rains' algorithm. Although Rains had
+predicted that an elliptic curve variant could not improve over the
+plain cyclotomic algorithm, we show that this is not true in general,
+and that for many parameter families the elliptic algorithm is indeed
+faster.
+
+Neither the Kummer-type, nor the group-based algorithms are
+asymptotically optimal. However, they succeed in being close to
+optimal for different parameter families, and, put together, cover in
+practice most of the range one is typically interested in. Hence, a
+complete implementation shall include both families, and carefully
+choose among them based on the input parameters. We highlight this by
+implementing the fastest variants of each of the algorithms presented,
+and comparing them on a wide array of benchmarks.
+
+Next, we go to the known strategies for embedding evaluation. Besides
+the obvious approach based on linear algebra, we present techniques
+based on modular composition, and techniques based on normal
+bases. These advanced techniques are folklore, but they are seldom
+presented in a comprehensive way.
+
+For the embedding evaluation problem too, we provide implementations
+and benchmarks comparing the various approaches.
+
+
+\bibliographystyle{plain}
+\bibliography{../defeo}
+
+\end{document}
+
+
+% Local Variables:
+% ispell-local-dictionary:"american"
+% End:
+
+%  LocalWords:  isomorphism
