@@ -1,0 +1,173 @@
+\documentclass[20pt,landscape,a0paper]{tikzposter}
+
+\usepackage[american]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{wrapfig}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows,arrows.meta,bending}
+\tikzset{>/.tip={Computer Modern Rightarrow[scale=2,line width=1pt]}}
+\tikzset{|/.tip={Bar[scale=2,line width=1pt]}}
+
+\def\Q {\ensuremath{\mathbb{Q}}}
+\def\Z {\ensuremath{\mathbb{Z}}}
+\def\F {\ensuremath{\mathbb{F}}}
+\def\Tr {\ensuremath{\mathrm{Tr}}}
+\def\M {\ensuremath{\mathsf{M}}}
+\def\tildO {\ensuremath{\mathrm{\tilde{O}}}}
+
+\renewcommand{\paragraph}[1]{\bigskip\textbf{#1}}
+\colorlet{alert}{red}
+
+\title{Computing isomorphisms and embeddings of finite fields}
+\author{Ludovic Brieulle\footnotemark[1], Luca De Feo\footnotemark[1],
+  Javad Doliskani\footnotemark[2], Jean-Pierre Flori\footnotemark[3],
+  Éric Schost\footnotemark[2]} \institute{\footnotemark[1]Université
+  de Versailles -- Saint-Quentin-en-Yvelines,
+  \footnotemark[2]University of Western Ontario,
+  \footnotemark[3]Agence Nationale de Sécurité des Systèmes
+  Informatiques} 
+
+\usetheme{Desert}
+
+\begin{document}
+\maketitle
+
+\begin{columns}
+  %%%%%%%%%%%%%%%%%
+  % Intro
+  %%%%%%%%%%%%%%%%%
+  \column{0.25} \block{The embedding problem}{
+    \begin{wrapfigure}{r}{0.45\colwidth}
+      \centering
+      \begin{tikzpicture}[node distance=8em,font=\Large]
+        \node(Fq){$\F_q$};
+        \node(Fqf)[above left of=Fq]{$k=\F_q[X]/(f)$};
+        \node(Fqg)[above right of=Fqf]{$K=\F_q[X]/(g)$};
+        \draw[]
+        (Fq) edge (Fqf)
+        (Fq) edge (Fqg)
+        (Fqf) edge[left,auto,color=alert] node{$\varphi$} (Fqg);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \paragraph{Let}
+    \begin{itemize}
+    \item $\F_q$ be a field with $q$ elements,
+    \item $f$ and $g$ be iralertucible polynomials in $\F_q[X]$,
+    \item $m=\deg f$, $n=\deg g$ and $m|n$.
+    \end{itemize}
+
+    There exists a field
+    embedding \[\color{alert}\varphi:k\hookrightarrow K,\] unique up to
+    \mbox{$\F_q$-auto}morphisms of $k$.
+
+    \paragraph{Goals}
+    \begin{itemize}
+    \item \textbf{Represent} $\varphi$ efficiently,
+    \item \textbf{Evaluate/Invert} $\varphi$ efficiently,
+    \end{itemize}
+
+    When $\deg f = \deg g$, this is also called the
+    \emph{isomorphism problem}. 
+    
+    \paragraph{Applications}
+    \begin{itemize}
+    \item Fundamental building blocks of computer algebra systems.
+    \item Work algorithmically in the algebraic closure
+      $\bar{\F}_q$~\cite{bosma+cannon+steel97}.
+    \end{itemize}
+  }
+
+  \block{Embedding description}{ 
+    \begin{wrapfigure}[8]{r}{0.4\colwidth}
+      \centering
+      \begin{tikzpicture}[node distance=8em,font=\Large]
+        \node(Fq){$\F_q$};
+        \node(Fqf)[above left of=Fq]{$k=\F_q[\alpha]$};
+        \node(Fqg)[above right of=Fqf]{$K$};
+        \begin{scope}[alert,node distance=2em]
+          \node(a)[above of=Fqf]{$\alpha$};
+          \node(b)[left of=Fqg]{$\beta$};
+        \end{scope}
+        \draw[auto,font=\small]
+        (Fq) edge node[left]{$m$} (Fqf)
+        (Fq) edge node[right]{$n$} (Fqg)
+        (Fqf) edge (Fqg);
+        \draw[|->,alert]
+        (a) edge (b);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \textbf{Determine} elements $\alpha\in k$ and $\beta\in K$ such
+    that
+
+    \begin{itemize}
+    \item $\alpha$ generates $k=\F_q[\alpha]$,
+    \item there exists $\varphi:\alpha\mapsto\beta$.
+    \end{itemize}
+
+    \paragraph{Naive solution:} take
+    \begin{itemize}
+    \item $\alpha= X \mod f(X)$, and
+    \item $\beta$ a root of $f$ in $K$.
+    \end{itemize}
+    Cost of factorization: $\tildO(mn\log q)$.\\ Storage: $O(n\log q)$.
+
+    \paragraph{Kummer-type algorithms}: Use properties of $m$-th
+      roots of unity.
+    \paragraph{Group-based algorithms}: Use properties of an
+      algebraic group $G/\F_q$.
+  }
+
+  \block{Embedding evaluation}{ 
+    \textbf{Given}
+    \begin{itemize}
+    \item a \emph{description} of the embedding (as above),
+    \item $\gamma\in k$ and $\delta\in K$,
+    \end{itemize}
+    \textbf{Solve} the following problems:
+    \begin{itemize}
+    \item Compute $\varphi(\gamma)$ in $K$.
+    \item Test if $\delta\in\varphi(k)$.
+    \item Supposing $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)$ in $K$.
+    \end{itemize}
+  }
+
+  %%%%%%%%%%%%%%%%%
+  % Kummer-type
+  %%%%%%%%%%%%%%%%%
+  \column{0.25}
+  \block{Lenstra's algorithm}{
+  }
+  \block{Allombert's variant}{
+  }
+  \block{Improvements}{
+  }
+
+  %%%%%%%%%%%%%%%%%
+  % Group-based
+  %%%%%%%%%%%%%%%%%
+  \column{0.25}
+  \block{Pinch's algorithm}{}
+  \block{Rain's cyclotomic algoritm}{}
+  \block{Elliptic curve variant}{}
+
+  %%%%%%%%%%%%%%%%%
+  % Embedding evaluation
+  %%%%%%%%%%%%%%%%%
+  \column{0.25}
+  \block{Linear algebra and modular composition}{}
+  \block{Normal bases}{}
+  \block{Benchmarks}{}
+  \block{\refname}{
+    \small
+    \renewcommand*{\refname}{\vspace{-1em}}
+    \bibliographystyle{plain}
+    \bibliography{../defeo}
+  }
+
+\end{columns}
+
+\end{document}
