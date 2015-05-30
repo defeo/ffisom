@@ -1,1 +1,14 @@
 *~
+*.aux
+*.snm
+*.toc
+*.bbl
+*.blg
+*.fls
+*.nav
+*.pdf
+*.log
+*.out
+*.fdb_latexmk
+_region_.tex
+
