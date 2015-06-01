@@ -18,6 +18,9 @@
 \def\M {\ensuremath{\mathsf{M}}}
 \def\tildO {\ensuremath{\mathrm{\tilde{O}}}}
 
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\ord}{ord}
+
 \renewcommand{\paragraph}[1]{\smallskip\textbf{#1}}
 \colorlet{alert}{red}
 
@@ -41,7 +44,7 @@
   %%%%%%%%%%%%%%%%%
   \column{0.25} \block{The embedding problem}{
     \begin{wrapfigure}{r}{0.45\colwidth}
-      \centering
+      \hfill
       \begin{tikzpicture}[node distance=8em,font=\Large]
         \node(Fq){$\F_q$};
         \node(Fqf)[above left of=Fq]{$k=\F_q[X]/(f)$};
@@ -175,7 +178,7 @@
     \end{wrapfigure}
 
     \begin{wrapfigure}[4]{r}{0.45\colwidth}
-      \centering
+      \hfill
       \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
         \node(Fq){$\F_q$};
         \node(kum)[above=of Fq]{$\F_q[\gamma_1]\simeq\F_q[\gamma_2^e]$};
@@ -234,12 +237,16 @@
     \item \textbf{Complexity:} $O\left(m^{\omega+1}\right)$ (dominated
       by Hilbert '90).
     \end{itemize}
+  }
 
-    \paragraph{Our improvements}
+  \block{Our improvements}{
     \begin{itemize}
     \item Classic trick (also present in Lenstra) + \emph{iterated
         frobenius}~\cite{vzgathen+shoup92:journal} to solve Hilbert
-      '90 \textbf{efficiently}.
+      '90 \textbf{efficiently}:
+      \[\gamma = \sum_{i=0}^{m-1}\zeta^i\delta^{\sigma^{-i}}\]
+      for $\zeta\in\mu_m$, $\sigma\in\Gal(\F_q[\mu_m])$, and random
+      $\delta$.
     \item Use factorization~\cite{kaltofen+shoup97} to compute $m$-th
       roots in $\F_q[\mu_m]$.
     \item \textcolor{alert}{Complexity analysis. \Large\Smiley}
@@ -253,11 +260,102 @@
   %%%%%%%%%%%%%%%%%
   \column{0.25}
   \block{Pinch's algorithm~\cite{Pinch}}{
+    \begin{wrapfigure}[5]{r}{0pt}
+      \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
+        \node(Fq){$\F_q$};
+        \node(kum)[above=of Fq]{$\F_q[\mu_s]$};
+        \node(k)[left=4em of kum]{$k$};
+        \node(K)[above right=3em and 5em of kum]{$K$};
+        \draw[auto,font=\small]
+        (Fq) edge node{$m$} (kum)
+        (Fq) edge node{$m$} (k)
+        (Fq) edge node[right]{$n$} (K)
+        (k) edge node[]{$\sim$} (kum)
+        (kum) edge node{} (K);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \paragraph{Idea}
+    \begin{itemize}
+    \item Find \emph{small} $s$ s.t. $k\simeq\F_q[\mu_s]$,
+    \item Pick $s$-th roots of unity $\gamma_1\in k$, $\gamma_2\in K$,
+    \item Find $e$ s.t. $\gamma_1\mapsto\gamma_2^e$.
+    \item No complexity analysis {\Large\Sadey}, fast if $s$
+      \emph{small}.
+    \end{itemize}
+
+    \paragraph{Technical details}
+    \begin{itemize}
+    \item $s$ is the smallest integer s.t. $\ord_s(q)=m$. 
+    \item \textbf{Problem:} generically $s\in O(q^m)$.
+    \item Test if $\gamma_1\mapsto\gamma_2^e$ by linear algebra.
+    \item \textbf{Problem:} tests are expensive, possibly $O(s)$ of
+      them.
+    \end{itemize}
     
+    \paragraph{Elliptic variant}
+    \begin{itemize}
+    \item Replace $\mu_s$ by an $s$-torsion subgroup of an elliptic
+      curve.
+    \item Possibly more choices for $s$, \emph{hopefully} $s\in O(m)$.
+    \end{itemize}
+
   }
-  \block{Rain's cyclotomic algoritm~\cite{rains2008}}{
+
+  \block{Rain's cyclotomic algorithm~\cite{rains2008}}{
+    \begin{wrapfigure}{r}{0.5\colwidth}
+      \hfill
+      \begin{tikzpicture}[node distance=7em,font=\Large,on grid]
+        \node(Fq){$\F_q$};
+        \node(Q)[left=of Fq]{$\Q$};
+        \node(k)[above=of Fq]{$\F_q[\mu_s]$};
+        \node(C)[above=of Q]{$\Q[\mu_s]$};
+        \draw[auto,font=\normalsize]
+        (Fq) edge node[right]{$\langle q\rangle\subset(\Z/s)^\ast$} (k)
+        (Q) edge node{$(\Z/s)^\ast$} (C);
+        \draw[auto,font=\small,->>]
+        (Q) edge node[below]{$\mod q$} (Fq)
+        (C) edge node{$\mod\frak{q}$} (k);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \paragraph{Removes trial-and-error}
+    \begin{itemize}
+    \item Replace $\gamma_1,\gamma_2$ with \emph{Gaussian periods}:
+      \[\eta(\gamma) = \sum_{\sigma\in S}\gamma^\sigma\]
+      where $(\Z/s)^\ast = \langle q\rangle \times S$.
+    \item Then $\eta(\gamma_1)\mapsto\eta(\gamma_2)$.
+    \end{itemize}
+
+    \paragraph{Improves bound on $s$}
+    \begin{itemize}
+    \item Allow $\ord_s(q) = m\cdot o$ with small $o$,
+      take degree $o$ extensions of $k,K$.
+    \item Best bound: $s\in O(m^{2.4+\epsilon})$ (GRH), in practice
+      $s\in O(m\log m)$.
+    \item \textbf{Practical complexity:} $\tildO\left((mo)^2\log q\right)$. Very fast
+      in practice.
+    \end{itemize}
+
+    \paragraph{Limitations}
+    \begin{itemize}
+    \item Unpublished. {\Large\Sadey} Implemented in Magma.
+      {\Large\Smiley}
+    \item Not really interesting for $q$ non-prime.
+    \item Only good for very small $o$.
+    \end{itemize}
   }
+
   \block{Elliptic curve variant}{
+    \begin{itemize}
+    \item Replace Gaussian periods with \emph{elliptic
+        periods}~\cite{mihailescu+morain+schost07}, $s$ an \emph{Elkies prime}.
+    \item Same bounds on $s$: $O(m^{2.4+\epsilon})$ (GRH),
+      $O(m\log m)$ (practical).
+    \item \textbf{Practical complexity:} $\tildO\left(m\log q\right)$. 
+    \item Slower than cyclotomic method for small $o$, but competitive
+      otherwise.
+    \end{itemize}
   }
 
   %%%%%%%%%%%%%%%%%
