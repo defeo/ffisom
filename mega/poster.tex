@@ -4,9 +4,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
+\usepackage{tikzsymbols}
 \usepackage{wrapfig}
 \usepackage{tikz}
-\usetikzlibrary{matrix,arrows,arrows.meta,bending}
+\usetikzlibrary{matrix,arrows,arrows.meta,bending,positioning}
 \tikzset{>/.tip={Computer Modern Rightarrow[scale=2,line width=1pt]}}
 \tikzset{|/.tip={Bar[scale=2,line width=1pt]}}
 
@@ -17,7 +18,7 @@
 \def\M {\ensuremath{\mathsf{M}}}
 \def\tildO {\ensuremath{\mathrm{\tilde{O}}}}
 
-\renewcommand{\paragraph}[1]{\bigskip\textbf{#1}}
+\renewcommand{\paragraph}[1]{\smallskip\textbf{#1}}
 \colorlet{alert}{red}
 
 \title{Computing isomorphisms and embeddings of finite fields}
@@ -27,7 +28,7 @@
   de Versailles -- Saint-Quentin-en-Yvelines,
   \footnotemark[2]University of Western Ontario,
   \footnotemark[3]Agence Nationale de Sécurité des Systèmes
-  Informatiques} 
+  d'Information}
 
 \usetheme{Desert}
 
@@ -55,7 +56,7 @@
     \paragraph{Let}
     \begin{itemize}
     \item $\F_q$ be a field with $q$ elements,
-    \item $f$ and $g$ be iralertucible polynomials in $\F_q[X]$,
+    \item $f$ and $g$ be irreducible polynomials in $\F_q[X]$,
     \item $m=\deg f$, $n=\deg g$ and $m|n$.
     \end{itemize}
 
@@ -113,7 +114,7 @@
     \item $\alpha= X \mod f(X)$, and
     \item $\beta$ a root of $f$ in $K$.
     \end{itemize}
-    Cost of factorization: $\tildO(mn\log q)$.\\ Storage: $O(n\log q)$.
+    Cost of factorization: $\tildO(mn)$.\\ Storage: $O(n)$.
 
     \paragraph{Kummer-type algorithms}: Use properties of $m$-th
       roots of unity.
@@ -122,44 +123,153 @@
   }
 
   \block{Embedding evaluation}{ 
+    \begin{wrapfigure}[8]{r}{0.2\colwidth}
+      \centering
+      \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
+        \node(Fq){$\F_q$};
+        \node(Fqf)[above=of Fq]{$k=\F_q[\alpha]$};
+        \node(Fqg)[above=of Fqf]{$K$};
+        \begin{scope}[alert,node distance=4em]
+          \node(a)[left=of Fqf]{$\gamma\in$};
+          \node(b)[left=of Fqg]{$\delta\in$};
+        \end{scope}
+        \draw
+        (Fq) edge (Fqf)
+        (Fqf) edge (Fqg);
+        \draw[<->,alert]
+        (a) edge node[left,auto,font=\small]{$\varphi$} (b);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
     \textbf{Given}
     \begin{itemize}
     \item a \emph{description} of the embedding (as above),
     \item $\gamma\in k$ and $\delta\in K$,
     \end{itemize}
+
     \textbf{Solve} the following problems:
     \begin{itemize}
     \item Compute $\varphi(\gamma)$ in $K$.
     \item Test if $\delta\in\varphi(k)$.
     \item Supposing $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)$ in $K$.
     \end{itemize}
+    
+    \textbf{Naive solution:} Linear algebra (size $n\times m$).
   }
 
   %%%%%%%%%%%%%%%%%
   % Kummer-type
   %%%%%%%%%%%%%%%%%
   \column{0.25}
-  \block{Lenstra's algorithm}{
+  
+  \block{Lenstra's algorithm~\cite{LenstraJr91}}{
+    \begin{wrapfigure}{l}{\colwidth}
+      \paragraph{Goals}
+      \begin{itemize}
+      \item Prove that the isomorphism problem is \emph{deterministic
+          polynomial}.
+      \item Pervasive use of linear algebra.
+      \item Does not prove precise complexity. Rough estimate:
+        $\Omega(n^3)$.
+      \end{itemize}
+    \end{wrapfigure}
+
+    \begin{wrapfigure}[4]{r}{0.45\colwidth}
+      \centering
+      \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
+        \node(Fq){$\F_q$};
+        \node(kum)[above=of Fq]{$\F_q[\gamma_1]\simeq\F_q[\gamma_2^e]$};
+        \node(k)[left=6em of kum]{$k$};
+        \node(K)[above right=3em and 7em of kum]{$K$};
+        \draw[auto,font=\small]
+        (Fq) edge node{$m$} (kum)
+        (Fq) edge node{$m$} (k)
+        (Fq) edge node[right]{$n$} (K)
+        (k) edge node[]{$\sim$} (kum)
+        (kum) edge node{} (K);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \paragraph{Technique}
+    \begin{itemize}
+    \item Reduce to $n$ a prime power.
+    \item If $(n,q)>1$,
+      \begin{itemize}
+      \item  use Artin-Schreier theory.
+      \end{itemize}
+    \item Else,
+      \begin{itemize}
+      \item find $\gamma_1\in k$ s.t. $\gamma_1^m=c_1\in\F_q$,
+      \item find $\gamma_2\in K$ s.t. $\gamma_2^m=c_2\in\F_q$,
+      \item compute $c_2=c_2^e$, then $\gamma_1\mapsto\gamma_2^e$.
+      \end{itemize}
+    \end{itemize}
+
+    In general, if $m\nmid(q-1)$, adjoin roots of unity by working in
+    \emph{cyclotomic extension rings}.
+  
   }
-  \block{Allombert's variant}{
-  }
-  \block{Improvements}{
+
+  \block{Allombert's variant~\cite{Allombert02}}{
+    \paragraph{Goals}
+    \begin{itemize}
+    \item Trade determinism for efficiency.
+    \item Implementation integrated into Pari/GP.
+    \item \textcolor{alert}{Still missing a rigorous complexity
+        analysis. \Large\Sadey}
+    \end{itemize}
+    
+    \paragraph{Technical differences}
+    \begin{itemize}
+    \item Allow factorization of cyclotomic polynomials to construct
+      $\F_q[\mu_m]$.
+    \item Explicit use of Hilbert '90 to compute $\gamma_1$ and
+      $\gamma_2$.
+    \item $\gamma_1/\gamma_2$ is in $\F_q[\mu_m]$: compute it by
+      taking the $m$-th root of $c_1/c_2$.
+    \item \textcolor{alert}{Use linear algebra to solve Hilbert
+        '90???}
+    \item Use Shank's algorithm to compute $m$-th roots in
+      $\F_q[\mu_m]$.
+    \item \textbf{Complexity:} $O\left(m^{\omega+1}\right)$ (dominated
+      by Hilbert '90).
+    \end{itemize}
+
+    \paragraph{Our improvements}
+    \begin{itemize}
+    \item Classic trick (also present in Lenstra) + \emph{iterated
+        frobenius}~\cite{vzgathen+shoup92:journal} to solve Hilbert
+      '90 \textbf{efficiently}.
+    \item Use factorization~\cite{kaltofen+shoup97} to compute $m$-th
+      roots in $\F_q[\mu_m]$.
+    \item \textcolor{alert}{Complexity analysis. \Large\Smiley}
+    \item \textbf{Complexity:} $\tildO(m^2)$, but very efficient when
+      $m\mid(q-1)$.
+    \end{itemize}
   }
 
   %%%%%%%%%%%%%%%%%
   % Group-based
   %%%%%%%%%%%%%%%%%
   \column{0.25}
-  \block{Pinch's algorithm}{}
-  \block{Rain's cyclotomic algoritm}{}
-  \block{Elliptic curve variant}{}
+  \block{Pinch's algorithm~\cite{Pinch}}{
+    
+  }
+  \block{Rain's cyclotomic algoritm~\cite{rains2008}}{
+  }
+  \block{Elliptic curve variant}{
+  }
 
   %%%%%%%%%%%%%%%%%
   % Embedding evaluation
   %%%%%%%%%%%%%%%%%
   \column{0.25}
-  \block{Linear algebra and modular composition}{}
-  \block{Normal bases}{}
+  \block{Linear algebra and modular composition}{
+    Kedlaya-Umans
+  }
+  \block{Normal bases}{
+    http://www.shoup.net/papers/subquadratic.pdf
+  }
   \block{Benchmarks}{}
   \block{\refname}{
     \small
