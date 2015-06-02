@@ -1,15 +1,17 @@
-\documentclass[20pt,landscape,a0paper]{tikzposter}
+\documentclass[20pt,landscape,a0paper,blockverticalspace=25mm]{tikzposter}
 
 \usepackage[american]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{amsmath,amssymb}
 \usepackage{tikzsymbols}
-\usepackage{wrapfig}
+\usepackage{wrapfig,graphicx}
 \usepackage{tikz}
-\usetikzlibrary{matrix,arrows,arrows.meta,bending,positioning}
+\usetikzlibrary{matrix,arrows,arrows.meta,positioning}
 \tikzset{>/.tip={Computer Modern Rightarrow[scale=2,line width=1pt]}}
 \tikzset{|/.tip={Bar[scale=2,line width=1pt]}}
+\tikzset{c_/.tip={Hooks[scale=2,line width=1pt,right]}}
+\tikzset{c^/.tip={Hooks[scale=2,line width=1pt,left]}}
 
 \def\Q {\ensuremath{\mathbb{Q}}}
 \def\Z {\ensuremath{\mathbb{Z}}}
@@ -22,7 +24,6 @@
 \DeclareMathOperator{\ord}{ord}
 
 \renewcommand{\paragraph}[1]{\smallskip\textbf{#1}}
-\colorlet{alert}{red}
 
 \title{Computing isomorphisms and embeddings of finite fields}
 \author{Ludovic Brieulle\footnotemark[1], Luca De Feo\footnotemark[1],
@@ -34,6 +35,37 @@
   d'Information}
 
 \usetheme{Desert}
+\definecolorpalette{UVSQ}{
+    \definecolor{colorOne}{RGB}{255,255,255}
+    \definecolor{colorTwo}{RGB}{0,146,187}
+    %\definecolor{colorThree}{RGB}{119,173,28}
+}
+\colorlet{alert}{red}
+\usecolorstyle[colorPalette=UVSQ]{Sweden}
+\definetitlestyle{WLogos}{
+    width=\paperwidth, roundedcorners=0, linewidth=0pt, innersep=1.5cm,
+    titletotopverticalspace=0mm, titletoblockverticalspace=20mm,
+    titlegraphictotitledistance=10pt, titletextscale=1
+}{
+   \draw[draw=none, bottom color=titlebgcolor, top color=framecolor,opacity=0.9]%
+   (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop); %
+   \draw
+   (\titleposleft+1em,0.5*\titlepostop+0.5*\titleposbottom)
+   node[anchor=west]{\includegraphics[width=20em]{uvsq-logo-cmjn}}
+   (\titleposleft/2,\titlepostop-1.5em)
+   node[anchor=north east]{\includegraphics[height=8em]{Anssi}}
+   (\titleposright/2,\titlepostop-1.5em)
+   node[anchor=north west]{\includegraphics[height=8em]{Anssi}}
+   (\titleposright-1em,0.5\titlepostop+0.5*\titleposbottom)
+   node[anchor=east]{\includegraphics[width=20em]{western}};
+}
+\usetitlestyle{WLogos}
+\pgfmathsetseed{\number\pdfrandomseed} 
+\definebackgroundstyle{FancyBack}{
+  \draw[opacity=0.2] (0,0) 
+  node[rotate={random(0,359)}]{\includegraphics[height=\textheight]{Anssi}};
+}
+\usebackgroundstyle{FancyBack}
 
 \begin{document}
 \maketitle
@@ -48,7 +80,7 @@
       \begin{tikzpicture}[node distance=8em,font=\Large]
         \node(Fq){$\F_q$};
         \node(Fqf)[above left of=Fq]{$k=\F_q[X]/(f)$};
-        \node(Fqg)[above right of=Fqf]{$K=\F_q[X]/(g)$};
+        \node(Fqg)[above right of=Fqf]{$K=\F_q[Y]/(g)$};
         \draw[]
         (Fq) edge (Fqf)
         (Fq) edge (Fqg)
@@ -59,7 +91,8 @@
     \paragraph{Let}
     \begin{itemize}
     \item $\F_q$ be a field with $q$ elements,
-    \item $f$ and $g$ be irreducible polynomials in $\F_q[X]$,
+    \item $f$ and $g$ be irreducible polynomials in $\F_q[X]$ and
+      $\F_q[Y]$,
     \item $m=\deg f$, $n=\deg g$ and $m|n$.
     \end{itemize}
 
@@ -164,6 +197,9 @@
   % Kummer-type
   %%%%%%%%%%%%%%%%%
   \column{0.25}
+  \makeatletter
+  \setlength{\TP@blockverticalspace}{15mm}
+  \makeatother
   
   \block{Lenstra's algorithm~\cite{LenstraJr91}}{
     \begin{wrapfigure}{l}{\colwidth}
@@ -181,7 +217,7 @@
       \hfill
       \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
         \node(Fq){$\F_q$};
-        \node(kum)[above=of Fq]{$\F_q[\gamma_1]\simeq\F_q[\gamma_2^e]$};
+        \node(kum)[above=of Fq]{$\F_q[\alpha]\simeq\F_q[\beta^e]$};
         \node(k)[left=6em of kum]{$k$};
         \node(K)[above right=3em and 7em of kum]{$K$};
         \draw[auto,font=\small]
@@ -202,9 +238,9 @@
       \end{itemize}
     \item Else,
       \begin{itemize}
-      \item find $\gamma_1\in k$ s.t. $\gamma_1^m=c_1\in\F_q$,
-      \item find $\gamma_2\in K$ s.t. $\gamma_2^m=c_2\in\F_q$,
-      \item compute $c_2=c_2^e$, then $\gamma_1\mapsto\gamma_2^e$.
+      \item find $\alpha\in k$ s.t. $\alpha^m=a\in\F_q$,
+      \item find $\beta\in K$ s.t. $\beta^m=b\in\F_q$,
+      \item compute $a=b^e$, then $\alpha\mapsto\beta^e$.
       \end{itemize}
     \end{itemize}
 
@@ -226,16 +262,16 @@
     \begin{itemize}
     \item Allow factorization of cyclotomic polynomials to construct
       $\F_q[\mu_m]$.
-    \item Explicit use of Hilbert '90 to compute $\gamma_1$ and
-      $\gamma_2$.
-    \item $\gamma_1/\gamma_2$ is in $\F_q[\mu_m]$: compute it by
-      taking the $m$-th root of $c_1/c_2$.
+    \item Explicit use of Hilbert 90 to compute $\alpha$ and
+      $\beta$.
+    \item $\alpha/\beta$ is in $\F_q[\mu_m]$: compute it by
+      taking the $m$-th root of $a/b$.
     \item \textcolor{alert}{Use linear algebra to solve Hilbert
-        '90???}
+        90???}
     \item Use Shank's algorithm to compute $m$-th roots in
       $\F_q[\mu_m]$.
     \item \textbf{Complexity:} $O\left(m^{\omega+1}\right)$ (dominated
-      by Hilbert '90).
+      by Hilbert 90).
     \end{itemize}
   }
 
@@ -243,10 +279,10 @@
     \begin{itemize}
     \item Classic trick (also present in Lenstra) + \emph{iterated
         frobenius}~\cite{vzgathen+shoup92:journal} to solve Hilbert
-      '90 \textbf{efficiently}:
-      \[\gamma = \sum_{i=0}^{m-1}\zeta^i\delta^{\sigma^{-i}}\]
+      90 \textbf{efficiently}:
+      \[\alpha = \sum_{i=0}^{m-1}\zeta^i\gamma^{\sigma^{-i}}\]
       for $\zeta\in\mu_m$, $\sigma\in\Gal(\F_q[\mu_m])$, and random
-      $\delta$.
+      $\gamma$.
     \item Use factorization~\cite{kaltofen+shoup97} to compute $m$-th
       roots in $\F_q[\mu_m]$.
     \item \textcolor{alert}{Complexity analysis. \Large\Smiley}
@@ -278,8 +314,8 @@
     \paragraph{Idea}
     \begin{itemize}
     \item Find \emph{small} $s$ s.t. $k\simeq\F_q[\mu_s]$,
-    \item Pick $s$-th roots of unity $\gamma_1\in k$, $\gamma_2\in K$,
-    \item Find $e$ s.t. $\gamma_1\mapsto\gamma_2^e$.
+    \item Pick $s$-th roots of unity $\alpha\in k$, $\beta\in K$,
+    \item Find $e$ s.t. $\alpha\mapsto\beta^e$.
     \item No complexity analysis {\Large\Sadey}, fast if $s$
       \emph{small}.
     \end{itemize}
@@ -288,7 +324,7 @@
     \begin{itemize}
     \item $s$ is the smallest integer s.t. $\ord_s(q)=m$. 
     \item \textbf{Problem:} generically $s\in O(q^m)$.
-    \item Test if $\gamma_1\mapsto\gamma_2^e$ by linear algebra.
+    \item Test if $\alpha\mapsto\beta^e$ by linear algebra.
     \item \textbf{Problem:} tests are expensive, possibly $O(s)$ of
       them.
     \end{itemize}
@@ -301,7 +337,7 @@
     \end{itemize}
 
   }
-
+  
   \block{Rain's cyclotomic algorithm~\cite{rains2008}}{
     \begin{wrapfigure}{r}{0.5\colwidth}
       \hfill
@@ -321,10 +357,10 @@
 
     \paragraph{Removes trial-and-error}
     \begin{itemize}
-    \item Replace $\gamma_1,\gamma_2$ with \emph{Gaussian periods}:
-      \[\eta(\gamma) = \sum_{\sigma\in S}\gamma^\sigma\]
+    \item Replace $\alpha,\beta$ with \emph{Gaussian periods}:
+      \[\eta(\alpha) = \sum_{\sigma\in S}\alpha^\sigma\]
       where $(\Z/s)^\ast = \langle q\rangle \times S$.
-    \item Then $\eta(\gamma_1)\mapsto\eta(\gamma_2)$.
+    \item Then $\eta(\alpha)\mapsto\eta(\beta)$.
     \end{itemize}
 
     \paragraph{Improves bound on $s$}
@@ -334,7 +370,7 @@
     \item Best bound: $s\in O(m^{2.4+\epsilon})$ (GRH), in practice
       $s\in O(m\log m)$.
     \item \textbf{Practical complexity:} $\tildO\left((mo)^2\log q\right)$. Very fast
-      in practice.
+      when $o=1$.
     \end{itemize}
 
     \paragraph{Limitations}
@@ -342,7 +378,7 @@
     \item Unpublished. {\Large\Sadey} Implemented in Magma.
       {\Large\Smiley}
     \item Not really interesting for $q$ non-prime.
-    \item Only good for very small $o$.
+    \item Only practical for very small $o$.
     \end{itemize}
   }
 
@@ -353,7 +389,7 @@
     \item Same bounds on $s$: $O(m^{2.4+\epsilon})$ (GRH),
       $O(m\log m)$ (practical).
     \item \textbf{Practical complexity:} $\tildO\left(m\log q\right)$. 
-    \item Slower than cyclotomic method for small $o$, but competitive
+    \item Slower than cyclotomic method for $o=1$, competitive
       otherwise.
     \end{itemize}
   }
@@ -362,18 +398,109 @@
   % Embedding evaluation
   %%%%%%%%%%%%%%%%%
   \column{0.25}
-  \block{Linear algebra and modular composition}{
-    Kedlaya-Umans
+  \makeatletter
+  \setlength{\TP@blockverticalspace}{10mm}
+  \makeatother
+  \block{Embedding evaluation and duality}{
+    \begin{wrapfigure}[4]{r}{0.4\colwidth}
+      \hfill
+      \begin{tikzpicture}[node distance=8em,font=\Large,on grid]
+        \node(k)[]{$k=\F_q[X]/(f)$};
+        \node(K)[above=5em of k]{$\F_q[Y]/(g)=K$};
+        \node(Fqa)[right=of k]{$\F_q[\alpha]$};
+        \node(Fqb)[right=of K]{$\F_q[\beta]$};
+        \draw[auto,font=\normalsize]
+        (k) edge node[above]{$\sim$} node[below,alert,font=\large]{$A$} (Fqa)
+        (k) edge[c_->] node{$\varphi$} (K)
+        (Fqa) edge node[rotate=90,above]{$\sim$} node[right,alert,font=\large]{$B$} (Fqb)
+        (Fqb) edge[c^->] node[above,alert,font=\large]{$C$} (K);
+      \end{tikzpicture}
+    \end{wrapfigure}
+    
+    \paragraph{Evaluation decomposition}
+    \begin{enumerate}
+      \renewcommand{\labelenumi}{\textcolor{alert}{$\Alph{enumi}$.}}
+    \item Dual of polynomial evaluation~\cite{shoup99}.
+    \item Trivial.
+    \item Evaluate polynomial in $\beta$ modulo $g$.
+    \item[\color{alert}$\varphi^{\tiny-1}$.] Dual of
+      \textcolor{alert}{$A\circ B\circ C$}
+    \end{enumerate}
+
+    \paragraph{Algorithms}
+    \begin{itemize}
+    \item Polynomial evaluation
+      \begin{itemize}
+      \item Horner's rule: $\tildO(mn)$,
+      \item Modular composition: $O(n^{1+\epsilon})$~\cite{KeUm11},
+        or $O(n^{(\omega+1)/2})$~\cite{brent+kung}.
+      \end{itemize}
+    \item Dual operations: same complexity as original (transposition
+      principle).
+    \end{itemize}
+    
+    \paragraph{Normal bases:}
+    All the previous algorithms yield a \emph{normal element}
+    $\alpha$.  Conversions to/from normal bases (\textcolor{alert}{$A,
+      C$}) can be done in $O(n^{1.815}\log
+    q)$~\cite{kaltofen+shoup98}.
+
   }
-  \block{Normal bases}{
-    http://www.shoup.net/papers/subquadratic.pdf
+
+  \block[bodyinnersep=0]{Implementation}{
+    \bigskip
+    
+    \begin{tikzpicture}[x=\colwidth/15,y=\colwidth/15]
+      \draw (0,-0.4) [color=white,fill=white] rectangle (15,6.6);
+      \node[inner sep=0,outer sep=0,anchor=south west]{\includegraphics[width=\colwidth]{bench}};
+      \begin{scope}[line width=1pt,font=\small,anchor=east]
+        \draw (6.5,2) node{naive}
+        [Rays-Rays,color=red!70!black] -- (7.5,2);
+        \draw (6.5,1.5) node{Allombert}
+        [{Rays[n=8]}-{Rays[n=8]},color=blue!80!white] -- (7.5,1.5);
+        \draw[line width=3pt] (6.5,1) node{elliptic Rains}
+        [color=green!70!black] -- (7.5,1);
+
+        \draw (13.5,2.4) node{$o=6$}
+        [{Circle[open]-Circle[open]},color=red!70!black] -- (14.5,2.4);
+        \draw (13.5,2.1) node{$o=4$}
+        [Square-Square,color=cyan!50!white!] -- (14.5,2.1);
+        \draw (13.5,1.8) node{$o=3$}
+        [{Square[open]-Square[open]},color=magenta!80!blue] -- (14.5,1.8);
+        \draw (13.5,1.5) node{$o=2$}
+        [{Rays[n=8]}-{Rays[n=8]},color=blue!70!white] -- (14.5,1.5);
+        \draw (13.5,1.1) node{elliptic}
+        [line width=3pt,color=red!80!black] -- (14.5,1.1);
+        \draw (13.5,0.8) node{$o=1$}
+        [Rays-Rays,color=teal!70!green] -- (14.5,0.8);
+      \end{scope}
+      \begin{scope}
+        \draw
+        (0.2,3.2) node[font=\small,inner sep=0,rotate=90]{seconds}
+        (4.3,0) node[font=\small]{degree $m$}
+        (11.3,0) node[font=\small]{degree $m$}
+        (1.2,5.3) node[anchor=west,font=\small]{$q=101$}
+        (1.2,4.9) node[anchor=west,font=\small]{$m=n$}
+        (8.2,5.3) node[anchor=west,font=\small]{$q=101$}
+        (8.2,4.9) node[anchor=west,font=\small]{$m=n$}
+        (4.3,6.2) node{comparison of main algorithms}
+        (11.3,6.2) node{variants of Rains' algorithm};
+      \end{scope}
+    \end{tikzpicture}
+
+    \begin{center}
+      Code, data, notes and paper draft on
+      \texttt{https://github.com/defeo/ffisom}
+    \end{center}
   }
-  \block{Benchmarks}{}
+
   \block{\refname}{
+    \vspace{-1em}
     \small
     \renewcommand*{\refname}{\vspace{-1em}}
     \bibliographystyle{plain}
     \bibliography{../defeo}
+    \vspace{-2em}
   }
 
 \end{columns}
