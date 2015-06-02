@@ -1,4 +1,4 @@
-\documentclass[20pt,landscape,a0paper,blockverticalspace=25mm]{tikzposter}
+\documentclass[20pt,a0paper,blockverticalspace=20mm]{tikzposter}
 
 \usepackage[american]{babel}
 \usepackage[utf8]{inputenc}
@@ -24,6 +24,7 @@
 \DeclareMathOperator{\ord}{ord}
 
 \renewcommand{\paragraph}[1]{\smallskip\textbf{#1}}
+\newcommand{\secblock}[1]{\block[]{}{\huge\sc #1}}
 
 \title{Computing isomorphisms and embeddings of finite fields}
 \author{Ludovic Brieulle\footnotemark[1], Luca De Feo\footnotemark[1],
@@ -35,6 +36,7 @@
   d'Information}
 
 \usetheme{Desert}
+
 \definecolorpalette{UVSQ}{
     \definecolor{colorOne}{RGB}{255,255,255}
     \definecolor{colorTwo}{RGB}{0,146,187}
@@ -42,6 +44,7 @@
 }
 \colorlet{alert}{red}
 \usecolorstyle[colorPalette=UVSQ]{Sweden}
+
 \definetitlestyle{WLogos}{
     width=\paperwidth, roundedcorners=0, linewidth=0pt, innersep=1.5cm,
     titletotopverticalspace=0mm, titletoblockverticalspace=20mm,
@@ -50,16 +53,17 @@
    \draw[draw=none, bottom color=titlebgcolor, top color=framecolor,opacity=0.9]%
    (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop); %
    \draw
-   (\titleposleft+1em,0.5*\titlepostop+0.5*\titleposbottom)
-   node[anchor=west]{\includegraphics[width=20em]{uvsq-logo-cmjn}}
-   (\titleposleft/2,\titlepostop-1.5em)
-   node[anchor=north east]{\includegraphics[height=8em]{Anssi}}
-   (\titleposright/2,\titlepostop-1.5em)
-   node[anchor=north west]{\includegraphics[height=8em]{Anssi}}
-   (\titleposright-1em,0.5\titlepostop+0.5*\titleposbottom)
-   node[anchor=east]{\includegraphics[width=20em]{western}};
+   (\titleposleft,0.75*\titlepostop+0.25*\titleposbottom)
+   node[anchor=west]{\includegraphics[width=15em]{uvsq-logo-cmjn}}
+   (\titleposright-1em,0.75\titlepostop+0.25*\titleposbottom)
+   node[anchor=east]{\includegraphics[width=15em]{western}}
+   (\titleposleft+1em,\titleposbottom+1em)
+   node[anchor=south west]{\includegraphics[height=5em]{Anssi}}
+   (\titleposright-1em,\titleposbottom+1em)
+   node[anchor=south east]{\includegraphics[height=5em]{Anssi}};
 }
 \usetitlestyle{WLogos}
+
 \pgfmathsetseed{\number\pdfrandomseed} 
 \definebackgroundstyle{FancyBack}{
   \draw[opacity=0.2] (0,0) 
@@ -74,7 +78,7 @@
   %%%%%%%%%%%%%%%%%
   % Intro
   %%%%%%%%%%%%%%%%%
-  \column{0.25} \block{The embedding problem}{
+  \column{0.333} \block{The embedding problem}{
     \begin{wrapfigure}{r}{0.45\colwidth}
       \hfill
       \begin{tikzpicture}[node distance=8em,font=\Large]
@@ -196,11 +200,8 @@
   %%%%%%%%%%%%%%%%%
   % Kummer-type
   %%%%%%%%%%%%%%%%%
-  \column{0.25}
-  \makeatletter
-  \setlength{\TP@blockverticalspace}{15mm}
-  \makeatother
-  
+  \secblock{Kummer-type algorithms}
+
   \block{Lenstra's algorithm~\cite{LenstraJr91}}{
     \begin{wrapfigure}{l}{\colwidth}
       \paragraph{Goals}
@@ -249,6 +250,11 @@
   
   }
 
+  \column{0.333}
+  \makeatletter
+  \setlength{\TP@blockverticalspace}{10mm}
+  \makeatother
+
   \block{Allombert's variant~\cite{Allombert02}}{
     \paragraph{Goals}
     \begin{itemize}
@@ -294,7 +300,8 @@
   %%%%%%%%%%%%%%%%%
   % Group-based
   %%%%%%%%%%%%%%%%%
-  \column{0.25}
+  \secblock{Group-based algorithms}
+
   \block{Pinch's algorithm~\cite{Pinch}}{
     \begin{wrapfigure}[5]{r}{0pt}
       \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
@@ -365,11 +372,11 @@
 
     \paragraph{Improves bound on $s$}
     \begin{itemize}
-    \item Allow $\ord_s(q) = m\cdot o$ with small $o$,
-      take degree $o$ extensions of $k,K$.
+    \item Allow $\ord_s(q) = m\cdot o$, with small $o$,
+      take degree $o$ extensions.
     \item Best bound: $s\in O(m^{2.4+\epsilon})$ (GRH), in practice
       $s\in O(m\log m)$.
-    \item \textbf{Practical complexity:} $\tildO\left((mo)^2\log q\right)$. Very fast
+    \item \textbf{Practical complexity:} $\tildO\left((mo)^2\log q\right)$. Fast
       when $o=1$.
     \end{itemize}
 
@@ -382,8 +389,12 @@
     \end{itemize}
   }
 
+  \column{0.333}
+  \makeatletter
+  \setlength{\TP@blockverticalspace}{14mm}
+  \makeatother
+
   \block{Elliptic curve variant}{
-    \vspace{-1em}
     \begin{itemize}
     \item Replace Gaussian periods with \emph{elliptic
         periods}~\cite{mihailescu+morain+schost07}, $s$ an \emph{Elkies prime}.
@@ -399,10 +410,8 @@
   %%%%%%%%%%%%%%%%%
   % Embedding evaluation
   %%%%%%%%%%%%%%%%%
-  \column{0.25}
-  \makeatletter
-  \setlength{\TP@blockverticalspace}{10mm}
-  \makeatother
+  \secblock{Embedding evaluation}
+
   \block{Embedding evaluation and duality}{
     \begin{wrapfigure}[4]{r}{0.4\colwidth}
       \hfill
@@ -450,7 +459,11 @@
   }
 
   \block[bodyinnersep=0]{Implementation}{
-    \bigskip
+    \begin{itemize}
+    \item C/Flint implementation of Allombert's algortihm,
+    \item Sage/Cython implementation of Rains' and variants,
+    \item Comparisons with Pari/GP, Sage, Magma, \dots
+    \end{itemize}
     
     \begin{tikzpicture}[x=\colwidth/15,y=\colwidth/15]
       \draw (0,-0.4) [color=white,fill=white] rectangle (15,6.6);
@@ -497,12 +510,10 @@
   }
 
   \block{\refname}{
-    \vspace{-1em}
     \small
     \renewcommand*{\refname}{\vspace{-1em}}
     \bibliographystyle{plain}
     \bibliography{../defeo}
-    \vspace{-2em}
   }
 
 \end{columns}
