@@ -187,7 +187,7 @@
     \begin{itemize}
     \item Compute $\varphi(\gamma)$ in $K$.
     \item Test if $\delta\in\varphi(k)$.
-    \item Supposing $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)$ in $K$.
+    \item Supposing $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)$ in $k$.
     \end{itemize}
     
     \textbf{Naive solution:} Linear algebra (size $n\times m$).
@@ -236,7 +236,7 @@
       \begin{itemize}
       \item  use Artin-Schreier theory.
       \end{itemize}
-    \item Else,
+    \item Else, use Kummer theory:
       \begin{itemize}
       \item find $\alpha\in k$ s.t. $\alpha^m=a\in\F_q$,
       \item find $\beta\in K$ s.t. $\beta^m=b\in\F_q$,
@@ -383,6 +383,7 @@
   }
 
   \block{Elliptic curve variant}{
+    \vspace{-1em}
     \begin{itemize}
     \item Replace Gaussian periods with \emph{elliptic
         periods}~\cite{mihailescu+morain+schost07}, $s$ an \emph{Elkies prime}.
@@ -391,6 +392,7 @@
     \item \textbf{Practical complexity:} $\tildO\left(m\log q\right)$. 
     \item Slower than cyclotomic method for $o=1$, competitive
       otherwise.
+    \item Works well with $q$ non-prime.
     \end{itemize}
   }
 

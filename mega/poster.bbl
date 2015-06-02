@@ -1,0 +1,69 @@
+\begin{thebibliography}{10}
+
+\bibitem{Allombert02}
+B.~Allombert.
+\newblock Explicit computation of isomorphisms between finite fields.
+\newblock {\em Finite Fields Appl.}, 8(3):332 -- 342, 2002.
+
+\bibitem{bosma+cannon+steel97}
+W.~Bosma, J.~Cannon, and A.~Steel.
+\newblock Lattices of compatibly embedded finite fields.
+\newblock {\em J. Symbolic Comput.}, 24(3-4):351--369, 1997.
+
+\bibitem{brent+kung}
+R.~P. Brent and H.-T. Kung.
+\newblock Fast algorithms for manipulating formal power series.
+\newblock {\em Journal of the ACM}, 25(4):581--595, 1978.
+
+\bibitem{kaltofen+shoup97}
+Erich Kaltofen and Victor Shoup.
+\newblock Fast polynomial factorization over high algebraic extensions of
+  finite fields.
+\newblock In {\em ISSAC '97}, pages 184--188, New York, NY, USA, 1997.
+  ACM.
+
+\bibitem{kaltofen+shoup98}
+Erich Kaltofen and Victor Shoup.
+\newblock Subquadratic-time factoring of polynomials over finite fields.
+\newblock {\em Math. Comp.}, 67(223):1179--1197, 1998.
+
+\bibitem{KeUm11}
+K.~S. Kedlaya and C.~Umans.
+\newblock Fast polynomial factorization and modular composition.
+\newblock {\em SICOMP}, 40(6):1767--1802, 2011.
+
+\bibitem{LenstraJr91}
+H.~W. Lenstra~Jr.
+\newblock Finding isomorphisms between finite fields.
+\newblock {\em Math. Comp.}, 56(193):329--347, 1991.
+
+\bibitem{mihailescu+morain+schost07}
+Preda Mihailescu, Fran\c{c}ois Morain, and \'{E}ric Schost.
+\newblock Computing the eigenvalue in the {S}choof-{E}lkies-{A}tkin algorithm
+  using abelian lifts.
+\newblock In {\em ISSAC '07}, pages 285--292, New York, NY, USA, 2007.
+  ACM.
+
+\bibitem{Pinch}
+Richard G.~E. Pinch.
+\newblock Recognising elements of finite fields.
+\newblock In {\em Cryptography and Coding II}, pages 193--197. Oxford
+  University Press, 1992.
+
+\bibitem{rains2008}
+\'Eric~M. Rains.
+\newblock Efficient computation of isomorphisms between finite fields.
+\newblock 2008.
+
+\bibitem{shoup99}
+Victor Shoup.
+\newblock Efficient computation of minimal polynomials in algebraic extensions
+  of finite fields.
+\newblock In {\em ISSAC'99}, pages 53--58. ACM, 1999.
+
+\bibitem{vzgathen+shoup92:journal}
+J.~{von zur}~Gathen and V.~Shoup.
+\newblock Computing {F}robenius maps and factoring polynomials.
+\newblock {\em Comput. Complexity}, 2:187--224, 1992.
+
+\end{thebibliography}
