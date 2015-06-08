@@ -11,4 +11,5 @@
 *.out
 *.fdb_latexmk
 _region_.tex
-
+*.synctex.gz
+*.sty
