@@ -709,7 +709,40 @@ using transposed modular composition.
 
 \section{Rains' algorithm}
 
+In his paper, Pinch \cite{} proposed to use specific generating element to solve
+the isomorphism problem. One of his two methods makes use of the cyclotomic
+extension.\par
+Let $\F_q$ be a finite field of characteristic $p$ and let $n$ be an integer. 
+Now, let $m$ be an integer such that the primitive $m$th roots span 
+$\F(q^n)$, and let $f$ and $g$ be two different irreducible polynomial of
+degree $n$ over $\F_q$. We note
+\begin{equation}
+k_1 := \F_q[X]/(f)\text{ and }k_2 := \F_q[X]/(g)
+\end{equation}
+Pinch's method consists of finding primitive $m$th roots of unity in both extensions
+$k_1$ and $k_2$, which we will called $\alpha$ and $\beta$ respectively, then
+find the morphism
+\begin{equation}
+\varphi_e : \alpha\longmapsto\beta^e
+\end{equation}
+which actually defines an isomorphism.\par
+One of the issue with this method is that the order of $\F(q^n)$ may only be
+divisible by large integers, increasing drastically the time it takes to find a 
+$m$th root of unity in each extensions. Another issue is the random choice of
+primitive $m$th roots. Due to how the cyclotomic polynomial factors in
+charateristic $p$, it could take $O(m)$ tries to find two roots which are not in
+the same irreducible factor.\par
+
 \subsection{Gaussian periods}
+
+A solution to the problem mentionned above would be to find a way to generate
+elements which define an isomorphism. Those elements are the \emph{Gaussian
+periods} that will be introduced in this section.\par
+Let $L$ be a number fields of degree $\ell$ and $\mathcal{O}_{K}$ its ring of
+integers. Let $q = p^{\ell}$ and $\mu_m$ be the abstract group of $m$th roots of
+unity. If we let $\mathfrak{p}$ be the ideal of $L$ above $p$ such that
+$\mathcal{O}_L/\mathfrak{p} = \F_q$ and $\mathfrak{P}$ one of its irreducible 
+factors, we have the following situation
 
 \subsection{Rains' special algorithm}
 
@@ -722,16 +755,316 @@ using transposed modular composition.
 
 \section{Elliptic Rains' algorithm}
 
+In \cite{}, Pinch already proposed to use the torsion point of an elliptic
+curve in place of the roots of unity. Rains also mentionned this possiblity, 
+but judges that as far as he could see it would not bring significant 
+improvements.\par 
+In practice the use of auxiliary extensions in the cyclotomic method costs a of
+ressources.We will see that, contrary to Rains' belief, in the cases where an
+auxiliary extention is necessary, the elliptic variant is actually more 
+competitive.\par
+In the next sections, we will first introduce the \emph{elliptic periods} which 
+plays a similar role as the Gaussian periods, then we will describe the
+algorithm itself and finally we will compute its complexity; which will
+roughly be $\tildO(n^2)$ just like the other variants, the difference will be 
+on the constant of the big $O$.
+
 \subsection{Elliptic periods}
+
+The use of elliptic curve raises another kind of problem that was not present 
+in the cyclotomic version of Rains' algorithm. The fact is elliptic curves 
+come with non trivial automorphisms that can't be ignored. This will be taken 
+in account in the definition of the elliptic periods. In particular, the cases 
+$j = 0, 1728$ shall be dealt more specifically.\par
+As in the
+previous sections, we work in positive charactestic $p$, with the addition of
+$p \neq 2$ or $3$, we denote by $f$ and $g$ two disctinct irreducible
+polynomials of degree $n$ on $\F_q$ and we let $k_1$ and $k_2$ be the
+respective extensions they define. Let us quickly recall the definition of an 
+Elkies Prime. 
+
+\begin{definition}
+Let $E/\F_q$ be an elliptic curve, let $m$ be a prime, we say that $m$
+is an Elkies prime for $E$ if the charateristic polynomial of its Frobenius
+$\pi_q : (X, Y, Z) \to (X^q, Y^q, Z^q)$ splits in $\Z/m\Z$, in other words
+\begin{equation}
+X^2 - tX + q = (X - a)(X - b) \bmod m
+\end{equation}
+for $a,b\in\Z/m\Z$ and $t$ the trace of the Frobenius $\pi_q$ such that 
+$\# E(\F_q) = q + 1 - t$.
+\end{definition}
+
+\begin{remark}
+\emph{note : à retravailler}\\
+If $m$ is an Elkies prime for $E$, then there exists a basis such that the 
+Frobenius acts as a diagonale matrix on $E[m]$, on which the restriction of
+$\pi$ is decomposed in two eigenspaces; the eigenvalues are the root of the 
+characteristic polynomial of the Frobenius :
+\begin{equation}
+\begin{pmatrix}
+a & 0\\
+0 & b
+\end{pmatrix}.
+\end{equation}
+For all integer $n$, the action Frobenius of $E/\F_{q^n}$ will be the $n$th
+power of that matrix. Additionnaly, if you note $k =
+\textup{min}(\order_m(a),\order_m(b))$ then the extension $\F_{q^k}$ is
+the smallest extension on which there is a torsion point. Let $k = \order_m(a)$
+and $P$ be in the eigenspace of $a$, then we have the following
+\begin{equation}
+\pi_{q^k}(P) = [a^k]P = [1] = P
+\end{equation}
+Moreover, this also show that with good conditions the abscissas of points in the 
+eigenspace of $a$ generates $\F_{q^k}$. This will be used in the next
+section.
+\end{remark}
+
+\begin{definition}
+Let $E/\F_q$ be an elliptic curve and let $m>2$ be an Elkies prime for $E$.\par
+\begin{itemize}
+\item Let us consider the case where $j\neq0, 1728$. Let $a$ be
+an eigenvalue of $\phi_q \bmod m$. Suppose there exists a subgroup $S$ of
+$(\Z/m\Z)^{\times}$ such that 
+\begin{equation}
+(\Z/m\Z)^{\times}/\lbrace{\pm1}\rbrace = \langle{a}\rangle \times S
+\end{equation}
+Then for every $P\in E[m]$ in the eigenspace generated by $a$, we define
+the elliptic periods as follow
+\begin{equation}
+\eta_{a}(P) = \sum_{\sigma\in S}{\left([\sigma]P\right)_X}
+\end{equation}
+where $P_X$ denotes the abscissa of the point $P$.\par
+     
+\item For the cases $j = 0$ or $1728$, we have to take in account the size
+of $\Aut_{\F_q}(E)$. Namely, we shall assume that its order divides $\varphi(m)$
+then we identify it to a subgroupe of $(\Z/m\Z)^{\times}$. We once again assume
+that there is a subgroup $S$ of $(\Z/m\Z)^{\times}$ such that
+\begin{equation}
+(\Z/m\Z)^{\times}/\Aut_{\F_q}(E) = \langle{a}\rangle\times S
+\end{equation}
+Then for every $P\in E[m]$ in the eigenspace generated by $a$, we define
+the elliptic periods as follow
+\begin{equation}
+\eta_{a}(P) = \sum_{\sigma\in
+S}{\left([\sigma]P\right)_X^{\#\Aut_{\F_q}(E)/2}}
+\end{equation}\par
+\end{itemize}
+
+\end{definition}
+
+Notice that the first description is a particular case of the last definition.
+As we noted earlier, the elliptic periods will play the same role as the
+Gaussian periods in the cyclotomic variant. We shall now enounce the main
+theorem of this section.
+
+\begin{theorem}
+\label{theorem:ellperiods}
+Let $m$ be a prime different from $p$ and $t$ an integer such that 
+
+\begin{enumerate}
+
+    \item $\mid t\mid < \sqrt{2q}$,
+    \item $X^2 - tX + q = (X - a)(X - b)\bmod m,$
+    \item $(\Z/m\Z)^{\times}/\Aut_{\F_q}(E) = \langle{a}\rangle \times S$ for $S$ a subgroup of
+$(\Z/m\Z)^{\times}$,
+    \item $\order_m(a) = n$ and $\order_m(b) \nmid n$.
+\end{enumerate}
+Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^n}$ is the
+smallest extension that contains $m$-torsion points and for all $P$ in the
+eigenspace of $a$, the periods $\eta_a(P)$ form a normal basis of $\F_{q^n}$ on
+$\F_q$.
+
+\end{theorem}
+
+To prove this theoreme, we will have to move back to characteristic $0$ just
+like in the previous section.
 
 \subsection{Elliptic algorithm}
 
+The main improvement of the elliptic variant of Rains' algorithm is the fact
+that we can work directly in the extensions we are interested in. What allows
+this to happen is that contrary to the roots of unity, there isn't only one
+elliptic curve per extension, namely there are as many elliptic curves as there
+are $j$-invariants in $\F_q$. Even more so, the use of twist of curves, which we
+will be talking about later, ensures to almost always find the elliptic curve we
+need for our algorithm.\\\par
+
+\subsubsection*{Finding an elliptic curve}
+If theoritically, we always introduce the elliptic curve before finding an
+Elkies prime number, in practice, we have to find a prime $m$ which has the good
+properties and then we pick an elliptic curve for which this $m$ is an Elkies
+prime.\par
+At first, we will concentrate on $p\neq2,3$. We need to find an integer $m$ 
+such that there exist an element of order $n$ modulo $m$, so that the first 
+extension on which there will be rational torsion point of order $m$ is 
+$\F_{q^n}$. The first condition is then $n\mid \varphi(m)$. We also require 
+that the cofactor $\varphi(n)/n$ is prime with $n$, so it ensures that the right 
+groups split as we want, namely 
+\begin{equation}
+(\Z/m\Z)^{\times}/\Aut_{\F_q}(E)=\langle{a}\rangle\times S
+\end{equation}
+for $S$ a subgroup of $(\Z/m\Z)^{\times}$ and $a$ the eigenvalue of $\pi_q$ of
+order $n$ modulo $m$. We also wish for $b$, the other eigenvalue of $\pi_q$ to
+be of order not dividing $n$, because...\par
+To pick a good elliptic curve, we shall first pick some trace candidate modulo 
+$m$. Since we need $m$ to be an Elkies prime for the future elliptic curve, the
+polynomial in $(\Z/m\Z)$ shall be of the form
+\begin{equation}
+(X - a)(X - b) = X^2 - (a + b)X + ab \bmod m.
+\end{equation}
+Then we pick $a\in(\Z/m\Z)^{\times}$ such that $\order_m(a) = n$ and,
+since $ab = q$, we check that $\order_m(a/q)\nmid n$. If these conditions are
+met, we note $t = a + a/q \bmod m$ and check if it is a good trace candidate
+using Hasse theorem. More precisely, we verify that $\hat{t}$ the lift of $t$ is
+actually in the Hasse's bound
+\begin{equation}
+|\hat{t}| \leq 2\sqrt{q}.
+\end{equation}\\\par
+To chose the right elliptic curve, we pick a $j\in\F_q$ and compute the trace of
+the associated ellpitic curve to check if it is equal to one of the candidates
+we picked previously. Before testing the curves for other $j$-invariant, should
+the trace not be a match for any candidate, it is important to know that there
+are serveral curves defined for one $j$-invariant; these are called twists of an
+elliptic curve. We will use a proposition from \cite{Silverman} as a
+definition.
+
+\begin{definition}
+Let $E/\F_q$ be an elliptic curve and let $A,B\in\F_q$ be such that
+\begin{equation}
+E : y^2 = x^3 + AX + B
+\end{equation}
+is its Weierstrass equation. Then for $D\in(\F_q)^*$ we define the twist $E_D$
+of $E$ corresponding to $D$ as follow.
+
+\begin{equation*}
+\begin{aligned}
+(i)\quad & E_D : y^2 = x^3 + D^2Ax + D^3B && \text{if } j(E)\neq0,1728,\\
+(ii)\quad & E_D : y^2 = x^3 + DAx && \text{if } j(E)=1728,\\
+(iii)\quad & E_D : y^2 = x^3 + DB && \text{if } j(E)=0.
+\end{aligned}
+\end{equation*}
+
+\end{definition}
+
+\begin{remark}
+For $j\neq0,1728$, the twist is called a quadratic twist and for it to be
+different from $E$, $D$ needs to be a non-quadratic residue. For $j=1728$, $D$
+needs to be a non-quadratic residue and for $j = 0$, $D$ needs to be a
+non-cubic residue as well. The twists are called quartic twists and sextic twists
+respectively.
+\end{remark}
+
+We can deduce quite simply that the trace of quadratic twist is the
+opposite of the original curve. TODO\par
+There are similar results for the other $j$-invariant which will be detailed in
+the next proposition.
+
+\begin{proposition}
+\label{proposition:twisttrace}
+Let $E/\F_q$ be an ordinary elliptic curve and $j_E$ its $j$-invariant. We have
+one of the following.
+
+\begin{enumerate}
+    \item For $j_E\neq0,1728$, we let $D\in\F_q$ be a non-quadratic residue, then
+the trace of the quadratic twist $E_D$ of $E$ satisfies the relation
+\begin{equation}
+t_{E_D} = -t_E.
+\end{equation}
+
+    \item For $j_E=1728$ and $q=1\bmod4$, we let $D\in\F_q$ be a non-quadratic residue, then the
+traces of the quartic twists $E_D$ of $E$ statisfy
+\begin{equation}
+t_{E_D} = \zeta_4t_E,
+\end{equation}
+for $\zeta_4\in\F_q$ a $4th$ root of unity.
+
+    \item For $j_E=0$ and $q=1\bmod6$, we let $D\in\F_q$ be a non-quadratic
+residue and a non-cubic residue, then the
+traces of the sextic twists $E_D$ of $E$ statisfy
+\begin{equation}
+t_{E_D} = \zeta_6t_E,
+\end{equation}
+for $\zeta_6\in\F_q$ a $6th$ root of unity.
+\end{enumerate}
+
+\end{proposition}
+
+\begin{proof}
+\end{proof}
+
+In summary, we need to find an integer $m$ such that :
+\begin{itemize}
+    \item $m$ is prime,
+    \item $n\mid\varphi(m)$ and $(\varphi(m)/n,n)=1$,
+    \item there exists $a\in(\Z/m\Z)^{\times}$ such that 
+\begin{equation}
+\label{equation:ordeigen}
+\order_m(a) = n,\order_m(\dfrac{a}{q}) \nmid n\text{ and }|\widehat{a + \dfrac{a}{q}}| \leq 2\sqrt{q}.
+\end{equation}
+\end{itemize}
+Let
+\begin{equation}
+\mathcal{T}_m = \lbrace{t = a + a/q \bmod m \text{ with } a\in(\Z/m\Z)^{\times}
+\text{ such that } a \text{ satisfies 
+}(\ref{equation:ordeigen})}\rbrace
+\end{equation}
+the good trace candidates for a prime $m$, then the
+routine to find a good elliptic curve is as follow.
+
+\begin{algorithm}
+    [Selecting an elliptic curve]
+    \label{algorithm:selectell}
+    \begin{algorithmic}[1]
+    \REQUIRE $m$ an integer as above, $q$ a prime power, $n$ the extension
+degree, $\mathcal{T}_m$, $c$ a generator of $(\Z/m\Z)^{\times}$
+    \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_m$
+    \STATE $E\leftarrow \text{EllipticCurve}(j=1728)$
+    \STATE $t_E\leftarrow \text{Trace}(E)$
+    \IF{$q\neq1\bmod4$ \AND $0\in\mathcal{T}_m$}
+        \RETURN $E$
+    \ELSE
+        \FOR{$i\in\lbrace{0,\dots,3}\rbrace$}
+            \IF{$\zeta_4^it_E\in\mathcal{T}_m$}
+                \RETURN $\text{quartic\_twist}(E,c^i)$
+            \ENDIF
+        \ENDFOR
+    \ENDIF
+    \STATE $E\leftarrow \text{EllipticCurve}(j=0)$
+    \STATE $t_E\leftarrow \text{Trace}(E)$
+    \IF{$q\neq1\bmod6$ \AND $0\in\mathcal{T}_m$}
+        \RETURN $E$
+    \ELSE
+        \FOR{$i\in\lbrace{0,\dots,5}\rbrace$}
+            \IF{$\zeta_6^it_E\in\mathcal{T}_m$}
+                \RETURN $\text{sextic\_twist}(E,c^i)$
+            \ENDIF
+        \ENDFOR
+    \ENDIF
+    \FOR{$j_0\in\F_q$ \AND $j_0\neq0,1728$}
+        \STATE $E\leftarrow \text{EllipticCurve}(j=j_0)$
+        \STATE $t_E \leftarrow \text{Trace}(E)$
+        \FOR{$\zeta\in\lbrace{1,-1}\rbrace$}
+            \IF{$\zeta t_E\in\mathcal{T}_m$}
+                \RETURN $\text{quadratic\_twist}(E)$
+            \ENDIF
+        \ENDFOR
+    \ENDFOR
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection*{Computing the elliptic periods}
+
+Computing the elliptic periods isn't the most complicated part of the algorithm.
+Counting the points of $E/\F_{q^n}$ is directly deduced from the number of
+points of $E/\F_q$ using the relation
+\begin{equation}
+\# E(\F_q^n) = q^n + 1 - (a^n + b^n)
+\end{equation}
+for $a, b$ the roots of the characteristic polynomial of $\pi_q$. To find a
+point of order $m$ in the eigenspace of $a$, we just have to find a point of
+order $m$ in $\F_{q^n}$ thanks to the properties on the order of the eigenvalue.
+
 \subsection{Complexity analysis}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Experimental results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
