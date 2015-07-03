@@ -707,8 +707,6 @@ using transposed modular composition.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Rains' algorithm}
-
 In his paper, Pinch \cite{} proposed to use specific generating element to solve
 the isomorphism problem. One of his two methods makes use of the cyclotomic
 extension.\par
@@ -742,7 +740,48 @@ Let $L$ be a number fields of degree $\ell$ and $\mathcal{O}_{K}$ its ring of
 integers. Let $q = p^{\ell}$ and $\mu_m$ be the abstract group of $m$th roots of
 unity. If we let $\mathfrak{p}$ be the ideal of $L$ above $p$ such that
 $\mathcal{O}_L/\mathfrak{p} = \F_q$ and $\mathfrak{P}$ one of its irreducible 
-factors, we have the following situation
+factors in $L[\mu_m]$, we have the following situation.
+
+
+\begin{center}
+\begin{tikzpicture}
+    \node (Q) {$\Q$};
+    \node[above =1.5cm of Q] (Qm) {$\Q[\mu_m]$};
+    \node[above right=1cm and 2cm of Q] (L) {$L$};
+    \node[above =1.5cm of L] (Lm) {$L[\mu_m]$};
+    \node[right =3cm of Lm] (Fqm) {$\F_q[\mu_m]$};
+    \node[below =1.4cm of Fqm] (Fq) {$\F_q$};
+    \node[below right=1cm and 1.15cm of Fqm] (Fpm) {$\F_p[\mu_m]$};
+    \node[below =1.3cm of Fpm] (Fp) {$\F_p$};
+    \draw (Q) edge node[left] {\small $(\Z/m\Z)^{\times}$} (Qm); 
+    \draw (L) edge node[left] {\small $G$} (Lm); 
+    \draw (Fqm) edge node[right] {\small $\langle{q}\rangle$} (Fq); 
+    \draw (Fpm) edge node[right] {\small $\langle{p}\rangle$} (Fp); 
+    \draw (Q) edge node {} (L);
+    \draw (Qm) edge node {} (Lm);
+    \draw (Fqm) edge node {} (Fpm);
+    \draw (Fq) edge node {} (Fp);
+    \draw[->>] (Q) edge node[above] {$\bmod\, p$} (Fp);
+    \draw[->>] (L) edge node[above] {$\bmod\, \mathfrak{p}$} (Fq);
+    \draw[->>] (Lm) edge node[above] {$\bmod\, \mathfrak{P}$} (Fqm);
+\end{tikzpicture}
+\end{center}
+
+where $G$ is the Galois group of $L[\mu_m]/L$ subgroup of $(\Z/m\Z)^{\times}$
+and $\langle{q}\rangle$, $\langle{p}\rangle$ are the decomposition groups of
+$\mathfrak{P}/\mathfrak{p}$ and $\mathfrak{p}/p$ respectively.
+
+\begin{definition}
+Let us assume that there exists a subgroup $S\subset(\Z/m\Z)^{\times}$ such that
+\begin{equation}
+(\Z/m\Z)^{\times} = \langle{q}\rangle \times S.
+\end{equation}
+Then for every generator $\zeta_m$ of $\mu_m$, we define the Gauss periods
+$\eta(\zeta_m)$ as follow
+\begin{equation}
+\eta(\zeta_m) = \sum_{\sigma\in S}{\zeta_m^{\sigma}}.
+\end{equation}
+\end{definition}
 
 \subsection{Rains' special algorithm}
 
