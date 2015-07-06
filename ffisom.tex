@@ -55,12 +55,13 @@
 % roman numerals
 \newcommand{\romnum}[1]{\romannumeral #1}
 \newcommand{\Romnum}[1]{\uppercase\expandafter{\romannumeral #1}}
-\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
 
+\newcommand{\todo}[1]{\textcolor{red}{TODO: #1}}
+\newcommand{\comment}[2][Note]{\textcolor{green}{(#1): #2}}
 
 \DeclareMathOperator{\fieldchar}{char} % characteristic of a field
 \DeclareMathOperator{\ringofend}{End} % endomorphism ring
-\DeclareMathOperator{\trace}{tr} % trace of a mtrix
+\DeclareMathOperator{\trace}{Tr} % finite field trace
 \DeclareMathOperator{\gal}{Gal} % Galois group
 \DeclareMathOperator{\order}{ord} % order of an element
 \DeclareMathOperator{\lcm}{lcm} % least common multiple
@@ -131,15 +132,15 @@
 
 
 \title{Computing isomorphisms and embeddings of finite fields}
-\author{Ludovic Brieulle, Luca De Feo, Javad Doliskani,\\ Jean Pierre
-  Flori and Éric Schost}
+\author{Ludovic Brieulle, Luca De Feo, Javad Doliskani,\\ Jean-Pierre
+  Flori and \'Eric Schost}
 
 
 \begin{document}
 
 \maketitle
 \begin{abstract}
-  Let $\F_q$ be a finite field.  The finite field isomorphism problem
+  Let $\F_q$ be a finite field.  The finite field embedding problem
   asks, given two irreducible polynomials $f,g$ in $\F_q[X]$ with
   $\deg f$ dividing $\deg g$, to compute an explicit description of a
   field embedding of $\F_q[X]/f$ into $\F_q[X]/g$. When $\deg f = \deg
@@ -153,6 +154,153 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Notations}
+
+\def\poster{\textbf{Poster}}
+\def\rains{\textbf{Rains}}
+\def\kummer{\textbf{Kummer}}
+\def\cons{\textbf{consensual}}
+\def\prop{\textbf{proposed}}
+
+This section is for internal reference only: erase after the paper has
+stabilized.
+
+
+Diagram from the poster:
+
+\begin{tikzpicture}[node distance=8em]
+  \node(Fq){$\F_q$};
+  \node(Fqf)[above left of=Fq]{$k=\F_q[X]/(f)$};
+  \node(Fqg)[above right of=Fqf]{$K=\F_q[Y]/(g)$};
+  \draw[]
+  (Fq) edge (Fqf)
+  (Fq) edge (Fqg)
+  (Fqf) edge[left,auto] node{$\varphi$} (Fqg);
+\end{tikzpicture}
+
+\begin{itemize}
+\item Base field: 
+  \begin{itemize}
+  \item \cons: $\F_q$,
+  \item \kummer: $E=\F_q$, uses $p=q$ starting from 2.1
+  \item \prop: $\F_q$ is the base field, no alias for it. Where
+    needed, we make clear that $q$ is prime. We avoid using $p$
+    anywhere.
+  \end{itemize}
+\item Irreducible polynomials:
+  \begin{itemize}
+  \item \poster: $f$ (smallest), $g$ (largest),
+  \item \kummer: $f$ degree $r$ polynomial defining the extension, $g$
+    factor of the cyclotomic polynomial,
+  \item \prop: $f$ and $g$ are reserved for the defining polynomials of the
+    field extensions.
+  \end{itemize}
+\item Fields:
+  \begin{itemize}
+  \item \poster: $k$ (smallest), $K$ (largest),
+  \item \kummer: $F,F_1,F_2$ 
+  \item \rains: $k_1,k_2$, 
+  \item \rains: $K,L$ number fields
+  \item \prop: ??
+  \end{itemize}
+\item Polynomials: 
+  \begin{itemize}
+  \item \cons{} variables are upper-cased: $X,Y,\dots$
+  \item \kummer: in secs. 2.1.3 and 2.1.4 variables become lower-cased,
+    $f,f_i,g,g_1,g_2,h,v$ are used for generic polynomials
+  \item \prop: Polynomial variables are all upper-case: $X,Y,Z$. $f$ and $g$ are reserved.
+  \end{itemize}
+\item Field extensions:
+  \begin{itemize}
+  \item \poster, \rains: $\F_q[X]/(f)$
+  \item \textbf{intro}: $\F_q[X]/f$
+  \item \kummer: $\F_q[X]/f(X)$ but $\F_q[X]/\ang{X^r-c}$
+  \item \prop: ??
+  \end{itemize}
+\item Degrees:
+  \begin{itemize}
+  \item \poster, \prop: $m=\deg f$ (smallest extension), $n=\deg g$ (largest extension),
+  \item \kummer: $r = [F:\F_q]$,
+  \item \rains: $n=\deg f=\deg g$,
+  \end{itemize}
+\item Other integers and degrees:
+  \begin{itemize}
+  \item \poster: $s$ (prime) such that $\mu_s$ generates $k$,
+  \item \poster: $e$ exponent such that $\alpha\mapsto\beta^e$
+    (inconsistent with ``Generators'' below)
+  \item \poster: $o$ degree of auxiliary extension (quite bad visually)
+  \item \kummer: $j,\ell$ some exponents sending generators over other generators
+  \item \kummer: $s,u,t$ order of $p \mod r$ and related integers
+  \item \rains: $m$ integer (often prime) such that $\mu_m$ generates $k_1$ 
+  \item \rains: $\ell$ extension degree (e.g., $q=p^\ell$)
+  \item \rains: $k$ extension degree,
+  \item \rains: $a,b$ elements of $(\Z/m\Z)^\times$
+  \item \prop: ??
+  \end{itemize}
+\item Embedding/isomorphism:
+  \begin{itemize}
+  \item \poster: $\varphi$ (clashes with Euler function),
+  \item \kummer: $\varphi_1,\varphi_2,\psi$,
+  \item \rains: $\varphi$, $\varphi_e$
+  \item \prop: ??
+  \end{itemize}
+\item Generators:
+  \begin{itemize}
+  \item \poster, \prop: $\F_q[\alpha]=k$ (smallest), $\beta = \varphi(\alpha)$ (largest), 
+  \item \kummer: $c,c_i$ generators of Teichm\"uller groups $T_E$,
+  \item \kummer: $\alpha_1,\alpha_2\gamma$ generator of extension ring $F[\zeta]$,
+  \item \kummer: $x,z$ residue classes of $X,Z$
+  \item \rains: $\alpha,\beta$
+  \end{itemize}
+\item Other field elements:
+  \begin{itemize}
+  \item \poster: $\gamma, \delta$
+  \item \poster: $a=\alpha^m$, $b=\beta^m$ in Lenstra's algorithm
+  \item \kummer: $b=(\alpha_1/\alpha_2)^r$ generators of extension ring
+  \item \kummer: $c=(\eta_a/\eta_b)$, same role as $b$ above, but in different section
+  \item \kummer: $\theta_a$ solution to Hilbert 90
+  \item \kummer: $\beta_a,\beta_b,\gamma_a,\gamma_b$ byproducts of Hilbert 90 proof
+  \item \kummer: $\eta,\eta_a=\theta_a^r,\eta_b=\theta_b^r$ non $r$-adic residues
+  \item \kummer: $\xi_i,\delta_i$ intermediary computations
+  \item \kummer: $\beta_i,\xi_i,\zeta_i$ intermediary computations
+  \item \rains: $j,j_E$ curve invariant
+  \item \rains: $A,B,D$ curve coefficients
+  \item \prop: Elements of \emph{small} fields (e.g. $\F_q,
+    \F_q[\zeta]$ are represented by roman letters. Elements of
+    \emph{large fields} (e.g. $\F_{q^m},\F_{q^n}$ are represented by
+    greek letters.
+  \end{itemize}
+\item Roots of unity and related elements:
+  \begin{itemize}
+  \item \poster, \rains, \prop: $\mu_m$ group of $m$-th roots, $\zeta$ a root,
+  \item \poster, \rains: $\eta(\alpha)$, $\eta(\zeta)$ (gaussian) periods,
+  \item \rains: $\eta_a(P)$ elliptic period
+  \item \kummer: $\Phi_r$ cyclotomic polynomial
+  \end{itemize}
+\item Galois theory:
+  \begin{itemize}
+  \item \poster, \prop: $\gal(K/k)$ Galois group, $\sigma\in\gal$ (preferred
+    to $q$ to express frobenius)
+  \item \kummer: $\Delta=\Aut(S/R)$ Automorphism group of rings,
+  \item \kummer: $\gal(K/k)$ Galois group, $\sigma\in\gal$ (but
+    prefers using $p$ as exponent in formulas)
+  \item \kummer: $T_{K/k}$ trace
+  \item \rains: $\Aut(E)$ automorphism group of a curve
+  \item \prop: use $\trace$ for trace
+  \end{itemize}
+\item Modular integers
+  \begin{itemize}
+  \item \poster: $\Z/s$ and $(\Z/s)^\ast$,
+  \item \kummer: $\Z/r\Z$
+  \item \rains: $\Z/m\Z$ and $(\Z/m\Z)^\times$,
+  \item \prop: ??
+  \end{itemize}
+\end{itemize}
+
+Note: abstract and intro generally agree with \poster{} notation.
+
+
 
 \section{Introduction}
 
@@ -178,7 +326,7 @@ sub-problems:
   \begin{itemize}
   \item Compute $\varphi(\gamma)\in K$.
   \item Test if $\delta\in\varphi(k)$.
-  \item If $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)\in K$.
+  \item If $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)\in k$.
   \end{itemize}
   We refer collectively to these problems as the \emph{Embedding
     evaluation}.
@@ -213,7 +361,7 @@ the end we give a variant of these algorithms with a significantly lower running
 Let $F$ be an extension of degree $r$ of $E = \F_q$. In \cite{LenstraJr91}, Lenstra proves that 
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
 that finds an isomorphism between them. The focus of the paper is on the theoretical construction 
-of the isomorphism, and no rigorous complexity analysis is presented. However, since there is an 
+of the isomorphism, and no rigorous \comment[Luca]{I would rather say ``precise'' or ``fine-grained'': Lenstra's analysis is very rigorous!} complexity analysis is presented. However, since there is an 
 explicit assumption of using linear algebra in the paper, a rough analysis of the algorithm yields 
 an estimate of $O(r^3)$ operations in $E$. The idea of the algorithm is as follows. First, if 
 the extension degree is equal to the charactristic the Artin-Schreier theory is used. Therefore, we 
@@ -280,13 +428,14 @@ indeterminism if one chose to use efficient factoring algorithms.
 
 Alombert's approach is more or less the same as above with more focus on implementation. The idea 
 of the algorithm is to cyclotomic field extensions which in turn allows the explicit use of Hilbert 
-90 Theorem to find elements $\alpha_1 \in F_1[\zeta]$, and $\alpha_2 \in F_2[\zeta]$. Then $b = 
+90 Theorem to find elements $\alpha_1 \in F_1[\zeta]$, and $\alpha_2 \in F_2[\zeta]$ \comment[Luca]{Even if Lenstra doesn't write ``Hilbert 90'', some formulas (e.g., definition of $\beta$ in Sec.~5) in his paper do suggest he's using it}. Then $b = 
 \alpha_1^r / \alpha_2^r$ is an $r$th power in $E[\zeta]$ from which $b^{1/r}$ can be computed using 
 a root extraction algorithm. The isomorphism $F_1[\zeta] \xrightarrow{\sim} F_2[\zeta]$ is then 
 given by $\alpha_1 \mapsto b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is 
 presented, one can easily see that the dominant cost of this algorithm is solving Hilbert 90 which 
 is done using linear algebra. Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations 
-in $E$.
+in $E$. \comment[Luca]{While writing the poster I had a doubt on this (and put question marks next to a similar sentence). Bill does give no complexity analysis, the only reason we assumed he uses Gaussian elimination is this sentence at the end of Sec~2.1: ``In practice, $\alpha_1$ and $\alpha_2$ will be computed using linear algebra, and not by
+directly using the proof of Hilbert's Theorem 90.''. But what does he mean by ``linear algebra''? Gaussian elimination, or something smarter? The reason I ask is that Pari is so fast that I find it unlikely it is using generic linear system solving. Maybe Bill knew the summation trick to solve Hilbert 90 and called it linear algebra, maybe he realized it after publishing the paper and corrected the code. In any case, I'd be more cautious formulating Allombert's algorithm complexity. It might be useful asking Bill (or trying to read Pari sources, aargh!).}
 
 
 \subsection{Fast variant}
@@ -364,6 +513,7 @@ extensions, and skip some detail computations. We first need the following resul
 		\item[\normalfont (ii)] $\theta_a, \theta_a^r$ are non-$r$-adic residues in $F_1[\zeta], 
 		\F_p[\zeta]$ respectively.
 	\end{enumerate}
+        \comment[Luca]{It's worth mentioning $\theta_a$ is a solution to Hilbert 90. Mathematicians are familiar with the property $\sigma(\theta)/\theta=\zeta$ (the usual statement of Hilbert 90), thus it is better to recall this property in the statement, rather than hiding it in the proof. Aren't there any \emph{caveats} when $r$ is even?}
 \end{proposition}
 \begin{proof}
 	Let $v = u^{-1} \bmod r$, and let $\gamma \in F_1[\zeta]$ be an $r^t$-th root of $\zeta^{v(r - 
@@ -703,6 +853,11 @@ from which we can get an isomorphism
 \end{array}
 \]
 using transposed modular composition.
+
+\subsubsection{The Artin-Schreier case}
+\label{sec:artin-schreier-case}
+
+\todo{We have to write at least a few paragraphs on how to handle this case.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
