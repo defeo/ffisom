@@ -183,7 +183,7 @@ Diagram from the poster:
 \item Base field: 
   \begin{itemize}
   \item \cons: $\F_q$,
-  \item \kummer: $E=\F_q$, uses $p=q$ starting from 2.1
+  \item \kummer: $E=\F_q$
   \item \prop: $\F_q$ is the base field, no alias for it. Where
     needed, we make clear that $q$ is prime. We avoid using $p$
     anywhere.
@@ -424,18 +424,18 @@ A more careful look at the above approach suggests a trade-off between determini
 simplicity/practicality. For example, one can replace the ring extension $E[\zeta]$ with the field 
 extension $E[\zeta] = E[X] / \ang{g}$ where $g$ is an irreducible factor of $\Phi_r$. This makes 
 things simpler and more practical at the cost of factoring $\Phi_r$ which of course introduces 
-indeterminism if one chose to use efficient factoring algorithms.
+indeterminism if one choses to use efficient factoring algorithms.
 
-Alombert's approach is more or less the same as above with more focus on implementation. The idea 
-of the algorithm is to cyclotomic field extensions which in turn allows the explicit use of Hilbert 
-90 Theorem to find elements $\alpha_1 \in F_1[\zeta]$, and $\alpha_2 \in F_2[\zeta]$ \comment[Luca]{Even if Lenstra doesn't write ``Hilbert 90'', some formulas (e.g., definition of $\beta$ in Sec.~5) in his paper do suggest he's using it}. Then $b = 
-\alpha_1^r / \alpha_2^r$ is an $r$th power in $E[\zeta]$ from which $b^{1/r}$ can be computed using 
-a root extraction algorithm. The isomorphism $F_1[\zeta] \xrightarrow{\sim} F_2[\zeta]$ is then 
-given by $\alpha_1 \mapsto b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is 
-presented, one can easily see that the dominant cost of this algorithm is solving Hilbert 90 which 
-is done using linear algebra. Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations 
-in $E$. \comment[Luca]{While writing the poster I had a doubt on this (and put question marks next to a similar sentence). Bill does give no complexity analysis, the only reason we assumed he uses Gaussian elimination is this sentence at the end of Sec~2.1: ``In practice, $\alpha_1$ and $\alpha_2$ will be computed using linear algebra, and not by
-directly using the proof of Hilbert's Theorem 90.''. But what does he mean by ``linear algebra''? Gaussian elimination, or something smarter? The reason I ask is that Pari is so fast that I find it unlikely it is using generic linear system solving. Maybe Bill knew the summation trick to solve Hilbert 90 and called it linear algebra, maybe he realized it after publishing the paper and corrected the code. In any case, I'd be more cautious formulating Allombert's algorithm complexity. It might be useful asking Bill (or trying to read Pari sources, aargh!).}
+To find generators for the Teichm\"{u}ller subgroups, Lenstra uses some trace-like formula that 
+suggests a version of Hilbert 90 Theorem over rings. Alombert's approach is more or less the same 
+as above with more focus on implementation. The idea of the algorithm is to use cyclotomic field 
+extensions which in turn allows a more explicit use of Hilbert 90 Theorem to find elements 
+$\alpha_1 \in F_1[\zeta]$, and $\alpha_2 \in F_2[\zeta]$. Then $b = \alpha_1^r / \alpha_2^r$ is an 
+$r$th power in $E[\zeta]$ from which $b^{1/r}$ can be computed using a root extraction algorithm. 
+The isomorphism $F_1[\zeta] \xrightarrow{\sim} F_2[\zeta]$ is then given by $\alpha_1 \mapsto 
+b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is presented, one can easily see 
+that the dominant cost of this algorithm is solving Hilbert 90 which is done using linear algebra. 
+Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations in $E$.
 
 
 \subsection{Fast variant}
@@ -509,10 +509,10 @@ extensions, and skip some detail computations. We first need the following resul
 	Then
 	\begin{enumerate}
 		\item[\normalfont (i)] There is an $a \in F_1[\zeta]$ such that $\theta_a \ne 0$.
-		\item[\normalfont (ii)] $\theta_a, \theta_a^r$ are non-$r$-adic residues in $F_1[\zeta], 
-		E[\zeta]$ respectively.
+		\item[\normalfont (ii)] For a generator $\sigma$ of $\gal(F_1[\zeta] / E[\zeta])$ we have 
+		$\sigma(\theta_a) / \theta_a = \zeta$. Also $\theta_a, \theta_a^r$ are non-$r$-adic 
+		residues in $F_1[\zeta], E[\zeta]$ respectively.
 	\end{enumerate}
-        \comment[Luca]{It's worth mentioning $\theta_a$ is a solution to Hilbert 90. Mathematicians are familiar with the property $\sigma(\theta)/\theta=\zeta$ (the usual statement of Hilbert 90), thus it is better to recall this property in the statement, rather than hiding it in the proof. Aren't there any \emph{caveats} when $r$ is even?}
 \end{proposition}
 \begin{proof}
 	Let $v = u^{-1} \bmod r$, and let $\gamma \in F_1[\zeta]$ be an $r^t$-th root of $\zeta^{v(r - 
