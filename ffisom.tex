@@ -1033,9 +1033,7 @@ and $P$ be in the eigenspace of $a$, then we have the following
 \begin{equation}
 \pi_{q^k}(P) = [a^k]P = [1] = P
 \end{equation}
-Moreover, this also show that with good conditions the abscissas of points in the 
-eigenspace of $a$ generates $\F_{q^k}$. This will be used in the next
-section.
+This will be used in the main algorithm.
 \end{remark}
 
 The use of elliptic curve raises another kind of problem that was not present 
@@ -1109,6 +1107,10 @@ $p$ satisfying
 \begin{equation}
 L/\mathfrak{p} \simeq \F_q.
 \end{equation}
+We denotes by $\widehat{E}$ the lift of $E$ in $L$,
+\[
+\widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
+\]
 
 
 
@@ -1154,8 +1156,8 @@ properties and then we pick an elliptic curve for which this $m$ is an Elkies
 prime. We shall assume $p\neq2,3$.\par
 We need to find an integer $m$ such that there exist an element of order $n$
 modulo $m$. The first condition will be that $n|\varphi(m)$. We also need 
-that the cofactor $\varphi(m)/(2n)$, or $\varphi(m)/n$ if $n$ is even, is prime
-with $n$, so it ensures that $(\Z/m\Z)^{\times}$ splits as we want, namely 
+that the cofactor $\varphi(m)/n$ is prime with $n$, so it ensures that 
+$(\Z/m\Z)^{\times}$ splits as we want, namely 
 \begin{equation}
 (\Z/m\Z)^{\times}/\Aut(E)=\langle{a}\rangle\times S \text{ or } 
 (\Z/m\Z)^{\times}=\langle{a}\rangle\times S
@@ -1173,10 +1175,10 @@ polynomial in $(\Z/m\Z)$ shall be of the form
 Then we pick $a\in(\Z/m\Z)^{\times}$ such that $\order_m(a) = n$ and,
 since $ab = q$, we check that $\order_m(q/a)\not| n$. If these conditions are
 met, we write $t = a + q/a \bmod m$ and check if it is a good trace candidate
-using Hasse theorem. More precisely, we verify that $\hat{t}$ the lift of $t$ is
+using Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t$ is
 actually in the Hasse's bound
 \begin{equation}
-|\hat{t}| \leq 2\sqrt{q}.
+|\widehat{t}| \leq 2\sqrt{q}.
 \end{equation}\\\par
 To chose the right elliptic curve, we pick a $j\in\F_q$ and compute the trace of
 the associated ellpitic curve to check if it is equal to one of the candidates
@@ -1341,8 +1343,7 @@ and
 \begin{equation}
 \eta'_a{P} = \sum_{i=0}^{\varphi(m)/n}{\left([s^i]P\right)_Y}
 \end{equation}
-still depending on the parity of $n$.
-The function can be summarized as follow
+still depending on the parity of $n$. The function can be summarized as follow
 
 \begin{algorithm}
 [Computing the elliptic periods]
@@ -1369,8 +1370,8 @@ generator of $(\Z/m\Z)^{\times}$
             \STATE $Q\leftarrow\text{rand}(E(K))$
             \STATE $P\leftarrow[\dfrac{\order_E}{m}]Q$
         \UNTIL{$P\neq\mathcal{O}$}
-        \STATE $\eta'\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_Y}$
-        \RETURN $\eta'$
+        \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_Y}$
+        \RETURN $\eta$
     \ENDIF
     \end{algorithmic}
 \end{algorithm}
