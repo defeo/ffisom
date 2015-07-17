@@ -863,7 +863,8 @@ using transposed modular composition.
 
 In his paper, Pinch \cite{} proposed to use specific generating element to solve
 the isomorphism problem. One of his two methods makes use of the cyclotomic
-extension.\par
+extension.
+
 Let $\F_q$ be a finite field of characteristic $p$ and let $n$ be an integer. 
 Now, let $m$ be an integer such that the primitive $m$th roots span 
 $\F(q^n)$, and let $f$ and $g$ be two different irreducible polynomial of
@@ -877,19 +878,22 @@ find the morphism
 \begin{equation}
 \varphi_e : \alpha\longmapsto\beta^e
 \end{equation}
-which actually defines an isomorphism.\par
+which actually defines an isomorphism.
+
 One of the issue with this method is that the order of $\F(q^n)$ may only be
 divisible by large integers, increasing drastically the time it takes to find a 
 $m$th root of unity in each extensions. Another issue is the random choice of
 primitive $m$th roots. Due to how the cyclotomic polynomial factors in
 charateristic $p$, it could take $O(m)$ tries to find two roots which are not in
-the same irreducible factor.\par
+the same irreducible factor.
+
 
 \subsection{Gaussian periods}
 
 A solution to the problem mentionned above would be to find a way to generate
 elements which define an isomorphism. Those elements are the \emph{Gaussian
-periods} that will be introduced in this section.\par
+periods} that will be introduced in this section.
+
 Let $L$ be a number fields of degree $\ell$ and $\mathcal{O}_{K}$ its ring of
 integers. Let $q = p^{\ell}$ and $\mu_m$ be the abstract group of $m$th roots of
 unity. If we let $\mathfrak{p}$ be the ideal of $L$ above $p$ such that
