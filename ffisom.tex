@@ -955,11 +955,13 @@ $\eta(\zeta_m)$ as follow
 In \cite{Pinch}, Pinch already proposed to use the torsion point of an elliptic
 curve in place of the roots of unity. Rains also mentionned this possiblity, 
 but judges that as far as he could see it would not bring significant 
-improvements.\par 
+improvements.
+ 
 In practice the use of auxiliary extensions in the cyclotomic method costs a of
 ressources.We will see that, contrary to Rains' belief, in the cases where an
 auxiliary extention is necessary, the elliptic variant is actually more 
-competitive.\par
+competitive.
+
 In the next sections, we will first introduce the \emph{elliptic periods} which 
 plays a similar role as the Gaussian periods, then we will describe the
 algorithm itself and finally we will compute its complexity; which will
@@ -1032,26 +1034,25 @@ a & 0\\
 For all integer $n$, the action Frobenius of $E/\F_{q^n}$ will be the $n$th
 power of that matrix. Additionnaly, if you note $k =
 \textup{min}(\order_m(a),\order_m(b))$ then the extension $\F_{q^k}$ is
-the smallest extension on which there are $m$-torsion points. Let $k = \order_m(a)$
-and $P$ be in the eigenspace of $a$, then we have the following
+the smallest extension on which there are $m$-torsion points. Indeed, let $k = 
+\order_m(a)$ and $P$ be in the eigenspace of $a$, then we have the following
 \begin{equation}
 \pi_{q^k}(P) = [a^k]P = [1] = P
 \end{equation}
-This will be used in the main algorithm.
 \end{remark}
 
 The use of elliptic curve raises another kind of problem that was not present 
 in the cyclotomic version of Rains' algorithm. The fact is elliptic curves 
 come with non trivial automorphisms that can't be ignored. This will be taken 
 in account in the definition of the elliptic periods. In particular, the cases 
-$j = 0, 1728$ shall be dealt more specifically. We shall also distinct the case
-$n$ odd and $n$ even.\par
+$j = 0, 1728$ shall be dealt more specifically. We shall focus only on the case
+$n$ odd.
 
 \begin{definition}
 \label{definition:ellperiod}
 Let $E/\F_q$ be an elliptic curve and let $m>2$ be an Elkies prime for $E$.
-\begin{itemize}
-\item First, let us consider the case where $n$ is odd. Suppose $j\neq0, 1728$. Let 
+
+First, let us consider the case where $n$ is odd. Suppose $j\neq0, 1728$. Let 
 $a$ be an eigenvalue of $\phi_q \bmod m$. Suppose there exists a subgroup $S$ of
 $(\Z/m\Z)^{\times}$ such that 
 \begin{equation}
@@ -1062,7 +1063,8 @@ the elliptic periods as follow
 \begin{equation}
 \eta_{a}(P) = \sum_{\sigma\in S}{\left([\sigma]P\right)_X}
 \end{equation}
-where $P_X$ denotes the abscissa of the point $P$.\par
+where $P_X$ denotes the abscissa of the point $P$.
+
 For the cases $j = 0$ or $1728$, we have to take in account the size
 of $\Aut(E)$. Namely, we shall assume that its order divides $\varphi(m)$
 then we identify it to a subgroup of $(\Z/m\Z)^{\times}$. Assume there exists a
@@ -1075,29 +1077,16 @@ the elliptic periods as follow
 \begin{equation}
 \eta_{a}(P) = \sum_{\sigma\in
 S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}
-\end{equation}\par
+\end{equation}
 
-\item Now, let $n$ be even and suppose there exists a subgroup $S$ of $(\Z/m\Z)^{\times}$
-such that
-\begin{equation}
-(\Z/m\Z)^{\times} = \langle{a}\rangle\times S.
-\end{equation}
-We define the elliptic periods for $j\neq0,1728$ as follow 
-\begin{equation}
-\eta'_a(P) = \sum_{\sigma\in H}{([\sigma]P)_Y}
-\end{equation}
-where $P_Y$ is the ordinate of the point $P$. For $j = 0,1728$, we write 
-\begin{equation}
-\eta'_a(P) = \sum_{\sigma\in H}{([\sigma]P)_Y^{\#\Aut(E)}}.
-\end{equation}
-\end{itemize}
 \end{definition}
 
 \begin{example}
 A simple fact in favour of taking the automorphism group of $E$ into account is
 easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
 \lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
-same element two times; which isn't necessary to what we do.\par
+same element two times; which isn't necessary to what we do.
+
 However, another more pathological issue arises when we are working on the
 specific case $j = 0$ or $1728$. Let us take a closer look to an elliptic curve
 $E$ of $j$-invariant $j_E = 1728$. %TODO
@@ -1115,19 +1104,30 @@ We denotes by $\widehat{E}$ the lift of $E$ in $L$,
 \[
 \widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
 \]
+Similarly, we define $\widehat{\psi}_{m,a}, \psi_m$ the lift of $\psi_{m,a},
+\psi_m$ respectively. Now let $L_m = L[X]/(\widehat{\psi}_{m,a}(X))$ be the 
+extension of degree $(m²-1)/2$ and let $R_m = L_m[Y]/(Y^2 - X^3 + \widehat{A}X +
+\widehat{B}$. We also write $\Theta = \bar{X}$ and $\Gamma = \bar{Y}$.
 
+Now, let us define for $s\in(\Z/m\Z)^{\times}$ the action
+\begin{equation}
+\rho_s : \Theta \mapsto ([s]\widehat{P})_X
+\end{equation}
+which define an autormorphism of $L_m/L$. Let $G = \lbrace{\rho_s : 1 \leq s
+\leq (m-1)/2}\rbrace$ subgroup of the Galois group $\text{Gal}(L_m/L)$. If we 
 
 
 \begin{theorem}
 \label{theorem:ellperiods}
-Let $m$ be a prime different from $p$ and $t$ an integer such that 
+Let $m$ be a prime different from $p$, $n$ an odd integer and $t$ an integer 
+such that 
 
 \begin{enumerate}
     \item $\mid t\mid < \sqrt{2q}$,
     \item $X^2 - tX + q = (X - a)(X - b)\bmod m,$
     \item $(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle \times S$ for $S$ a subgroup of
 $(\Z/m\Z)^{\times}$,
-    \item $\order_m(a) = n$ and $\order_m(b) \not| n$.
+    \item $\order_m(a) = n$ and $\order_m(b) > n$.
 \end{enumerate}
 Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^n}$ is the
 smallest extension that contains $m$-torsion points and for all $P$ in the
@@ -1147,17 +1147,20 @@ this to happen is that contrary to the roots of unity, there isn't only one
 elliptic curve per extension, namely there are as many elliptic curves as there
 are $j$-invariants in $\F_q$. Even more so, the use of twist of curves, which we
 will be talking about later, ensures to almost always find the elliptic curve we
-need for our algorithm.\par
+need for our algorithm.
+
 The procedure is close to the cyclotomic variant's procedure. We first need to
 generate the group we will be using, namely an elliptic curve, then we will
 compute the elliptic periods in both extension using the definition given in the
-previous section.\\\par
+previous section.\\
+
 
 \subsubsection{Finding an elliptic curve}
 If theoritically, we always introduce the elliptic curve before finding an
 Elkies prime number, in practice, we have to find a prime $m$ which has the good
 properties and then we pick an elliptic curve for which this $m$ is an Elkies
-prime. We shall assume $p\neq2,3$.\par
+prime. We shall assume $p\neq2,3$.
+
 We need to find an integer $m$ such that there exist an element of order $n$
 modulo $m$. The first condition will be that $n|\varphi(m)$. We also need 
 that the cofactor $\varphi(m)/n$ is prime with $n$, so it ensures that 
@@ -1169,7 +1172,8 @@ $(\Z/m\Z)^{\times}$ splits as we want, namely
 for $S$ a subgroup of $(\Z/m\Z)^{\times}$ and $a$ the eigenvalue of $\pi_q$ of
 order $n$ modulo $m$. We also wish for $b$, the other eigenvalue of $\pi_q$ to
 be of order not dividing $n$, so that the torsion points in $E(\F_{q^n}$ are
-only in $\langle{a}\rangle$.\par
+only in $\langle{a}\rangle$.
+
 To pick a good elliptic curve, we shall first pick some trace candidate modulo 
 $m$. Since we need $m$ to be an Elkies prime for the future elliptic curve, the
 polynomial in $(\Z/m\Z)$ shall be of the form
@@ -1183,7 +1187,8 @@ using Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t
 actually in the Hasse's bound
 \begin{equation}
 |\widehat{t}| \leq 2\sqrt{q}.
-\end{equation}\\\par
+\end{equation}\\
+
 To chose the right elliptic curve, we pick a $j\in\F_q$ and compute the trace of
 the associated ellpitic curve to check if it is equal to one of the candidates
 we picked previously. Before testing the curves for other $j$-invariant, should
@@ -1214,7 +1219,8 @@ For $j\neq0,1728$, the twist is called a quadratic twist and for it to be
 different from $E$, $D$ needs to be a non-quadratic residue. For $j=1728$, $D$
 needs to be a non-quadratic residue and for $j = 0$, $D$ needs to be a
 non-cubic residue as well. The twists are called quartic twists and sextic twists
-respectively.\par
+respectively.
+
 We can deduce quite simply that the trace of an elliptic quadratic twist is the
 opposite of the original curve. There are similar results for the other 
 $j$-invariant which will be detailed in the next proposition.
@@ -1327,27 +1333,22 @@ order $m$ in $\F_{q^n}$ thanks to the properties on the order of the eigenvalue.
 The procedure is straightforward, we pick a random point in $Q\in E(\F_{q^n})$
 and we compute $P = [\#E(\F_{q^n})/m]Q$. If $Q\neq\mathcal{O}$ then $P$ is a
 point of order exactly $m$ in the eigenspace of $a$, since $m$ is prime.
-Depending on the $j$-invariant of $E$ and the the parity of $n$, the elliptic 
-periods should be computed differently, see (\ref{definition:ellperiod}).\par 
+Depending on the $j$-invariant of $E$ the elliptic periods should be computed 
+differently, see (\ref{definition:ellperiod}).
+ 
 Practically, let $c\in(\Z/m\Z)^{\times}$ be a generator such that $s = c^n$ is 
-of order $\varphi(m)/(2n)$ in $(\Z/m\Z)^{\times}/\Aut(E)$ if $n$ is odd, of
-order $\varphi(m)/n$ in $(\Z/m\Z)^{\times}$ otherwise. Thus we define $S 
-:= \langle{s}\rangle$, since $a$ is of order $n$ in
-$(\Z/m\Z)^{\times}$, we obtain the product we want
+of order $\varphi(m)/(2n)$ in $(\Z/m\Z)^{\times}/\Aut(E)$. Thus we define $S 
+:= \langle{s}\rangle$, since $a$ is of order $n$ in $(\Z/m\Z)^{\times}$, we 
+obtain the product we want
 \[
-(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle\times\langle{s}\rangle \text{ or
-} (\Z/m\Z)^{\times} = \langle{a}\rangle\times\langle{s}\rangle.
+(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle\times\langle{s}\rangle
 \]
 Also, since all the groups are cyclic, we can rewrite the elliptic periods in a
 more computable form, if we let $n_E = \#\Aut(E)$ then we have
 \begin{equation}
 \eta_a(P) = \sum_{i = 0}^{\varphi(m)/n_E.n}{\left([s^i]P\right)_X^{n_E/2}}.
 \end{equation}
-and
-\begin{equation}
-\eta'_a{P} = \sum_{i=0}^{\varphi(m)/n}{\left([s^i]P\right)_Y}
-\end{equation}
-still depending on the parity of $n$. The function can be summarized as follow
+The function can be summarized as follow
 
 \begin{algorithm}
 [Computing the elliptic periods]
@@ -1358,25 +1359,14 @@ defined over $\F_q$, $m$ the parameter, $n_E = \#\Aut(E)$ an integer, $c$ a
 generator of $(\Z/m\Z)^{\times}$
     \ENSURE $\eta$ an elliptic period
     \STATE $\order_E\leftarrow\#E(K)$
-    \IF{$n = 1 \bmod 2$}
-        \STATE $\order_S \leftarrow \dfrac{\varphi(m)}{n_E.n}$
-        \STATE $s \leftarrow c^n$
-        \REPEAT
-            \STATE $Q\leftarrow\text{rand}(E(K))$
-            \STATE $P\leftarrow[\dfrac{\order_E}{m}]Q$
-        \UNTIL{$P\neq\mathcal{O}$}
-        \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_X^{n_E/2}}$
-        \RETURN $\eta$
-    \ELSE
-        \STATE $\order_S \leftarrow \dfrac{\varphi(m)}{n}$
-        \STATE $s \leftarrow c^n$
-        \REPEAT
-            \STATE $Q\leftarrow\text{rand}(E(K))$
-            \STATE $P\leftarrow[\dfrac{\order_E}{m}]Q$
-        \UNTIL{$P\neq\mathcal{O}$}
-        \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_Y}$
-        \RETURN $\eta$
-    \ENDIF
+    \STATE $\order_S \leftarrow \dfrac{\varphi(m)}{n_E.n}$
+    \STATE $s \leftarrow c^n$
+    \REPEAT
+        \STATE $Q\leftarrow\text{rand}(E(K))$
+        \STATE $P\leftarrow[\dfrac{\order_E}{m}]Q$
+    \UNTIL{$P\neq\mathcal{O}$}
+    \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_X^{n_E/2}}$
+    \RETURN $\eta$
     \end{algorithmic}
 \end{algorithm}
 
