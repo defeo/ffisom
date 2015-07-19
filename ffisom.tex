@@ -1052,9 +1052,8 @@ $n$ odd.
 \label{definition:ellperiod}
 Let $E/\F_q$ be an elliptic curve and let $m>2$ be an Elkies prime for $E$.
 
-First, let us consider the case where $n$ is odd. Suppose $j\neq0, 1728$. Let 
-$a$ be an eigenvalue of $\phi_q \bmod m$. Suppose there exists a subgroup $S$ of
-$(\Z/m\Z)^{\times}$ such that 
+Let $j\neq0, 1728$. Let $a$ be an eigenvalue of $\phi_q \bmod m$. Suppose there 
+exists a subgroup $S$ of $(\Z/m\Z)^{\times}$ such that 
 \begin{equation}
 (\Z/m\Z)^{\times}/\lbrace{\pm1}\rbrace = \langle{a}\rangle \times S
 \end{equation}
@@ -1093,29 +1092,7 @@ $E$ of $j$-invariant $j_E = 1728$. %TODO
 
 \end{example}
 
-Before we formulate the main result of this section, we shall put in place the
-setting surrounding it. Let us take a step back in characteristic $0$. We denote
-$L$ the number field such that there exists a prime idea $\mathfrak{p}$ above
-$p$ satisfying 
-\begin{equation}
-L/\mathfrak{p} \simeq \F_q.
-\end{equation}
-We denotes by $\widehat{E}$ the lift of $E$ in $L$,
-\[
-\widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
-\]
-Similarly, we define $\widehat{\psi}_{m,a}, \psi_m$ the lift of $\psi_{m,a},
-\psi_m$ respectively. Now let $L_m = L[X]/(\widehat{\psi}_{m,a}(X))$ be the 
-extension of degree $(m²-1)/2$ and let $R_m = L_m[Y]/(Y^2 - X^3 + \widehat{A}X +
-\widehat{B}$. We also write $\Theta = \bar{X}$ and $\Gamma = \bar{Y}$.
-
-Now, let us define for $s\in(\Z/m\Z)^{\times}$ the action
-\begin{equation}
-\rho_s : \Theta \mapsto ([s]\widehat{P})_X
-\end{equation}
-which define an autormorphism of $L_m/L$. Let $G = \lbrace{\rho_s : 1 \leq s
-\leq (m-1)/2}\rbrace$ subgroup of the Galois group $\text{Gal}(L_m/L)$. If we 
-
+Let us formulate the main theorem of the section. 
 
 \begin{theorem}
 \label{theorem:ellperiods}
@@ -1135,9 +1112,178 @@ eigenspace of $a$, the periods $\eta_a(P)$ form a normal basis of $\F_{q^n}$ on
 $\F_q$.
 
 \end{theorem}
+\begin{proof}
+Let us take a step back in characteristic $0$. We denote $L$ the number field 
+such that there exists a prime idea $\mathfrak{p}$ above $p$ satisfying 
+\begin{equation}
+\mathcal{O}(L)/\mathfrak{p} \simeq \F_q.
+\end{equation}
+We denotes by $\widehat{E}$ the lift of $E$ in $L$,
+\[
+\widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
+\]
+Similarly, we define $\widehat{\psi}_{m,a}, \widehat{\psi_m}$ the lifts of 
+$\psi_{m,a}, \psi_m$ respectively. Now let $L_m := 
+L[X]/(\widehat{\psi}_m(X))$ be the extension of degree $(m²-1)/2$ and let 
+$R_m := L_m[Y]/(Y^2 - X^3 + \widehat{A}X + \widehat{B})$. We also write $\Theta
+:=\bar{X}$ and $\Gamma:=\bar{Y}$, $P:=(\Theta, \Gamma)$ will denote the generic 
+point of $E[m]$.
 
-To prove this theoreme, we will have to move back to characteristic $0$ just
-like in the previous section.
+For $o\in(\Z/m\Z)^{\times}$ we write
+\begin{equation}
+\rho_o : \Theta \mapsto ([o]\widehat{P})_X
+\end{equation}
+which define an autormorphism of $L_m/L$. Let $G := \lbrace{\rho_o : 1 \leq o
+\leq (m-1)/2}\rbrace$, subgroup of the Galois group $\text{Gal}(L_m/L)$; we also 
+write $L_0 := L_m^G$. With that definition we can write 
+\begin{equation}
+\widehat{\psi}_{m,a}=\prod_{o=1}^{\tfrac{m-1}{2}}{(X-\rho_o(\Theta))}
+\end{equation}
+with coefficient in $K_0$, consequently $L_m = L_0[T]/(\widehat{\psi}_{m,a}(T))$.
+\emph{(Moreover, since $G$ is cyclic, for each $o\in G$ there exists a polynomial
+$\widehat{g}_o$ of degree $\text{deg}(\widehat{g}_o) < (m-1)/2$ such that
+$\widehat{g}_o(\Theta) = \rho_o(\Theta)$.)Useful ?}
+
+\begin{remark}
+Since the extension is cyclic, it is a noticibly interesting fact to note that
+\[
+\lbrace{\rho(\Theta), \rho\in G}\rbrace
+\]
+actually forms a normal basis of $L_m/L_0$.
+Therefore, for any intermediate extension $L'/L_0$ of $L_m/L_0$, the trace
+$\text{Tr}_{L_m/L'}(\Theta)$ along with its conjugates also form a normal basis
+of $L'/L_0$ and thus generates $L'$ as simple extension.
+\end{remark}
+
+Now consider the subfield $L'\subset L_m$ such that $[L', L_0] = n$. Let 
+$c\in(\Z/m\Z)^{\times}$ be a generator such that $a=c^{n'}$ and let $s:=c^n$ 
+where $n' = (m-1)/2n$. Then we have the following decomposition
+\[
+(\Z/m\Z)^{\times}/\lbrace{\pm1}\rbrace = \langle{a}\rangle \times S
+\]
+with $S = \langle{s}\rangle$. For $0 \leq i < n$, we define 
+\begin{equation}
+\widehat{\eta}_i = \sum_{\sigma\in S}{\left([a^i\sigma]P\right)_X} =
+\sum_{\sigma\in S}{\rho_{\sigma}(\rho_{a^i}(\Theta))}
+\end{equation}
+It is easy to see that $\widehat{\eta_0}$ is the lift of our elliptic periods.
+From above we can deduce that $\rho_{a^i}(\widehat{\eta}_0) = 
+\widehat{\eta_i}$, then we have the cyclic action
+\begin{equation}
+\widehat{\eta}_0 \buildrel\rho_a\over\longrightarrow
+\widehat{\eta}_1 \buildrel\rho_a\over\longrightarrow \dots 
+\buildrel\rho_a\over\longrightarrow \widehat{\eta}_{n-1}
+\buildrel\rho_a\over\longrightarrow \widehat{\eta}_0
+\end{equation}
+Another notable fact, is that we actually have
+\begin{equation}
+\widehat{\eta}_0=\text{Tr}_{L_m/L'}(\Theta).
+\end{equation}
+therefore $L' = L(\widehat{\eta}_0)$.
+
+\begin{lemma}
+Consider the polynomial :
+\begin{equation}
+\widehat{M}(T):=\prod_{i=0}^{n-1}{(T-\widehat{\eta}_i)}\in\mathcal{O}(L_0)[T]
+\end{equation}
+It is the minimal polynomial of $\widehat{\eta}_0$.
+\end{lemma}
+
+\begin{proof}
+From what we wrote above we are in the following situation
+\begin{center}
+\begin{tikzpicture}
+    \node (L0) {$L_0$};
+    \node[above left= of L0] (Lpr) {$L'$};
+    \node[above right= of Lpr] (Lm) {$L_m$};
+    \draw (L0) edge node[right] {$G$} (Lm);
+    \draw (L0) edge node[auto] {$\langle{a}\rangle$} (Lpr);
+    \draw (Lpr) edge node[auto] {$S$} (Lm);
+\end{tikzpicture}
+\end{center}
+The coefficients of $\widehat{M}(T)$ being the symmetrical polynomial in the $\eta_i$, we
+can see that the action of $\rho_a$ will simply permute the $\widehat{\eta_i}$
+leaving the coefficients unchanged. Moreover, if you take a product of less than
+$n$ factor of the form $(T - \widehat{\eta_i})$, the coefficients won't be fixed
+by $\rho_a$, thus the polynomial is irreducible.
+
+To finish the proof, we shall note that $\Theta$ is in $\mathcal{O}(L_0)$, then
+by a classical result $\text{Tr}_{L_m/L'}(\Theta)$ is in $\mathcal{O}(L_0)$. By
+applying again the same results, we deduce that all the coefficients of $\widehat{M}(T)$
+are indeed in $\mathcal{O}(L_0)$.
+\end{proof}
+
+We are now going back to finite characteristic, $p\geq3$. Let
+\begin{equation}
+\mathcal{A}_0:=\F_q[X]/(\psi_{m,a}(X))
+\end{equation}
+and
+\begin{equation}
+\mathcal{A}:=\F_p[X]/(Y^2-(X^3+AX+B),\psi_{m,a}(X)).
+\end{equation}
+Let $\theta$ and $\gamma$ be the residue class of $X$ and $Y$ in $\mathcal{A}$.
+We write $P = (\theta, \gamma)$ the generic point in the eigenspace of $a$. 
+Like above, for $o\in(\Z/m\Z)^{\times}$ we define the unique polynomials 
+$g_o\in\F_q$ of degree inferior to $(m-1)/2$ such that $g_a(\theta)= 
+([a]P)_X \in\mathcal{A}$. We can then write 
+\begin{equation}
+\psi_{m,a}(Z) = \prod_{a=1}^{(m-1)/2}{(Z - g_a(\theta))}.
+\end{equation}
+We can summarize the situation with the following figure
+\begin{center}
+\begin{tikzpicture}
+    \node (L) {$L$};
+    \node[above = of L] (L0) {$L_0 = L[X]/(\Phi_{m}(X,j(\widehat{E})))$};
+    \node[above left=0.2cm and 2cm of L0] (R0) {$R_0$};
+    \node[right=4cm of L0] (Fq) {$\F_q$};
+    \node[above= of L0] (Lpr) {$L' = L_0(\widehat{\eta}_0)$};
+    \node[above= of Fq] (Fqa) {$\F_q(\eta_0)$};
+    \node[above= of R0] (Rpr) {$R'$};
+    \node[above= of Lpr] (Lm) {$L_m = L(E[m]) = L_0[X]/(\widehat{\psi}_{m,a}(X))$};
+    \node[above= of Rpr] (Rm) {$R_m$};
+    \node[above= of Fqa] (A0) {$\mathcal{A}_0 = \F_q(E[m])$};
+    \draw (L) edge node[right] {$m+1$} (L0);
+    \draw (L0) edge node[auto] {$2$} (R0);
+    \draw (Lpr) edge node[auto] {$2$} (Rpr);
+    \draw (Lm) edge node[auto] {$2$} (Rm);
+    \draw (L0) edge node[right] {$n$} (Lpr);
+    \draw (Lpr) edge node[right] {$(m-1)/2n$} (Lm);
+    \draw (R0) edge node[auto] {} (Rpr);
+    \draw (Rpr) edge node[auto] {} (Rm);
+    \draw (Fq) edge node[right] {$\langle{a}\rangle$} (Fqa);
+    \draw (Fqa) edge node[auto] {} (A0);
+    \draw[->>] (L0) edge node[auto] {$\bmod \mathfrak{p}$} (Fq);
+    \draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{p}$} (Fqa);
+    \draw[->>] (Lm) edge node[auto] {$\bmod \mathfrak{p}$} (A0);
+\end{tikzpicture}
+\end{center}
+where $\Phi_m(X,j(\widehat{E}))$ is an equation of the modular curve $X_0(m)$.
+
+We recall that we can find a generator $c\in(\Z/m\Z)^{\times}$ such that $a =
+c^{n'}$ for $n' = (m-1)/(2n)$, and we have $S = \langle{s}\rangle$ with $s =
+c^n$. For $0\leq i < q$, we define 
+\begin{equation}
+\eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{a^i}(\theta))}
+\end{equation}
+reduction modulo $\mathfrak{p}$ of $\widehat{\eta}_i$. For $m\geq3$ odd, the
+discriminant of $\psi_m$ satisfies the following relation
+\begin{equation}
+\text{Disc}(\psi_m) = (-1)^{(m-1)/2}m^{(m^2 - 3)/2}(-\Delta)^{(m^2 - 1)(m^2 -
+3)/24}
+\end{equation}
+where $\Delta$ is the discriminant of $E$. From there we can assume that the
+roots of $\psi_m$, and consequently the roots of $\psi_{m,a}$, are
+distincts. Therefore, for $i\neq j$ we are assured that $\eta_i\neq\eta_j$ for
+there would exists linear relation between the roots of $\psi_{m,a}$.
+
+Then, we can deduce that the reduction of $\widehat{M}(T)$, the minimal
+polynomial of $\widehat{\eta}_0$, is separated. As it was the case in
+characteristic $0$, the action of $\langle{a}\rangle$ on the $\eta_i$ is cyclic,
+as a direct consequence the $\eta_i$ are conjugates and $M(T)$ the reduction of
+$\widehat{M}(T)$ is the minimal polynomial of $\eta_0 = \eta_a(P)$ and is of
+degree $n$. This concludes the proof of the theorem.
+
+\end{proof}
 
 \subsection{Elliptic algorithm}
 
