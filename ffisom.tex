@@ -1410,39 +1410,17 @@ elliptic curve is as follow.
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
     \REQUIRE $m$ an integer as above, $q$ a prime power, $n$ the extension
-degree, $\mathcal{T}_m$, $q$ a generator of $\F_{q^n}^{\times}$, $\zeta_4$,
-$\zeta_6$
+            degree, $\mathcal{T}_m$, $q$ a generator of $\F_{q^n}^{\times}$
     \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_m$
-    \STATE $E\leftarrow \text{EllipticCurve}(j=1728)$
-    \STATE $t_E\leftarrow \text{Trace}(E)$
-    \IF{$q\neq1\bmod4$ \AND $0\in\mathcal{T}_m$}
-        \RETURN $E$
-    \ELSE
-        \FOR{$i\in\lbrace{0,\dots,3}\rbrace$}
-            \IF{$\zeta_4^it_E\in\mathcal{T}_m$}
-                \RETURN $\text{quartic\_twist}(E,g^i)$
-            \ENDIF
-        \ENDFOR
-    \ENDIF
-    \STATE $E\leftarrow \text{EllipticCurve}(j=0)$
-    \STATE $t_E\leftarrow \text{Trace}(E)$
-    \IF{$q\neq1\bmod6$ \AND $0\in\mathcal{T}_m$}
-        \RETURN $E$
-    \ELSE
-        \FOR{$i\in\lbrace{0,\dots,5}\rbrace$}
-            \IF{$\zeta_6^it_E\in\mathcal{T}_m$}
-                \RETURN $\text{sextic\_twist}(E,g^i)$
-            \ENDIF
-        \ENDFOR
-    \ENDIF
-    \FOR{$j_0\in\F_q$ \AND $j_0\neq0,1728$}
-        \STATE $E\leftarrow \text{EllipticCurve}(j=j_0)$
-        \STATE $t_E \leftarrow \text{Trace}(E)$
-        \IF{$t_E\in\mathcal{T}_m$}
-            \RETURN $E$
-        \ELSIF{$-t_E\in\mathcal{T}_m$}
-            \RETURN $\text{quadratic\_twist}(E)$
-        \ENDIF
+    \FOR{$j\in\F_q$}
+        \STATE $E \leftarrow E(j_E = j)$ 
+        \STATE $\mathcal{U} \leftarrow \mu_2, \mu_4\text{ or }\mu_6$ if 
+$j_E\neq0,1728$, $j_E=1728$ or $j_E=0$ respectively.
+            \FOR{$U\in\mathcal{U}$}
+                \IF{$U.t_E\in\mathcal{T}_m$}
+                    \RETURN Twist($E$, $U$)
+                \ENDIF
+            \ENDFOR
     \ENDFOR
     \end{algorithmic}
 \end{algorithm}
