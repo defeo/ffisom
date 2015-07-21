@@ -1409,8 +1409,7 @@ elliptic curve is as follow.
     [Selecting an elliptic curve]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-    \REQUIRE $m$ an integer as above, $q$ a prime power, $n$ the extension
-            degree, $\mathcal{T}_m$, $q$ a generator of $\F_{q^n}^{\times}$
+    \REQUIRE $m$ an integer s.t. described above, $\mathcal{T}_m$ 
     \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_m$
     \FOR{$j\in\F_q$}
         \STATE $E \leftarrow E(j_E = j)$ 
