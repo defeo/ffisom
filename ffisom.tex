@@ -16,7 +16,7 @@
 \usetikzlibrary{positioning}
 \usetikzlibrary{calc}
 \usepackage{algorithmic}
-
+\usepackage{enumerate}
 
 \hypersetup{
 	unicode=true,
@@ -1380,74 +1380,11 @@ actually in the Hasse's bound
 |\widehat{t}| \leq 2\sqrt{q}.
 \end{equation}\\
 
-To chose the right elliptic curve, we pick a $j\in\F_q$ and compute the trace of
-the associated ellpitic curve to check if it is equal to one of the candidates
-we picked previously. Before testing the curves for other $j$-invariant, should
-the trace not be a match for any candidate, it is important to know that there
-are serveral curves defined for one $j$-invariant; these are called twists of an
-elliptic curve. We will use a proposition from \cite{Silverman} as a
-definition.
-
-\begin{definition}
-Let $E/\F_q$ be an elliptic curve and let $A,B\in\F_q$ be such that
-\begin{equation}
-E : y^2 = x^3 + AX + B
-\end{equation}
-is its Weierstrass equation. Then for $D\in(\F_q)^*$ we define the twist $E_D$
-of $E$ corresponding to $D$ as follow.
-
-\begin{equation*}
-\begin{aligned}
-(i)\quad & E_D : y^2 = x^3 + D^2Ax + D^3B && \text{if } j(E)\neq0,1728,\\
-(ii)\quad & E_D : y^2 = x^3 + DAx && \text{if } j(E)=1728,\\
-(iii)\quad & E_D : y^2 = x^3 + DB && \text{if } j(E)=0.
-\end{aligned}
-\end{equation*}
-
-\end{definition}
-
-For $j\neq0,1728$, the twist is called a quadratic twist and for it to be
-different from $E$, $D$ needs to be a non-quadratic residue. For $j=1728$, $D$
-needs to be a non-quadratic residue and for $j = 0$, $D$ needs to be a
-non-cubic residue as well. The twists are called quartic twists and sextic twists
-respectively.
-
-We can deduce quite simply that the trace of an elliptic quadratic twist is the
-opposite of the original curve. There are similar results for the other 
-$j$-invariant which will be detailed in the next proposition.
-
-\begin{proposition}
-\label{proposition:twisttrace}
-Let $E/\F_q$ be an ordinary elliptic curve and $j_E$ its $j$-invariant. We have
-one of the following.
-
-\begin{enumerate}
-    \item For $j_E\neq0,1728$, we let $D\in\F_q$ be a non-quadratic residue, then
-the trace of the quadratic twist $E_D$ of $E$ satisfies the relation
-\begin{equation}
-t_{E_D} = -t_E.
-\end{equation}
-
-    \item For $j_E=1728$ and $q=1\bmod4$, we let $D\in\F_q$ be a non-quadratic 
-residue, then the traces of the quartic twists $E_D$ of $E$ statisfy
-\begin{equation}
-t_{E_D} = \zeta_4t_E,
-\end{equation}
-for $\zeta_4\in\F_q$ a $4th$ root of unity.
-
-    \item For $j_E=0$ and $q=1\bmod6$, we let $D\in\F_q$ be a non-quadratic
-residue and a non-cubic residue, then the
-traces of the sextic twists $E_D$ of $E$ statisfy
-\begin{equation}
-t_{E_D} = \zeta_6t_E,
-\end{equation}
-for $\zeta_6\in\F_q$ a $6th$ root of unity.
-\end{enumerate}
-
-\end{proposition}
-
-\begin{proof}
-\end{proof}
+To chose the right elliptic curve, we pick a $j\in\F_q$ and compute
+the traces of the associated elliptic curves to check if any of them
+is equal to one of the candidates we picked previously. See
+Appendix~\ref{app:elliptic-curves} for a way of determining at once
+all the traces associated to a $j$-invariant.
 
 In summary, we need to find an integer $m$ such that :
 \begin{itemize}
@@ -1609,6 +1546,154 @@ isomorphism
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Conclusion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+\part*{Appendices}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Elliptic curves}
+\label{app:elliptic-curves}
+
+Recall that two elliptic curves $E$ and $E'$ over a field $k$ are said
+to be \emph{isomorphic} if there exists a linear change of variables
+with coefficients in $k$ sending one onto the other. If $E$ and $E'$
+are isomorphic over $\bar{k}$, but not over $k$, they are said to be
+\emph{twists} of each other. A twist is said to be quadratic
+(resp. cubic, quartic, sextic), if $E$ and $E'$ become isomorphic over
+a quadratic (resp. cubic, quartic, sextic) extension of $k$. Most
+elliptic curves only have quadratic twists; elliptic curves with
+$j=0,1728$ may have cubic, quartic and sextic twists. See~\cite{Sil}.
+
+We now give a proposition relating the number of points of an elliptic
+curve over a finite field with the number of points of its twists.  In
+the case of quadratic twists, this proposition simply states that $E$
+and $E'$ have opposite trace, a well known fact.
+
+\begin{proposition}
+  \label{proposition:twisttrace}
+  Let $E$ be an ordinary elliptic curve defined over a finite field
+  $\F_q$ of characteristic $p$, and denote by $t$ the trace of its
+  frobenius endomorphism.
+
+  Let $u\in\bar{\F}_q$ such that $u^{q-1}$ is in the prime field
+  $\F_p\subset\F_q$. Define a curve $E^u$ and an isomorphism
+  $\upsilon$ of elliptic curves by
+  \begin{equation*}
+    \begin{aligned}
+      \upsilon : E &\to E^u,\\
+      (x,y) &\mapsto (u^2x,u^3y).
+    \end{aligned}
+  \end{equation*}
+  
+  If $E^u$ is defined over $\F_q$, the trace $t_u$ of its frobenius
+  endomorphism is such that $t/t_u=U\bmod q$, where
+  \begin{enumerate}[a)]
+  \item $U$ is an element of $\Z/q$ of the same multiplicative order
+    as $u^{1-q}\in\F_q$, and
+  \item $U=u^{1-q}\mod p$.
+  \end{enumerate}
+\end{proposition}
+\begin{proof}
+  Observe that if $E^u$ is a quadratic (resp. cubic, quartic, sextic)
+  twist of $E$, then $u^{q-1}$ has multiplicative order $2$
+  (resp. $3,4,6$). Furthermore, since $E$ is ordinary, $u^{q-1}$ is in
+  the prime field $\F_p$ and it defines a curve automorphism
+  \begin{equation*}
+    \upsilon^{q-1}:(x,y)\mapsto(u^{2q-2}x,u^{3q-3}y).
+  \end{equation*}
+  Any twist arises this way (see~\cite{Sil}).
+
+  Denote by $\pi$ and $\pi_u$ the frobenius endomorphisms of $E$
+  and $E^u$ respectively. They satisfy the equations
+  \begin{equation}
+    \label{eq:frob-char-twist}
+    \pi^2 - [t]\pi + [q] = 0, \qquad \pi_u^2 - [t_u]\pi_u + [q] = 0,
+  \end{equation}
+  where $[m]$ denotes multiplication by $m$ on the elliptic curves. By
+  straightforward calculation, we also verify that they satisfy the
+  commutative diagram
+  \begin{equation*}
+    \begin{tikzpicture}[node distance=3em]
+      \node(E){$E$};
+      \node[right of=E](E2){$E$};
+      \node[right of=E2](E3){$E$};
+      \node[below of=E](Eu){$E^u$};
+      \node[right of=Eu](Eu2){$E^u$};
+      \node[right of=Eu2](Eu3){$E^u$};
+
+      \draw[->,auto,font=\scriptsize]
+      (E) edge node[swap]{$\upsilon$} (Eu)
+          edge node{$\pi$} (E2)
+          edge[bend left=45] node{$[q]$} (E3)
+      (Eu) edge node[swap]{$\pi_u$} (Eu2)
+           edge[bend right=45] node[swap]{$[q]$} (Eu3)
+      (E2) edge node[swap]{$\upsilon^q$} (Eu2)
+           edge node{$\hat\pi$} (E3)
+      (Eu2) edge node[swap]{$\hat\pi_u$} (Eu3)
+      (E3) edge node{$\upsilon$} (Eu3);
+    \end{tikzpicture}
+  \end{equation*}
+  where we denote by $\upsilon^q$ the isomorphism
+  $(x,y)\mapsto(u^{2q}x,u^{3q}y)$, and by $\hat\pi,\hat\pi_u$ the dual isogenies
+  to $\pi,\pi_u$.
+
+  Now we restrict the maps above to the $q$-torsion subgroups of $E$
+  and $E^u$. Since the curves are ordinary, these subgroups are cyclic
+  of order $q$, and the maps act as scalar multiplication on the
+  points. In particular, we deduce from Eq.~\eqref{eq:frob-char-twist} that 
+  \begin{equation*}
+    \pi = [t \bmod q], \qquad \pi_u = [t_u \bmod q].
+  \end{equation*}
+  Hence, from the diagram we obtain
+  \begin{equation*}
+    [t] = \upsilon^{-q}\circ[t_u]\circ\upsilon \mod q.
+  \end{equation*}
+
+  Notice that $\upsilon^{-q}$ can be decomposed as
+  $\upsilon^{-1}\circ\upsilon^{1-q}$, where $\upsilon^{1-q}$ is an
+  automorphism of $E^u$ by hypothesis. $\upsilon^{1-q}$ also acts on
+  the $q$-torsion points as a scalar in $\Z/q$, that we shall denote
+  by $U$. It is evident that the multiplicative order of $U$ in $\Z/q$
+  is the same as that of $u^{1-q}$ in $\F_p$. Then
+  \begin{equation*}
+    [t] = \upsilon^{-1}\circ[Ut_u]\circ\upsilon.
+  \end{equation*}
+  But $\upsilon$ is an isomorphism, thus it commutes with scalar
+  multiplication, and we conclude that $t=Ut_u\bmod q$.
+
+  If $u^{1-q}=\pm1$, we are done. When the order of $u^{1-q}$ is $3,4$
+  or $6$, we still have to determine which of the cubic, fourth, sixth
+  roots of unity in $\Z/q$ corresponds to $U$.
+
+  Using the diagram above, we decompose
+  Eq.~\eqref{eq:frob-char-twist} as
+  \begin{equation*}
+    \hat\pi\circ\pi = [t]\pi - \pi^2,
+  \end{equation*}
+  and similarly for $E^u$. Hence, from the diagram again,
+  \begin{equation*}
+    [t] - \pi = \hat\pi = \upsilon^{-1}\circ\hat\pi_u\circ\upsilon^q 
+    =  \upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q.
+  \end{equation*}
+  Let now $\omega$ be the invariant differential of $E$. We have
+  \begin{equation*}
+    ([t]-\pi^2)^\ast\omega = t\omega\in\Omega_E
+  \end{equation*}
+  because $\pi$ is inserparable. On the other hand, if we let
+  $\omega_u$ be the invariant differential of $E^u$, we have
+  \begin{multline*}
+    (\upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q)^\ast\omega =
+    (\upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^{q-1})^\ast\omega_u =\\
+    (\upsilon^{-1}\circ([t_u] - \pi_u))^\ast u^{1-q}\omega_u =
+    (\upsilon^{-1})^\ast t_uu^{1-q}\omega_u =
+    t_uu^{1-q}\omega.
+  \end{multline*}
+  Hence $t = t_uu^{1-q} \bmod p$.
+\end{proof}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
