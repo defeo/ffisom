@@ -51,6 +51,7 @@ public:
 	void compute_generators(nmod_poly_t f1, nmod_poly_t f2);
 	void build_isomorphism(const nmod_poly_t f1, const nmod_poly_t f2);
 	void compute_isom_matrix();
+	void get_x_image(nmod_poly_t x_image);
 	void compute_image_using_modcomp(nmod_poly_t image, const nmod_poly_t f);
 	void compute_image_using_matrix(nmod_poly_t image, const nmod_poly_t f);
 	~FFIsomorphism();

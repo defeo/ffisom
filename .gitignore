@@ -13,3 +13,5 @@
 _region_.tex
 *.synctex.gz
 *.sty
+*.cproject
+*.project

@@ -677,6 +677,9 @@ void FFIsomorphism::compute_isom_matrix() {
 	nmod_poly_clear(temp);
 }
 
+void FFIsomorphism::get_x_image(nmod_poly_t x_image){
+	nmod_poly_set(x_image, this->x_image);
+}
 
 void FFIsomorphism::compute_image_using_modcomp(nmod_poly_t image, const nmod_poly_t f) {
 	nmod_poly_compose_mod(image, f, x_image, ctx_2->modulus);
