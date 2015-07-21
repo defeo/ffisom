@@ -344,16 +344,26 @@ $n$.
 \subsection{Classical algorithms}
 
 The classical way to deal with the above problems combines
-root finding for the embedding description step
+root finding (or equal-degree factorization)
+for the embedding description step
 and linear algebra or modular composition
 for the embedding evaluation step.
+
+Denote the complexity of modular composition over $F_q$
+of polynomials of degree $n$ by $C(n)$.
+It is theoretically $O(n^{1 + o(1)})$ operations in $F_q$
+using Kedlaya-Umans algorithm~\cite{kedlaya+umans08},
+and practically
+$O(n^{(\omega + 1)/2})$ operations in $F_q$
+using Brent-Kung algorithm~\cite{brent+kung}.
 
 \subsubsection{Root finding}
 
 Since $k$ is defined as $k=\F_q[X]/f$, picking up $\alpha = X\in k$
 and $\beta$ a root of $f$ in $K$ defines an embedding of $k$ into $K$.
-This can be done deterministically in $O()$
-and probabistically in $O()$.
+This can be solved using randomized algorithms
+in~$C(\deg f) + O(\deg f \deg g \log q)$ operations
+in $K$~\cite[Sec. 5]{von1992computing,KeUm11}.
 
 \subsubsection{Linear algebra}
 
@@ -362,35 +372,41 @@ $\beta^i = \sum_{j=0}^{\deg g-1} m_{i,j} Y^j$
 for $i \in \{0, \ldots, \deg f-1\}$ and build a matrix
 $M = \{m_{i, j}\}_{0\leq i \leq \deg f-1, 0 \leq j \leq \deg g -1}$
 representing $\varphi$.
-This is done in $O()$.
+This is trivially done in $O(\deg f)$ operations in $K$.
 For $\gamma = \sum_{i = 0}^{\deg f -1} c_i X^i \in k$,
 $\varphi(\gamma)$ can then be computed by a
-matrix-vector multiplication in $O()$.
+matrix-vector multiplication in $O(\deg f \deg g)$ operations in $F_q$.
 
 Together, the second and third questions are the inverse image problem.
-They can be answered in $O()$.
+They can be answered by first computing 
+an LU or similar matrix decompostions of $M$
+in $O((\deg g (\deg f)^{\omega - 1})$ operations in $F_q$.
+Answering the second and third questions together is then
+an easy matter.
 
 Note that if $\deg f = \deg g$, that is if $k$ and $K$ are
 isomorphic, then the second question is trivial.
-The third one can be dealt with by computing
+For the third one, the inverse 
 the inverse $M^{-1}$ of $M$ representing $\varphi^{-1}$
-in $O()$.
+can be deduced from an an LU or similar matrix decompostions of $M$.
 For $\delta \in K$, $\varphi^{-1}(\delta)$ can then be computed by a
-matrix-vector multiplication in $O()$.
+matrix-vector multiplication in $O((\deg f)^2)$ in $F_q$.
 
 \subsubsection{Modular composition}
 
 Using modular composition, $\varphi(\gamma)$ can be computed
-as $\beta(\gamma) \pmod{g}$ theoretically in $O()$
-using Kedlaya-Umans, and practically in $O()$
-using Brent-Kung.
+as $\beta(\gamma) \pmod{g}$ in $C(\deg g)$ operations in $F_q$.
 
 The second question can be answered by performing a modular
-exponentiation to check that $\gamma^{q^{\deg f}} = 1$ in $O()$.
+exponentiation to check that $\gamma^{q^{\deg f}} = 1$
+naively in $O(\deg f \log q)$ operations in $K$
+or in $O(\log q)$ operations in $K$ plus
+$O(\log \deg f) C(\deg g)$ operations in $F_q$ using modular composition.
 
 The second and third questions can be answered using
 dual bases and power projection/transposed modular composition
-to express $\delta \in K$ as a polynomial in $\beta$ in $O()$.
+to express $\delta \in K$ as a polynomial in $\beta$ in
+$C(\deg g)$ operations in $F_q$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
