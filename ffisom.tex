@@ -70,6 +70,7 @@
 \DeclareMathOperator{\norm}{N} % norm
 \DeclareMathOperator{\Res}{Res}
 \DeclareMathOperator{\Aut}{Aut}
+\DeclareMathOperator{\minpoly}{minpoly}
 
 \def\Q{\ensuremath{\mathbb{Q}}}
 \def\N{\ensuremath{\mathbb{N}}}
@@ -319,7 +320,7 @@ All the algorithms we are aware of, split the embedding problem in two
 sub-problems:
 \begin{enumerate}
 \item Determine elements $\alpha\in k$ and $\beta\in K$ such that
-  $k=\F_q[\alpha]$, $K=\F_q[\beta]$, and such that there exists an
+  $k=\F_q[\alpha]$, and such that there exists an
   embedding $\varphi$ mapping $\alpha\mapsto\beta$. We refer to this
   problem as the \emph{Embedding description}.
   It is easily seen that $\alpha$ and $\beta$ describe an embedding
@@ -412,6 +413,31 @@ $C(\deg g)$ operations in $F_q$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \part{Embedding description}
+
+Throughout this part we let $m=\deg f$ and $n=\deg g$, so that
+$m|n$. The \emph{embedding description problem} asks to find two
+elements $\alpha\in k$ and $\beta\in K$ such that $\alpha\mapsto\beta$
+for some field embedding $\varphi:k\to K$. This is equivalent to
+$\alpha$ and $\beta$ having the same minimal polynomial.
+
+We note that it is enough to solve the following problem: let $r$ be a
+prime power such that $r|m$ and $\gcd(r,m/r)=1$, find $\alpha_r\in k$
+and $\beta_r\in K$ such that $\minpoly(\alpha_r)=\minpoly(\beta_r)$
+and $\deg\minpoly(\alpha_r)=r$.
+
+Indeed, once such $\alpha_r$ and $\beta_r$ are known for every primary
+factor $r$ of $m$, possible solutions to the embedding problem are
+\begin{equation*}
+  \alpha = \prod_{\substack{r|m,\\\gcd(r,m/r)=1}}\alpha_r,\qquad
+  \beta = \prod_{\substack{r|m,\\\gcd(r,m/r)=1}}\beta_r,
+\end{equation*}
+or
+\begin{equation*}
+  \alpha = \sum_{\substack{r|m,\\\gcd(r,m/r)=1}}\alpha_r,\qquad
+  \beta = \sum_{\substack{r|m,\\\gcd(r,m/r)=1}}\beta_r.
+\end{equation*}
+
+In the next sections, we present algorithms to solve this problem.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
