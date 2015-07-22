@@ -1193,17 +1193,16 @@ such that
     \item $X^2 - tX + q = (X - a)(X - b)\bmod m,$
     \item $(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle \times S$ for $S$ a subgroup of
 $(\Z/m\Z)^{\times}$,
-    \item $\order_m(a) = n$ and $\order_m(b) > n$.
+    \item $\order_m(a) = n$ and $\order_m(b)\not|n$.
 \end{enumerate}
-Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^n}$ is the
-smallest extension that contains $m$-torsion points and for all $P$ in the
-eigenspace of $a$, the periods $\eta_a(P)$ form a normal basis of $\F_{q^n}$ on
-$\F_q$.
+Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^n}$ contains 
+$m$-torsion points and for all $P$ in the eigenspace of $a$, the elliptic 
+period $\eta_a(P)$ form a normal basis of $\F_{q^n}$ on $\F_q$.
 
 \end{theorem}
 \begin{proof}
 Let us take a step back in characteristic $0$. We denote $L$ the number field 
-such that there exists a prime idea $\mathfrak{p}$ above $p$ satisfying 
+such that there exists a prime ideal $\mathfrak{p}$ above $p$ satisfying 
 \begin{equation}
 \mathcal{O}(L)/\mathfrak{p} \simeq \F_q.
 \end{equation}
@@ -1348,9 +1347,10 @@ We can summarize the situation with the following figure
 \end{center}
 where $\Phi_m(X,j(\widehat{E}))$ is an equation of the modular curve $X_0(m)$.
 
-We recall that we can find a generator $c\in(\Z/m\Z)^{\times}$ such that $a =
-c^{n'}$ for $n' = (m-1)/(2n)$, and we have $S = \langle{s}\rangle$ with $s =
-c^n$. For $0\leq i < q$, we define 
+We recall that, since $m$ is an Elkies prime for $E$ by definition, we can 
+find a generator $c\in(\Z/m\Z)^{\times}$ such that $a = c^{n'}$ for 
+$n'=(m-1)/(2n)$, and we have $S=\langle{s}\rangle$ with $s=c^n$. 
+For $0\leq i<q$, we define 
 \begin{equation}
 \eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{a^i}(\theta))}
 \end{equation}
@@ -1374,6 +1374,10 @@ degree $n$. This concludes the proof of the theorem.
 
 \end{proof}
 
+\begin{remark}
+For $j=0,1728$ the results still hold. %TODO
+\end{remark}
+
 \subsection{Elliptic algorithm}
 
 The main improvement of the elliptic variant of Rains' algorithm is the fact
@@ -1387,8 +1391,7 @@ need for our algorithm.
 The procedure is close to the cyclotomic variant's procedure. We first need to
 generate the group we will be using, namely an elliptic curve, then we will
 compute the elliptic periods in both extension using the definition given in the
-previous section.\\
-
+previous section.
 
 \subsubsection{Finding an elliptic curve}
 If theoritically, we always introduce the elliptic curve before finding an
@@ -1396,7 +1399,7 @@ Elkies prime number, in practice, we have to find a prime $m$ which has the good
 properties and then we pick an elliptic curve for which this $m$ is an Elkies
 prime. We shall assume $p\neq2,3$.
 
-We need to find an integer $m$ such that there exist an element of order $n$
+We need to find an integer $m\neq p$ such that there exist an element of order $n$
 modulo $m$. The first condition will be that $n|\varphi(m)$. We also need 
 that the cofactor $\varphi(m)/n$ is prime with $n$, so it ensures that 
 $(\Z/m\Z)^{\times}$ splits as we want, namely 
@@ -1406,8 +1409,8 @@ $(\Z/m\Z)^{\times}$ splits as we want, namely
 \end{equation}
 for $S$ a subgroup of $(\Z/m\Z)^{\times}$ and $a$ the eigenvalue of $\pi_q$ of
 order $n$ modulo $m$. We also wish for $b$, the other eigenvalue of $\pi_q$ to
-be of order not dividing $n$, so that the torsion points in $E(\F_{q^n}$ are
-only in $\langle{a}\rangle$.
+be of order not dividing $n$, so that the points of $E(\F_{q^n})$ of order $m$
+are only in the eigenspace of $a$.
 
 To pick a good elliptic curve, we shall first pick some trace candidate modulo 
 $m$. Since we need $m$ to be an Elkies prime for the future elliptic curve, the
@@ -1453,7 +1456,7 @@ elliptic curve is as follow.
     [Selecting an elliptic curve]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-    \REQUIRE $m$ an integer s.t. described above, $\mathcal{T}_m$ 
+    \REQUIRE $m$ an integer s.t. $\mathcal{T}_m\neq\O$, $\mathcal{T}_m$ 
     \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_m$
     \FOR{$j\in\F_q$}
         \STATE $E \leftarrow E(j_E = j)$ 
