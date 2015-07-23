@@ -83,6 +83,7 @@
 \def\A{\ensuremath{\mathbb{A}}}
 \def\B{\ensuremath{\mathbb{B}}}
 \def\MM{\ensuremath{\mathsf{M}}}
+\def\MC{\ensuremath{\mathsf{C}}}
 \def\II{\ensuremath{\mathsf{I}}}
 \def\QQ{\ensuremath{\mathsf{Q}}}
 \def\CC{\ensuremath{\mathsf{C}}}
@@ -337,10 +338,18 @@ sub-problems:
 \end{enumerate}
 
 \paragraph{Complexity notation} We measure all complexities in number
-of operations $+$, $\times$, $\div$ in $\F_q$. We write $\MM(n)$ for
+of operations $+$, $\times$, $\div$ in $\F_q$ unless explicitely
+stated otherwise. We write $\MM(n)$ for
 the cost of multiplying two polynomials in $\F_q[X]$ of degree at most
-$n$.
+$n$ and $\MC(n)$ for the cost of modular composition of three
+polynomials in $\F_q[X]$ of degree at most $n$.
 
+% Remove? State something for MM?
+$\MC(n)$ is theoretically $O(n^{1 + o(1)})$ operations in $F_q$
+using Kedlaya-Umans algorithm~\cite{kedlaya+umans08},
+and practically
+$O(n^{(\omega + 1)/2})$ operations in $F_q$
+using Brent-Kung algorithm~\cite{brent+kung}.
 
 \subsection{Classical algorithms}
 
@@ -350,25 +359,20 @@ for the embedding description step
 and linear algebra or modular composition
 for the embedding evaluation step.
 
-Denote the complexity of modular composition over $F_q$
-of polynomials of degree $n$ by $C(n)$.
-It is theoretically $O(n^{1 + o(1)})$ operations in $F_q$
-using Kedlaya-Umans algorithm~\cite{kedlaya+umans08},
-and practically
-$O(n^{(\omega + 1)/2})$ operations in $F_q$
-using Brent-Kung algorithm~\cite{brent+kung}.
-
 \subsubsection{Root finding}
 
-Since $k$ is defined as $k=\F_q[X]/f$, picking up $\alpha = X\in k$
-and $\beta$ a root of $f$ in $K$ defines an embedding of $k$ into $K$.
-This can be solved using randomized algorithms
-in~$C(\deg f) + O(\deg f \deg g \log q)$ operations
-in $K$~\cite[Sec. 5]{von1992computing,KeUm11}.
+As $k$ is defined as $k=\F_q[X]/f$, a natural choice is to
+pick $\alpha = X\in k$
+and $\beta$ a root of $f$ in $K$.
+This trivially defines an embedding of $k$ into $K$.
+The root computation can be solved using randomized algorithms
+in~$\MC(\deg f) + O(\deg f \deg g \log q)$ operations
+in $K$~\cite{von1992computing,KeUm11}.
 
 \subsubsection{Linear algebra}
 
-Once $\beta \in K$ has been computed, one computes the powers
+Once $\beta \in K$ has been computed as a polynomial in $Y$,
+one can compute the powers
 $\beta^i = \sum_{j=0}^{\deg g-1} m_{i,j} Y^j$
 for $i \in \{0, \ldots, \deg f-1\}$ and build a matrix
 $M = \{m_{i, j}\}_{0\leq i \leq \deg f-1, 0 \leq j \leq \deg g -1}$
@@ -395,19 +399,20 @@ matrix-vector multiplication in $O((\deg f)^2)$ in $F_q$.
 
 \subsubsection{Modular composition}
 
-Using modular composition, $\varphi(\gamma)$ can be computed
-as $\beta(\gamma) \pmod{g}$ in $C(\deg g)$ operations in $F_q$.
+As an alternative to using linear algebra,
+$\varphi(\gamma)$ can be computed directly using modular composition
+as $\beta(\gamma) \pmod{g}$ in $\MC(\deg g)$ operations in $F_q$.
 
 The second question can be answered by performing a modular
 exponentiation to check that $\gamma^{q^{\deg f}} = 1$
 naively in $O(\deg f \log q)$ operations in $K$
 or in $O(\log q)$ operations in $K$ plus
-$O(\log \deg f) C(\deg g)$ operations in $F_q$ using modular composition.
+$O(\log \deg f) \MC(\deg g)$ operations in $F_q$ using modular composition.
 
 The second and third questions can be answered using
 dual bases and power projection/transposed modular composition
 to express $\delta \in K$ as a polynomial in $\beta$ in
-$C(\deg g)$ operations in $F_q$.
+$\MC(\deg g)$ operations in $F_q$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
