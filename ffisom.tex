@@ -962,7 +962,7 @@ competitive.
 In the next sections, we will first introduce the \emph{elliptic periods} which 
 plays a similar role as the Gaussian periods, then we will describe the
 algorithm itself and finally we will compute its complexity; which will
-roughly be $\tildO(n^2)$ just like the other variants, the difference will be 
+roughly be $\tildO(r^2)$ just like the other variants, the difference will be 
 on the constant of the big $O$.
 
 \subsection{Elliptic periods}
@@ -975,7 +975,7 @@ torsion points, they are called divisions polynomial. Let
 E : y^2 = x^3 + Ax + B
 \end{equation}
 be the weierstrass equation of an elliptic curve $E/\F_q$ with $A,B\in\F_q$.
-We define the division polynomials as follow. We have $\psi_m\in\Z[x,y,A,B]$ and 
+We define the division polynomials as follow. We have $\psi_\ell\in\Z[x,y,A,B]$ and 
 \begin{align*}
 \psi_1 &=1,\\
 \psi_2 &= 2y,\\
@@ -983,58 +983,58 @@ We define the division polynomials as follow. We have $\psi_m\in\Z[x,y,A,B]$ and
 \end{align*}
 Inductively, we deduce that
 \begin{align*}
-\psi_{2m+1}&=\psi_{m+2}\psi_{m}^{3}-\psi_{m-1}\psi^{3}_{m+1}
-&&\text{ for }m\geq2,\\
-\psi_{2m}&=\left(\frac{\psi_{m}}{2y}\right)\cdot(
-\psi_{m+2}\psi^{2}_{m-1}-\psi_{m-2}\psi^{2}_{m+1})&&\text{ for }m\geq
+\psi_{2\ell+1}&=\psi_{\ell+2}\psi_{\ell}^{3}-\psi_{\ell-1}\psi^{3}_{\ell+1}
+&&\text{ for }\ell\geq2,\\
+\psi_{2\ell}&=\left(\frac{\psi_{\ell}}{2y}\right)\cdot(
+\psi_{\ell+2}\psi^{2}_{\ell-1}-\psi_{\ell-2}\psi^{2}_{\ell+1})&&\text{ for }\ell\geq
 3.
 \end{align*}
-More precisely, the roots of $\psi_m$ are exactly the abscissas of the
-points in $E[m]$. Since $E[m]$ is either isomorphic to $\Z/m\Z\times\Z/m\Z$,
-$\Z/m\Z$ or $0$, we have the following
+More precisely, the roots of $\psi_\ell$ are exactly the abscissas of the
+points in $E[\ell]$. Since $E[\ell]$ is either isomorphic to $\Z/\ell\Z\times\Z/\ell\Z$,
+$\Z/\ell\Z$ or $0$, we have the following
 \begin{equation}
-\deg(\psi_m) = \begin{cases}
-   \tfrac{(m^2-1)}{2} &\text{ if }E[m]\simeq\Z/m\Z\times\Z/m\Z\\
-   \tfrac{(m-1)}{2} &\text{ if }E[m]\simeq\Z/m\Z\\
-   0 &\text{ if } E[m]\simeq\lbrace{0}\rbrace\\
+\deg(\psi_\ell) = \begin{cases}
+   \tfrac{(\ell^2-1)}{2} &\text{ if }E[\ell]\simeq\Z/\ell\Z\times\Z/\ell\Z\\
+   \tfrac{(\ell-1)}{2} &\text{ if }E[\ell]\simeq\Z/\ell\Z\\
+   0 &\text{ if } E[\ell]\simeq\lbrace{0}\rbrace\\
 \end{cases}
 \end{equation}
 As for the roots of unity in the cyclotomic section, the goal will be to sum
 specific roots of a division polynomial to generate elements with a common orbit
 under the action of a certain Galois group. But for our algorithm to work, we need
-the degree to be equal to $(m^2 - 1)/2$ and for that we have to introduce the
+the degree to be equal to $(\ell^2 - 1)/2$ and for that we have to introduce the
 \emph{Elkies prime}.
 
 \begin{definition}
-Let $E/\F_q$ be an elliptic curve, let $m$ be a prime, we say that $m$
+Let $E/\F_q$ be an elliptic curve, let $\ell$ be a prime, we say that $\ell$
 is an Elkies prime for $E$ if the charateristic polynomial of its Frobenius
-$\pi_q : (X, Y, Z) \to (X^q, Y^q, Z^q)$ splits in $\Z/m\Z$, in other words
+$\pi_q : (X, Y, Z) \to (X^q, Y^q, Z^q)$ splits in $\Z/\ell\Z$, in other words
 \begin{equation}
-X^2 - tX + q = (X - a)(X - b) \bmod m
+X^2-tX+q=(X-\lambda)(X-\mu)\bmod\ell
 \end{equation}
-for $a,b\in\Z/m\Z$ and $t$ the trace of the Frobenius $\pi_q$ such that 
-$\# E(\F_q) = q + 1 - t$.
+for $\lambda,\mu\in\Z/\ell\Z$ and $t$ the trace of the Frobenius $\pi_q$ such that 
+$\#E(\F_q)=q+1-t$.
 \end{definition}
 
 \begin{remark}
-If $m$ is an Elkies prime for $E$, then there exists a basis such that the 
-Frobenius acts as a diagonal matrix on $E[m]$, on which the restriction of
+If $\ell$ is an Elkies prime for $E$, then there exists a basis such that the 
+Frobenius acts as a diagonal matrix on $E[\ell]$, on which the restriction of
 $\pi$ is decomposed in two eigenspaces; the eigenvalues are the root of the 
 characteristic polynomial of the Frobenius. Therefore, we can find a basis where
 the Frobenius acts on the torsion point as a diagonal matrix :
 \begin{equation}
 \begin{pmatrix}
-a & 0\\
-0 & b
+\lambda & 0\\
+0 & \mu
 \end{pmatrix}.
 \end{equation}
-For all integer $n$, the action Frobenius of $E/\F_{q^n}$ will be the $n$th
-power of that matrix. Additionnaly, if you note $k =
-\textup{min}(\order_m(a),\order_m(b))$ then the extension $\F_{q^k}$ is
-the smallest extension on which there are $m$-torsion points. Indeed, let $k = 
-\order_m(a)$ and $P$ be in the eigenspace of $a$, then we have the following
+For all integer $r$, the action Frobenius of $E/\F_{q^r}$ will be the $r$th
+power of that matrix. Additionnaly, if we denote by $k =
+\textup{min}(\order_\ell(\lambda),\order_\ell(\mu))$ then the extension $\F_{q^k}$ is
+the smallest extension on which there are $\ell$-torsion points. Indeed, let $k = 
+\order_\ell(\lambda)$ and $P$ be in the eigenspace of $\lambda$, then we have the following
 \begin{equation}
-\pi_{q^k}(P) = [a^k]P = [1] = P
+\pi_{q^k}(P)=[\lambda^k]P=[1]=P
 \end{equation}
 \end{remark}
 
@@ -1043,35 +1043,35 @@ in the cyclotomic version of Rains' algorithm. The fact is elliptic curves
 come with non trivial automorphisms that can't be ignored. This will be taken 
 in account in the definition of the elliptic periods. In particular, the cases 
 $j = 0, 1728$ shall be dealt more specifically. We shall focus only on the case
-$n$ odd.
+$r$ odd.
 
 \begin{definition}
 \label{definition:ellperiod}
-Let $E/\F_q$ be an elliptic curve and let $m>2$ be an Elkies prime for $E$.
+Let $E/\F_q$ be an elliptic curve and let $\ell>2$ be an Elkies prime for $E$.
 
-Let $j\neq0, 1728$. Let $a$ be an eigenvalue of $\phi_q \bmod m$. Suppose there 
-exists a subgroup $S$ of $(\Z/m\Z)^{\times}$ such that 
+Let $j\neq0, 1728$. Let $\lambda$ be an eigenvalue of $\pi_q \bmod \ell$. Suppose there 
+exists a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that 
 \begin{equation}
-(\Z/m\Z)^{\times}/\lbrace{\pm1}\rbrace = \langle{a}\rangle \times S
+(\Z/\ell\Z)^{\ast}/\lbrace{\pm1}\rbrace=\langle{\lambda}\rangle\times S
 \end{equation}
-Then for every $P\in E[m]$ in the eigenspace generated by $a$, we define
+Then for every $P\in E[\ell]$ in the eigenspace generated by $\lambda$, we define
 the elliptic periods as follow
 \begin{equation}
-\eta_{a}(P) = \sum_{\sigma\in S}{\left([\sigma]P\right)_X}
+\eta_{\lambda}(P) = \sum_{\sigma\in S}{\left([\sigma]P\right)_X}
 \end{equation}
 where $P_X$ denotes the abscissa of the point $P$.
 
 For the cases $j = 0$ or $1728$, we have to take in account the size
-of $\Aut(E)$. Namely, we shall assume that its order divides $\varphi(m)$
-then we identify it to a subgroup of $(\Z/m\Z)^{\times}$. Assume there exists a
+of $\Aut(E)$. Namely, we shall assume that its order divides $\varphi(\ell)$
+then we identify it to a subgroup of $(\Z/\ell\Z)^{\ast}$. Assume there exists a
 subgroup $S$ such that
 \begin{equation}
-(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle\times S
+(\Z/\ell\Z)^{\ast}/\Aut(E) = \langle{\lambda}\rangle\times S
 \end{equation}
-Then for every $P\in E[m]$ in the eigenspace generated by $a$, we define
+Then for every $P\in E[\ell]$ in the eigenspace generated by $\lambda$, we define
 the elliptic periods as follow
 \begin{equation}
-\eta_{a}(P) = \sum_{\sigma\in
+\eta_{\lambda}(P) = \sum_{\sigma\in
 S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}
 \end{equation}
 
@@ -1093,51 +1093,51 @@ Let us formulate the main theorem of the section.
 
 \begin{theorem}
 \label{theorem:ellperiods}
-Let $m$ be a prime different from $p$, $n$ an odd integer and $t$ an integer 
+Let $\ell$ be a prime different from $p$, $r$ an odd integer and $t$ an integer 
 such that 
 
 \begin{enumerate}
     \item $\mid t\mid < \sqrt{2q}$,
-    \item $X^2 - tX + q = (X - a)(X - b)\bmod m,$
-    \item $(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle \times S$ for $S$ a subgroup of
-$(\Z/m\Z)^{\times}$,
-    \item $\order_m(a) = n$ and $\order_m(b)\not|n$.
+    \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell,$
+    \item $(\Z/\ell\Z)^{\ast}/\Aut(E) = \langle{\lambda}\rangle \times S$ for $S$ a subgroup of
+$(\Z/\ell\Z)^{\ast}$,
+    \item $\order_\ell(\lambda) = r$ and $\order_\ell(\mu)\not|r$.
 \end{enumerate}
-Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^n}$ contains 
-$m$-torsion points and for all $P$ in the eigenspace of $a$, the elliptic 
-period $\eta_a(P)$ form a normal basis of $\F_{q^n}$ on $\F_q$.
+Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^r}$ contains 
+$\ell$-torsion points and for all $P$ in the eigenspace of $\lambda$, the elliptic 
+period $\eta_\lambda(P)$ form a normal basis of $\F_{q^r}$ on $\F_q$.
 
 \end{theorem}
 \begin{proof}
 Let us take a step back in characteristic $0$. We denote $L$ the number field 
 such that there exists a prime ideal $\mathfrak{p}$ above $p$ satisfying 
 \begin{equation}
-\mathcal{O}(L)/\mathfrak{p} \simeq \F_q.
+\mathcal{O}_L/\mathfrak{p} \simeq \F_q.
 \end{equation}
 We denotes by $\widehat{E}$ the lift of $E$ in $L$,
 \[
 \widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
 \]
-Similarly, we define $\widehat{\psi}_{m,a}, \widehat{\psi_m}$ the lifts of 
-$\psi_{m,a}, \psi_m$ respectively. Now let $L_m := 
-L[X]/(\widehat{\psi}_m(X))$ be the extension of degree $(m²-1)/2$ and let 
-$R_m := L_m[Y]/(Y^2 - X^3 + \widehat{A}X + \widehat{B})$. We also write $\Theta
+Similarly, we define $\widehat{\psi}_{\ell,\lambda}, \widehat{\psi_\ell}$ the lifts of 
+$\psi_{\ell,\lambda}, \psi_\ell$ respectively. Now let $L_\ell := 
+L[X]/(\widehat{\psi}_\ell(X))$ be the extension of degree $(\ell^2-1)/2$ and let 
+$R_\ell := L_\ell[Y]/(Y^2 - X^3 + \widehat{A}X + \widehat{B})$. We also write $\Theta
 :=\bar{X}$ and $\Gamma:=\bar{Y}$, $P:=(\Theta, \Gamma)$ will denote the generic 
-point of $E[m]$.
+point of $E[\ell]$.
 
-For $o\in(\Z/m\Z)^{\times}$ we write
+For $o\in(\Z/\ell\Z)^{\ast}$ we write
 \begin{equation}
 \rho_o : \Theta \mapsto ([o]\widehat{P})_X
 \end{equation}
-which define an autormorphism of $L_m/L$. Let $G := \lbrace{\rho_o : 1 \leq o
-\leq (m-1)/2}\rbrace$, subgroup of the Galois group $\text{Gal}(L_m/L)$; we also 
-write $L_0 := L_m^G$. With that definition we can write 
+which define an autormorphism of $L_\ell/L$. Let $G := \lbrace{\rho_o : 1 \leq o
+\leq (\ell-1)/2}\rbrace$, subgroup of the Galois group $\text{Gal}(L_\ell/L)$; we also 
+write $L_0 := L_\ell^G$. With that definition we can write 
 \begin{equation}
-\widehat{\psi}_{m,a}=\prod_{o=1}^{\tfrac{m-1}{2}}{(X-\rho_o(\Theta))}
+\widehat{\psi}_{\ell,\lambda}=\prod_{o=1}^{\tfrac{\ell-1}{2}}{(X-\rho_o(\Theta))}
 \end{equation}
-with coefficient in $K_0$, consequently $L_m = L_0[T]/(\widehat{\psi}_{m,a}(T))$.
+with coefficient in $L_0$, consequently $L_\ell = L_0[T]/(\widehat{\psi}_{\ell,\lambda}(T))$.
 \emph{(Moreover, since $G$ is cyclic, for each $o\in G$ there exists a polynomial
-$\widehat{g}_o$ of degree $\text{deg}(\widehat{g}_o) < (m-1)/2$ such that
+$\widehat{g}_o$ of degree $\text{deg}(\widehat{g}_o) < (\ell-1)/2$ such that
 $\widehat{g}_o(\Theta) = \rho_o(\Theta)$.)Useful ?}
 
 \begin{remark}
@@ -1145,42 +1145,42 @@ Since the extension is cyclic, it is a noticibly interesting fact to note that
 \[
 \lbrace{\rho(\Theta), \rho\in G}\rbrace
 \]
-actually forms a normal basis of $L_m/L_0$.
-Therefore, for any intermediate extension $L'/L_0$ of $L_m/L_0$, the trace
-$\text{Tr}_{L_m/L'}(\Theta)$ along with its conjugates also form a normal basis
+actually forms a normal basis of $L_\ell/L_0$.
+Therefore, for any intermediate extension $L'/L_0$ of $L_\ell/L_0$, the trace
+$\text{Tr}_{L_\ell/L'}(\Theta)$ along with its conjugates also form a normal basis
 of $L'/L_0$ and thus generates $L'$ as simple extension.
 \end{remark}
 
-Now consider the subfield $L'\subset L_m$ such that $[L', L_0] = n$. Let 
-$c\in(\Z/m\Z)^{\times}$ be a generator such that $a=c^{n'}$ and let $s:=c^n$ 
-where $n' = (m-1)/2n$. Then we have the following decomposition
+Now consider the subfield $L'\subset L_\ell$ such that $[L', L_0] = r$. Let 
+$c\in(\Z/\ell\Z)^{\ast}$ be a generator such that $\lambda=c^{r'}$ and let $s:=c^r$ 
+where $r' = (\ell-1)/2n$. Then we have the following decomposition
 \[
-(\Z/m\Z)^{\times}/\lbrace{\pm1}\rbrace = \langle{a}\rangle \times S
+(\Z/\ell\Z)^{\ast}/\lbrace{\pm1}\rbrace = \langle{\lambda}\rangle \times S
 \]
-with $S = \langle{s}\rangle$. For $0 \leq i < n$, we define 
+with $S = \langle{s}\rangle$. For $0 \leq i < r$, we define 
 \begin{equation}
-\widehat{\eta}_i = \sum_{\sigma\in S}{\left([a^i\sigma]P\right)_X} =
-\sum_{\sigma\in S}{\rho_{\sigma}(\rho_{a^i}(\Theta))}
+\widehat{\eta}_i = \sum_{\sigma\in S}{\left([\lambda^i\sigma]P\right)_X} =
+\sum_{\sigma\in S}{\rho_{\sigma}(\rho_{\lambda^i}(\Theta))}
 \end{equation}
 It is easy to see that $\widehat{\eta_0}$ is the lift of our elliptic periods.
-From above we can deduce that $\rho_{a^i}(\widehat{\eta}_0) = 
+From above we can deduce that $\rho_{\lambda^i}(\widehat{\eta}_0) = 
 \widehat{\eta_i}$, then we have the cyclic action
 \begin{equation}
-\widehat{\eta}_0 \buildrel\rho_a\over\longrightarrow
-\widehat{\eta}_1 \buildrel\rho_a\over\longrightarrow \dots 
-\buildrel\rho_a\over\longrightarrow \widehat{\eta}_{n-1}
-\buildrel\rho_a\over\longrightarrow \widehat{\eta}_0
+\widehat{\eta}_0 \buildrel\rho_\lambda\over\longrightarrow
+\widehat{\eta}_1 \buildrel\rho_\lambda\over\longrightarrow \dots 
+\buildrel\rho_\lambda\over\longrightarrow \widehat{\eta}_{r-1}
+\buildrel\rho_\lambda\over\longrightarrow \widehat{\eta}_0
 \end{equation}
 Another notable fact, is that we actually have
 \begin{equation}
-\widehat{\eta}_0=\text{Tr}_{L_m/L'}(\Theta).
+\widehat{\eta}_0=\text{Tr}_{L_\ell/L'}(\Theta).
 \end{equation}
 therefore $L' = L(\widehat{\eta}_0)$.
 
 \begin{lemma}
 Consider the polynomial :
 \begin{equation}
-\widehat{M}(T):=\prod_{i=0}^{n-1}{(T-\widehat{\eta}_i)}\in\mathcal{O}(L_0)[T]
+\widehat{M}(T):=\prod_{i=0}^{r-1}{(T-\widehat{\eta}_i)}\in\mathcal{O}_{L_0}[T]
 \end{equation}
 It is the minimal polynomial of $\widehat{\eta}_0$.
 \end{lemma}
@@ -1191,95 +1191,93 @@ From what we wrote above we are in the following situation
 \begin{tikzpicture}
     \node (L0) {$L_0$};
     \node[above left= of L0] (Lpr) {$L'$};
-    \node[above right= of Lpr] (Lm) {$L_m$};
+    \node[above right= of Lpr] (Lm) {$L_\ell$};
     \draw (L0) edge node[right] {$G$} (Lm);
-    \draw (L0) edge node[auto] {$\langle{a}\rangle$} (Lpr);
+    \draw (L0) edge node[auto] {$\langle{\lambda}\rangle$} (Lpr);
     \draw (Lpr) edge node[auto] {$S$} (Lm);
 \end{tikzpicture}
 \end{center}
 The coefficients of $\widehat{M}(T)$ being the symmetrical polynomial in the $\eta_i$, we
-can see that the action of $\rho_a$ will simply permute the $\widehat{\eta_i}$
-leaving the coefficients unchanged. Moreover, if you take a product of less than
-$n$ factor of the form $(T - \widehat{\eta_i})$, the coefficients won't be fixed
-by $\rho_a$, thus the polynomial is irreducible.
+can see that the action of $\rho_\lambda$ will simply permute the $\widehat{\eta_i}$
+leaving the coefficients unchanged. Moreover, if we take a product of less than
+$r$ factor of the form $(T - \widehat{\eta_i})$, the coefficients won't be fixed
+by $\rho_\lambda$, thus the polynomial is irreducible.
 
-To finish the proof, we shall note that $\Theta$ is in $\mathcal{O}(L_0)$, then
-by a classical result $\text{Tr}_{L_m/L'}(\Theta)$ is in $\mathcal{O}(L_0)$. By
+To finish the proof, we shall note that since $\Theta$ is in $\mathcal{O}_{L_0}$, then
+by a classical result $\text{Tr}_{L_\ell/L'}(\Theta)$ is in $\mathcal{O}_{L_0}$. By
 applying again the same results, we deduce that all the coefficients of $\widehat{M}(T)$
-are indeed in $\mathcal{O}(L_0)$.
+are indeed in $\mathcal{O}_{L_0}$.
 \end{proof}
 
 We are now going back to finite characteristic, $p\geq3$. Let
 \begin{equation}
-\mathcal{A}_0:=\F_q[X]/(\psi_{m,a}(X))
+\mathcal{A}_0:=\F_q[X]/(\psi_{\ell,\lambda}(X))
 \end{equation}
 and
 \begin{equation}
-\mathcal{A}:=\F_p[X]/(Y^2-(X^3+AX+B),\psi_{m,a}(X)).
+\mathcal{A}:=\F_p[X]/(Y^2-(X^3+AX+B),\psi_{\ell,\lambda}(X)).
 \end{equation}
 Let $\theta$ and $\gamma$ be the residue class of $X$ and $Y$ in $\mathcal{A}$.
-We write $P = (\theta, \gamma)$ the generic point in the eigenspace of $a$. 
-Like above, for $o\in(\Z/m\Z)^{\times}$ we define the unique polynomials 
-$g_o\in\F_q$ of degree inferior to $(m-1)/2$ such that $g_a(\theta)= 
-([a]P)_X \in\mathcal{A}$. We can then write 
+We write $P = (\theta, \gamma)$ the generic point in the eigenspace of $\lambda$. 
+For $o\in(\Z/\ell\Z)^{\ast}$ we define the unique polynomials 
+$g_o\in\F_q$ of degree inferior to $(\ell-1)/2$ such that $g_o(\theta)= 
+([o]P)_X \in\mathcal{A}$. We can then write 
 \begin{equation}
-\psi_{m,a}(Z) = \prod_{a=1}^{(m-1)/2}{(Z - g_a(\theta))}.
+\psi_{\ell,\lambda}(Z) = \prod_{i=1}^{(\ell-1)/2}{(Z - g_{\lambda^i}(\theta))}.
 \end{equation}
 We can summarize the situation with the following figure
 \begin{center}
 \begin{tikzpicture}
     \node (L) {$L$};
-    \node[above = of L] (L0) {$L_0 = L[X]/(\Phi_{m}(X,j(\widehat{E})))$};
+    \node[above = of L] (L0) {$L_0 = L[X]/(\Phi_{\ell}(X,j(\widehat{E})))$};
     \node[above left=0.2cm and 2cm of L0] (R0) {$R_0$};
     \node[right=4cm of L0] (Fq) {$\F_q$};
     \node[above= of L0] (Lpr) {$L' = L_0(\widehat{\eta}_0)$};
     \node[above= of Fq] (Fqa) {$\F_q(\eta_0)$};
     \node[above= of R0] (Rpr) {$R'$};
-    \node[above= of Lpr] (Lm) {$L_m = L(E[m]) = L_0[X]/(\widehat{\psi}_{m,a}(X))$};
-    \node[above= of Rpr] (Rm) {$R_m$};
-    \node[above= of Fqa] (A0) {$\mathcal{A}_0 = \F_q(E[m])$};
-    \draw (L) edge node[right] {$m+1$} (L0);
+    \node[above= of Lpr] (Lm) {$L_\ell = L(E[\ell]) = L_0[X]/(\widehat{\psi}_{\ell,\lambda}(X))$};
+    \node[above= of Rpr] (Rm) {$R_\ell$};
+    \node[above= of Fqa] (A0) {$\mathcal{A}_0 = \F_q(E[\ell])$};
+    \draw (L) edge node[right] {$\ell+1$} (L0);
     \draw (L0) edge node[auto] {$2$} (R0);
     \draw (Lpr) edge node[auto] {$2$} (Rpr);
     \draw (Lm) edge node[auto] {$2$} (Rm);
-    \draw (L0) edge node[right] {$n$} (Lpr);
-    \draw (Lpr) edge node[right] {$(m-1)/2n$} (Lm);
+    \draw (L0) edge node[right] {$r$} (Lpr);
+    \draw (Lpr) edge node[right] {$(\ell-1)/2n$} (Lm);
     \draw (R0) edge node[auto] {} (Rpr);
     \draw (Rpr) edge node[auto] {} (Rm);
-    \draw (Fq) edge node[right] {$\langle{a}\rangle$} (Fqa);
+    \draw (Fq) edge node[right] {$\langle{\lambda}\rangle$} (Fqa);
     \draw (Fqa) edge node[auto] {} (A0);
     \draw[->>] (L0) edge node[auto] {$\bmod \mathfrak{p}$} (Fq);
     \draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{p}$} (Fqa);
     \draw[->>] (Lm) edge node[auto] {$\bmod \mathfrak{p}$} (A0);
 \end{tikzpicture}
 \end{center}
-where $\Phi_m(X,j(\widehat{E}))$ is an equation of the modular curve $X_0(m)$.
+where $\Phi_\ell(X,j(\widehat{E}))$ is an equation of the modular curve $X_0(\ell)$.
 
-We recall that, since $m$ is an Elkies prime for $E$ by definition, we can 
-find a generator $c\in(\Z/m\Z)^{\times}$ such that $a = c^{n'}$ for 
-$n'=(m-1)/(2n)$, and we have $S=\langle{s}\rangle$ with $s=c^n$. 
+We recall that, since $\ell$ is an Elkies prime for $E$ by definition, we can 
+find a generator $c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$ for 
+$r'=(\ell-1)/(2n)$, and we have $S=\langle{s}\rangle$ with $s=c^r$. 
 For $0\leq i<q$, we define 
 \begin{equation}
-\eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{a^i}(\theta))}
+\eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{\lambda^i}(\theta))}
 \end{equation}
-reduction modulo $\mathfrak{p}$ of $\widehat{\eta}_i$. For $m\geq3$ odd, the
-discriminant of $\psi_m$ satisfies the following relation
+reduction modulo $\mathfrak{p}$ of $\widehat{\eta}_i$. For $\ell\geq3$ odd, the
+discriminant of $\psi_\ell$ satisfies the following relation
 \begin{equation}
-\text{Disc}(\psi_m) = (-1)^{(m-1)/2}m^{(m^2 - 3)/2}(-\Delta)^{(m^2 - 1)(m^2 -
+\text{Disc}(\psi_\ell) = (-1)^{(\ell-1)/2}\ell^{(\ell^2 - 3)/2}(-\Delta)^{(\ell^2 - 1)(\ell^2 -
 3)/24}
 \end{equation}
 where $\Delta$ is the discriminant of $E$. From there we can assume that the
-roots of $\psi_m$, and consequently the roots of $\psi_{m,a}$, are
+roots of $\psi_\ell$, and consequently the roots of $\psi_{\ell,\lambda}$, are
 distincts. Therefore, for $i\neq j$ we are assured that $\eta_i\neq\eta_j$ for
-there would exists linear relation between the roots of $\psi_{m,a}$.
-
+there would exists linear relation between the roots of $\psi_{\ell,\lambda}$.
 Then, we can deduce that the reduction of $\widehat{M}(T)$, the minimal
 polynomial of $\widehat{\eta}_0$, is separated. As it was the case in
-characteristic $0$, the action of $\langle{a}\rangle$ on the $\eta_i$ is cyclic,
+characteristic $0$, the action of $\langle{\lambda}\rangle$ on the $\eta_i$ is cyclic,
 as a direct consequence the $\eta_i$ are conjugates and $M(T)$ the reduction of
-$\widehat{M}(T)$ is the minimal polynomial of $\eta_0 = \eta_a(P)$ and is of
-degree $n$. This concludes the proof of the theorem.
-
+$\widehat{M}(T)$ is the minimal polynomial of $\eta_0 = \eta_\lambda(P)$ and is of
+degree $r$. This concludes the proof of the theorem.
 \end{proof}
 
 \begin{remark}
@@ -1303,32 +1301,33 @@ previous section.
 
 \subsubsection{Finding an elliptic curve}
 If theoritically, we always introduce the elliptic curve before finding an
-Elkies prime number, in practice, we have to find a prime $m$ which has the good
-properties and then we pick an elliptic curve for which this $m$ is an Elkies
+Elkies prime number, in practice, we have to find a prime $\ell$ which has the good
+properties and then we pick an elliptic curve for which this $\ell$ is an Elkies
 prime. We shall assume $p\neq2,3$.
 
-We need to find an integer $m\neq p$ such that there exist an element of order $n$
-modulo $m$. The first condition will be that $n|\varphi(m)$. We also need 
-that the cofactor $\varphi(m)/n$ is prime with $n$, so it ensures that 
-$(\Z/m\Z)^{\times}$ splits as we want, namely 
+We need to find an integer $\ell\neq p$ such that there exist an element of order $r$
+modulo $\ell$. The first condition will be that $r|\varphi(\ell)$. We also need 
+that the cofactor $\varphi(\ell)/r$ is prime with $r$, so it ensures that 
+$(\Z/\ell\Z)^{\ast}$ splits as we want, namely 
 \begin{equation}
-(\Z/m\Z)^{\times}/\Aut(E)=\langle{a}\rangle\times S \text{ or } 
-(\Z/m\Z)^{\times}=\langle{a}\rangle\times S
+(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S \text{ or } 
+(\Z/\ell\Z)^{\ast}=\langle{\lambda}\rangle\times S
 \end{equation}
-for $S$ a subgroup of $(\Z/m\Z)^{\times}$ and $a$ the eigenvalue of $\pi_q$ of
-order $n$ modulo $m$. We also wish for $b$, the other eigenvalue of $\pi_q$ to
-be of order not dividing $n$, so that the points of $E(\F_{q^n})$ of order $m$
-are only in the eigenspace of $a$.
+for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$ and $\lambda$ the eigenvalue of $\pi_q$ of
+order $r$ modulo $\ell$. We also wish for $\mu$, the other eigenvalue of $\pi_q$ to
+be of order not dividing $r$, so that there is not subfields of $\F_{q^r}$
+containing $\ell$-torsion points and, consequently, those in $\F_{q^r}$ are in the 
+eigenspace of $\lambda$.
 
 To pick a good elliptic curve, we shall first pick some trace candidate modulo 
-$m$. Since we need $m$ to be an Elkies prime for the future elliptic curve, the
-polynomial in $(\Z/m\Z)$ shall be of the form
+$\ell$. Since we need $\ell$ to be an Elkies prime for the future elliptic curve, the
+polynomial in $(\Z/\ell\Z)$ shall be of the form
 \begin{equation}
-(X - a)(X - b) = X^2 - (a + b)X + ab \bmod m.
+(X - \lambda)(X - \mu) = X^2 - (\lambda + \mu)X + \lambda\mu \bmod \ell.
 \end{equation}
-Then we pick $a\in(\Z/m\Z)^{\times}$ such that $\order_m(a) = n$ and,
-since $ab = q$, we check that $\order_m(q/a)\not| n$. If these conditions are
-met, we write $t = a + q/a \bmod m$ and check if it is a good trace candidate
+Then we pick $\lambda\in(\Z/\ell\Z)^{\ast}$ such that $\order_\ell(\lambda) = r$ and,
+since $\lambda\mu = q$, we check that $\order_\ell(q/\lambda)\not| r$. If these conditions are
+met, we write $t = \lambda + q/\lambda \bmod \ell$ and check if it is a good trace candidate
 using Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t$ is
 actually in the Hasse's bound
 \begin{equation}
@@ -1341,37 +1340,37 @@ is equal to one of the candidates we picked previously. See
 Appendix~\ref{app:elliptic-curves} for a way of determining at once
 all the traces associated to a $j$-invariant.
 
-In summary, we need to find an integer $m$ such that :
+In summary, we need to find an integer $\ell$ such that :
 \begin{itemize}
-    \item $m$ is prime,
-    \item $n\mid\varphi(m)$ and $(\varphi(m)/n,n)=1$,
-    \item there exists $a\in(\Z/m\Z)^{\times}$ such that 
+    \item $\ell$ is prime,
+    \item $r\mid\varphi(\ell)$ and $(\varphi(\ell)/r,r)=1$,
+    \item there exists $\lambda\in(\Z/\ell\Z)^{\ast}$ such that 
 \begin{equation}
 \label{equation:ordeigen}
-\order_m(a) = n,\order_m(\dfrac{q}{a}) \not| n\text{ and }|\widehat{a + \dfrac{q}{a}}| \leq 2\sqrt{q}.
+\order_\ell(\lambda) = r,\order_\ell(\dfrac{q}{\lambda}) \not| r\text{ and }|\widehat{\lambda + \dfrac{q}{\lambda}}| \leq 2\sqrt{q}.
 \end{equation}
 \end{itemize}
 Let
 \begin{equation}
-\mathcal{T}_m = \lbrace{t = a + q/a \bmod m \text{ with } a\in(\Z/m\Z)^{\times}
-\text{ such that } a \text{ satisfies 
+\mathcal{T}_\ell = \lbrace{t = \lambda + q/\lambda \bmod \ell \text{ with } \lambda\in(\Z/\ell\Z)^{\ast}
+\text{ such that } \lambda \text{ satisfies 
 }(\ref{equation:ordeigen})}\rbrace
 \end{equation}
-the good trace candidates for a prime $m$, then the routine to find a good 
+the good trace candidates for a prime $\ell$, then the routine to find a good 
 elliptic curve is as follow.
 
 \begin{algorithm}
     [Selecting an elliptic curve]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-    \REQUIRE $m$ an integer s.t. $\mathcal{T}_m\neq\O$, $\mathcal{T}_m$ 
-    \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_m$
+    \REQUIRE $\ell$ an integer s.t. $\mathcal{T}_\ell\neq\O$, $\mathcal{T}_\ell$ 
+    \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_\ell$
     \FOR{$j\in\F_q$}
         \STATE $E \leftarrow E(j_E = j)$ 
         \STATE $\mathcal{U} \leftarrow \mu_2, \mu_4\text{ or }\mu_6$ if 
 $j_E\neq0,1728$, $j_E=1728$ or $j_E=0$ respectively.
             \FOR{$U\in\mathcal{U}$}
-                \IF{$U.t_E\in\mathcal{T}_m$}
+                \IF{$U.t_E\in\mathcal{T}_\ell$}
                     \RETURN Twist($E$, $U$)
                 \ENDIF
             \ENDFOR
@@ -1382,31 +1381,31 @@ $j_E\neq0,1728$, $j_E=1728$ or $j_E=0$ respectively.
 \subsubsection{Computing the elliptic periods}
 
 Computing the elliptic periods isn't the most complicated part of the algorithm.
-Counting the points of $E/\F_{q^n}$ is directly deduced from the number of
+Counting the points of $E/\F_{q^r}$ is directly deduced from the number of
 points of $E/\F_q$ using the relation
 \begin{equation}
-\#E(\F_q^n)=q^n+1-(a^n+b^n)
+\#E(\F_q^r)=q^r+1-(\lambda^r+\mu^r)
 \end{equation}
-for $a, b$ the roots of the characteristic polynomial of $\pi_q$. To find a
-point of order $m$ in the eigenspace of $a$, we just have to find a point of
-order $m$ in $\F_{q^n}$ thanks to the properties on the order of the eigenvalue.
-The procedure is straightforward, we pick a random point in $Q\in E(\F_{q^n})$
-and we compute $P = [\#E(\F_{q^n})/m]Q$. If $Q\neq\mathcal{O}$ then $P$ is a
-point of order exactly $m$ in the eigenspace of $a$, since $m$ is prime.
+for $\lambda, \mu$ the roots of the characteristic polynomial of $\pi_q$. To find a
+point of order $\ell$ in the eigenspace of $\lambda$, we just have to find a point of
+order $\ell$ in $\F_{q^r}$ thanks to the properties on the order of the eigenvalue.
+The procedure is straightforward, we pick a random point in $Q\in E(\F_{q^r})$
+and we compute $P = [\#E(\F_{q^r})/\ell]Q$. If $Q\neq\mathcal{O}$ then $P$ is a
+point of order exactly $\ell$ in the eigenspace of $\lambda$, since $\ell$ is prime.
 Depending on the $j$-invariant of $E$ the elliptic periods should be computed 
 differently, see (\ref{definition:ellperiod}).
  
-Practically, let $c\in(\Z/m\Z)^{\times}$ be a generator such that $s = c^n$ is 
-of order $\varphi(m)/(2n)$ in $(\Z/m\Z)^{\times}/\Aut(E)$. Thus we define $S 
-:= \langle{s}\rangle$, since $a$ is of order $n$ in $(\Z/m\Z)^{\times}$, we 
+Practically, let $c\in(\Z/\ell\Z)^{\ast}$ be a generator such that $s = c^r$ is 
+of order $\varphi(\ell)/(2n)$ in $(\Z/\ell\Z)^{\ast}/\Aut(E)$. Thus we define $S 
+:= \langle{s}\rangle$, since $\lambda$ is of order $r$ in $(\Z/\ell\Z)^{\ast}$, we 
 obtain the product we want
 \[
-(\Z/m\Z)^{\times}/\Aut(E) = \langle{a}\rangle\times\langle{s}\rangle
+(\Z/\ell\Z)^{\ast}/\Aut(E) = \langle{\lambda}\rangle\times\langle{s}\rangle
 \]
 Also, since all the groups are cyclic, we can rewrite the elliptic periods in a
-more computable form, if we let $n_E = \#\Aut(E)$ then we have
+more computable form, if we let $r_E = \#\Aut(E)$ then we have
 \begin{equation}
-\eta_a(P) = \sum_{i = 0}^{\varphi(m)/n_E.n}{\left([s^i]P\right)_X^{n_E/2}}.
+\eta_\lambda(P) = \sum_{i = 0}^{\varphi(\ell)/r_E.r}{\left([s^i]P\right)_X^{r_E/2}}.
 \end{equation}
 The function can be summarized as follow
 
@@ -1414,18 +1413,18 @@ The function can be summarized as follow
 [Computing the elliptic periods]
 \label{algorithm:compell}
     \begin{algorithmic}[1]
-    \REQUIRE $K$ a finite field with $q^n$ elements, $E/\F_q$ an elliptic curve
-defined over $\F_q$, $m$ the parameter, $n_E = \#\Aut(E)$ an integer, $c$ a 
-generator of $(\Z/m\Z)^{\times}$
+    \REQUIRE $K$ a finite field with $q^r$ elements, $E/\F_q$ an elliptic curve
+defined over $\F_q$, $\ell$ the parameter, $r_E = \#\Aut(E)$ an integer, $c$ a 
+generator of $(\Z/\ell\Z)^{\ast}$
     \ENSURE $\eta$ an elliptic period
     \STATE $\order_E\leftarrow\#E(K)$
-    \STATE $\order_S \leftarrow \dfrac{\varphi(m)}{n_E.n}$
-    \STATE $s \leftarrow c^n$
+    \STATE $\order_S \leftarrow \dfrac{\varphi(\ell)}{r_E.r}$
+    \STATE $s \leftarrow c^r$
     \REPEAT
         \STATE $Q\leftarrow\text{rand}(E(K))$
-        \STATE $P\leftarrow[\dfrac{\order_E}{m}]Q$
+        \STATE $P\leftarrow[\dfrac{\order_E}{\ell}]Q$
     \UNTIL{$P\neq\mathcal{O}$}
-    \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_X^{n_E/2}}$
+    \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_X^{r_E/2}}$
     \RETURN $\eta$
     \end{algorithmic}
 \end{algorithm}
@@ -1444,7 +1443,7 @@ complete elliptic variants of Rains' algorithm.
     \REQUIRE $k_1$, $k_2$, $\F_q$
     \ENSURE $\eta_1\in k_1$, $\eta_2\in k_2$ two elements defining an
 isomorphism
-    \STATE Find $m$ s.t. $\mathcal{T}_m\neq\emptyset$
+    \STATE Find $\ell$ s.t. $\mathcal{T}_\ell\neq\emptyset$
     \STATE Compute $g$ a generator of $\F_{q^n}^{\times}$
     \STATE Find $E$ using algorithm (\ref{algorithm:selectell})
     \STATE Compute $c$ a generator of $(\Z/m\Z)^{\times}$
