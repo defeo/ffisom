@@ -83,6 +83,7 @@
 \def\A{\ensuremath{\mathbb{A}}}
 \def\B{\ensuremath{\mathbb{B}}}
 \def\MM{\ensuremath{\mathsf{M}}}
+\def\MMM{\ensuremath{\mathsf{MM}}}
 \def\MC{\ensuremath{\mathsf{C}}}
 \def\II{\ensuremath{\mathsf{I}}}
 \def\QQ{\ensuremath{\mathsf{Q}}}
@@ -157,150 +158,52 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section*{Notations}
-
-\def\poster{\textbf{Poster}}
-\def\rains{\textbf{Rains}}
-\def\kummer{\textbf{Kummer}}
-\def\cons{\textbf{consensual}}
-\def\prop{\textbf{proposed}}
+\section*{Proposed notation}
 
 This section is for internal reference only: erase after the paper has
 stabilized.
 
-
-Diagram from the poster:
-
-\begin{tikzpicture}[node distance=8em]
-  \node(Fq){$\F_q$};
-  \node(Fqf)[above left of=Fq]{$k=\F_q[X]/(f)$};
-  \node(Fqg)[above right of=Fqf]{$K=\F_q[Y]/(g)$};
-  \draw[]
-  (Fq) edge (Fqf)
-  (Fq) edge (Fqg)
-  (Fqf) edge[left,auto] node{$\varphi$} (Fqg);
-\end{tikzpicture}
-
 \begin{itemize}
-\item Base field: 
-  \begin{itemize}
-  \item \cons: $\F_q$,
-  \item \kummer: $E=\F_q$
-  \item \prop: $\F_q$ is the base field, no alias for it. Where
-    needed, we make clear that $q$ is prime. We avoid using $p$
-    anywhere.
-  \end{itemize}
-\item Irreducible polynomials:
-  \begin{itemize}
-  \item \poster: $f$ (smallest), $g$ (largest),
-  \item \kummer: $f$ degree $r$ polynomial defining the extension, $g$
-    factor of the cyclotomic polynomial,
-  \item \prop: $f$ and $g$ are reserved for the defining polynomials of the
-    field extensions.
-  \end{itemize}
-\item Fields:
-  \begin{itemize}
-  \item \poster: $k$ (smallest), $K$ (largest),
-  \item \kummer: $F,F_1,F_2$ 
-  \item \rains: $k_1,k_2$, 
-  \item \rains: $K,L$ number fields
-  \item \prop: ??
-  \end{itemize}
-\item Polynomials: 
-  \begin{itemize}
-  \item \cons{} variables are upper-cased: $X,Y,\dots$
-  \item \kummer: in secs. 2.1.3 and 2.1.4 variables become lower-cased,
-    $f,f_i,g,g_1,g_2,h,v$ are used for generic polynomials
-  \item \prop: Polynomial variables are all upper-case: $X,Y,Z$. $f$ and $g$ are reserved.
-  \end{itemize}
-\item Field extensions:
-  \begin{itemize}
-  \item \poster, \rains: $\F_q[X]/(f)$
-  \item \textbf{intro}: $\F_q[X]/f$
-  \item \kummer: $\F_q[X]/f(X)$ but $\F_q[X]/\ang{X^r-c}$
-  \item \prop: ??
-  \end{itemize}
-\item Degrees:
-  \begin{itemize}
-  \item \poster, \prop: $m=\deg f$ (smallest extension), $n=\deg g$ (largest extension),
-  \item \kummer: $r = [F:\F_q]$,
-  \item \rains: $n=\deg f=\deg g$,
-  \end{itemize}
-\item Other integers and degrees:
-  \begin{itemize}
-  \item \poster: $s$ (prime) such that $\mu_s$ generates $k$,
-  \item \poster: $e$ exponent such that $\alpha\mapsto\beta^e$
-    (inconsistent with ``Generators'' below)
-  \item \poster: $o$ degree of auxiliary extension (quite bad visually)
-  \item \kummer: $j,\ell$ some exponents sending generators over other generators
-  \item \kummer: $s,u,t$ order of $p \mod r$ and related integers
-  \item \rains: $m$ integer (often prime) such that $\mu_m$ generates $k_1$ 
-  \item \rains: $\ell$ extension degree (e.g., $q=p^\ell$)
-  \item \rains: $k$ extension degree,
-  \item \rains: $a,b$ elements of $(\Z/m\Z)^\times$
-  \item \prop: ??
-  \end{itemize}
-\item Embedding/isomorphism:
-  \begin{itemize}
-  \item \poster: $\varphi$ (clashes with Euler function),
-  \item \kummer: $\varphi_1,\varphi_2,\psi$,
-  \item \rains: $\varphi$, $\varphi_e$
-  \item \prop: ??
-  \end{itemize}
-\item Generators:
-  \begin{itemize}
-  \item \poster, \prop: $\F_q[\alpha]=k$ (smallest), $\beta = \varphi(\alpha)$ (largest), 
-  \item \kummer: $c,c_i$ generators of Teichm\"uller groups $T_E$,
-  \item \kummer: $\alpha_1,\alpha_2\gamma$ generator of extension ring $F[\zeta]$,
-  \item \kummer: $x,z$ residue classes of $X,Z$
-  \item \rains: $\alpha,\beta$
-  \end{itemize}
-\item Other field elements:
-  \begin{itemize}
-  \item \poster: $\gamma, \delta$
-  \item \poster: $a=\alpha^m$, $b=\beta^m$ in Lenstra's algorithm
-  \item \kummer: $b=(\alpha_1/\alpha_2)^r$ generators of extension ring
-  \item \kummer: $c=(\eta_a/\eta_b)$, same role as $b$ above, but in different section
-  \item \kummer: $\theta_a$ solution to Hilbert 90
-  \item \kummer: $\beta_a,\beta_b,\gamma_a,\gamma_b$ byproducts of Hilbert 90 proof
-  \item \kummer: $\eta,\eta_a=\theta_a^r,\eta_b=\theta_b^r$ non $r$-adic residues
-  \item \kummer: $\xi_i,\delta_i$ intermediary computations
-  \item \kummer: $\beta_i,\xi_i,\zeta_i$ intermediary computations
-  \item \rains: $j,j_E$ curve invariant
-  \item \rains: $A,B,D$ curve coefficients
-  \item \prop: Elements of \emph{small} fields (e.g. $\F_q,
-    \F_q[\zeta]$ are represented by roman letters. Elements of
-    \emph{large fields} (e.g. $\F_{q^m},\F_{q^n}$ are represented by
-    greek letters.
-  \end{itemize}
-\item Roots of unity and related elements:
-  \begin{itemize}
-  \item \poster, \rains, \prop: $\mu_m$ group of $m$-th roots, $\zeta$ a root,
-  \item \poster, \rains: $\eta(\alpha)$, $\eta(\zeta)$ (gaussian) periods,
-  \item \rains: $\eta_a(P)$ elliptic period
-  \item \kummer: $\Phi_r$ cyclotomic polynomial
-  \end{itemize}
-\item Galois theory:
-  \begin{itemize}
-  \item \poster, \prop: $\gal(K/k)$ Galois group, $\sigma\in\gal$ (preferred
-    to $q$ to express frobenius)
-  \item \kummer: $\Delta=\Aut(S/R)$ Automorphism group of rings,
-  \item \kummer: $\gal(K/k)$ Galois group, $\sigma\in\gal$ (but
-    prefers using $p$ as exponent in formulas)
-  \item \kummer: $T_{K/k}$ trace
-  \item \rains: $\Aut(E)$ automorphism group of a curve
-  \item \prop: use $\trace$ for trace
-  \end{itemize}
-\item Modular integers
-  \begin{itemize}
-  \item \poster: $\Z/s$ and $(\Z/s)^\ast$,
-  \item \kummer: $\Z/r\Z$
-  \item \rains: $\Z/m\Z$ and $(\Z/m\Z)^\times$,
-  \item \prop: ??
-  \end{itemize}
+\item Base field: $\F_q$. Characteristic: $p$ (use it as little as
+  possible). When algorithms only apply if $p=q$, state explicitly
+  (verbally) that $q$ is prime.
+\item Ditch the alias $E=\F_q$ in Kummer section (unless Javad has
+  very strong arguments in favor).
+\item Quotient notation: $\F_q[X]/f(X)$ or $\F_q[X]/(X^a-b)$, or
+  $\F_q[X,Y]/(X^3,Y^6)$.
+\item Other fields: $k = \F_q[X]/f(X)$, $K = \F_q[Y]/g(Y)$.
+\item $m = \deg f, n=\deg g$, $m|n$.
+\item $r$ a prime power dividing $m$.
+\item $\phi,\psi$ embeddings.
+\item Field trace $\trace$.
+\item $\varphi$: Euler function.
+\item $\Phi_r$ cyclotomic polynomial, also modular polynomial.
+\item $h$: factor of the cyclotomic polynomial.
+\item Elliptic curves: $E:y^2=x^3+ax+b$ or $E:y^2+a_1xy+a_3y=x^3+\cdots$.
+\item $\psi_m$ division polynomial, $\omega$ invariant differential.
+\item $\pi$ frobenius endomorphism (elliptic curves), $t$ its trace,
+  $\lambda,\mu$ its eigenvalues.
+\item $s$ order of $q$ mod $r$ (Kummer), degree of auxiliary extension (Rains).
+\item $\ell$ prime (power) such that $r|\order_\ell q$ (Rains).
+\item modular integers: $\Z/m\Z$,
+\item multiplicative groups: $\F_q^\ast$ and $(\Z/m\Z)^\ast$.
+\item $S$ subgroup of Galois group. $\langle s,t \rangle$ subgroup
+  generated by $s$ and $t$.
+\item $\sigma$ element of Galois group.
+\item $\zeta$ root of unity. $\mu_x$ roots group of order $x$.
+\item $\eta$, $\eta_a$, $\eta(\zeta)$ periods.
+\item $L$ number field, $\mathcal{O}_L$ integer ring.
+\item $\alpha,\beta$ outputs of embedding description algorithms.
+\item $\gamma,\delta$ inputs/outputs of embedding evaluation algorithms.
+\item Complexity: $O$, $\tildO$. $\MM$ polynomial multiplication,
+  $\MC$ modcomp, $\MMM(n)$ and $\MMM(m,n)$ matrix multiplication.
+\item Free symbols (for use internal to sections):
+  $a,b,c,d,e,i,j,t,u,v,w,z$,
+  $\varepsilon,\epsilon,\theta,\xi,\kappa,\nu,\rho,\chi,\upsilon,\tau$,
+  $A,B,C,D,E,F,G,H,I,J,M,N,Q,R,T,U,V$,
+  $\Gamma,\Delta,\Theta,\Lambda,\Xi,\Psi,\Omega$.
 \end{itemize}
 
-Note: abstract and intro generally agree with \poster{} notation.
 
 
 
