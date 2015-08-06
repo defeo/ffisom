@@ -85,6 +85,7 @@
 \def\MM{\ensuremath{\mathsf{M}}}
 \def\MMM{\ensuremath{\mathsf{MM}}}
 \def\MC{\ensuremath{\mathsf{C}}}
+\def\PC{\ensuremath{\mathsf{PC}}}
 \def\II{\ensuremath{\mathsf{I}}}
 \def\QQ{\ensuremath{\mathsf{Q}}}
 \def\CC{\ensuremath{\mathsf{C}}}
@@ -145,9 +146,9 @@
 \begin{abstract}
   Let $\F_q$ be a finite field.  The finite field embedding problem
   asks, given two irreducible polynomials $f,g$ in $\F_q[X]$ with
-  $\deg f$ dividing $\deg g$, to compute an explicit description of a
-  field embedding of $\F_q[X]/f$ into $\F_q[X]/g$. When $\deg f = \deg
-  g$, this is also known as the isomorphism problem.
+  $m = \deg f$ dividing $n = \deg g$, to compute an explicit description of a
+  field embedding of $\F_q[X]/f$ into $\F_q[X]/g$. When $m = \deg n$,
+  this is also known as the isomorphism problem.
   
   We review classical algorithms for the two problems, and compare
   their asymptotic complexities. We also propose new improvements and
@@ -194,7 +195,8 @@ stabilized.
 \item $\alpha,\beta$ outputs of embedding description algorithms.
 \item $\gamma,\delta$ inputs/outputs of embedding evaluation algorithms.
 \item Complexity: $O$, $\tildO$. $\MM$ polynomial multiplication,
-  $\MC$ modcomp, $\MMM(n)$ and $\MMM(m,n)$ matrix multiplication.
+  $\MC$ modcomp, $\MMM(n)$ and $\MMM(m,n)$ matrix multiplication,
+  $\PC$ point counting.
 \item Free symbols (for use internal to sections):
   $a,b,c,d,e,i,j,t,u,v,w,z$,
   $\varepsilon,\epsilon,\theta,\xi,\kappa,\nu,\rho,\chi,\upsilon,\tau$,
@@ -238,19 +240,39 @@ sub-problems:
     evaluation}.
 \end{enumerate}
 
-\paragraph{Complexity notation} We measure all complexities in number
+\paragraph{Complexity notation}
+\todo{bit or algebraic? ignore log factors?}
+We measure all complexities in number
 of operations $+$, $\times$, $\div$ in $\F_q$ unless explicitely
 stated otherwise. We write $\MM(n)$ for
 the cost of multiplying two polynomials in $\F_q[X]$ of degree at most
-$n$ and $\MC(n)$ for the cost of modular composition of three
-polynomials in $\F_q[X]$ of degree at most $n$.
+$n$, $\MC(n)$ for the cost of modular composition of three
+polynomials in $\F_q[X]$ of degree at most $n$,
+$\MMM(n, m)$ for multiplication of matrices with entries in $\F_q$,
+% is this enough for our algorithm? or do we need \PC(m, n)?
+$\PC(n)$ for counting points defined over an extension of
+degree $n$ of $\F_q$ of a curve defined over $\F_q$.
 
-% Remove? State something for MM?
-$\MC(n)$ is theoretically $O(n^{1 + o(1)})$ operations in $F_q$
+
+\todo{matrix multiplication and related problems}
+$\MMM(m, n)$ is $O()$.
+
+\todo{poly multiplication}
+$\MM(n)$ is $O()$ bit-complexity.
+
+\todo{remove $\omega$ and use $\MMM$}
+$\MC(n)$ is theoretically $O(n^{1 + o(1)})$ operations in $\F_q$
 using Kedlaya-Umans algorithm~\cite{kedlaya+umans08},
 and practically
-$O(n^{(\omega + 1)/2})$ operations in $F_q$
+$O(n^{(\omega + 1)/2})$ operations in $\F_q$
 using Brent-Kung algorithm~\cite{brent+kung}.
+
+\todo{point counting complexity}
+$\PC(1)$ is heuristically $O()$ bit-complexity
+using the SEA algorithm.
+Once the number of points over $\F_q$ is known at a $\PC(1)$ cost,
+deducing the number of points over an extension of degree $n$ is
+$O()$.
 
 \subsection{Classical algorithms}
 
@@ -267,53 +289,53 @@ pick $\alpha = X\in k$
 and $\beta$ a root of $f$ in $K$.
 This trivially defines an embedding of $k$ into $K$.
 The root computation can be solved using randomized algorithms
-in~$\MC(\deg f) + O(\deg f \deg g \log q)$ operations
+in~$\MC(m) + O(m n \log q)$ operations
 in $K$~\cite{von1992computing,KeUm11}.
 
 \subsubsection{Linear algebra}
 
 Once $\beta \in K$ has been computed as a polynomial in $Y$,
 one can compute the powers
-$\beta^i = \sum_{j=0}^{\deg g-1} m_{i,j} Y^j$
-for $i \in \{0, \ldots, \deg f-1\}$ and build a matrix
-$M = \{m_{i, j}\}_{0\leq i \leq \deg f-1, 0 \leq j \leq \deg g -1}$
+$\beta^i = \sum_{j=0}^{n-1} m_{i,j} Y^j$
+for $i \in \{0, \ldots, n-1\}$ and build a matrix
+$M = \{m_{i, j}\}_{0\leq i \leq m-1, 0 \leq j \leq n -1}$
 representing $\varphi$.
-This is trivially done in $O(\deg f)$ operations in $K$.
-For $\gamma = \sum_{i = 0}^{\deg f -1} c_i X^i \in k$,
+This is trivially done in $O(m)$ operations in $K$.
+For $\gamma = \sum_{i = 0}^{m - 1} c_i X^i \in k$,
 $\varphi(\gamma)$ can then be computed by a
-matrix-vector multiplication in $O(\deg f \deg g)$ operations in $F_q$.
+matrix-vector multiplication in $O(m n)$ operations in $\F_q$.
 
 Together, the second and third questions are the inverse image problem.
 They can be answered by first computing 
 an LU or similar matrix decompostions of $M$
-in $O((\deg g (\deg f)^{\omega - 1})$ operations in $F_q$.
+in $O((n (m)^{\omega - 1})$ operations in $\F_q$.
 Answering the second and third questions together is then
 an easy matter.
 
-Note that if $\deg f = \deg g$, that is if $k$ and $K$ are
+Note that if $m = n$, that is if $k$ and $K$ are
 isomorphic, then the second question is trivial.
-For the third one, the inverse 
+For the third one, the inverse
 the inverse $M^{-1}$ of $M$ representing $\varphi^{-1}$
 can be deduced from an an LU or similar matrix decompostions of $M$.
 For $\delta \in K$, $\varphi^{-1}(\delta)$ can then be computed by a
-matrix-vector multiplication in $O((\deg f)^2)$ in $F_q$.
+matrix-vector multiplication in $O(m^2)$ in $\F_q$.
 
 \subsubsection{Modular composition}
 
 As an alternative to using linear algebra,
 $\varphi(\gamma)$ can be computed directly using modular composition
-as $\beta(\gamma) \pmod{g}$ in $\MC(\deg g)$ operations in $F_q$.
+as $\beta(\gamma) \pmod{g}$ in $\MC(n)$ operations in $F_q$.
 
 The second question can be answered by performing a modular
-exponentiation to check that $\gamma^{q^{\deg f}} = 1$
-naively in $O(\deg f \log q)$ operations in $K$
+exponentiation to check that $\gamma^{q^{m}} = 1$
+naively in $O(m \log q)$ operations in $K$
 or in $O(\log q)$ operations in $K$ plus
-$O(\log \deg f) \MC(\deg g)$ operations in $F_q$ using modular composition.
+$O(\log m) \MC(n)$ operations in $F_q$ using modular composition.
 
 The second and third questions can be answered using
 dual bases and power projection/transposed modular composition
 to express $\delta \in K$ as a polynomial in $\beta$ in
-$\MC(\deg g)$ operations in $F_q$.
+$\MC(n)$ operations in $F_q$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
