@@ -13,8 +13,7 @@
 \usepackage[sectionbib]{chapterbib}
 \usepackage{hyperref}
 \usepackage{tikz}
-\usetikzlibrary{positioning}
-\usetikzlibrary{calc}
+\usetikzlibrary{positioning,calc,arrows}
 \usepackage{algorithmic}
 \usepackage{enumerate}
 
@@ -39,7 +38,7 @@
 \newtheorem{conjecture}[theorem]{Conjecture}
 \newtheorem{example}[theorem]{Example}
 \newtheorem*{remark}{Remark}
-\newtheorem*{note}{Note}
+\newtheorem{note}[theorem]{Note}
 
 
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -109,7 +108,7 @@
 \def\bupsilon{\boldsymbol{\upsilon}}
 \def\bzeta{\boldsymbol{\zeta}}
 \def\blambda{\boldsymbol{\lambda}}
-
+\def\euler{\ensuremath{\varphi}}
 
 % allow algorithms to split over multiple pages
 \makeatletter
@@ -156,6 +155,9 @@
   with the state of the art.
 \end{abstract}
 
+\setcounter{tocdepth}{2}
+\tableofcontents
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -175,7 +177,7 @@ stabilized.
 \item $r$ a prime power dividing $m$.
 \item $\phi,\psi$ embeddings.
 \item Field trace $\trace$.
-\item $\varphi$: Euler function.
+\item $\euler$: Euler function.
 \item $\Phi_r$ cyclotomic polynomial, also modular polynomial.
 \item $h$: factor of the cyclotomic polynomial.
 \item Elliptic curves: $E:y^2=x^3+ax+b$ or $E:y^2+a_1xy+a_3y=x^3+\cdots$.
@@ -365,7 +367,11 @@ or
   \beta = \sum_{\substack{r|m,\\\gcd(r,m/r)=1}}\beta_r.
 \end{equation*}
 
-In the next sections, we present algorithms to solve this problem.
+In the next sections, we present algorithms to solve this problem. All
+algorithms are going to rely on one common principle: construct an
+element in $k$ (and in $K$) such that its minimal polynomial (or,
+equivalently, its orbit under the absolute Galois group of $\F_q$) is
+uniquely defined.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -877,96 +883,301 @@ using transposed modular composition.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rains' algorithm}
 
-In his paper, Pinch \cite{} proposed to use specific generating element to solve
-the isomorphism problem. One of his two methods makes use of the cyclotomic
-extension.
+We now move on to a family of algorithms based on the theory of
+algebraic groups. The simplest of these algorithms is Pinch's
+cyclotomic algorithm~\cite{Pinch}. The idea is very simple: given $r$,
+select a integer $\ell$ such that $[\F_q[\mu_\ell]:\F_q]=r$, where
+$\mu_\ell$ is the group of $\ell$-th roots of unity.  Then, any
+embedding $k\to K$ takes $\mu_\ell\subset k^\ast$ to $\mu_\ell\subset
+K^\ast$, and the minimal polynomial of any primitive $\ell$-th root of
+unity has degree exactly $r$.
 
-Let $\F_q$ be a finite field of characteristic $p$ and let $n$ be an integer. 
-Now, let $m$ be an integer such that the primitive $m$th roots span 
-$\F(q^n)$, and let $f$ and $g$ be two different irreducible polynomial of
-degree $n$ over $\F_q$. We note
-\begin{equation}
-k_1 := \F_q[X]/(f)\text{ and }k_2 := \F_q[X]/(g)
-\end{equation}
-Pinch's method consists of finding primitive $m$th roots of unity in both extensions
-$k_1$ and $k_2$, which we will called $\alpha$ and $\beta$ respectively, then
-find the morphism
-\begin{equation}
-\varphi_e : \alpha\longmapsto\beta^e
-\end{equation}
-which actually defines an isomorphism.
+Pinch's algorithm is very effective when $r=\euler(\ell)$. Indeed in
+this case the $\ell$-th cyclotomic polynomial $\Phi_\ell$ is
+irreducible over $\F_q$, and its roots form a unique orbit under the
+action of the absolute Galois group of $\F_q$. Thus we can take any
+primitive $\ell$-th roots of unity $\alpha\in k$ and $\beta\in K$ to
+describe the embedding.
 
-One of the issue with this method is that the order of $\F(q^n)$ may only be
-divisible by large integers, increasing drastically the time it takes to find a 
-$m$th root of unity in each extensions. Another issue is the random choice of
-primitive $m$th roots. Due to how the cyclotomic polynomial factors in
-charateristic $p$, it could take $O(m)$ tries to find two roots which are not in
-the same irreducible factor.
+In the general case, however, the roots of $\Phi_\ell$ are partitioned
+in $\euler(\ell)/r$ orbits, thus for two randomly chosen $\ell$-th
+roots of unity $\zeta_1\in k$ and $\zeta_2\in K$, we can only say that
+there exists an exponent $e$ such that
+\begin{equation*}
+  \alpha = \zeta_1 \mapsto \zeta_2^e = \beta
+\end{equation*}
+defines a valid embedding. Pinch's algorithm tests all possible
+exponents $e$, until a suitable one is found. To test for the validity
+of a given $e$, it applies the embedding $\phi:\zeta_1\mapsto\zeta_2$
+to the class of $X$ in $k$, and verfies that its image is a root of
+$f$ in $K$ (see Part~\ref{part:eval} for details on embedding
+evaluation).
 
+The trial-and-error nature of Pinch's algorithm makes it impractical,
+except for rare favorable cases where a \emph{small} $\ell$ such that
+$r=\euler(\ell)$ can be found. One possible workaround, suggested by
+Pinch himself, is to replace the group of roots of unity with a group
+of torsion points of a well chosen elliptic curve. We analyze this
+idea in greater detail in Section~\ref{sec:rains-elliptic}.
 
-\subsection{Gaussian periods}
+This section is devoted to a different way of improving Pinch's
+algorithm, imagined by Rains~\cite{rains2008}, and implemented in the
+Magma computer algebra system~\cite{MAGMA}. Rains' original preprint
+went unpublished\footnote{The only publicly available source for
+  Rains' algorithm is Magma's source code (file
+  \texttt{package/Ring/FldFin/embed.m}, since v2.14).}, thus we
+describe his algorithm in detail for completeness. Rains' technical
+contribution is twofold: first he replaces roots of unity with
+Gaussian periods to avoid trial-and-error, second he moves to slightly
+larger extension fields to insure the existence of a small $\ell$ as
+above.
 
-A solution to the problem mentionned above would be to find a way to generate
-elements which define an isomorphism. Those elements are the \emph{Gaussian
-periods} that will be introduced in this section.
+\subsection{Uniquely defined orbits from Gaussian periods}
 
-Let $L$ be a number fields of degree $\ell$ and $\mathcal{O}_{K}$ its ring of
-integers. Let $q = p^{\ell}$ and $\mu_m$ be the abstract group of $m$th roots of
-unity. If we let $\mathfrak{p}$ be the ideal of $L$ above $p$ such that
-$\mathcal{O}_L/\mathfrak{p} = \F_q$ and $\mathfrak{P}$ one of its irreducible 
-factors in $L[\mu_m]$, we have the following situation.
+For the rest of the section, we are going to assume that $q$ is
+prime. The case where $q$ is a higher power of a prime is discussed in
+Note~\ref{note:rains-non-prime}.
 
+Suppose that we have an $\ell$, coprime with $q$, such that
+$[\F_q[\mu_\ell]:\F_q]=r$, then the cyclotomic polynomial $\Phi_\ell$
+factors over $\F_q$ into $\euler(\ell)/r$ distinct factors of degree
+$r$. Pinch's method, by choosing random roots of $\Phi_\ell$ in $k$
+and $K$, randomly selects one of these factors as minimal polynomial.
 
-\begin{center}
-\begin{tikzpicture}
-    \node (Q) {$\Q$};
-    \node[above =1.5cm of Q] (Qm) {$\Q[\mu_m]$};
-    \node[above right=1cm and 2cm of Q] (L) {$L$};
-    \node[above =1.5cm of L] (Lm) {$L[\mu_m]$};
-    \node[right =3cm of Lm] (Fqm) {$\F_q[\mu_m]$};
-    \node[below =1.4cm of Fqm] (Fq) {$\F_q$};
-    \node[below right=1cm and 1.15cm of Fqm] (Fpm) {$\F_p[\mu_m]$};
-    \node[below =1.3cm of Fpm] (Fp) {$\F_p$};
-    \draw (Q) edge node[left] {\small $(\Z/m\Z)^{\times}$} (Qm); 
-    \draw (L) edge node[left] {\small $G$} (Lm); 
-    \draw (Fqm) edge node[right] {\small $\langle{q}\rangle$} (Fq); 
-    \draw (Fpm) edge node[right] {\small $\langle{p}\rangle$} (Fp); 
-    \draw (Q) edge node {} (L);
-    \draw (Qm) edge node {} (Lm);
-    \draw (Fqm) edge node {} (Fpm);
-    \draw (Fq) edge node {} (Fp);
-    \draw[->>] (Q) edge node[above] {$\bmod\, p$} (Fp);
-    \draw[->>] (L) edge node[above] {$\bmod\, \mathfrak{p}$} (Fq);
-    \draw[->>] (Lm) edge node[above] {$\bmod\, \mathfrak{P}$} (Fqm);
-\end{tikzpicture}
-\end{center}
-
-where $G$ is the Galois group of $L[\mu_m]/L$ subgroup of $(\Z/m\Z)^{\times}$
-and $\langle{q}\rangle$, $\langle{p}\rangle$ are the decomposition groups of
-$\mathfrak{P}/\mathfrak{p}$ and $\mathfrak{p}/p$ respectively.
+By combining the roots of $\Phi_\ell$ into Gaussian periods, Rains'
+method uniquely selects a minimal polynomial of degree $r$. The
+construction is best understood by looking at the Galois groups of
+cyclotomic fields. It is well known that the Galois group of
+$\Q[\mu_\ell]/\Q$ is canonically isomorphic to $(\Z/\ell\Z)^\ast$ via
+the mapping
+\begin{equation*}
+  \begin{aligned}
+    (\Z/\ell\Z)^\ast &\to \gal(\Q[\mu_\ell]/\Q),\\
+    e &\mapsto (\sigma_e : \zeta_\ell\mapsto\zeta_\ell^e),
+  \end{aligned}
+\end{equation*}
+where $\sigma_e$ is the map sending any $\ell$-th root of unity to its
+$e$-th power, extended by linearity to all of $\Q[\mu_\ell]$. Gaussian
+periods are defined as traces of generators of $\mu_\ell$ down to a
+subfield of $\Q[\mu_\ell]$.
 
 \begin{definition}
-Let us assume that there exists a subgroup $S\subset(\Z/m\Z)^{\times}$ such that
-\begin{equation}
-(\Z/m\Z)^{\times} = \langle{q}\rangle \times S.
-\end{equation}
-Then for every generator $\zeta_m$ of $\mu_m$, we define the Gauss periods
-$\eta(\zeta_m)$ as follow
-\begin{equation}
-\eta(\zeta_m) = \sum_{\sigma\in S}{\zeta_m^{\sigma}}.
-\end{equation}
+  Let $S$ be a subgroup of $(\Z/\ell\Z)^\ast$, and let $L$ be the
+  subfield of $\Q[\mu_\ell]$ fixed by $S$. For any generator
+  $\zeta_\ell$ of $\mu_\ell$, define the Gaussian period
+  $\eta(\zeta_\ell)$ as
+  \begin{equation}
+    \eta(\zeta_\ell) = \trace_{\Q[\mu_\ell]/L} \zeta_\ell = \sum_{\sigma\in S}{\zeta_\ell^{\sigma}}.
+  \end{equation}
 \end{definition}
 
-\subsection{Rains' special algorithm}
+By hypothesis, the prime $q$ factors as a product of $\euler(\ell)/r$
+distinct primes ideals in $\Z[\mu_\ell]$. Let $\mathfrak{q}$ be one
+such prime ideal, then $\F_q[\mu_\ell]$ is isomorphic to the residue
+field $\Z[\mu_\ell]/\mathfrak{q}$, and we can identify (canonically)
+the Galois group $\gal(\F_q[\mu_\ell]/\F_q)$ with the subgroup
+$\langle q\rangle\subset(\Z/\ell\Z)^\ast$.
+
+Now, suppose there is a group $S$ such that
+$(\Z/\ell\Z)^\ast=S\times\langle q\rangle$, let $L$ be the field fixed
+by $S$, and let $\mathcal{O}_L$ be its ring of integers. Then, the
+Galois group of $L/\Q$ is also canonically identified with $\langle
+q\rangle\subset(\Z/\ell\Z)^\ast$, the prime $q$ is inert in $L$, and
+$\mathcal{O}_L/q\mathcal{O}_L$ is isomorphic to
+$\F_q[\mu_\ell]$. While the identification of $\F_q[\mu_\ell]$ with
+$\Z[\mu_\ell]/\mathfrak{q}$ depended on the choice of the prime
+$\mathfrak{q}$, taking the trace down to $L$ and then reducing modulo
+$q$ is independent of such choice, we obtain thus a canonical
+identification between $\mathcal{O}_L/q\mathcal{O}_L$ and
+$\F_q[\mu_\ell]$. The situation is summarized in the following
+diagram:
+\begin{equation*}
+  \begin{tikzpicture}[node distance=1.7cm]
+    \node (Q) {$\Z$};
+    \node[above of=Q] (L) {$\mathcal{O}_L$};
+    \node[above of=L] (Qm) {$\Z[\mu_\ell]$};
+    \node[right=8cm of Q] (Fp) {$\F_q$};
+    \node[above of=Fp] (Fpm) {$\F_q[\mu_\ell]$};
+    \node[above of=Fpm] (Prod) {$\Z[\mu_\ell]/\mathfrak{q}_1\times\cdots\times\Z[\mu_\ell]/\mathfrak{q}_t$};
+    \draw 
+    (Q) edge node[left] {\small $\langle q\rangle$} (L)
+    (L) edge node[left] {\small $S$} (Qm)
+    (Fp) edge node[right] {\small $\langle q\rangle$} (Fpm); 
+    \draw[->>] 
+    (Q) edge node[above] {\small $\bmod\, q$} (Fp)
+    (L) edge node[above] {\small $\bmod\, q$} (Fpm)
+    (Qm) edge node[above] {\small $\bmod\, \mathfrak{q}_1\times\cdots\times\bmod\,\mathfrak{q}_t$} (Prod)
+    (Prod) edge node[right] {} (Fpm);
+  \end{tikzpicture}
+\end{equation*}
+
+We can now extend the definition of Gaussian period to finite fields.
+
+\begin{definition}
+  Suppose that there is a subgroup $S\subset(\Z/\ell\Z)^\ast$ such
+  that $(\Z/\ell\Z)^\ast=S\times\langle q\rangle$. For any generator
+  $\zeta_\ell$ of $\mu_\ell$ in $\F_q[\mu_\ell]$, define the Gaussian
+  period $\eta_q(\zeta_\ell)$ as
+  \begin{equation}
+    \eta_q(\zeta_\ell) = \sum_{\sigma\in S}{\zeta_\ell^{\sigma}}.
+  \end{equation}
+\end{definition}
+
+\begin{lemma}
+  \label{th:gaussian}
+  Let $\ell$ be a squarefree integer such that $(\Z/\ell\Z)^\ast = S
+  \times \langle q\rangle$ for some $S$.  The periods
+  $\eta_q(\zeta_\ell^\sigma)$ for $\sigma$ running through $\langle
+  q\rangle$ form a normal basis of $\F_q[\mu_\ell]$ over $\F_q$,
+  independent of the choice of $\zeta_\ell$.
+\end{lemma}
+\begin{proof}
+  See~\cite[Main Theorem]{feisel1999normal}.
+\end{proof}
+
+In what follows we are going to write $\eta(\zeta_\ell)$ when $q$ is
+clear from the context.
+
+\begin{example} 
+  Consider the extension $\F_8/\F_2$ of degree $3$, which is generated
+  by the $7$-th roots of unity. We have a decomposition
+  $(\Z/7\Z)^\ast=\langle 2\rangle\times\langle-1\rangle$, and the
+  cyclotomic polynomial factors as
+  \begin{equation}
+    \Phi_7(x) = (x^3 + x + 1) (x^3 + x^2 + 1).
+  \end{equation}
+  For any root $\zeta_7$, we define the period
+  \begin{equation}
+    \eta_2(\zeta_7) = \zeta_7+\zeta_7^{-1}.
+  \end{equation}
+  The three periods $\eta_2(\zeta_7)$, $\eta_2(\zeta_7)^2$ and
+  $\eta_2(\zeta_7)^4$ are all roots of the polynomial $x^3+x^2+1$ and
+  form a normal basis of $\F_8/\F_2$.
+\end{example}
 
 \subsection{Rains' cyclotomic algorithm}
 
-\subsection{Complexity analysis}
+The bottom-line of Rains' algorithm follows immediately from the
+previous section: given $k$, $K$ and $r$,
+\begin{enumerate}
+\item find a \emph{small} $\ell$ satisfying the conditions of
+  Lemma~\ref{th:gaussian} with $[\F_q[\mu_\ell]:\F_q]=r$;
+\item take random $\ell$-th roots of unity $\zeta_\ell\in k$ and
+  $\zeta_\ell'\in K$;
+\item return the Gaussian periods $\alpha=\eta(\zeta_\ell)$ and
+  $\beta=\eta(\zeta_\ell')$.
+\end{enumerate}
+
+The problem with this algorithm is the vaguely defined
+\emph{smallness} requirement on $\ell$. Indeed the conditions of
+Lemma~\ref{th:gaussian} imply that $\ell$ divides $\Phi_r(q)$, thus in
+the worst case $\ell$ can be as large as $O(q^{\euler(r)})$, which
+yields an algorithm of exponential complexity in the field size.
+
+To circumvent this problem, Rains allows the algorithm to work in
+small auxiliary extensions of $k$ and $K$, and then descend the
+results to $k$ and $K$ via a field trace. In other words, Rains'
+algorithm looks for $\ell$ such that $[\F_q[\mu_\ell]:\F_q]=rs$ for
+some small $s$. We summarize this method in
+Algorithm~\ref{algorithm:rains-cyclo}; we only give the procedure for
+the smaller field $k$, the procedure for the larger field $K$ being
+identical.
+
+\begin{algorithm}[Rains' cyclotomic algorithm]
+  \label{algorithm:rains-cyclo}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $m$, a prime power
+    $r|m$, a prime $\ell$ such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = S \times \langle q\rangle$ for some $S$,
+    \item $\#\langle q\rangle = rs$ for some integer $s$.
+    \end{itemize}
+    \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Construct the smallest field extension $k'/k$
+    containing $\F_{q^{rs}}$; 
+    \REPEAT
+    \STATE Compute $\zeta = \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
+    \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
+    \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) = \sum_{\sigma\in S}\zeta^\sigma$;
+    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha = \trace_{\F_{q^{rs}}/\F_{q^r}}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
+  $m,q,r,\ell,s$ it computes its output using $O(\MM(ms)(ms\log q +
+  (\ell\log\ell)/r))$ operations in $\F_q$, or $\tildO(m^2s^2\log q)$
+  assuming $\ell\in o(mrs)$.
+\end{proposition}
+\begin{proof}
+  By construction $k'$ contains a subfield isomorphic to $\F_{q^{rs}}$
+  and to $\F_q[\mu_\ell]$. By Lemma~\ref{th:gaussian} $\eta(\zeta)$ is
+  a normal generator of $\F_{q^{rs}}$, and
+  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} is a normal generator of
+  $\F_{q^r}\subset k$.
+
+  In the worst case $[k':k]=s$. Using the techniques
+  in~\cite{couveignes+lercier11,DeDoSc13,DeFeo:2014:FAA:2608628.2608672},
+  $k'$ can be constructed, and elements can be moved between $k$ and
+  $k'$ using $O(\MM(ms))$ operations in $\F_q$ \todo{This is very
+    optimistic, esp. if $s$ is not coprime to $m$}.
+
+  The root of unity $\zeta$ is obtained after $O(1)$ tries on average,
+  at a cost of $O(\MM(ms)ms\log q)$ operations each.
+  Steps~\ref{algorithm:rains-cyclo:period}
+  and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
+  observing that
+  \[\alpha = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
+  By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
+  the cost of $\euler(\ell)/r$ exponentiations of degree at most
+  $\ell$ in $k'$, for a total cost of $O((\MM(ms)\ell\log\ell)/r)$.
+\end{proof}
+
+This concludes the presentation of Rains' algorithm. However, we are
+still left with a problem: how to find $\ell$ satisfying the
+conditions of the algorithm, and what bounds can be given on it. These
+questions will be analyzed in Section~\ref{sec:selection}.
+
+\begin{remark}
+  Various practical optimizations are possible for Rains'
+  algorithm. We list here some of them.
+  \begin{itemize}
+  \item If $s$ cannot be chosen so that $k'=k$, then it is interesting
+    to take $s$ coprime with $m$. In this case, the extension $k$' can
+    be built using a polynomial with coefficients in $\F_q$ rather
+    than $k$, and a lookup table of irreducible polynomials can be
+    established for small $s$.
+  \item Different prime powers $r_1,r_2,\dots$ can be treated
+    simultaneously in some cases. We come back to this in
+    Section~\ref{sec:selection}.
+  \item In some cases, the trace in the final step can be computed
+    more efficiently by exploiting the fact that it is a linear form,
+    as per~\cite{todo}.
+  \end{itemize}
+\end{remark}
+
+\begin{note}
+  \label{note:rains-non-prime}
+  Rains' algorithm is easily extended to a non-prime field $\F_q$, as
+  long as $q=p^d$ with $\gcd(d,r)=1$. In this case, indeed, any
+  generator of $\F_{p^r}$ over $\F_p$ is also a generator of
+  $\F_{q^r}$ over $\F_q$. The algorithm is unchanged, except for the
+  additional requirement that $\gcd(\euler(\ell),d)=1$, which ensures
+  that the Gaussian periods indeed generate $\F_{p^r}$.
+
+  However, when $\gcd(d,r)\ne 1$, it is impossible to have
+  $(\Z/\ell\Z)^\ast=S\times\langle q\rangle$, so Rains' algorithm
+  simply cannot be applied to this case. In the next section we are
+  going to present a variant that does not suffer from this problem.
+\end{note}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Elliptic Rains' algorithm}
+\label{sec:rains-elliptic}
 
 In \cite{Pinch}, Pinch already proposed to use the torsion point of an elliptic
 curve in place of the roots of unity. Rains also mentionned this possiblity, 
@@ -1474,12 +1685,16 @@ isomorphism
 
 \subsection{Complexity analysis}
 
+\section{Algorithm selection}
+\label{sec:selection}
+
 \section{Experimental Results}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \part{Embedding evaluation}
+\label{part:eval}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1502,6 +1717,7 @@ isomorphism
 
 \appendix
 \part*{Appendices}
+\addcontentsline{toc}{part}{Appendices}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1645,6 +1861,9 @@ and $E'$ have opposite trace, a well known fact.
   Hence $t = t_uu^{1-q} \bmod p$.
 \end{proof}
 
+\todo{Give a similar proposition for supersingular curves (see, e.g.,
+  Menezes-Okamoto-Vanstone)}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1658,4 +1877,4 @@ and $E'$ have opposite trace, a well known fact.
 % ispell-local-dictionary:"american"
 % End:
 
-%  LocalWords:  isomorphism
+%  LocalWords:  isomorphism cyclotomic coprime subfield
