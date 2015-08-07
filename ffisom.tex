@@ -1179,49 +1179,30 @@ questions will be analyzed in Section~\ref{sec:selection}.
 \section{Elliptic Rains' algorithm}
 \label{sec:rains-elliptic}
 
-In \cite{Pinch}, Pinch already proposed to use the torsion point of an elliptic
+In \cite{Pinch}, Pinch already proposed to use the torsion points of an elliptic
 curve in place of the roots of unity. Rains also mentionned this possiblity, 
-but judges that as far as he could see it would not bring significant 
+but judged that as far as he could see, it would not bring significant 
 improvements.
  
-In practice the use of auxiliary extensions in the cyclotomic method costs a of
-ressources.We will see that, contrary to Rains' belief, in the cases where an
-auxiliary extention is necessary, the elliptic variant is actually more 
+In practice the use of auxiliary extensions in the cyclotomic method costs a
+lot of ressources. We will see that, contrary to Rains' belief, in the cases 
+where an auxiliary extention is necessary, the elliptic variant is actually more 
 competitive.
 
 In the next sections, we will first introduce the \emph{elliptic periods} which 
-plays a similar role as the Gaussian periods, then we will describe the
-algorithm itself and finally we will compute its complexity; which will
-roughly be $\tildO(r^2)$ just like the other variants, the difference will be 
-on the constant of the big $O$.
-
+similar to the Gaussian periods will form a normal basis of $\F_q^r$, then we will 
+describe the algorithm itself, namely how to pick the right elliptic curve and
+how to compute the \emph{elliptic periods}.
+ 
 \subsection{Elliptic periods}
 
 In the previous section, the group used to compute our generating elements was
 the group of primitive roots of unity. For this variant, we use the group of
 torsion point of a certain elliptic curve. There are polynomials that encode 
-torsion points, they are called divisions polynomial. Let 
-\begin{equation}
-E : y^2 = x^3 + Ax + B
-\end{equation}
-be the weierstrass equation of an elliptic curve $E/\F_q$ with $A,B\in\F_q$.
-We define the division polynomials as follow. We have $\psi_\ell\in\Z[x,y,A,B]$ and 
-\begin{align*}
-\psi_1 &=1,\\
-\psi_2 &= 2y,\\
-\psi_{3} &= 3x^{4} + 6Ax^{2} + 12Bx - A^{2}.
-\end{align*}
-Inductively, we deduce that
-\begin{align*}
-\psi_{2\ell+1}&=\psi_{\ell+2}\psi_{\ell}^{3}-\psi_{\ell-1}\psi^{3}_{\ell+1}
-&&\text{ for }\ell\geq2,\\
-\psi_{2\ell}&=\left(\frac{\psi_{\ell}}{2y}\right)\cdot(
-\psi_{\ell+2}\psi^{2}_{\ell-1}-\psi_{\ell-2}\psi^{2}_{\ell+1})&&\text{ for }\ell\geq
-3.
-\end{align*}
-More precisely, the roots of $\psi_\ell$ are exactly the abscissas of the
-points in $E[\ell]$. Since $E[\ell]$ is either isomorphic to $\Z/\ell\Z\times\Z/\ell\Z$,
-$\Z/\ell\Z$ or $0$, we have the following
+torsion points, they are called divisions polynomial. More precisely, for
+all integers $\ell$, the roots of the division polynomial $\psi_\ell$ are exactly the 
+abscissas of the points in $E[\ell]$. Since $E[\ell]$ is either isomorphic to 
+$\Z/\ell\Z\times\Z/\ell\Z$, $\Z/\ell\Z$ or $0$, we have the following
 \begin{equation}
 \deg(\psi_\ell) = \begin{cases}
    \tfrac{(\ell^2-1)}{2} &\text{ if }E[\ell]\simeq\Z/\ell\Z\times\Z/\ell\Z\\
@@ -1231,9 +1212,9 @@ $\Z/\ell\Z$ or $0$, we have the following
 \end{equation}
 As for the roots of unity in the cyclotomic section, the goal will be to sum
 specific roots of a division polynomial to generate elements with a common orbit
-under the action of a certain Galois group. But for our algorithm to work, we need
-the degree to be equal to $(\ell^2 - 1)/2$ and for that we have to introduce the
-\emph{Elkies prime}.
+under the action of a certain Galois group. For our algorithm to work, we will 
+need the degree of the division polynomial to be equal to $(\ell^2 - 1)/2$,
+\emph{i.e.} we need the \emph{Elkies primes}.
 
 \begin{definition}
 Let $E/\F_q$ be an elliptic curve, let $\ell$ be a prime, we say that $\ell$
@@ -1246,86 +1227,74 @@ for $\lambda,\mu\in\Z/\ell\Z$ and $t$ the trace of the Frobenius $\pi_q$ such th
 $\#E(\F_q)=q+1-t$.
 \end{definition}
 
+If $\ell$ is an Elkies prime for $E$, then the restriction of $\pi_q$ on
+$E[\ell]$ splits in two eigenspaces. Those are associated to the eigenvalues,
+roots of the charateristic polynomial of the Frobenius in $(\Z/\ell\Z)$. 
+We shall write $\psi_{\ell,\lambda}$ the polynomial who defines the eigenspace 
+associated with $\lambda$ and assume its degree is $(\ell - 1)/2$ for the rest
+of this section. 
+
 \begin{remark}
-If $\ell$ is an Elkies prime for $E$, then there exists a basis such that the 
-Frobenius acts as a diagonal matrix on $E[\ell]$, on which the restriction of
-$\pi$ is decomposed in two eigenspaces; the eigenvalues are the root of the 
-characteristic polynomial of the Frobenius. Therefore, we can find a basis where
-the Frobenius acts on the torsion point as a diagonal matrix :
+As a consequence, we can find a basis where the Frobenius acts on the torsion 
+point as a diagonal matrix :
 \begin{equation}
 \begin{pmatrix}
 \lambda & 0\\
 0 & \mu
 \end{pmatrix}.
 \end{equation}
-For all integer $r$, the action Frobenius of $E/\F_{q^r}$ will be the $r$th
-power of that matrix. Additionnaly, if we denote by $k =
-\textup{min}(\order_\ell(\lambda),\order_\ell(\mu))$ then the extension $\F_{q^k}$ is
-the smallest extension on which there are $\ell$-torsion points. Indeed, let $k = 
-\order_\ell(\lambda)$ and $P$ be in the eigenspace of $\lambda$, then we have the following
+For all integer $v$, the action Frobenius of $E/\F_{q^v}$ will be the $v$th
+power of that matrix. Additionnaly, if we denote by $v :=
+\textup{min}(\order_\ell(\lambda),\order_\ell(\mu))$ then the extension $\F_{q^v}$ is
+the smallest extension on which there are $\ell$-torsion points. Indeed, let 
+say that $\order_\ell(\lambda) = v$ and $P$ be in the eigenspace of $\lambda$, 
+then we have the following
 \begin{equation}
 \pi_{q^k}(P)=[\lambda^k]P=[1]=P
 \end{equation}
+Therefore $P$ is in $E(\F_{q^v})$. Moreover, for an extension to have points of
+order $\ell$, you need the following relation
+\begin{equation}
+q^v + 1 - (\lambda^v + \mu^v) = 0 \bmod \ell.
+\end{equation}
+If we recall that $q=\lambda\mu$, we can easily see that no extensions of
+smaller degree would have a point of order $\ell$.
 \end{remark}
-
-The use of elliptic curve raises another kind of problem that was not present 
-in the cyclotomic version of Rains' algorithm. The fact is elliptic curves 
-come with non trivial automorphisms that can't be ignored. This will be taken 
-in account in the definition of the elliptic periods. In particular, the cases 
-$j = 0, 1728$ shall be dealt more specifically. We shall focus only on the case
-$r$ odd.
+\hspace{0.3cm}
+The use of elliptic curve raises another kind of problem. The fact is elliptic 
+curves come with non trivial automorphisms that can't be ignored. This will be 
+taken in account in the definition of the elliptic periods. In particular, the cases 
+$j = 0, 1728$, which have automorphisms group of cardinality greater than $2$, 
+shall be dealt more specifically. We will now define the \emph{elliptic
+periods} and detail some of their properties in a theorem below. We shall focus
+only on the case $r$ odd.
 
 \begin{definition}
 \label{definition:ellperiod}
-Let $E/\F_q$ be an elliptic curve and let $\ell>2$ be an Elkies prime for $E$.
-
-Let $j\neq0, 1728$. Let $\lambda$ be an eigenvalue of $\pi_q \bmod \ell$. Suppose there 
-exists a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that 
+Let $E/\F_q$ be an elliptic curve, $\ell>2$ be an Elkies prime for $E$ and 
+$\lambda$ be an eigenvalue of $\pi_q$.Suppose that $\#\Aut(E)$ divides $\ell -
+1$ and the existence of a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that 
 \begin{equation}
-(\Z/\ell\Z)^{\ast}/\lbrace{\pm1}\rbrace=\langle{\lambda}\rangle\times S
+(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S
 \end{equation}
-Then for every $P\in E[\ell]$ in the eigenspace generated by $\lambda$, we define
-the elliptic periods as follow
+Then for every $P\in E[\ell]$ in the eigenspace of $\lambda$, we define the
+elliptic period of $P$ in respect to $\lambda$ as follow
 \begin{equation}
-\eta_{\lambda}(P) = \sum_{\sigma\in S}{\left([\sigma]P\right)_X}
+\eta_{\lambda}(P) := \sum_{\sigma\in S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}
 \end{equation}
 where $P_X$ denotes the abscissa of the point $P$.
 
-For the cases $j = 0$ or $1728$, we have to take in account the size
-of $\Aut(E)$. Namely, we shall assume that its order divides $\varphi(\ell)$
-then we identify it to a subgroup of $(\Z/\ell\Z)^{\ast}$. Assume there exists a
-subgroup $S$ such that
-\begin{equation}
-(\Z/\ell\Z)^{\ast}/\Aut(E) = \langle{\lambda}\rangle\times S
-\end{equation}
-Then for every $P\in E[\ell]$ in the eigenspace generated by $\lambda$, we define
-the elliptic periods as follow
-\begin{equation}
-\eta_{\lambda}(P) = \sum_{\sigma\in
-S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}
-\end{equation}
-
 \end{definition}
 
-\begin{example}
-A simple fact in favour of taking the automorphism group of $E$ into account is
-easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
-\lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
-same element two times; which isn't necessary to what we do.
-
-However, another more pathological issue arises when we are working on the
-specific case $j = 0$ or $1728$. Let us take a closer look to an elliptic curve
-$E$ of $j$-invariant $j_E = 1728$. %TODO
-
-\end{example}
-
-Let us formulate the main theorem of the section. 
+For the case $j\neq0,1728$, we have $\Aut(E)=\lbrace{\pm1}\rbrace$ therefore
+$\#\Aut(E)/2 = 1$. The following theorem is a secondary result of
+\cite{MiMoScho} and fall into the case $j\neq0,1728$ and we shall first focus only
+this case.
 
 \begin{theorem}
 \label{theorem:ellperiods}
-Let $\ell$ be a prime different from $p$, $r$ an odd integer and $t$ an integer 
-such that 
-
+Let $\ell$ be a prime different from $p$, $r$ an odd integer and $t, \lambda,
+\mu$ be integers such that 
 \begin{enumerate}
     \item $\mid t\mid < \sqrt{2q}$,
     \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell,$
@@ -1336,49 +1305,49 @@ $(\Z/\ell\Z)^{\ast}$,
 Now, let $E/\F_q$ be an elliptic curve of trace $t$. Then $\F_{q^r}$ contains 
 $\ell$-torsion points and for all $P$ in the eigenspace of $\lambda$, the elliptic 
 period $\eta_\lambda(P)$ form a normal basis of $\F_{q^r}$ on $\F_q$.
-
 \end{theorem}
+
 \begin{proof}
-Let us take a step back in characteristic $0$. We denote $L$ the number field 
+We shall take a step back in characteristic $0$. Let $L$ the number field 
 such that there exists a prime ideal $\mathfrak{p}$ above $p$ satisfying 
 \begin{equation}
-\mathcal{O}_L/\mathfrak{p} \simeq \F_q.
+\mathcal{O}_L/\mathfrak{p} \simeq \F_p.
 \end{equation}
-We denotes by $\widehat{E}$ the lift of $E$ in $L$,
+Let us $\widehat{E}$ the lift of $E$ in $L$,
 \[
 \widehat{E} : Y^2 = X^3 + \widehat{A}X + \widehat{B}
 \]
-Similarly, we define $\widehat{\psi}_{\ell,\lambda}, \widehat{\psi_\ell}$ the lifts of 
-$\psi_{\ell,\lambda}, \psi_\ell$ respectively. Now let $L_\ell := 
-L[X]/(\widehat{\psi}_\ell(X))$ be the extension of degree $(\ell^2-1)/2$ and let 
-$R_\ell := L_\ell[Y]/(Y^2 - X^3 + \widehat{A}X + \widehat{B})$. We also write $\Theta
-:=\bar{X}$ and $\Gamma:=\bar{Y}$, $P:=(\Theta, \Gamma)$ will denote the generic 
-point of $E[\ell]$.
+Similarly, we define $\widehat{\psi}_{\ell,\lambda}, \widehat{\psi_\ell}$ the 
+lifts of $\psi_{\ell,\lambda}, \psi_\ell$ respectively, with 
+$\psi_{\ell,\lambda}$ being the polynomial defining the eigenspace of $\lambda$, 
+of degree $(\ell^2 - 1)/2$. It also divides $psi_\ell$. Now let 
+$L_\ell:=L[X]/(\widehat{\psi}_\ell(X))$ be the extension of degree 
+$(\ell^2-1)/2$ and let $R_\ell:=L_\ell[Y]/(Y^2-X^3+\widehat{A}X+\widehat{B})$. 
+We also write $\Theta:=\bar{X}$ and $\Gamma:=\bar{Y}$ so that 
+$P:=(\Theta,\Gamma)$ will denote the generic point of $\widehat{E}[\ell]$.
 
-For $o\in(\Z/\ell\Z)^{\ast}$ we write
+For $o\in(\Z/\ell\Z)^{\ast}$ we shall write
 \begin{equation}
 \rho_o : \Theta \mapsto ([o]\widehat{P})_X
 \end{equation}
-which define an autormorphism of $L_\ell/L$. Let $G := \lbrace{\rho_o : 1 \leq o
-\leq (\ell-1)/2}\rbrace$, subgroup of the Galois group $\text{Gal}(L_\ell/L)$; we also 
-write $L_0 := L_\ell^G$. With that definition we can write 
+which define an autormorphism of $L_\ell/L$. Let us define 
+$G:=\lbrace{\rho_o : 1 \leq o\leq (\ell-1)/2}\rbrace$ which is a subgroup of 
+the Galois group $\text{Gal}(L_\ell/L)$. We also define $L_0 := L_\ell^G$. Therefore
 \begin{equation}
-\widehat{\psi}_{\ell,\lambda}=\prod_{o=1}^{\tfrac{\ell-1}{2}}{(X-\rho_o(\Theta))}
+\widehat{\psi}_{\ell,\lambda}=\prod_{o=1}^{\tfrac{\ell-1}{2}}{(X-\rho_o(\Theta))}\in
+L_0[X]
 \end{equation}
-with coefficient in $L_0$, consequently $L_\ell = L_0[T]/(\widehat{\psi}_{\ell,\lambda}(T))$.
-\emph{(Moreover, since $G$ is cyclic, for each $o\in G$ there exists a polynomial
-$\widehat{g}_o$ of degree $\text{deg}(\widehat{g}_o) < (\ell-1)/2$ such that
-$\widehat{g}_o(\Theta) = \rho_o(\Theta)$.)Useful ?}
+Consequently, we also have $L_\ell = L_0[T]/(\widehat{\psi}_{\ell,\lambda}(T))$.
 
 \begin{remark}
-Since the extension is cyclic, it is a noticibly interesting fact to note that
+Since the extension is cyclic, it is an interesting fact to note that
 \[
 \lbrace{\rho(\Theta), \rho\in G}\rbrace
 \]
-actually forms a normal basis of $L_\ell/L_0$.
-Therefore, for any intermediate extension $L'/L_0$ of $L_\ell/L_0$, the trace
-$\text{Tr}_{L_\ell/L'}(\Theta)$ along with its conjugates also form a normal basis
-of $L'/L_0$ and thus generates $L'$ as simple extension.
+actually forms a normal basis of $L_\ell/L_0$. Therefore, for any intermediate 
+extension $L'/L_0$ of $L_\ell/L_0$, the trace $\text{Tr}_{L_\ell/L'}(\Theta)$ 
+along with its conjugates also form a normal basis of $L'/L_0$ and thus 
+generates $L'$ as simple extension.
 \end{remark}
 
 Now consider the subfield $L'\subset L_\ell$ such that $[L', L_0] = r$. Let 
@@ -1455,7 +1424,11 @@ $g_o\in\F_q$ of degree inferior to $(\ell-1)/2$ such that $g_o(\theta)=
 \begin{equation}
 \psi_{\ell,\lambda}(Z) = \prod_{i=1}^{(\ell-1)/2}{(Z - g_{\lambda^i}(\theta))}.
 \end{equation}
-We can summarize the situation with the following figure
+
+By definition, $\ell$ is an Elkies prime of $E$, so there exists a prime 
+$\mathfrak{q}$ above $\mathfrak{p}$ such that $\mathcal{O}_{L_\ell}/\mathfrak{q} =
+\mathcal{A}$. We can summarize the situation with the following figure
+
 \begin{center}
 \begin{tikzpicture}
     \node (L) {$L$};
@@ -1478,36 +1451,37 @@ We can summarize the situation with the following figure
     \draw (Rpr) edge node[auto] {} (Rm);
     \draw (Fq) edge node[right] {$\langle{\lambda}\rangle$} (Fqa);
     \draw (Fqa) edge node[auto] {} (A0);
-    \draw[->>] (L0) edge node[auto] {$\bmod \mathfrak{p}$} (Fq);
-    \draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{p}$} (Fqa);
-    \draw[->>] (Lm) edge node[auto] {$\bmod \mathfrak{p}$} (A0);
+    \draw[->>] (L0) edge node[auto] {$\bmod \mathfrak{q}$} (Fq);
+    \draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{q}$} (Fqa);
+    \draw[->>] (Lm) edge node[auto] {$\bmod \mathfrak{q}$} (A0);
 \end{tikzpicture}
 \end{center}
-where $\Phi_\ell(X,j(\widehat{E}))$ is an equation of the modular curve $X_0(\ell)$.
+where $\Phi_\ell(X,j(\widehat{E}))$ is an equation of the modular curve 
+$X_0(\ell)$.
 
-We recall that, since $\ell$ is an Elkies prime for $E$ by definition, we can 
-find a generator $c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$ for 
-$r'=(\ell-1)/(2n)$, and we have $S=\langle{s}\rangle$ with $s=c^r$. 
-For $0\leq i<q$, we define 
+We can find a generator $c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$
+with $r'=(\ell-1)/(2n)$. Let $S:=\langle{s}\rangle$ with $s=c^r$. For 
+$0\leqi<q$, we define 
 \begin{equation}
 \eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{\lambda^i}(\theta))}
 \end{equation}
-reduction modulo $\mathfrak{p}$ of $\widehat{\eta}_i$. For $\ell\geq3$ odd, the
-discriminant of $\psi_\ell$ satisfies the following relation
+reduction modulo $\mathfrak{q}$ of $\widehat{\eta}_i$. For $\ell\geq3$ odd, the
+discriminant of $\psi_\ell$ satisfies the following relation \cite{MiMoScho}
 \begin{equation}
-\text{Disc}(\psi_\ell) = (-1)^{(\ell-1)/2}\ell^{(\ell^2 - 3)/2}(-\Delta)^{(\ell^2 - 1)(\ell^2 -
-3)/24}
+\text{Disc}(\psi_\ell)=
+(-1)^{(\ell-1)/2}\ell^{(\ell^2-3)/2}(-\Delta)^{(\ell^2-1)(\ell^2-3)/24}
 \end{equation}
 where $\Delta$ is the discriminant of $E$. From there we can assume that the
 roots of $\psi_\ell$, and consequently the roots of $\psi_{\ell,\lambda}$, are
 distincts. Therefore, for $i\neq j$ we are assured that $\eta_i\neq\eta_j$ for
-there would exists linear relation between the roots of $\psi_{\ell,\lambda}$.
-Then, we can deduce that the reduction of $\widehat{M}(T)$, the minimal
-polynomial of $\widehat{\eta}_0$, is separated. As it was the case in
-characteristic $0$, the action of $\langle{\lambda}\rangle$ on the $\eta_i$ is cyclic,
-as a direct consequence the $\eta_i$ are conjugates and $M(T)$ the reduction of
-$\widehat{M}(T)$ is the minimal polynomial of $\eta_0 = \eta_\lambda(P)$ and is of
-degree $r$. This concludes the proof of the theorem.
+there would exists some linear relations between the roots of
+$\psi_{\ell,\lambda}$ if that were not the case. Then, we can deduce that the 
+reduction of $\widehat{M}(T)$, the minimal polynomial of $\widehat{\eta}_0$, 
+is separated. As it was the case in characteristic $0$, the action of 
+$\langle{\lambda}\rangle$ on the $\eta_i$ is cyclic, as a direct consequence 
+the $\eta_i$ are conjugates and $M(T)$ the reduction of $\widehat{M}(T)$ is 
+the minimal polynomial of $\eta_0 = \eta_\lambda(P)$ and is of degree $r$. 
+This concludes the proof of the theorem.
 \end{proof}
 
 \begin{remark}
@@ -1540,8 +1514,7 @@ modulo $\ell$. The first condition will be that $r|\varphi(\ell)$. We also need
 that the cofactor $\varphi(\ell)/r$ is prime with $r$, so it ensures that 
 $(\Z/\ell\Z)^{\ast}$ splits as we want, namely 
 \begin{equation}
-(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S \text{ or } 
-(\Z/\ell\Z)^{\ast}=\langle{\lambda}\rangle\times S
+(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S
 \end{equation}
 for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$ and $\lambda$ the eigenvalue of $\pi_q$ of
 order $r$ modulo $\ell$. We also wish for $\mu$, the other eigenvalue of $\pi_q$ to
@@ -1637,6 +1610,25 @@ more computable form, if we let $r_E = \#\Aut(E)$ then we have
 \begin{equation}
 \eta_\lambda(P) = \sum_{i = 0}^{\varphi(\ell)/r_E.r}{\left([s^i]P\right)_X^{r_E/2}}.
 \end{equation}
+
+\begin{remark}
+A simple fact in favour of taking the automorphism group of $E$ into account is
+easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
+\lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
+same element two times; which isn't necessary to what we do.
+
+However, another more pathological issue arises when we are working on the
+specific case $j = 0$ or $1728$. For example, if we consider the case $j =
+1728$, we know that an element of $\sigma\in\Aut(E)$ acts as follow
+\[
+\sigma : (x,y) \mapsto (-x, iy)
+\]
+Therefore, we can end up summing points with opposites abscissas, resulting in a
+$0$ sum, which isn't of great interest. A counter to this phenomenon is to
+square the abscissas. The same happens with the case $j = 0$, only this time
+$3$rd roots of unity are invovled instead of $\pm1$.
+\end{remark}
+
 The function can be summarized as follow
 
 \begin{algorithm}
