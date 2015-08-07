@@ -144,10 +144,10 @@
 \maketitle
 \begin{abstract}
   Let $\F_q$ be a finite field.  The finite field embedding problem
-  asks, given two irreducible polynomials $f,g$ in $\F_q[X]$ with
-  $m = \deg f$ dividing $n = \deg g$, to compute an explicit description of a
-  field embedding of $\F_q[X]/f$ into $\F_q[X]/g$. When $m = \deg n$,
-  this is also known as the isomorphism problem.
+  asks, given two irreducible polynomials $f,g$ over $\F_q$ with $\deg
+  f$ dividing $\deg g$, to compute an explicit description of a field
+  embedding of $\F_q[X]/f(X)$ into $\F_q[Y]/g(Y)$. When $\deg f = \deg
+  g$, this is also known as the isomorphism problem.
   
   We review classical algorithms for the two problems, and compare
   their asymptotic complexities. We also propose new improvements and
@@ -212,10 +212,9 @@ stabilized.
 \section{Introduction}
 
 Let $q$ be a prime power and let $\F_q$ be a field with $q$
-elements. Let $f$ and $g$ be irreducible polynomials in $\F_q[X]$,
-with $\deg f$ dividing $\deg g$. Define $k=\F_q[X]/f$ and
-$K=\F_q[X]/g$,
-then there is an embedding $\varphi:k\hookrightarrow
+elements. Let $f$ and $g$ be irreducible polynomials over $\F_q$, with
+$\deg f$ dividing $\deg g$. Define $k=\F_q[X]/f(X)$ and
+$K=\F_q[Y]/g(Y)$, then there is an embedding $\phi:k\hookrightarrow
 K$, unique up to $\F_q$-automorphisms of $k$. The goal of this paper
 is to describe algorithms to efficiently represent and evaluate one
 such embedding.
@@ -227,16 +226,16 @@ sub-problems:
 \begin{enumerate}
 \item Determine elements $\alpha\in k$ and $\beta\in K$ such that
   $k=\F_q[\alpha]$, and such that there exists an
-  embedding $\varphi$ mapping $\alpha\mapsto\beta$. We refer to this
+  embedding $\phi$ mapping $\alpha\mapsto\beta$. We refer to this
   problem as the \emph{Embedding description}.
   It is easily seen that $\alpha$ and $\beta$ describe an embedding
   if and only if they share the same minimal polynomial.
 \item Given elements $\alpha$ and $\beta$ as above, given $\gamma\in
   k$ and $\delta\in K$, solve the following problems:
   \begin{itemize}
-  \item Compute $\varphi(\gamma)\in K$.
-  \item Test if $\delta\in\varphi(k)$.
-  \item If $\delta\in\varphi(k)$, compute $\varphi^{-1}(\delta)\in k$.
+  \item Compute $\phi(\gamma)\in K$.
+  \item Test if $\delta\in\phi(k)$.
+  \item If $\delta\in\phi(k)$, compute $\phi^{-1}(\delta)\in k$.
   \end{itemize}
   We refer collectively to these problems as the \emph{Embedding
     evaluation}.
@@ -245,7 +244,7 @@ sub-problems:
 \paragraph{Complexity notation}
 \todo{bit or algebraic? ignore log factors?}
 We measure all complexities in number
-of operations $+$, $\times$, $\div$ in $\F_q$ unless explicitely
+of operations $+$, $\times$, $\div$ in $\F_q$ unless explicitly
 stated otherwise. We write $\MM(n)$ for
 the cost of multiplying two polynomials in $\F_q[X]$ of degree at most
 $n$, $\MC(n)$ for the cost of modular composition of three
@@ -286,7 +285,7 @@ for the embedding evaluation step.
 
 \subsubsection{Root finding}
 
-As $k$ is defined as $k=\F_q[X]/f$, a natural choice is to
+As $k$ is defined as $k=\F_q[X]/f(X)$, a natural choice is to
 pick $\alpha = X\in k$
 and $\beta$ a root of $f$ in $K$.
 This trivially defines an embedding of $k$ into $K$.
@@ -301,10 +300,10 @@ one can compute the powers
 $\beta^i = \sum_{j=0}^{n-1} m_{i,j} Y^j$
 for $i \in \{0, \ldots, n-1\}$ and build a matrix
 $M = \{m_{i, j}\}_{0\leq i \leq m-1, 0 \leq j \leq n -1}$
-representing $\varphi$.
+representing $\phi$.
 This is trivially done in $O(m)$ operations in $K$.
 For $\gamma = \sum_{i = 0}^{m - 1} c_i X^i \in k$,
-$\varphi(\gamma)$ can then be computed by a
+$\phi(\gamma)$ can then be computed by a
 matrix-vector multiplication in $O(m n)$ operations in $\F_q$.
 
 Together, the second and third questions are the inverse image problem.
@@ -317,27 +316,27 @@ an easy matter.
 Note that if $m = n$, that is if $k$ and $K$ are
 isomorphic, then the second question is trivial.
 For the third one, the inverse
-the inverse $M^{-1}$ of $M$ representing $\varphi^{-1}$
+the inverse $M^{-1}$ of $M$ representing $\phi^{-1}$
 can be deduced from an an LU or similar matrix decompostions of $M$.
-For $\delta \in K$, $\varphi^{-1}(\delta)$ can then be computed by a
+For $\delta \in K$, $\phi^{-1}(\delta)$ can then be computed by a
 matrix-vector multiplication in $O(m^2)$ in $\F_q$.
 
 \subsubsection{Modular composition}
 
 As an alternative to using linear algebra,
-$\varphi(\gamma)$ can be computed directly using modular composition
-as $\beta(\gamma) \pmod{g}$ in $\MC(n)$ operations in $F_q$.
+$\phi(\gamma)$ can be computed directly using modular composition
+as $\beta(\gamma) \pmod{g}$ in $\MC(n)$ operations in $\F_q$.
 
 The second question can be answered by performing a modular
 exponentiation to check that $\gamma^{q^{m}} = 1$
 naively in $O(m \log q)$ operations in $K$
 or in $O(\log q)$ operations in $K$ plus
-$O(\log m) \MC(n)$ operations in $F_q$ using modular composition.
+$O(\log m) \MC(n)$ operations in $\F_q$ using modular composition.
 
 The second and third questions can be answered using
 dual bases and power projection/transposed modular composition
 to express $\delta \in K$ as a polynomial in $\beta$ in
-$\MC(n)$ operations in $F_q$.
+$\MC(n)$ operations in $\F_q$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -347,7 +346,7 @@ $\MC(n)$ operations in $F_q$.
 Throughout this part we let $m=\deg f$ and $n=\deg g$, so that
 $m|n$. The \emph{embedding description problem} asks to find two
 elements $\alpha\in k$ and $\beta\in K$ such that $\alpha\mapsto\beta$
-for some field embedding $\varphi:k\to K$. This is equivalent to
+for some field embedding $\phi:k\to K$. This is equivalent to
 $\alpha$ and $\beta$ having the same minimal polynomial.
 
 We note that it is enough to solve the following problem: let $r$ be a
@@ -1758,7 +1757,7 @@ and $E'$ have opposite trace, a well known fact.
   If $E^u$ is defined over $\F_q$, the trace $t_u$ of its frobenius
   endomorphism is such that $t/t_u=U\bmod q$, where
   \begin{enumerate}[a)]
-  \item $U$ is an element of $\Z/q$ of the same multiplicative order
+  \item $U$ is an element of $\Z/q\Z$ of the same multiplicative order
     as $u^{1-q}\in\F_q$, and
   \item $U=u^{1-q}\mod p$.
   \end{enumerate}
@@ -1822,8 +1821,8 @@ and $E'$ have opposite trace, a well known fact.
   Notice that $\upsilon^{-q}$ can be decomposed as
   $\upsilon^{-1}\circ\upsilon^{1-q}$, where $\upsilon^{1-q}$ is an
   automorphism of $E^u$ by hypothesis. $\upsilon^{1-q}$ also acts on
-  the $q$-torsion points as a scalar in $\Z/q$, that we shall denote
-  by $U$. It is evident that the multiplicative order of $U$ in $\Z/q$
+  the $q$-torsion points as a scalar in $\Z/q\Z$, that we shall denote
+  by $U$. It is evident that the multiplicative order of $U$ in $\Z/q\Z$
   is the same as that of $u^{1-q}$ in $\F_p$. Then
   \begin{equation*}
     [t] = \upsilon^{-1}\circ[Ut_u]\circ\upsilon.
@@ -1833,7 +1832,7 @@ and $E'$ have opposite trace, a well known fact.
 
   If $u^{1-q}=\pm1$, we are done. When the order of $u^{1-q}$ is $3,4$
   or $6$, we still have to determine which of the cubic, fourth, sixth
-  roots of unity in $\Z/q$ corresponds to $U$.
+  roots of unity in $\Z/q\Z$ corresponds to $U$.
 
   Using the diagram above, we decompose
   Eq.~\eqref{eq:frob-char-twist} as
