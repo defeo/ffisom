@@ -717,8 +717,8 @@ polynomial $X^r - a$ using the Equal Degree Factorization algorithm given in
 		\[ \beta = \alpha + \alpha^q + \alpha^{q^2} + \cdots + \alpha^{q^{s - 1}} \]
 		\STATE $\gamma \leftarrow \beta^{(q - 1) / 2}$
 		\STATE $g \leftarrow \gamma \bmod f$, $g_1 \leftarrow \gcd(g, f)$, $g_2 \leftarrow \gcd(1 + 
-		g, f)$
-		\STATE Recursively factor one of $g_1, g_2$ that is non-constant
+		g, f)$, $g_3 \leftarrow f/(g_1g_2)$
+		\STATE Recursively factor one of $g_1, g_2, g_3$ that is non-constant
 	\end{algorithmic}
 \end{algorithm}
 The dominant cost of the algorithm comes from Step \ref{step:edf-trace}, which is done as follows. 
