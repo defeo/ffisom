@@ -1262,16 +1262,13 @@ smaller degree would have a point of order $\ell$.
 \hspace{0.3cm}
 The use of elliptic curve raises another kind of problem. The fact is elliptic 
 curves come with non trivial automorphisms that can't be ignored. This will be 
-taken in account in the definition of the elliptic periods. In particular, the cases 
-$j = 0, 1728$, which have automorphisms group of cardinality greater than $2$, 
-shall be dealt more specifically. We will now define the \emph{elliptic
-periods} and detail some of their properties in a theorem below. We shall focus
+taken in account in the definition of the elliptic periods. We shall focus
 only on the case $r$ odd.
 
 \begin{definition}
 \label{definition:ellperiod}
 Let $E/\F_q$ be an elliptic curve, $\ell>2$ be an Elkies prime for $E$ and 
-$\lambda$ be an eigenvalue of $\pi_q$.Suppose that $\#\Aut(E)$ divides $\ell -
+$\lambda$ be an eigenvalue of $\pi_q$. Suppose that $\#\Aut(E)$ divides $\ell -
 1$ and the existence of a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that 
 \begin{equation}
 (\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S
@@ -1281,13 +1278,13 @@ elliptic period of $P$ in respect to $\lambda$ as follow
 \begin{equation}
 \eta_{\lambda}(P) := \sum_{\sigma\in S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}
 \end{equation}
-where $P_X$ denotes the abscissa of the point $P$.
+where $P_X$ is the abscissa of the point $P$.
 
 \end{definition}
 
 For the case $j\neq0,1728$, we have $\Aut(E)=\lbrace{\pm1}\rbrace$ therefore
 $\#\Aut(E)/2 = 1$. The following theorem is a secondary result of
-\cite{MiMoScho} and fall into the case $j\neq0,1728$ and we shall first focus only
+\cite{MiMoScho} and fall into the case $j\neq0,1728$. We will first focus on
 this case.
 
 \begin{theorem}
@@ -1319,9 +1316,14 @@ Let us $\widehat{E}$ the lift of $E$ in $L$,
 Similarly, we define $\widehat{\psi}_{\ell,\lambda}, \widehat{\psi_\ell}$ the 
 lifts of $\psi_{\ell,\lambda}, \psi_\ell$ respectively, with 
 $\psi_{\ell,\lambda}$ being the polynomial defining the eigenspace of $\lambda$, 
-of degree $(\ell^2 - 1)/2$. It also divides $psi_\ell$. Now let 
-$L_\ell:=L[X]/(\widehat{\psi}_\ell(X))$ be the extension of degree 
-$(\ell^2-1)/2$ and let $R_\ell:=L_\ell[Y]/(Y^2-X^3+\widehat{A}X+\widehat{B})$. 
+of degree $(\ell^2 - 1)/2$. It also divides $\psi_\ell$. Let 
+\[
+L_\ell:=L[X]/(\widehat{\psi}_\ell(X))
+\]
+be the extension of degree $(\ell^2-1)/2$ and let 
+\[
+R_\ell:=L_\ell[Y]/(Y^2-X^3+\widehat{A}X+\widehat{B}). 
+\]
 We also write $\Theta:=\bar{X}$ and $\Gamma:=\bar{Y}$ so that 
 $P:=(\Theta,\Gamma)$ will denote the generic point of $\widehat{E}[\ell]$.
 
@@ -1460,7 +1462,7 @@ $X_0(\ell)$.
 
 We can find a generator $c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$
 with $r'=(\ell-1)/(2n)$. Let $S:=\langle{s}\rangle$ with $s=c^r$. For 
-$0\leqi<q$, we define 
+$0\leq i<q$, we define 
 \begin{equation}
 \eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{\lambda^i}(\theta))}
 \end{equation}
@@ -1527,11 +1529,11 @@ polynomial in $(\Z/\ell\Z)$ shall be of the form
 \begin{equation}
 (X - \lambda)(X - \mu) = X^2 - (\lambda + \mu)X + \lambda\mu \bmod \ell.
 \end{equation}
-Then we pick $\lambda\in(\Z/\ell\Z)^{\ast}$ such that $\order_\ell(\lambda) = r$ and,
-since $\lambda\mu = q$, we check that $\order_\ell(q/\lambda)\not| r$. If these conditions are
-met, we write $t = \lambda + q/\lambda \bmod \ell$ and check if it is a good trace candidate
-using Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t$ is
-actually in the Hasse's bound
+Then we pick $\lambda\in(\Z/\ell\Z)^{\ast}$ such that $\order_\ell(\lambda)= $ 
+and, since $\lambda\mu = q$, we check that $\order_\ell(q/\lambda)$ does not 
+divide $r$. If these conditions are met, we write $t=\lambda+q/\lambda\bmod\ell$ 
+and check if it is a good trace candidate using Hasse theorem. More precisely, 
+we verify that $\widehat{t}$ the lift of $t$ is actually in the Hasse's bound
 \begin{equation}
 |\widehat{t}| \leq 2\sqrt{q}.
 \end{equation}\\
