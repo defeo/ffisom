@@ -1217,7 +1217,7 @@ similar to the Gaussian periods will form a normal basis of $\F_q^r$, then we wi
 describe the algorithm itself, namely how to pick the right elliptic curve and
 how to compute the \emph{elliptic periods}.
  
-\subsection{Elliptic periods}
+\subsection{Uniquely defined orbits from elliptic periods}
 
 In the previous section, the group used to compute our generating elements was
 the group of primitive roots of unity. For this variant, we use the group of
@@ -1463,9 +1463,9 @@ $\mathfrak{q}$ above $\mathfrak{p}$ such that $\mathcal{O}_{L_\ell}/\mathfrak{q}
     \node[above= of L0] (Lpr) {$L' = L_0(\widehat{\eta}_0)$};
     \node[above= of Fq] (Fqa) {$\F_q(\eta_0)$};
     \node[above= of R0] (Rpr) {$R'$};
-    \node[above= of Lpr] (Lm) {$L_\ell = L(E[\ell]) = L_0[X]/(\widehat{\psi}_{\ell,\lambda}(X))$};
+    \node[above= of Lpr] (Lm) {$L_\ell = L_0[X]/(\widehat{\psi}_{\ell,\lambda}(X))$};
     \node[above= of Rpr] (Rm) {$R_\ell$};
-    \node[above= of Fqa] (A0) {$\mathcal{A}_0 = \F_q(E[\ell])$};
+    \node[above= of Fqa] (A0) {$\mathcal{A}_0$};
     \draw (L) edge node[right] {$\ell+1$} (L0);
     \draw (L0) edge node[auto] {$2$} (R0);
     \draw (Lpr) edge node[auto] {$2$} (Rpr);
@@ -1523,54 +1523,75 @@ are $j$-invariants in $\F_q$. Even more so, the use of twist of curves, which we
 will be talking about later, ensures to almost always find the elliptic curve we
 need for our algorithm.
 
-The procedure is close to the cyclotomic variant's procedure. We first need to
-generate the group we will be using, namely an elliptic curve, then we will
-compute the elliptic periods in both extension using the definition given in the
-previous section.
+ We quickly recall the situation, we have an extension $K/k$ of degree $r$,
+$k'\subset K$ a subfield such that $k'\simeq k$. We wish to compute two elements 
+$\alpha\in k$ and $\beta\in k'$, such that :
+\begin{equation}
+\begin{tikzpicture}
+    \node (k) {$k$};
+    \node[below=0.1cm of k] (alpha) {$\alpha$};
+    \node[right=2cm of k] (kp) {$k'$};
+    \node[below=0cm of kp] (beta) {$\beta$};
 
+    \draw[->] (k) edge node[auto] {$\phi$} (kp);
+    \draw[|->] (alpha) edge node[auto] {} (beta);
+
+\end{tikzpicture}
+\end{equation}
+defines an isomorphism.
+The procedure is close to the cyclotomic variant's procedure, given $k$, $K$
+and $r$ we need to :
+\begin{itemize}
+    \item Find a prime $\ell$ and an elliptic curve $E$ satisfying the
+conditions of theorem \ref{theorem:ellperiods};
+    \item Take random points $P\in E(k)$ and $P'\in E(k')$ such that they are of
+order $m$;
+    \item Compute the elliptic periods $\alpha := \eta_{\lambda}(P)$ and $\beta
+:= \eta_\lambda(P')$.
+\end{itemize}
+The first operation usually takes a reasonable amount of time, on exception of a
+few particular case. The second operations is what will take the most ressources.
+More precisely, it is the multiplication of a point on a $E(\F_{q^r})$. The last
+operation also demands little time. We shall now describe in more
+detail each step in detail.
+    
 \subsubsection{Finding an elliptic curve}
 If theoritically, we always introduce the elliptic curve before finding an
 Elkies prime number, in practice, we have to find a prime $\ell$ which has the good
 properties and then we pick an elliptic curve for which this $\ell$ is an Elkies
 prime. We shall assume $p\neq2,3$.
 
-We need to find an integer $\ell\neq p$ such that there exist an element of order $r$
-modulo $\ell$. The first condition will be that $r|\varphi(\ell)$. We also need 
-that the cofactor $\varphi(\ell)/r$ is prime with $r$, so it ensures that 
-$(\Z/\ell\Z)^{\ast}$ splits as we want, namely 
+We need to find an integer $\ell\neq p$ such that there exist an element
+$\lambda$ of order $r$ modulo $\ell$. The first condition will be that 
+$r|\varphi(\ell)$. We also need that the cofactor $\varphi(\ell)/r$ is prime 
+with $r$, so it ensures that $(\Z/\ell\Z)^{\ast}$ splits as we want, namely 
 \begin{equation}
 (\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S
 \end{equation}
-for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$ and $\lambda$ the eigenvalue of $\pi_q$ of
-order $r$ modulo $\ell$. We also wish for $\mu$, the other eigenvalue of $\pi_q$ to
-be of order not dividing $r$, so that there is not subfields of $\F_{q^r}$
-containing $\ell$-torsion points and, consequently, those in $\F_{q^r}$ are in the 
-eigenspace of $\lambda$.
+for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$. If we chose
+$\mu\in(\Z/\ell\Z)^{\ast}$ such that $\mu = q/\lambda$ of order not dividing 
+$r$, then this makes $\lambda$ and $\mu$ the soon to be eigenvalues of $\pi_q$. The
+fact that $\order_\ell(\mu)\not|r$ guarantees that any points on $\F_{q^r}$ will be
+in the eigenspace of $\lambda$, since no subfield of $\F_{q^r}$ would contain
+points of order $r$.
 
-To pick a good elliptic curve, we shall first pick some trace candidate modulo 
-$\ell$. Since we need $\ell$ to be an Elkies prime for the future elliptic curve, the
-polynomial in $(\Z/\ell\Z)$ shall be of the form
+The next step is to find elements of $(\Z/\ell\Z)^{\ast}$ that could be used as
+potential trace. Since we need $\ell$ to be an Elkies prime for the future 
+elliptic curve, the charactestic polynomial of $\pi_q$ on $(\Z/\ell\Z)$ shall 
+be of the form
 \begin{equation}
 (X - \lambda)(X - \mu) = X^2 - (\lambda + \mu)X + \lambda\mu \bmod \ell.
 \end{equation}
-Then we pick $\lambda\in(\Z/\ell\Z)^{\ast}$ such that $\order_\ell(\lambda)= $ 
-and, since $\lambda\mu = q$, we check that $\order_\ell(q/\lambda)$ does not 
-divide $r$. If these conditions are met, we write $t=\lambda+q/\lambda\bmod\ell$ 
-and check if it is a good trace candidate using Hasse theorem. More precisely, 
-we verify that $\widehat{t}$ the lift of $t$ is actually in the Hasse's bound
+From there, we need to find $\lambda$ and $\mu$ as we described above. Then we 
+write $t:=\lambda+\mu$ and check if it is a good trace candidate using 
+Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t$ in
+$\Q$ is actually in the Hasse's bound
 \begin{equation}
 |\widehat{t}| \leq 2\sqrt{q}.
 \end{equation}\\
-
-To chose the right elliptic curve, we pick a $j\in\F_q$ and compute
-the traces of the associated elliptic curves to check if any of them
-is equal to one of the candidates we picked previously. See
-Appendix~\ref{app:elliptic-curves} for a way of determining at once
-all the traces associated to a $j$-invariant.
-
-In summary, we need to find an integer $\ell$ such that :
+In summary, we need an integer $\ell$ such that :
 \begin{itemize}
-    \item $\ell$ is prime,
+    \item $\ell\neq p$ is prime,
     \item $r\mid\varphi(\ell)$ and $(\varphi(\ell)/r,r)=1$,
     \item there exists $\lambda\in(\Z/\ell\Z)^{\ast}$ such that 
 \begin{equation}
@@ -1578,14 +1599,20 @@ In summary, we need to find an integer $\ell$ such that :
 \order_\ell(\lambda) = r,\order_\ell(\dfrac{q}{\lambda}) \not| r\text{ and }|\widehat{\lambda + \dfrac{q}{\lambda}}| \leq 2\sqrt{q}.
 \end{equation}
 \end{itemize}
+
 Let
-\begin{equation}
-\mathcal{T}_\ell = \lbrace{t = \lambda + q/\lambda \bmod \ell \text{ with } \lambda\in(\Z/\ell\Z)^{\ast}
+\[
+\mathcal{T}_\ell := \lbrace{t = \lambda + q/\lambda \bmod \ell \text{ with } \lambda\in(\Z/\ell\Z)^{\ast}
 \text{ such that } \lambda \text{ satisfies 
 }(\ref{equation:ordeigen})}\rbrace
-\end{equation}
-the good trace candidates for a prime $\ell$, then the routine to find a good 
-elliptic curve is as follow.
+\]
+be the set of good trace candidates for a prime $\ell$.
+To chose the right elliptic curve, we pick a $j\in\F_q$ and compute
+the traces of the associated elliptic curves to check if any of them
+is equal to one of the candidates in $\mathcal{T}_\ell$. See
+Appendix~\ref{app:elliptic-curves} for a way of determining at once
+all the traces associated to a $j$-invariant. The general procedure is as
+follow.
 
 \begin{algorithm}
     [Selecting an elliptic curve]
@@ -1605,6 +1632,9 @@ $j_E\neq0,1728$, $j_E=1728$ or $j_E=0$ respectively.
     \ENDFOR
     \end{algorithmic}
 \end{algorithm}
+
+To create an elliptic curve from its $j$-invariant in a finite field, we simply
+use the following relations
 
 \subsubsection{Computing the elliptic periods}
 
