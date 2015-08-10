@@ -1612,24 +1612,6 @@ more computable form, if we let $r_E = \#\Aut(E)$ then we have
 \eta_\lambda(P) = \sum_{i = 0}^{\varphi(\ell)/r_E.r}{\left([s^i]P\right)_X^{r_E/2}}.
 \end{equation}
 
-\begin{remark}
-A simple fact in favour of taking the automorphism group of $E$ into account is
-easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
-\lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
-same element two times; which isn't necessary to what we do.
-
-However, another more pathological issue arises when we are working on the
-specific case $j = 0$ or $1728$. For example, if we consider the case $j =
-1728$, we know that an element of $\sigma\in\Aut(E)$ acts as follow
-\[
-\sigma : (x,y) \mapsto (-x, iy)
-\]
-Therefore, we can end up summing points with opposites abscissas, resulting in a
-$0$ sum, which isn't of great interest. A counter to this phenomenon is to
-square the abscissas. The same happens with the case $j = 0$, only this time
-$3$rd roots of unity are invovled instead of $\pm1$.
-\end{remark}
-
 The function can be summarized as follow
 
 \begin{algorithm}
@@ -1651,6 +1633,24 @@ generator of $(\Z/\ell\Z)^{\ast}$
     \RETURN $\eta$
     \end{algorithmic}
 \end{algorithm}
+
+\begin{remark}
+A simple fact in favor of taking the automorphism group of $E$ into account is
+easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
+\lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
+same element two times; which isn't necessary to what we do.
+
+However, another more pathological issue arises when we are working on the
+specific case $j = 0$ or $1728$. For example, if we consider the case $j =
+1728$, we know that an element of $\sigma\in\Aut(E)$ acts as follow
+\[
+\sigma : (x,y) \mapsto (-x, iy)
+\]
+Therefore, we can end up summing points with opposites abscissas, resulting in a
+$0$ sum, which isn't of great interest. A counter to this phenomenon is to
+square the abscissas. The same happens with the case $j = 0$, only this time
+$3$rd roots of unity are invovled instead of $\pm1$.
+\end{remark}
 
 \subsubsection{Isomorphism algorithm}
 
