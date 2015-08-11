@@ -377,7 +377,7 @@ complexity analysis below, to adapt to our framework.
   algorithm is the computation of the trace-like function at
   step~\ref{alg:ks-pseudotrace}. By using a divide-and-conquer
   strategy, they show in~\cite{kaltofen+shoup97} how to compute it in
-  $\log m$ steps, using at each step
+  $\log n$ steps, using at each step
   \begin{itemize}
   \item $O(m)$ modular compositions in $\F_q[Y]$,
   \item $O(1)$ modular compositions in $K[X]$,
@@ -952,7 +952,7 @@ went unpublished\footnote{The only publicly available source for
 describe his algorithm in detail for completeness. Rains' technical
 contribution is twofold: first he replaces roots of unity with
 Gaussian periods to avoid trial-and-error, second he moves to slightly
-larger extension fields to insure the existence of a small $\ell$ as
+larger extension fields to ensure the existence of a small $\ell$ as
 above.
 
 \subsection{Uniquely defined orbits from Gaussian periods}
@@ -1002,7 +1002,7 @@ the Galois group $\gal(\F_q[\mu_\ell]/\F_q)$ with the subgroup
 $\langle q\rangle\subset(\Z/\ell\Z)^\ast$.
 
 Now, suppose there is a group $S$ such that
-$(\Z/\ell\Z)^\ast=S\times\langle q\rangle$, let $L$ be the field fixed
+$(\Z/\ell\Z)^\ast=\langle q\rangle\times S$, let $L$ be the field fixed
 by $S$, and let $\mathcal{O}_L$ be its ring of integers. Then, the
 Galois group of $L/\Q$ is also canonically identified with $\langle
 q\rangle\subset(\Z/\ell\Z)^\ast$, the prime $q$ is inert in $L$, and
@@ -1038,7 +1038,7 @@ We can now extend the definition of Gaussian period to finite fields.
 
 \begin{definition}
   Suppose that there is a subgroup $S\subset(\Z/\ell\Z)^\ast$ such
-  that $(\Z/\ell\Z)^\ast=S\times\langle q\rangle$. For any generator
+  that $(\Z/\ell\Z)^\ast=\langle q\rangle\times S$. For any generator
   $\zeta_\ell$ of $\mu_\ell$ in $\F_q[\mu_\ell]$, define the Gaussian
   period $\eta_q(\zeta_\ell)$ as
   \begin{equation}
@@ -1048,8 +1048,8 @@ We can now extend the definition of Gaussian period to finite fields.
 
 \begin{lemma}
   \label{th:gaussian}
-  Let $\ell$ be a squarefree integer such that $(\Z/\ell\Z)^\ast = S
-  \times \langle q\rangle$ for some $S$.  The periods
+  Let $\ell$ be a squarefree integer such that $(\Z/\ell\Z)^\ast =
+  \langle q\rangle \times S$ for some $S$.  The periods
   $\eta_q(\zeta_\ell^\sigma)$ for $\sigma$ running through $\langle
   q\rangle$ form a normal basis of $\F_q[\mu_\ell]$ over $\F_q$,
   independent of the choice of $\zeta_\ell$.
@@ -1112,7 +1112,7 @@ identical.
     \REQUIRE A field extension $k/\F_q$ of degree $m$, a prime power
     $r|m$, a prime $\ell$ such that
     \begin{itemize}
-    \item $(\Z/\ell\Z)^\ast = S \times \langle q\rangle$ for some $S$,
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
     \item $\#\langle q\rangle = rs$ for some integer $s$.
     \end{itemize}
     \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
@@ -1191,7 +1191,7 @@ questions will be analyzed in Section~\ref{sec:selection}.
   that the Gaussian periods indeed generate $\F_{p^r}$.
 
   However, when $\gcd(d,r)\ne 1$, it is impossible to have
-  $(\Z/\ell\Z)^\ast=S\times\langle q\rangle$, so Rains' algorithm
+  $(\Z/\ell\Z)^\ast=\langle q\rangle\times S$, so Rains' algorithm
   simply cannot be applied to this case. In the next section we are
   going to present a variant that does not suffer from this problem.
 \end{note}
