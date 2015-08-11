@@ -336,8 +336,8 @@ algorithm~\cite{cantor1981}.
     \STATE If $\deg f = 1$ return $f$.
     \STATE Take a random polynomial $h\in K[X]$ of degree less than $\deg f$,
     \STATE\label{alg:ks-pseudotrace} Compute $\displaystyle\dot{h} \leftarrow \sum_{i=0}^{\deg g-1} h^{q^i} \mod f$,
-    \IF{$q$ is an even power $q=2^e$}
-    \STATE Compute $\displaystyle\ddot{h} \leftarrow \sum_{i=0}^{e-1} \dot{h}^{2^i}$
+    \IF{$q$ is an even power $q=2^d$}
+    \STATE Compute $\displaystyle\ddot{h} \leftarrow \sum_{i=0}^{d-1} \dot{h}^{2^i}$
     \ELSE
     \STATE Compute $\ddot{h} \leftarrow \dot{h}^{(q-1)/2}$
     \ENDIF
