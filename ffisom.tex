@@ -1554,87 +1554,7 @@ few particular case. The second operations is what will take the most ressources
 More precisely, it is the multiplication of a point on a $E(\F_{q^r})$. The last
 operation also demands little time. We shall now describe in more
 detail each step in detail.
-    
-\subsubsection{Finding an elliptic curve}
-If theoritically, we always introduce the elliptic curve before finding an
-Elkies prime number, in practice, we have to find a prime $\ell$ which has the good
-properties and then we pick an elliptic curve for which this $\ell$ is an Elkies
-prime. We shall assume $p\neq2,3$.
 
-We need to find an integer $\ell\neq p$ such that there exist an element
-$\lambda$ of order $r$ modulo $\ell$. The first condition will be that 
-$r|\varphi(\ell)$. We also need that the cofactor $\varphi(\ell)/r$ is prime 
-with $r$, so it ensures that $(\Z/\ell\Z)^{\ast}$ splits as we want, namely 
-\begin{equation}
-(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times S
-\end{equation}
-for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$. If we chose
-$\mu\in(\Z/\ell\Z)^{\ast}$ such that $\mu = q/\lambda$ of order not dividing 
-$r$, then this makes $\lambda$ and $\mu$ the soon to be eigenvalues of $\pi_q$. The
-fact that $\order_\ell(\mu)\not|r$ guarantees that any points on $\F_{q^r}$ will be
-in the eigenspace of $\lambda$, since no subfield of $\F_{q^r}$ would contain
-points of order $r$.
-
-The next step is to find elements of $(\Z/\ell\Z)^{\ast}$ that could be used as
-potential trace. Since we need $\ell$ to be an Elkies prime for the future 
-elliptic curve, the charactestic polynomial of $\pi_q$ on $(\Z/\ell\Z)$ shall 
-be of the form
-\begin{equation}
-(X - \lambda)(X - \mu) = X^2 - (\lambda + \mu)X + \lambda\mu \bmod \ell.
-\end{equation}
-From there, we need to find $\lambda$ and $\mu$ as we described above. Then we 
-write $t:=\lambda+\mu$ and check if it is a good trace candidate using 
-Hasse theorem. More precisely, we verify that $\widehat{t}$ the lift of $t$ in
-$\Q$ is actually in the Hasse's bound
-\begin{equation}
-|\widehat{t}| \leq 2\sqrt{q}.
-\end{equation}\\
-In summary, we need an integer $\ell$ such that :
-\begin{itemize}
-    \item $\ell\neq p$ is prime,
-    \item $r\mid\varphi(\ell)$ and $(\varphi(\ell)/r,r)=1$,
-    \item there exists $\lambda\in(\Z/\ell\Z)^{\ast}$ such that 
-\begin{equation}
-\label{equation:ordeigen}
-\order_\ell(\lambda) = r,\order_\ell(\dfrac{q}{\lambda}) \not| r\text{ and }|\widehat{\lambda + \dfrac{q}{\lambda}}| \leq 2\sqrt{q}.
-\end{equation}
-\end{itemize}
-
-Let
-\[
-\mathcal{T}_\ell := \lbrace{t = \lambda + q/\lambda \bmod \ell \text{ with } \lambda\in(\Z/\ell\Z)^{\ast}
-\text{ such that } \lambda \text{ satisfies 
-}(\ref{equation:ordeigen})}\rbrace
-\]
-be the set of good trace candidates for a prime $\ell$.
-To chose the right elliptic curve, we pick a $j\in\F_q$ and compute
-the traces of the associated elliptic curves to check if any of them
-is equal to one of the candidates in $\mathcal{T}_\ell$. See
-Appendix~\ref{app:elliptic-curves} for a way of determining at once
-all the traces associated to a $j$-invariant. The general procedure is as
-follow.
-
-\begin{algorithm}
-    [Selecting an elliptic curve]
-    \label{algorithm:selectell}
-    \begin{algorithmic}[1]
-    \REQUIRE $\ell$ an integer s.t. $\mathcal{T}_\ell\neq\O$, $\mathcal{T}_\ell$ 
-    \ENSURE $E$ an elliptic curve with $t_E\in\mathcal{T}_\ell$
-    \FOR{$j\in\F_q$}
-        \STATE $E \leftarrow E(j_E = j)$ 
-        \STATE $\mathcal{U} \leftarrow \mu_2, \mu_4\text{ or }\mu_6$ if 
-$j_E\neq0,1728$, $j_E=1728$ or $j_E=0$ respectively.
-            \FOR{$U\in\mathcal{U}$}
-                \IF{$U.t_E\in\mathcal{T}_\ell$}
-                    \RETURN Twist($E$, $U$)
-                \ENDIF
-            \ENDFOR
-    \ENDFOR
-    \end{algorithmic}
-\end{algorithm}
-
-To create an elliptic curve from its $j$-invariant in a finite field, we simply
-use the following relations
 
 \subsubsection{Computing the elliptic periods}
 
@@ -1734,6 +1654,135 @@ isomorphism
 
 \section{Algorithm selection}
 \label{sec:selection}
+
+The algorithms presented in the previous sections have very similar
+complexities, and no one stands out as absolute winner. The complexity
+of all algorithms, besides the naive one, depends in a non-trivial way
+on the parameters $q$ and $r$, and, for Rains' algorithms, on the
+search for a parameter $\ell$ and an associated elliptic curve.
+
+This section studies the complexity of the embedding description
+problem from a global perspective. We give procedures to find
+parameters for Rains' algorithms, criteria to choose the best among
+the embedding algorithms, and asymptotic bounds on the embedding
+description problem.
+
+
+\subsection{Finding parameters for Rains' algorithms}
+
+Given parameters $q$ and $r$, Rains' cyclotomic algorithm asks for a
+\emph{small} parameter $\ell$ such that:
+\begin{enumerate}
+\item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+\item $\langle q \rangle = rs$ for some integer $s$.
+\end{enumerate}
+
+Since $r$ is a prime power, the second condition implies that $\ell$
+is a prime power too. Indeed if $\ell=\ell_1\ell_2$ with
+$\gcd(\ell_1,\ell_2)=1$, then $r$ would divide at least one of
+$\euler(\ell_1)$ or $\euler(\ell_2)$, and we could take that integer
+in place of $\ell$. Furthermore, if $\gcd(\ell,r)=1$, then we can take
+$\ell$ is prime, since higher powers would not help satisfying the
+conditions. On the other hand, if $\gcd(\ell,r)\ne1$, then Kummer-type
+algorithms have better complexity \todo{double-check this}, hence we
+shall take $\ell$ prime.
+
+Given the above constraints, we can rewrite the conditions as:
+\begin{enumerate}
+\item $\ell = rsu + 1$ for some $s,u$ such that $\gcd(rs,u)=1$,
+\item $\order_\ell(q) = rs$.
+\end{enumerate}
+
+\begin{remark}
+  Rains remarked that, when $q=2$ and $r$ is a power of $2$ greater
+  than $4$, no $\ell$ can satisfy these constraints because $2$ is a
+  quadratic residue modulo any prime of the form $8u+1$. This case,
+  however, is covered by the Artin-Schreier technique in
+  Section~\ref{sec:artin-schreier-case}, we thus ignore it.
+\end{remark}
+
+In the elliptic algorithm we look for an integer $\ell$ and a curve
+$E/\F_q$ that satisfy the preconditions of
+Algorithm~\ref{algorithm:compell}, i.e. such that 
+\begin{enumerate}
+\item the Frobenius endomorphism $\pi_q$ satisfies a characteristic
+  equation $(\pi_q-\lambda)(\pi_q-\mu) = 0 \mod \ell$,
+\item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times T$ for some $T$,
+\item $\#\langle\lambda\rangle=r$, and
+\item $\mu^r\ne1\mod\ell$.
+\end{enumerate}
+
+As before, we only need to look at prime $\ell$. For simplicity, we
+also exclude the case where $r$ is a power of $2$, which is easily
+dealt with Kummer-type algorithms. Because $\mu=q/\lambda$, the last
+condition is equivalent to $q^r\ne1\bmod\ell$. Hence, we can restate
+the conditions on $\ell$ as
+\begin{enumerate}
+\item $\ell = ru+1$ for some $u$ such that $\gcd(r,u)=1$,
+\item $q^r\ne1\mod\ell$.
+\end{enumerate}
+Once $\ell$ is found, we compile a list of all integers of order $r$
+in $(\Z/\ell\Z)^\ast$, and look for a curve of trace
+$t=\lambda+q/\lambda\bmod\ell$ for any $\lambda$ in the list. Note,
+however, that for there to be such a curve, $t$ must have a
+representative in the interval $[-2\sqrt{q},2\sqrt{q}]$. In order to
+have a good chance of finding such curves, we are going to require
+$\ell\ll\sqrt{q}$.
+
+We propose a procedure to simultaneously find parameters for the
+cyclotomic and the elliptic case in
+Algorithm~\ref{algorithm:selectell}. The procedure is given bounds on
+the size of the parameters sought, and outputs all suitable parameters
+within those bounds.
+
+\begin{algorithm}
+    [Parameter selection for Rains' algorithms]
+    \label{algorithm:selectell}
+    \begin{algorithmic}[1]
+      \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}\ll\sqrt{q}$;
+      \ENSURE $\mathcal{C}$ and $\mathcal{E}$, lists of parameters for the cyclotomic and elliptic algorithm resp.
+      \STATE $\mathcal{C}\leftarrow\{\}$, $\mathcal{E}\leftarrow\{\}$;
+      \FOR{$u=1$ to $\bar{u}$}
+      \IF{\label{alg:selectell:prime}$\ell=ur+1$ is prime}
+      \IF{$\order_\ell(q)=rs$ with $s\le\bar{s}$ and $\gcd(rs,u/s)=1$}
+      \STATE Add $\ell$ to $\mathcal{C}$.
+      \ENDIF
+      \IF{$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
+      \STATE Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
+      \REPEAT
+      \STATE Take random $E/\F_q$ and compute its trace $t$;
+      \UNTIL{$(t\bmod\ell)\in\mathcal{T}$}
+      \STATE Add $(\ell,E,t)$ to $\mathcal{E}$.
+      \ENDIF
+      \ENDIF
+      \ENDFOR
+      \RETURN $\mathcal{C}$ and $\mathcal{E}$.
+    \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  On input $q$, $r$, $\bar{u}$ and $\bar{e}$,
+  Algorithm~\ref{algorithm:selectell} computes its output using $O()$
+  binary operations.
+\end{proposition}
+\begin{proof}
+  We only consider naive integer arithmetic, since it is unrealistic
+  to apply embedding algorithms to very large sizes. \todo{}
+\end{proof}
+
+\subsection{Selecting the best algorithm}
+
+A natural question is: what bounds $\bar{u},\bar{s},\bar{e}$ must be
+taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ are
+non-empty? We are going to eschew this very hard question, and simply
+remark that even the condition in step~\ref{alg:selectell:prime} is
+relatively hard to meet. Heuristically, we expect that about
+$u/\log(ur)$ of those numbers are prime. However the best bound on
+primes of the form $ur+1$, even under GRH, is
+$O(r^{2.4+\epsilon})$~\cite{heath1992zero}. \todo{Shall we proceed
+  with the heuristic bound, and try to give a general statement?}
+
+
 
 \section{Experimental Results}
 
@@ -1971,4 +2020,5 @@ and $E'$ have opposite trace, a well known fact.
 % ispell-local-dictionary:"american"
 % End:
 
-%  LocalWords:  isomorphism cyclotomic coprime subfield
+%  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
+%  LocalWords:  endomorphism
