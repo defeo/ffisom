@@ -1589,21 +1589,21 @@ more computable form, if we let $r_E = \#\Aut(E)$ then we have
 The function can be summarized as follow
 
 \begin{algorithm}
-[Computing the elliptic periods]
+[Computing an elliptic periods]
 \label{algorithm:compell}
     \begin{algorithmic}[1]
-    \REQUIRE $K$ a finite field with $q^r$ elements, $E/\F_q$ an elliptic curve
-defined over $\F_q$, $\ell$ the parameter, $r_E = \#\Aut(E)$ an integer, $c$ a 
-generator of $(\Z/\ell\Z)^{\ast}$
-    \ENSURE $\eta$ an elliptic period
-    \STATE $\order_E\leftarrow\#E(K)$
-    \STATE $\order_S \leftarrow \dfrac{\varphi(\ell)}{r_E.r}$
-    \STATE $s \leftarrow c^r$
+    \REQUIRE $k$ a finite field of degree $m$ on $\F_q$, $r|m$ a prime power
+such that $(m/r,r) = 1$, $E/\F_q$ an elliptic curve defined over $\F_q$, $\ell$
+the Elkies prime for $E/\F_q$ satisfying the conditions of theorem
+(\ref{theorem:ellperiods})
+    \ENSURE $\eta$ a normal generator of $\F_{q^r}\subset k$, with a uniquely
+defined Galois orbit.
+    \STATE $\order_E\leftarrow\#E(\F_{q^r})$
     \REPEAT
-        \STATE $Q\leftarrow\text{rand}(E(K))$
+        \STATE $Q\leftarrow\text{rand}(E(\F_{q^r}))$
         \STATE $P\leftarrow[\dfrac{\order_E}{\ell}]Q$
     \UNTIL{$P\neq\mathcal{O}$}
-    \STATE $\eta\leftarrow\sum_{i=0}^{\order_S}{\left([s^i]P\right)_X^{r_E/2}}$
+    \STATE $\eta\leftarrow\sum_{\sigma\in S}{\left([\sigma]P\right)_X^{\#\Aut(E)/2}}$
     \RETURN $\eta$
     \end{algorithmic}
 \end{algorithm}
@@ -1626,31 +1626,53 @@ square the abscissas. The same happens with the case $j = 0$, only this time
 $3$rd roots of unity are invovled instead of $\pm1$.
 \end{remark}
 
-\subsubsection{Isomorphism algorithm}
+\begin{remark}
 
-We recall that $k_1\simeq\F_q[X]/(f)$ and $k_2\simeq\F_q[Y]/(g)$. Then using the
-previous algorithms, we compute a period elliptic in each field extension. By
-the theorem \ref{}, they define an isomorphism. Therefore we can state the
-complete elliptic variants of Rains' algorithm.
+\end{remark}
 
-\begin{algorithm}
-[Elliptic variants of Rains' algorithm]
-\label{algorithm:rainsell}
-    \begin{algorithmic}[1]
-    \REQUIRE $k_1$, $k_2$, $\F_q$
-    \ENSURE $\eta_1\in k_1$, $\eta_2\in k_2$ two elements defining an
-isomorphism
-    \STATE Find $\ell$ s.t. $\mathcal{T}_\ell\neq\emptyset$
-    \STATE Compute $g$ a generator of $\F_{q^n}^{\times}$
-    \STATE Find $E$ using algorithm (\ref{algorithm:selectell})
-    \STATE Compute $c$ a generator of $(\Z/m\Z)^{\times}$
-    \STATE Compute $\eta_1$ in $k_1$ using algorithm (\ref{algorithm:compell})
-    \STATE Compute $\eta_2$ in $k_2$ using algorithm (\ref{algorithm:compell})
-    \RETURN $\eta_1, \eta_2$
-    \end{algorithmic}
-\end{algorithm}
+\begin{proposition}
+Algorithm (\ref{algorithm:compell}) is correct. Given $m,q,r,\ell$ it computes
+its output using $O(...)$ operations in $\F_q$.
+\end{proposition}
+\begin{proof}
+We can assume that we have everything we need from $E/\F_q$. More precisely, we
+already know its cardinality and the roots of the characteristic polynomial of
+$\pi_q$ on $\Q$. Therefore, determining $\#E(k)$ is mainly a matter of
+raising $q$, $\lambda$ and $\mu\in\Q$ to $r$. This takes 
+\begin{equation}
+O(...) 
+\end{equation}
+operations \cite{}.
 
-\subsection{Complexity analysis}
+The main and the most expensive step is the search for a point of order $\ell$
+in $E(k)$. We first need to pick a point randomly. To do that, we pick an
+element $x\in \F_{q^r}$ and check if $f_E(X)$ is indeed a square in 
+$\F_{q^r}$, where $f_E$ is the polynomial in $x$ defining the curve $E$. With
+the use of Montgomery formulas, this is done in
+\todo{Talk about the fact that we are working on $k$ and have to go down on
+$\F_{q^r}$ somehow}
+\begin{equation}
+O(m \MM(m)\text{log}\,(m))
+\end{equation}
+operations on $\F_q$ \cite{}. Similarly, the Montgomery formulas allows us to 
+compute the multiplication of a point by a scalar in
+\begin{equation}
+\label{equation:complexityofscalarprod}
+O(...)
+\end{equation}
+operations on $\F_q$ \cite{}.
+
+It only remains to compute the elliptic period itself. Depending on the case,
+there is essentially $(\ell-1)/(i.n)$ products in $\F_{q^r}$, with $i=2,4$ or 
+$6$. This takes 
+\begin{equation}
+O(\ell\text{log\,}(\ell)\MM(m)/m)
+\end{equation}
+operations in $\F_q$ \cite{}.
+
+
+
+\end{proof}
 
 \section{Algorithm selection}
 \label{sec:selection}
