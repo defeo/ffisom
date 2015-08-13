@@ -84,7 +84,7 @@ def isom_elliptic(k1, k2, k = None, bound = None):
     # Added the b parameter, because for some cases, like q = 2 and n = 3, there
     # were no prime of the form a*n + 1 that gave good trace candidates. Only
     # one of the form a*n + 6 work ; it's m = 9, which is a prime power and not
-    # really in the scope of our algorithm as of august 2015.
+    # really in the scope (theoritically) of our algorithm as of august 2015.
     m_t = find_m(n, k, bound)
     while m_t is None:
         m_t = find_m(n, k, bound, b)
@@ -96,7 +96,6 @@ def isom_elliptic(k1, k2, k = None, bound = None):
 
     # Finding the elliptic curve on which we can work. 
     E, case = find_elliptic_curve(k, k1, m_t)
-    print case
 
     if E is None:
         raise RuntimeError, 'No suitable elliptic curve found, check your \
@@ -255,7 +254,7 @@ def find_unique_orbit_elliptic(E, m, case = 0, one_element = 0):
             #
             #TODO: Look into how to react when such case arises, although the
             # case of an even degree may be reserved to the Rains cyclotomic
-            # algorithm
+            # algorithm.
             if one_element == 1:
                 return P 
 
@@ -357,8 +356,8 @@ def find_elliptic_curve(k, K, m_t):
         # centerlift instead of just c**i. But then, the bug was transferred to
         # more cases.
         #
-        # TODO: figure a way to make the program work for this cases should they
-        # come up
+        # TODO: figure a way to make the program work for these cases should they
+        # come up.
         L = [(t*(c**i).centerlift(), g**i) for i in range(4)]
 
         for i in range(4):
@@ -580,4 +579,4 @@ def find_m(n, k, bound = None, b = 1):
             if len(S_t) < 1:   
                 continue       
             else:
-                return m, S_t, 0
+                return m, S_t
