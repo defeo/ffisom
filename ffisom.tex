@@ -1212,8 +1212,8 @@ lot of ressources. We will see that, contrary to Rains' belief, in the cases
 where an auxiliary extention is necessary, the elliptic variant is actually more 
 competitive.
 
-In the next sections, we will first introduce the \emph{elliptic periods} which 
-similar to the Gaussian periods will form a normal basis of $\F_q^r$, then we will 
+In the next sections, we first introduce the \emph{elliptic periods} which 
+similar to the Gaussian periods form a normal basis of $\F_q^r$, then we 
 describe the algorithm itself, namely how to pick the right elliptic curve and
 how to compute the \emph{elliptic periods}.
  
@@ -1233,9 +1233,9 @@ $\Z/\ell\Z\times\Z/\ell\Z$, $\Z/\ell\Z$ or $0$, we have the following
    0 &\text{ if } E[\ell]\simeq\lbrace{0}\rbrace\\
 \end{cases}
 \end{equation}
-As for the roots of unity in the cyclotomic section, the goal will be to sum
+As for the roots of unity in the cyclotomic section, the goal is to sum
 specific roots of a division polynomial to generate elements with a common orbit
-under the action of a certain Galois group. For our algorithm to work, we will 
+under the action of a certain Galois group. For our algorithm to work, we 
 need the degree of the division polynomial to be equal to $(\ell^2 - 1)/2$,
 \emph{i.e.} we need the \emph{Elkies primes}.
 
@@ -1266,7 +1266,7 @@ point as a diagonal matrix :
 0 & \mu
 \end{pmatrix}.
 \end{equation}
-For all integer $v$, the action Frobenius of $E/\F_{q^v}$ will be the $v$th
+For all integer $v$, the action Frobenius of $E/\F_{q^v}$ is the $v$th
 power of that matrix. Additionnaly, if we denote by $v :=
 \textup{min}(\order_\ell(\lambda),\order_\ell(\mu))$ then the extension $\F_{q^v}$ is
 the smallest extension on which there are $\ell$-torsion points. Indeed, let 
@@ -1285,8 +1285,8 @@ smaller degree would have a point of order $\ell$.
 \end{remark}
 \hspace{0.3cm}
 The use of elliptic curve raises another kind of problem. The fact is elliptic 
-curves come with non trivial automorphisms that can't be ignored. This will be 
-taken in account in the definition of the elliptic periods. We shall focus
+curves come with non trivial automorphisms that can't be ignored. This is 
+taken into account in the definition of the elliptic periods. We shall focus
 only on the case $r$ odd.
 
 \begin{definition}
@@ -1308,7 +1308,7 @@ where $P_X$ is the abscissa of the point $P$.
 
 For the case $j\neq0,1728$, we have $\Aut(E)=\lbrace{\pm1}\rbrace$ therefore
 $\#\Aut(E)/2 = 1$. The following theorem is a secondary result of
-\cite{MiMoScho} and fall into the case $j\neq0,1728$. We will first focus on
+\cite{MiMoScho} and fall into the case $j\neq0,1728$. We first focus on
 this case.
 
 \begin{theorem}
@@ -1349,7 +1349,7 @@ be the extension of degree $(\ell^2-1)/2$ and let
 R_\ell:=L_\ell[Y]/(Y^2-X^3+\widehat{A}X+\widehat{B}). 
 \]
 We also write $\Theta:=\bar{X}$ and $\Gamma:=\bar{Y}$ so that 
-$P:=(\Theta,\Gamma)$ will denote the generic point of $\widehat{E}[\ell]$.
+$P:=(\Theta,\Gamma)$ is the generic point of $\widehat{E}[\ell]$.
 
 For $o\in(\Z/\ell\Z)^{\ast}$ we shall write
 \begin{equation}
@@ -1422,7 +1422,7 @@ From what we wrote above we are in the following situation
 \end{tikzpicture}
 \end{center}
 The coefficients of $\widehat{M}(T)$ being the symmetrical polynomial in the $\eta_i$, we
-can see that the action of $\rho_\lambda$ will simply permute the $\widehat{\eta_i}$
+can see that the action of $\rho_\lambda$ simply permutes the $\widehat{\eta_i}$
 leaving the coefficients unchanged. Moreover, if we take a product of less than
 $r$ factor of the form $(T - \widehat{\eta_i})$, the coefficients won't be fixed
 by $\rho_\lambda$, thus the polynomial is irreducible.
