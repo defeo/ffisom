@@ -241,32 +241,70 @@ sub-problems:
     evaluation}.
 \end{enumerate}
 
-\paragraph{Complexity notation}
-\todo{bit or algebraic? ignore log factors?}
-We measure all complexities in number
-of operations $+$, $\times$, $\div$ in $\F_q$ unless explicitly
-stated otherwise. We write $\MM(n)$ for
-the cost of multiplying two polynomials in $\F_q[X]$ of degree at most
-$n$, $\MC(n)$ for the cost of modular composition of three
-polynomials in $\F_q[X]$ of degree at most $n$,
-$\MMM(n, m)$ for multiplication of matrices with entries in $\F_q$,
-% is this enough for our algorithm? or do we need \PC(m, n)?
-$\PC(n)$ for counting points defined over an extension of
-degree $n$ of $\F_q$ of a curve defined over $\F_q$.
 
+\paragraph{Fundamental algorithms and complexity}
+We review the fundamental building blocks that constitute the
+algorithms presented next.  We are going to measure all complexities
+in number of operations $+$, $\times$, $\div$ in $\F_q$, unless
+explicitly stated otherwise.
 
-\todo{matrix multiplication and related problems}
-$\MMM(m, n)$ is $O()$.
+We let $\MM(n)$ be a function such that polynomials in $\F_q[X]$ of
+degree less than $n$ can be multiplied in $\MM(n)$ operations in
+$\F_q$, under the assumptions of~\cite[Ch.~8.3]{vzGG}. Using FFT
+multiplication, one can take $\MM(n)\in O(n\log (n) \log\log (n))$.
 
-\todo{poly multiplication}
-$\MM(n)$ is $O()$ bit-complexity.
+We denote by $\omega$ the \emph{exponent of linear algebra}, i.e.\ a
+constant such that $n\times n$ matrices with coefficients in any field
+$K$ can be multiplied using $O(n^\omega)$ multiplications in $K$.
 
-\todo{remove $\omega$ and use $\MMM$}
-$\MC(n)$ is theoretically $O(n^{1 + o(1)})$ operations in $\F_q$
-using Kedlaya-Umans algorithm~\cite{kedlaya+umans08},
-and practically
-$O(n^{(\omega + 1)/2})$ operations in $\F_q$
-using Brent-Kung algorithm~\cite{brent+kung}.
+Some algorithms will operate in a polynomial ring $K[Z]$, where $K$ is
+a field extension of $\F_q$. Some other algorithms will operate in
+$K[Z]/h(Z)$, where $h$ is a monic polynomial in $K[Z]$. We review the
+basic operations in these rings. We let $n=[K:\F_q]$ and $m=\deg h$ in
+the complexity estimates.
+
+Multiplying and dividing polynomials of degree at most $m$ in $K[Z]$
+is done in $O(\MM(mn))$ operations in $\F_q$, using Kronecker's
+substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}.
+Multiplication in $K[Z]/h(Z)$ is also done in $O(\MM(mn))$ using the
+technique in~\cite{pascal+schost06}. By the same techniques, gcds in
+$K[Z]$ and inverses in $K[Z]/h(Z)$ are computed in $O(\MM(mn)\log m)$.
+
+Given polynomials $f,g,h\in K[Z]$ of degree at most $m$, modular
+composition is the problem of computing $f(g) \bmod h$. An upper bound
+on the algebraic complexity of modular composition is obtained by the
+Brent-Kung algorithm~\cite{brent+kung}, which takes $O(m^{1/2}\MM(mn)
++ m^{(\omega+1)/2}\MM(n))$ operations in $\F_q$.  In the binary RAM
+complexity model, the Kedlaya-Umans algorithm~\cite{KeUm11} and its
+extension in~\cite{PoSc13a} yield an algorithm with essentially linear
+complexity in $m$, $n$ and $\log(q)$. Unfortunately, making these
+algorithms competitive in practice is challenging; we are not aware of
+any implementation of them. Hence, we will restrict to an algebraic
+complexity model, denote by $\CC(m,n)$ the complexity of modular
+composition in $K[Z]$, and use $O(m^{1/2}\MM(mn) +
+m^{(\omega+1)/2}\MM(n))$ as an upper bound.
+
+We will need to factor some special polynomials in $K[Z]$. More
+precisely, we are interested in finding one factor of a polynomial
+that splits into factors of the same, known, degree. This problem is
+known as \emph{equal degree factorization}, and the best generic
+algorithm for it is the Cantor-Zassenhaus method~\cite{cantor1981},
+which runs in $O(nd\MM(mn)\log q)$ operations in $\F_q$, where $m$ is
+the degree of the polynomial to factor and $d$ is the degree of the
+factors.
+
+More efficient variants of the Cantor-Zassenhaus method are known for
+special cases. When the degree $m$ of the polynomial is small compared
+to the extension degree $n$, Kaltofen and
+Shoup~\cite{kaltofen+shoup97} give an algorithm which runs in
+$O((m\CC(n,1) + \CC(m,n) + \MM(mn)\log q)\log nd)$. We review this
+algorithm for the special case $d=1$ in
+Section~\ref{sec:description-naive}. The cyclotomic polynomial
+$\Phi_m$ can also be factored more efficiently using similar ideas by
+Shoup~\cite{shoup94}, for a cost of $O(M(mn)\log m + M(mn)\log q)$
+\todo{(double check)}. We will present other algorithms similar in
+spirit in Section~\ref{sec:kummer}.
+
 
 \todo{point counting complexity}
 $\PC(1)$ is heuristically $O()$ bit-complexity
@@ -322,10 +360,9 @@ uniquely defined.
 
 The simplest solution to the embedding problem is obtained by
 factoring $f$ in $K$. Since $f$ splits completely in $K$, we can apply
-an \emph{equal degree factorization} algorithm. For our particular
-parameters, the best one is Kaltofen's and Shoup's
-variant~\cite{kaltofen+shoup97} of Cantor's and Zassenhaus'
-algorithm~\cite{cantor1981}.
+an equal degree factorization algorithm. For our particular
+parameters, the best one is the Kaltofen-Shoup variant presented
+below.
 
 \begin{algorithm}[Kaltofen-Shoup root finding algorithm for extension
   fields]
@@ -353,27 +390,11 @@ complexity analysis below, to adapt to our framework.
 \begin{proposition}
   Given $f$ and $g$ of degrees $m$ and $n$ respectively, the
   Kaltofen-Shoup algorithm finds a root of $f$ in $K=\F_q[Y]/g(Y)$
-  using $O\bigl((mn^{(\omega+1)/2} + m^{(\omega+1)/2}\MM(n) +
-  \MM(mn)\log q)\log n\bigr)$ operations in $\F_q$, or
-  $\tildO(mn^{(\omega+1)/2}\log n + mn\log q\log n)$.
+  using $O\bigl((m\CC(n) + \CC(m,n) + \MM(mn)\log q)\log n\bigr)$
+  operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-  The algorithm uses operations in a ring extension $K[X]/f(X)$,
-  hence, before analyzing it, we must assess the cost of the basic
-  operations in this ring.
-
-  Multiplying and dividing polynomials of degree at most $m$ in $K[X]$
-  is done in $O(\MM(mn))$ operations in $\F_q$, using Kronecker's
-  substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}. Multiplication
-  in $K[X]/f(X)$ is also done in $O(\MM(mn))$ using one of the
-  techniques
-  in~\cite{pascal+schost06,DeDoSc13,DeFeo:2014:FAA:2608628.2608672}. By
-  the same techniques, gcds in $K[X]$ and inverses in $K[X]/f(X)$ are
-  computed in $O(\MM(mn)\log m)$. Finally, modular composition in
-  $K[X]$ is computed by Brent's and Kung's algorithm in $O(m^{1/2}\MM(mn) +
-  m^{(\omega+1)/2}\MM(n))$.
-
-  Now it is evident that the dominating step in the Kaltofen-Shoup
+  It is evident that the dominating step in the Kaltofen-Shoup
   algorithm is the computation of the trace-like function at
   step~\ref{alg:ks-pseudotrace}. By using a divide-and-conquer
   strategy, they show in~\cite{kaltofen+shoup97} how to compute it in
@@ -383,22 +404,22 @@ complexity analysis below, to adapt to our framework.
   \item $O(1)$ modular compositions in $K[X]$,
   \item $\log q$ multiplications in $K[X]/f(X)$,
   \end{itemize}
-  for a total of $O\bigl((mn^{(\omega+1)/2} + m^{(\omega+1)/2}\MM(n) +
-  \MM(mn)\log q)\log n\bigr)$ operations in $\F_q$.  All other steps
-  are easily seen to be within this complexity.
+  for a total of $O\bigl((m\CC(n) + \CC(m,n) + \MM(mn)\log q)\log
+  n\bigr)$ operations in $\F_q$.  All other steps are easily seen to
+  be within this complexity.
 
   Now we need to estimate the average number of recursive calls. The
   probability that only one of $f_0$, $f_1$ and $f_{-1}$ is
   non-constant is at least $1/2^{m-1}$, thus we expect that after
   $O(1)$ attempts the algorithm calls itself on a polynomial of
   smaller degree. When the degree decreases, it decreases by at least
-  a half, thus the overall complexity is dominated is dominated by the
-  first call.
+  a half, thus the overall complexity is dominated by the first call.
 \end{proof}
 
 
 
 \section{Kummer-type algorithms}
+\label{sec:kummer}
 
 In this section we review what we call \textit{Kummer-type} approaches to the isomorphism problem. 
 We briefly review the works of Lenstra \cite{LenstraJr91}, and Allombert \cite{Allombert02}, and at 
