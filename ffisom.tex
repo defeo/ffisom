@@ -255,56 +255,116 @@ multiplication, one can take $\MM(n)\in O(n\log (n) \log\log (n))$.
 
 We denote by $\omega$ the \emph{exponent of linear algebra}, i.e.\ a
 constant such that $n\times n$ matrices with coefficients in any field
-$K$ can be multiplied using $O(n^\omega)$ multiplications in $K$.
+$K$ can be multiplied using $O(n^\omega)$ additions and
+multiplications in $K$.
 
 Some algorithms will operate in a polynomial ring $K[Z]$, where $K$ is
 a field extension of $\F_q$. Some other algorithms will operate in
 $K[Z]/h(Z)$, where $h$ is a monic polynomial in $K[Z]$. We review the
-basic operations in these rings. We let $n=[K:\F_q]$ and $m=\deg h$ in
-the complexity estimates.
+basic operations in these rings. We assume that $K$ is represented as
+a quotient ring $\F_q[Y]/g(Y)$, with $n=\deg g$, and we let $s=\deg h$
+in the complexity estimates.
 
-Multiplying and dividing polynomials of degree at most $m$ in $K[Z]$
-is done in $O(\MM(mn))$ operations in $\F_q$, using Kronecker's
+Multiplying and dividing polynomials of degree at most $s$ in $K[Z]$
+is done in $O(\MM(sn))$ operations in $\F_q$, using Kronecker's
 substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}.
-Multiplication in $K[Z]/h(Z)$ is also done in $O(\MM(mn))$ using the
+Multiplication in $K[Z]/h(Z)$ is also done in $O(\MM(sn))$ using the
 technique in~\cite{pascal+schost06}. By the same techniques, gcds in
-$K[Z]$ and inverses in $K[Z]/h(Z)$ are computed in $O(\MM(mn)\log m)$.
+$K[Z]$ and inverses in $K[Z]/h(Z)$ are computed in $O(\MM(sn)\log(sn))$.
 
-Given polynomials $f,g,h\in K[Z]$ of degree at most $m$, modular
+Given polynomials $f,g,h\in K[Z]$ of degree at most $s$, modular
 composition is the problem of computing $f(g) \bmod h$. An upper bound
 on the algebraic complexity of modular composition is obtained by the
-Brent-Kung algorithm~\cite{brent+kung}, which takes $O(m^{1/2}\MM(mn)
-+ m^{(\omega+1)/2}\MM(n))$ operations in $\F_q$.  In the binary RAM
+Brent-Kung algorithm~\cite{brent+kung}, which takes $O(s^{1/2}\MM(sn)
++ s^{(\omega+1)/2}\MM(n))$ operations in $\F_q$.  In the binary RAM
 complexity model, the Kedlaya-Umans algorithm~\cite{KeUm11} and its
 extension in~\cite{PoSc13a} yield an algorithm with essentially linear
-complexity in $m$, $n$ and $\log(q)$. Unfortunately, making these
+complexity in $s$, $n$ and $\log(q)$. Unfortunately, making these
 algorithms competitive in practice is challenging; we are not aware of
 any implementation of them. Hence, we will restrict to an algebraic
-complexity model, denote by $\CC(m,n)$ the complexity of modular
-composition in $K[Z]$, and use $O(m^{1/2}\MM(mn) +
-m^{(\omega+1)/2}\MM(n))$ as an upper bound.
+complexity model, denote by $\CC(s,n)$ the complexity of modular
+composition in $K[Z]$, and use $O(s^{1/2}\MM(sn) +
+s^{(\omega+1)/2}\MM(n))$ as an upper bound.
 
 We will need to factor some special polynomials in $K[Z]$. More
 precisely, we are interested in finding one factor of a polynomial
 that splits into factors of the same, known, degree. This problem is
 known as \emph{equal degree factorization}, and the best generic
-algorithm for it is the Cantor-Zassenhaus method~\cite{cantor1981},
-which runs in $O(nd\MM(mn)\log q)$ operations in $\F_q$, where $m$ is
-the degree of the polynomial to factor and $d$ is the degree of the
-factors.
+algorithm for it is the Cantor-Zassenhaus
+method~\cite{cantor1981,von1992computing}, which runs in
+$O(\MM(sn)(dn\log(q) + \log(sn)))$ operations in
+$\F_q$~\cite[Th.~14.9]{vzGG}, where $s$ is the degree of the
+polynomial to factor and $d$ is the degree of the factors.
 
 More efficient variants of the Cantor-Zassenhaus method are known for
-special cases. When the degree $m$ of the polynomial is small compared
+special cases. When the degree $s$ of the polynomial is small compared
 to the extension degree $n$, Kaltofen and
-Shoup~\cite{kaltofen+shoup97} give an algorithm which runs in
-$O((m\CC(n,1) + \CC(m,n) + \MM(mn)\log q)\log nd)$. We review this
+Shoup~\cite{kaltofen+shoup97} give an algorithm which finds one factor
+in $O((s\CC(n,1) + \CC(s,n) + \MM(sn)\log q)\log(dn))$. We review this
 algorithm for the special case $d=1$ in
 Section~\ref{sec:description-naive}. The cyclotomic polynomial
-$\Phi_m$ can also be factored more efficiently using similar ideas by
-Shoup~\cite{shoup94}, for a cost of $O(M(mn)\log m + M(mn)\log q)$
-\todo{(double check)}. We will present other algorithms similar in
-spirit in Section~\ref{sec:kummer}.
+$\Phi_s$ can also be factored more efficiently using similar ideas by
+Shoup~\cite{shoup94}. We review his algorithm below, and adapt it to
+our framework. We will present other algorithms similar in spirit in
+Section~\ref{sec:kummer}.
 
+\begin{algorithm}[Shoup's cyclotomic polynomial factorization]
+  \label{alg:cyclo}
+  \begin{algorithmic}[1]
+    \REQUIRE A factor $f$ of the cyclotomic polynomial $\Phi_s$, a field $K=\F_q[Y]/g(Y)$.
+    \ENSURE An irreducible factor of $f$ over $K$.
+    \STATE Let $n=\deg g$ and $d=\order_sq^n$;
+    \STATE If $\deg f = d$ return $f$.
+    \STATE Take a random polynomial $h\in K[X]$ of degree less than $\deg f$,
+    \STATE\label{alg:cyclo:pt} Compute $\displaystyle\dot{h} \leftarrow\sum_{j=0}^{n-1} \sum_{i=0}^{d-1} h^{q^{in+j}} \mod (X^s-1)$,
+    \STATE\label{alg:cyclo:mod} Compute $\ddot{h}\leftarrow \dot{h}\mod f$;
+    \IF{$q$ is an even power $q=2^e$}
+    \STATE\label{alg:cyclo:even} Compute $\displaystyle\dddot{h} \leftarrow \sum_{i=0}^{e-1} \ddot{h}^{2^i}\mod f$
+    \ELSE
+    \STATE\label{alg:cyclo:odd} Compute $\dddot{h} \leftarrow \ddot{h}^{(q-1)/2}\mod f$
+    \ENDIF
+    \STATE\label{alg:cyclo:gcd} Compute $f_0\leftarrow\gcd(\dddot{h},f)$ and $f_1\leftarrow\gcd(\dddot{h}-1,f)$ and $f_{-1}\leftarrow f/(f_0f_1)$,
+    \STATE Apply recursively to the smallest non-constant polynomial among $f_0,f_1,f_{-1}$.
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  Given the cyclotomic polynomial $\Phi_s$, and $g$ of degree and $n$,
+  Algorithm~\ref{alg:cyclo} finds an irreducible factor of $\Phi_s$ of
+  degree $d$ over $K=\F_q[Y]/g(Y)$ using $O(sn(\log(d)+\log(n))\log(s)
+  + M(sn)\log(sn) + M(sn)\log(q))$ operations in $\F_q$.
+\end{proposition}
+\begin{proof}
+  We address the reader to the original paper~\cite{shoup94} for the
+  correctness of the algorithm. We start by analyzing the complexity
+  of a single recursive call, and we let $t=\deg f$.
+
+  The trace-like function in Step~\ref{alg:cyclo:pt} is computed one
+  sum at a time. The inner sum is computed with $O(\log d)$ additions
+  and powerings of the form $x\mapsto x^{q^{ni}}$; the outer sum is
+  computed with $O(\log n)$ additions and powerings of the form
+  $x\mapsto x^{q^j}$. As remarked by Shoup~\cite{shoup94}, these
+  powerings modulo $X^s-1$ boil down to simple permutations of the
+  coefficients, using $O(sn)$ each. Thus the total cost for
+  Step~\ref{alg:cyclo:pt} is $O(sn(\log(d)+\log(n)))$.
+
+  The reduction at Step~\ref{alg:cyclo:mod} is done by a division with
+  remainder, taking $O(\MM(sn))$ operations. The exponentiations in
+  Steps~\ref{alg:cyclo:even} and~\ref{alg:cyclo:odd} are done in
+  $O(\MM(tn)\log(q))$ operations. Finally, the gcds in
+  Step.~\ref{alg:cyclo:gcd} are computed in $O(\MM(tn)\log(tn))$.
+
+  As analyzed by Shoup, the number of recursive calls is in
+  $O(\log(s))$, and at each recursive step the degree of $f$ is halved
+  with probability at least $1/2$. Hence, we shall multiply the
+  complexity of Steps~\ref{alg:cyclo:pt} and~\ref{alg:cyclo:mod} by
+  $\log s$, while the first call to
+  Steps~\ref{alg:cyclo:even},~\ref{alg:cyclo:odd}
+  and~\ref{alg:cyclo:gcd} dominates all others.
+  
+  Thus the total cost of the algorithm is
+  $O(sn(\log(d)+\log(n))\log(s) + M(sn)\log(sn) + M(sn)\log(q))$.
+\end{proof}
 
 \todo{point counting complexity}
 $\PC(1)$ is heuristically $O()$ bit-complexity
@@ -369,17 +429,17 @@ below.
   \label{alg:ks}
   \begin{algorithmic}[1]
     \REQUIRE A polynomial $f$ splitting completely in $K=\F_q[Y]/g(Y)$.
-    \ENSURE A linear factor of $f$ in $K$.
+    \ENSURE A linear factor of $f$ over $K$.
     \STATE If $\deg f = 1$ return $f$.
     \STATE Take a random polynomial $h\in K[X]$ of degree less than $\deg f$,
     \STATE\label{alg:ks-pseudotrace} Compute $\displaystyle\dot{h} \leftarrow \sum_{i=0}^{\deg g-1} h^{q^i} \mod f$,
-    \IF{$q$ is an even power $q=2^d$}
-    \STATE Compute $\displaystyle\ddot{h} \leftarrow \sum_{i=0}^{d-1} \dot{h}^{2^i}$
+    \IF{$q$ is an even power $q=2^e$}
+    \STATE Compute $\displaystyle\ddot{h} \leftarrow \sum_{i=0}^{e-1} \dot{h}^{2^i}\mod f$
     \ELSE
-    \STATE Compute $\ddot{h} \leftarrow \dot{h}^{(q-1)/2}$
+    \STATE Compute $\ddot{h} \leftarrow \dot{h}^{(q-1)/2}\mod f$
     \ENDIF
     \STATE Compute $f_0\leftarrow\gcd(\ddot{h},f)$ and $f_1\leftarrow\gcd(\ddot{h}-1,f)$ and $f_{-1}\leftarrow f/(f_0f_1)$,
-    \STATE Apply recursively to one among $f_0,f_1,f_{-1}$ that is non-constant.
+    \STATE Apply recursively to the smallest non-constant polynomial among $f_0,f_1,f_{-1}$.
   \end{algorithmic}
 \end{algorithm}
 
