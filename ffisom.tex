@@ -1255,7 +1255,7 @@ construction of the field extension $k'$.
     \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
     with a uniquely defined Galois orbit.
     
-    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ over $\F_{q^{rs}}$ using Algorithm~\ref{alg:cyclo}; 
+    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ over $\F_{q^r}\subset k$ using Algorithm~\ref{alg:cyclo}; 
     \STATE Compute $\bar{h} = \rev{h'}/\rev{h} \mod z^\ell$ in $k[[z]]$;
     \RETURN\label{algorithm:rains-cyclo:period} $\eta = \sum_{\sigma\in S}[\bar{h}]_\sigma$.
   \end{algorithmic}
