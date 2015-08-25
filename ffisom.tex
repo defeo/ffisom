@@ -70,6 +70,7 @@
 \DeclareMathOperator{\Res}{Res}
 \DeclareMathOperator{\Aut}{Aut}
 \DeclareMathOperator{\minpoly}{minpoly}
+\DeclareMathOperator{\rev}{rev}
 
 \def\Q{\ensuremath{\mathbb{Q}}}
 \def\N{\ensuremath{\mathbb{N}}}
@@ -100,7 +101,6 @@
 \def\cat{\ensuremath{\mathsf{cat}}}
 \def\coeff{\ensuremath{\mathsf{coefficient}}}
 \def\mulmod{\ensuremath{\mathsf{mulmod}}}
-\def\rev{\ensuremath{\mathsf{rev}}}
 \def\x{\ensuremath{\mathbf{x}}}
 \def\uu{\ensuremath{\mathbf{U}}}
 \def\bb{\ensuremath{\mathbf{B}}}
@@ -329,10 +329,11 @@ Section~\ref{sec:kummer}.
 \end{algorithm}
 
 \begin{proposition}
+  \label{th:cyclo}
   Given the cyclotomic polynomial $\Phi_s$, and $g$ of degree and $n$,
   Algorithm~\ref{alg:cyclo} finds an irreducible factor of $\Phi_s$ of
   degree $d$ over $K=\F_q[Y]/g(Y)$ using $O(sn(\log(d)+\log(n))\log(s)
-  + M(sn)\log(sn) + M(sn)\log(q))$ operations in $\F_q$.
+  + \MM(sn)\log(sn) + \MM(sn)\log(q))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
   We address the reader to the original paper~\cite{shoup94} for the
@@ -363,7 +364,7 @@ Section~\ref{sec:kummer}.
   and~\ref{alg:cyclo:gcd} dominates all others.
   
   Thus the total cost of the algorithm is
-  $O(sn(\log(d)+\log(n))\log(s) + M(sn)\log(sn) + M(sn)\log(q))$.
+  $O(sn(\log(d)+\log(n))\log(s) + \MM(sn)\log(sn) + \MM(sn)\log(q))$.
 \end{proof}
 
 \todo{point counting complexity}
@@ -1238,6 +1239,46 @@ identical.
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of $O((\MM(ms)\ell\log\ell)/r)$.
 \end{proof}
+
+We now present a variant of Rains' algorithm which avoids the
+construction of the field extension $k'$. 
+
+\begin{algorithm}[Rains' cyclotomic algorithm variant]
+  \label{algorithm:rains-cyclo-2}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $m$, a prime power
+    $r|m$, a prime $\ell$ such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+    \item $\#\langle q\rangle = rs$ for some integer $s$.
+    \end{itemize}
+    \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ over $\F_{q^{rs}}$ using Algorithm~\ref{alg:cyclo}; 
+    \STATE Compute $\bar{h} = \rev{h'}/\rev{h} \mod z^\ell$ in $k[[z]]$;
+    \RETURN\label{algorithm:rains-cyclo:period} $\eta = \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
+  $m,q,r,\ell,s$ it computes its output using $O(\ell
+  m(\log(s)+\log(m))\log(\ell) + \MM(\ell m)\log(\ell m) + \MM(\ell
+  m)\log(q))$ operations in $\F_q$.
+\end{proposition}
+\begin{proof}
+  \todo{Explain how you factor over a subfield $\F_{q^{rs}}$.}
+
+  Factoring $\Phi_\ell$ costs $O(\ell m(\log(s)+\log(m))\log(\ell) +
+  \MM(\ell m)\log(\ell m) + \MM(\ell m)\log(q))$ according to
+  Prop.~\ref{th:cyclo}.
+
+  $\bar{h}$ is computed by a Euclidean division in $O(\MM(\ell m))$
+  operations. The final sum is computed in $O(\ell m)$ operations.
+\end{proof}
+
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
