@@ -1577,18 +1577,19 @@ By definition, $\ell$ is an Elkies prime of $E$, so there exists a prime
 $\mathfrak{q}$ above $\mathfrak{p}$ such that $\mathcal{O}_{L_\ell}/\mathfrak{q} =
 \mathcal{A}$. We can summarize the situation with the following figure
 
-\begin{center}
+\begin{equation}
+\label{scheme:equation}
 \begin{tikzpicture}
     \node (L) {$L$};
     \node[above = of L] (L0) {$L_0 = L[X]/(\Phi_{\ell}(X,j(\widehat{E})))$};
     \node[above left=0.2cm and 2cm of L0] (R0) {$R_0$};
-    \node[right=4cm of L0] (Fq) {$\F_q$};
+    \node[right=2cm of L0] (Fq) {$\F_q$};
     \node[above= of L0] (Lpr) {$L' = L_0(\widehat{\eta}_0)$};
-    \node[above= of Fq] (Fqa) {$\F_q(\eta_0)$};
+    %\node[above= of Fq] (Fqa) {$\F_q(\eta_0)$};
     \node[above= of R0] (Rpr) {$R'$};
     \node[above= of Lpr] (Lm) {$L_\ell = L_0[X]/(\widehat{\psi}_{\ell,\lambda}(X))$};
     \node[above= of Rpr] (Rm) {$R_\ell$};
-    \node[above= of Fqa] (A0) {$\mathcal{A}_0$};
+    \node[above=2cm of Fq] (A0) {$\mathcal{A}_0$};
     \draw (L) edge node[right] {$\ell+1$} (L0);
     \draw (L0) edge node[auto] {$2$} (R0);
     \draw (Lpr) edge node[auto] {$2$} (Rpr);
@@ -1597,19 +1598,20 @@ $\mathfrak{q}$ above $\mathfrak{p}$ such that $\mathcal{O}_{L_\ell}/\mathfrak{q}
     \draw (Lpr) edge node[right] {$(\ell-1)/2n$} (Lm);
     \draw (R0) edge node[auto] {} (Rpr);
     \draw (Rpr) edge node[auto] {} (Rm);
-    \draw (Fq) edge node[right] {$\langle{\lambda}\rangle$} (Fqa);
-    \draw (Fqa) edge node[auto] {} (A0);
+    \draw (Fq) edge node[right] {$\langle{\lambda}\rangle$} (A0);
+    %\draw (Fqa) edge node[auto] {} (A0);
     \draw[->>] (L0) edge node[auto] {$\bmod \mathfrak{q}$} (Fq);
-    \draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{q}$} (Fqa);
+    %\draw[->>] (Lpr) edge node[auto] {$\bmod \mathfrak{q}$} (Fqa);
     \draw[->>] (Lm) edge node[auto] {$\bmod \mathfrak{q}$} (A0);
 \end{tikzpicture}
-\end{center}
+\end{equation}
 where $\Phi_\ell(X,j(\widehat{E}))$ is an equation of the modular curve 
 $X_0(\ell)$.
 
-We can find a generator $c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$
-with $r'=(\ell-1)/(2n)$. Let $S:=\langle{s}\rangle$ with $s=c^r$. For 
-$0\leq i<q$, we define 
+Since $\lambda$ is of order $r$, we can find a generator 
+$c\in(\Z/\ell\Z)^{\ast}$ such that $\lambda = c^{r'}$ with 
+$r'=(\ell-1)/(2r)$. Let $S:=\langle{s}\rangle$ with $s=c^r$. For $0\leq i<q$, 
+we define 
 \begin{equation}
 \eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{\lambda^i}(\theta))}
 \end{equation}
@@ -1634,7 +1636,7 @@ This concludes the proof of the theorem.
 
 \begin{remark}
 For $j=0,1728$ the results still hold. \todo{Adapt the proof to the mentionned
-cases}
+cases.}
 \end{remark}
 
 \subsection{Rains' elliptic algorithm}
@@ -1647,7 +1649,7 @@ are $j$-invariants in $\F_q$. The twists of curve will help us in
 almost always finding a good elliptic curve. For a more detailed discussion 
 about the way to select an elliptic curve, we refer to the section 
 \ref{sec:selection}. In this section, we focus on computing elements with a 
-unique orbit.
+unique orbit. We recall that we are working in characteristic $p\geq3$.
 
 We quickly recall the situation, we have an extension $K/k$ with $K/\F_q$ being
 of degree $n$ and $k/\F_q$ being of degree $m$ such that $m|n$. Thus we can find 
@@ -1665,8 +1667,7 @@ $\alpha\in k$ and $\beta\in k'$, such that
     \draw[|->] (alpha) edge node[auto] {} (beta);
 \end{tikzpicture}
 \end{equation}
-defines an isomorphism.
-
+defines an isomorphism. 
 The procedure is close to the cyclotomic variant's procedure, given $k$, $K$
 and $r$ a prime power dividing $m$ such that $(m/r,r) = 1$, we need to :
 \begin{itemize}
@@ -1680,12 +1681,11 @@ where $k_r\subset k$ and $k'_r\subset k'$ are both fields of degree $r$ on
 $\F_q$.
 
 The first operation usually takes a reasonable amount of time, on exception of a
-few particular case. The second operations is what will take the most ressources.
-Since $k$ and $K$ are not of degree on $\F_q$, we have to compute a trace to be
-able to compute in $\F_{q^r}$. The multiplication of a point by a scalar also
-cost a lot of ressources, even more so since the elements are still represented
-as elements of $k$ and $K$. And we shall see that the lasts steps are dominated 
-by the previous one. 
+few particular case, see section \ref{sec:selection} for more detail. The second 
+operations is what will take the most ressources, since $k$ and $K$ are not of 
+degree $r$ on $\F_q$, we have to compute traces. The multiplication of a point 
+by a scalar also costs a lot of ressources. And we shall see that the second 
+step is dominating the whole algorithm. 
 \vspace{0.3cm}
 
 Let us assume that we have $k$, $r$ and $E/\F_q$ as above. First, we need to 
@@ -1702,7 +1702,8 @@ is possible if we assume that we already have computed
 $\#E(\F_q)$, which will be the case. Moreover, since the class modulo $\ell$ of
 $\lambda$ and $\mu$ have the right proprieties from theorem 
 \ref{theorem:ellperiods}, this tells us that $P$ is indeed in 
-the eigenspace of $\lambda$. 
+the eigenspace of $\lambda$ and that its elliptic period forms a normal basis of
+$\F_{q^r}$ with its conjugates. 
 
 Depending on the $j$-invariant of $E$, the elliptic periods should be computed 
 differently, see definition \ref{definition:ellperiod}. Practically, let 
@@ -1719,7 +1720,7 @@ periods in a more computable form
 \eta_\lambda(P)=\sum_{i=0}^{(\ell-1)/r_E.r}
 {\left([s^i]P\right)_X^{r_E/2}}.
 \end{equation}
-Thus we have the following algorithm : 
+Thus we have the following algorithm.
 
 \begin{algorithm}
 [Computing an elliptic periods]
@@ -1759,53 +1760,87 @@ square the abscissas. A similar phenomenon appears with $j = 0$, only this time
 $3$rd roots of unity are invovled instead of $\pm1$.
 \end{remark}
 
-\begin{remark}
-
-\end{remark}
-
 \begin{proposition}
 Algorithm (\ref{algorithm:compell}) is correct. Given $m,q,r,\ell$ it computes
-its output using $O(...)$ operations in $\F_q$.
+its output using 
+\begin{equation}
+O(m\MM(m)\log(m)\log(q))
+\end{equation}
+ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
 We can assume that we have everything we need from $E/\F_q$. More precisely, we
 already know its cardinality and the roots of the characteristic polynomial of
-$\pi_q$ on $\Q$. Therefore, determining $\#E(k)$ is mainly a matter of
-raising $q$, $\lambda$ and $\mu\in\Q$ to $r$. This takes 
+$\pi_q$ on $\Q$. Therefore, determining $\order_E:=\#E(\F_{q^r})$ is mainly a 
+matter of raising $q$, $\lambda$ and $\mu\in\Q$ to $r$. Assuming that we are
+using FFT, this takes
 \begin{equation}
-O(...) 
+O(r\log(r)\log(\log(r) d))
 \end{equation}
-operations \cite{}.
+bit operations, where $d$ is the number of bits of $r$. Since $r$ is a divisor
+of $m$ and most of the following complexities depend on $m$, the previous
+complexity is dominated by all the other operations.
 
 The main and the most expensive step is the search for a point of order $\ell$
-in $E(k)$. We first need to pick a point randomly. To do that, we pick an
-element $x\in \F_{q^r}$ and check if $f_E(X)$ is indeed a square in 
-$\F_{q^r}$, where $f_E$ is the polynomial in $x$ defining the curve $E$. With
-the use of Montgomery formulas, this is done in
-\todo{Talk about the fact that we are working on $k$ and have to go down on
-$\F_{q^r}$ somehow}
+in $E(\F_{q^r})$. It is important to note that we are actually working on the
+field $k$ and not in $\F_{q^r}$ directly. To pick a point on $E(\F_{q^r})$, we
+then should proceed as follow :
+\begin{enumerate}
+    \item Pick a random element $\nu\in k$ and compute its trace 
+$\tau:=\trace_{k/\F_{q^r}}(\nu)$.
+    \item Check that for $f_E$ the polynomial in $x$ of the Weierstass equation
+of $E$, the point $Q:=(\tau, \sqrt{f_E(\tau)})$ or $(\tau, -\sqrt{f_E(\tau)})$ 
+is on $E$.
+    \item Compute $P:=[\order_E/\ell]Q$.
+\end{enumerate}
+
+The first point is computing a trace on $\F_{q^r}$ form $k$. For $q_r=q^r$ and
+$m_r = m/r$, the most straightforward way to compute the trace is to compute 
+\[
+\tau = \nu + \nu^{q_r} + \nu^{q_r^2} + \dots + \nu^{q_r^{m_r-1}}
+\]
+This requires $m_r-2$ exponentiations to the power $q_r$ and $(m_r-1)$ 
+sums of polynomial of degree less than $m$, therefore the required number of
+operations on $\F_q$ is 
 \begin{equation}
-O(m \MM(m)\text{log}\,(m))
+O(m\MM(m)\log(q)).
 \end{equation}
-operations on $\F_q$ \cite{}. Similarly, the Montgomery formulas allows us to 
-compute the multiplication of a point by a scalar in
+the proof can be found in \cite{Shoup}.
+
+Next, we wish to compute a square root of $f_E(\tau)$ in $\F_{q^r}$, keeping in
+mind that the operations are done using elements of $k$, this can be done in 
 \begin{equation}
-\label{equation:complexityofscalarprod}
-O(...)
+O(\MM(m)\log(q) + \CC(m)\log(m))
+\end{equation}
+operations on $\F_q$, using the algorithm in \cite{javad'spaper}, which is
+subquadratic in $m$; we expect a good point in $O(1)$ tries.
+
+The third and the most straightforward step is also the most expensive one. 
+We use a double and add algorithm to compute the point $[\order_E/\ell]Q$. This
+requires ? points addition and ? points doubling, which in turn requires one
+division and one squaring. This requires
+\begin{equation}
+O(m\MM(m)\log(m))
 \end{equation}
 operations on $\F_q$ \cite{}.
 
 It only remains to compute the elliptic period itself. Depending on the case,
-there is essentially $(\ell-1)/(i.n)$ products in $\F_{q^r}$, with $i=2,4$ or 
-$6$. This takes 
+there is essentially $(\ell-1)/(i.r)$ scalar products by elements in
+$(\Z/\ell\Z)^{\ast}$ on $E/\F_{q^r}$ and exponentiations of power $i/2$, with 
+$i=2,4$ or $6$. This takes 
 \begin{equation}
-O(\ell\text{log\,}(\ell)\MM(m)/m)
+O(\ell/r \MM(m)\log(m))
 \end{equation}
-operations in $\F_q$ \cite{}.
-
-
-
+operations in $\F_q$ \cite{}. This is, as are all the previous steps of the
+algorithm, dominated by the scalar product. Therefore, the complexity of the
+whole algorithm is the one announced in the statement.
 \end{proof}
+
+\begin{remark}
+At the cost of some precalculations, we can reduce the number of operations
+required to compute the trace. \todo{Maybe look at what Rains said in his mail.}
+\end{remark}
+
 
 \section{Algorithm selection}
 \label{sec:selection}
