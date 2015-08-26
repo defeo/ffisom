@@ -1255,9 +1255,10 @@ construction of the field extension $k'$.
     \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
     with a uniquely defined Galois orbit.
     
-    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ over $\F_{q^r}\subset k$ using Algorithm~\ref{alg:cyclo}; 
-    \STATE Compute $\bar{h} = \rev{h'}/\rev{h} \mod z^\ell$ in $k[[z]]$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\eta = \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$ using Algorithm~\ref{alg:cyclo}; 
+    \STATE Compute $\bar{h} \leftarrow \rev{h'}/\rev{h} \bmod Z^\ell$;
+    \STATE Let $S' = \langle q^m\rangle \times S$;
+    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow \sum_{\sigma\in S'}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1269,8 +1270,6 @@ construction of the field extension $k'$.
   m)\log(q))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-  \todo{Explain how you factor over a subfield $\F_{q^{rs}}$.}
-
   Factoring $\Phi_\ell$ costs $O(\ell m(\log(s)+\log(m))\log(\ell) +
   \MM(\ell m)\log(\ell m) + \MM(\ell m)\log(q))$ according to
   Prop.~\ref{th:cyclo}.
