@@ -1257,8 +1257,8 @@ construction of the field extension $k'$.
     
     \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$ using Algorithm~\ref{alg:cyclo}; 
     \STATE Compute $\bar{h} \leftarrow \rev{h'}/\rev{h} \bmod Z^\ell$;
-    \STATE Let $S' = \langle q^m\rangle \times S$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow \sum_{\sigma\in S'}[\bar{h}]_\sigma$.
+    \STATE Let $s'=\gcd(s,m/r)$ and $S' = \langle q^{rs/s'}\rangle \times S$;
+    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow -\sum_{\sigma\in S'}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
