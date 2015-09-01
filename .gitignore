@@ -15,3 +15,4 @@ _region_.tex
 *.sty
 *.cproject
 *.project
+makefile

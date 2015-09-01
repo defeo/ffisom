@@ -571,13 +571,14 @@ In this section we give an asymptotically faster and more practical version of t
 algorithms. We replace linear algebra with polynomial arithmetic, and use a trace-like computation 
 technique to solve Hilbert 90. 
 
-An overview of the construction is as follows. For simplicity, we assume $q$ is prime in $F = 
-\F_q$. Suppose we are given extensions $F_1, F_2$ of $F$ of prime degree $r \ne q$. Let $s$ be 
-the order of $q$ in $\mathbb{Z} / r\mathbb{Z}$, and write $q^s - 1 = ur^t$ where $\gcd(r, u) = 1$. 
+An overview of the construction is as follows. Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ 
+is a positive integer. Suppose we are given extensions $F_1, F_2$ of $F$ degree $r$. Let $s$ be 
+the order of $q$ in $\mathbb{Z} / v\mathbb{Z}$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. 
 We first move to cyclotomic field extensions $F[\zeta], F_1[\zeta], F_2[\zeta]$ of degree $s$ over 
-$F, F_1, F_2$ respectively, by obtaining an irreducible factor of the $r$th cyclotomic polynomial. 
-Then there is a non-$r$-adic residue $\eta \in F[\zeta]$ such that $X^r - \eta$ is irreducible in 
-$F[\zeta][X]$. Next we find elements $\alpha_1, \alpha_2$ in $F_1[\zeta], F_2[\zeta]$ to build 
+$F, F_1, F_2$ respectively, by obtaining an irreducible factor of the $v$th cyclotomic polynomial 
+over $F$. 
+Then there is a non-$v$-adic residue $\eta \in F[\zeta]$ such that $X^r - \eta$ is irreducible in 
+$F[\zeta][X]$. Next we find elements $\alpha_1,	 \alpha_2$ in $F_1[\zeta], F_2[\zeta]$ to build 
 isomorphisms $\varphi_1, \varphi_2$ as in Figure \ref{figure:isom1}. Once we obtain an isomorphism 
 $F_1[\zeta] \rightarrow F_2[\zeta]$, we descend it down to an isomorphism $F_1 \rightarrow F_2$. 
 
@@ -588,7 +589,7 @@ F_1 = F[X] / f(X), \; F[\zeta] = F[Z] / h(Z), \;
 F_1[\zeta] = F[X, Z] / (f(X), g(Z))
 \end{equation}
 where $f(X) \in F[X]$ is an irreducible polynomial of degree $r$, and $h(Z)$ is an irreducible 
-factor of the $r$-th cyclotomic polynomial $\Phi_r(Z)$. We also let $x, z = \zeta$ be the residue 
+factor of the $v$th cyclotomic polynomial $\Phi_v(Z)$. We also let $x, z = \zeta$ be the residue 
 classes of $X, Z$ in these quotients.
 \begin{figure}
 	\begin{center}
@@ -622,52 +623,61 @@ classes of $X, Z$ in these quotients.
 
 \subsubsection{Preliminaries}
 
-As mentioned above, we let $s$ be the order of $q$ in $\mathbb{Z} / r\mathbb{Z}$, and write $q^s - 
-1 = ur^t$ where $\gcd(r, u) = 1$. The obvious way constructing isomorphisms $\varphi_1, \varphi_2$ 
+The obvious way constructing isomorphisms $\varphi_1, \varphi_2$ 
 in Figure \ref{figure:isom1} is to compute an $r$-th root of $\eta$ in $F_1[\zeta], F_2[\zeta]$. 
 But, as a more efficient way, we show how to avoid the costly operation of taking roots in these 
 extensions, and skip some detail computations. We first need the following result.
 \begin{proposition}
 	\label{proposition:semi-trace}
-	For an element $a \in F_1[\zeta]$ define 
+	Let $q_i = q^{isr/v}$. For an element $a \in F_1[\zeta]$ define 
 	\begin{equation}
 	\label{equation:semi-trace} 
-	\theta_a = a + \zeta^{r - 1}a^{q^s} + \cdots + \zeta^2a^{q^{(r - 2)s}} + \zeta a^{q^{(r - 1)s}}
+	\theta_a = a + \zeta^{v - 1}a^{q_1} + \cdots + \zeta^2a^{q_{v - 2}} + \zeta a^{q_{v - 1}}
 	\end{equation}
 	Then
 	\begin{enumerate}
 		\item[\normalfont (i)] There is an $a \in F_1[\zeta]$ such that $\theta_a \ne 0$.
-		\item[\normalfont (ii)] For a generator $\sigma$ of $\gal(F_1[\zeta] / F[\zeta])$ we have 
-		$\sigma(\theta_a) / \theta_a = \zeta$. Also $\theta_a, \theta_a^r$ are non-$r$-adic 
-		residues in $F_1[\zeta], F[\zeta]$ respectively.
+		\item[\normalfont (ii)] Let $F[\zeta] \subset L \subset F_1[\zeta]$ be the extension such 
+		that $[F_1[\zeta]: L] = v$. For a generator $\sigma$ of $\gal(F_1[\zeta] / L)$ we have 
+		$\sigma(\theta_a) / \theta_a = \zeta$. 
+		\item[\normalfont (iii)] We have $q_1 - 1 = u_1v^{d + t - 1}$ with $(u_1, v) = 1$. Then 
+		$\lambda_a = \theta_a^{u_1}$ is a primitive $v^{d + t}$-th root of unity in $F_1[\zeta]$. 
+		In particular, $\lambda_a^r$ is a non-$v$-adic residue in $F[\zeta]$.
 	\end{enumerate}
 \end{proposition}
 \begin{proof}
-	Let $v = u^{-1} \bmod r$, and let $\gamma \in F_1[\zeta]$ be an $r^t$-th root of $\zeta^{v(r - 
-	1)}$. There exists an element $a \in F_1[\zeta]$ such that $\beta = T_{F_1[\zeta] / 
-	F[\zeta]}(\gamma a) \ne 0$, and we have 
+	A simple induction shows that the number of factors of $v$ in $q_i - 1$ is $t + d - i$. So let 
+	$q_1 - 1 = u_1v^{t + d - 1}$ with $(u_1, v) = 1$. Let $w = u_1^{-1} \bmod v$, and let $\gamma 
+	\in F_1[\zeta]$ be a $v^{t + d - 1}$-th root of $\zeta^{(v - 1)w}$. This will make sure that 
+	$\gamma^{q_1 - 1} = \zeta^{v - 1}$. We also have 
+	\[q_i - 1 = (q_1 - 1)(q_{i - 1} + q_{i - 2} + \cdots + q_1 + 1).\]
+	Since the trace function is not zero, there exists an element $a \in F_1[\zeta]$ such that 
+	$\beta = \trace_{F_1[\zeta] / L}(\gamma a) \ne 0$, and we have 
 	\begin{equation}
 		\label{equation:trace}
 		\begin{aligned}
 		\beta 
-		& = \gamma a + (\gamma a)^{q^s} + \cdots + (\gamma a)^{q^{(r - 1)s}} \\
-		& = \gamma (a + \gamma^{q^s - 1}a^{q^s} + \cdots + \gamma^{q^{(r - 1)s} - 1}a^{q^{(r - 
-		1)s}}) \\
-		& = \gamma (a + \gamma^{ur^t}a^{q^s} + \cdots + \gamma^{ur^t(q^{(r - 2)s} + \cdots + q^s + 
-		1)}a^{q^{(r - 1)s}}) \\
-		& = \gamma (a + \zeta^{r - 1}a + \cdots + \zeta a^{q^{(r - 1)s}}) \\
+		& = \gamma a + (\gamma a)^{q_1} + \cdots + (\gamma a)^{q_{v - 1}} \\
+		& = \gamma (a + \gamma^{q_1 - 1}a^{q_1} + \cdots + \gamma^{q_{v - 1} - 1}a^{q_{v - 1}}) \\
+		& = \gamma (a + \gamma^{q_1 - 1}a^{q_1} + \cdots + \gamma^{(q_1 - 1)(q_{v - 2} + \cdots + 
+		q_1 + 1)}a^{q_{v - 1}}) \\
+		& = \gamma (a + \zeta^{v - 1}a^{q_1} + \cdots + \zeta a^{q_{v - 1}}) \\
 		& = \gamma \theta_a.
 		\end{aligned}
 	\end{equation}
-	This proves (i). To prove (ii), first observe that $\theta_a^{q^s} = \zeta\theta_a$ so that 
-	$\sigma(\theta_a) = \zeta\theta_a$ for a generator $\sigma: x \to x^{q^s}$ of $\gal(F_1[\zeta] 
-	/ F[\zeta])$. Therefore, we have $\sigma(\theta_a^r) = \theta_a^r$, which means that 
-	$\theta_a^r \in F[\zeta]$, and $\theta_a^{ur^t} = \theta_a^{q^s - 1} = \zeta$ which proves 
-	that $\theta_a, \theta_a^r$ are non-$r$-adic residues.
+	Raising both sides to the power of $q_1 - 1$ gives $\theta_a^{q_1} = \zeta\theta_a$ so that 
+	$\sigma(\theta_a) = \zeta\theta_a$ for the generator $\sigma: x \to x^{q_1}$ of 
+	$\gal(F_1[\zeta] / L)$. This proves (i) and (ii).
+	
+	For (iii) we have \[\lambda_a^{v^{d + t - 1}} = \theta_a^{(q_1 - 1)} = \zeta\] which shows that 
+	$\lambda_a$ is a primitive $v^{d + t}$-th root of unity. Also
+	\[\lambda_a^{r(q^s - 1) / v} = \theta_a^{u_1uv^{t + d - 1}} = \theta_a^{u(q_1 - 1)} = \zeta^u 
+	\ne 1\]
+	 which shows that $\lambda_a^r$ is a non-$v$-adic residue in $F[\zeta]$.
 \end{proof}
-Let $\eta_a = \theta_a^r, \eta_b = \theta_b^r$ for nonzero $\theta_a, \theta_b$ as in Proposition 
-\ref{proposition:semi-trace}. Then we can construct isomorphisms $\varphi_1, \varphi_2$ as in the 
-following diagram.
+Let $\eta_a = \lambda_a^r, \eta_b = \lambda_b^r$ for nonzero $\lambda_a, \lambda_b$ as in 
+Proposition \ref{proposition:semi-trace}. Then we can construct isomorphisms $\varphi_1, \varphi_2$ 
+as in the following diagram.
 \begin{equation}
 	\label{equation:iso-chain}
 	\begin{tikzpicture}
@@ -676,29 +686,28 @@ following diagram.
 		\node[left = of Fpzxa] (F1z) {$F_1[\zeta]$};
 		\node[right = of Fpzxb] (F2z) {$F_2[\zeta]$};
 		\draw[->] (F1z) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner 
-		sep=0.5pt] {$ \varphi_1 $} node[below = 3mm, inner sep=0.5pt] {$\theta_a \longmapsto x$} 
+		sep=0.5pt] {$ \varphi_1 $} node[below = 3mm, inner sep=0.5pt] {$\lambda_a \longmapsto x$} 
 		(Fpzxa);
 		\draw[->] (Fpzxa) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner 
 		sep=0.5pt] {$ \psi $} (Fpzxb);
 		\draw[->] (Fpzxb) edge node[above, inner sep=0.5pt] {$ \sim $} node[above = 3mm, inner 
-		sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$x \longmapsto \theta_b$} 
+		sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$x \longmapsto \lambda_b$} 
 		(F2z);
 	\end{tikzpicture}
 \end{equation}
-To complete this isomorphism chain, we need to compute $\psi$. For that we simply compute an $r$-th 
-root of $\eta_a$ in $F = F[\zeta][X] / (X^r - \eta_b)$, and construct the 
-isomorphism in the obvious way. Note that from (\ref{equation:trace}) we have $\beta_a = 
-\gamma_a\theta_a$,  $\beta_b = \gamma_b\theta_b$, and we can choose $\gamma_a, \gamma_b$
-such that $\gamma_a^r = \gamma_b^r$. Therefore, 
-\[ \eta_a\eta_b^{-1} = \beta_a^r\beta_b^{-r} = (\beta_a\beta_b^{-1})^r = c^r. \] 
-So we can construct the isomorphism
-\begin{equation*}
+To complete this isomorphism chain, we need to compute $\psi$. For that we could simply compute an 
+$r$-th root of $\eta_a$ in $F = F[\zeta][X] / (X^r - \eta_b)$, and construct the 
+isomorphism in the obvious way. But there is a more efficient way. Since $\eta_a, \eta_b$ generate 
+the same subgroups, namely the $v$-subgroup, of $F[\zeta]^*$ we have $\eta_a = \eta_b^i$ for some 
+$1 \le j < v^t$. So we can construct the isomorphism
+\begin{equation}
+	\label{equation:middle-isom}
 	\begin{array}{rrll}
 	\psi: & F[\zeta][X] / (X^r - \eta_a) & \longrightarrow & F[\zeta][X] / (X^r - \eta_b) \\
-	& x & \longmapsto & cx
+	& x & \longmapsto & x^i
 	\end{array}
-\end{equation*}
-by computing an $r$-th root in $F[\zeta]$.
+\end{equation}
+by computing a discrete logarithm in the $v$-subgroup of $F[\zeta]^*$.
 
 
 
@@ -710,31 +719,31 @@ by computing an $r$-th root in $F[\zeta]$.
 Let $a \in F_1[\zeta]$. To compute $\theta_a$, we use a binary powering scheme similar to the one 
 in \cite{doliskanischost2011}. Assuming the representations (\ref{equation:rep}) we let 
 \[
-\xi_i = x^{q^{is}}, \quad
-\delta_i = a + z^{r - 1}a^{q^s} + \cdots + z^2a^{q^{(i - 1)s}} + z^{r - i + 1} a^{q^{(i - 1)s}}.
+\xi_i = x^{q_i}, \quad
+\delta_i = a + z^{r - 1}a^{q_1} + \cdots + z^2a^{q_{i - 2}} + z^{r - i + 1}a^{q_{i - 1}}.
 \]
-Then we have the following relations:
-\[\xi_1 = x^{q^s}, \quad \delta_1 = a, \]
+where $q_i = q^{isr/v}$ as in Proposition \ref{proposition:semi-trace}. Then we have the following 
+relations:
+\[\xi_1 = x^{q_1}, \quad \delta_1 = a, \]
 \[
 \xi_i =
 \begin{cases}
-\xi_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
-\xi_{i - 1}^{q^s} & \text{if $i$ is odd,}
+\xi_{i / 2}^{q_{i / 2}} & \text{if $i$ is even}  \\
+\xi_{i - 1}^{q_1} & \text{if $i$ is odd,}
 \end{cases} \quad
 \delta_i=
 \begin{cases}
-z^{r - i / 2}\delta_{i / 2}^{q^{is / 2}} + \delta_{i / 2} & \text{if $i$ is even} \\
-z^{r - 1}\delta_{i - 1}^{q^s} + \delta_1 & \text{if $i$ is odd}
+z^{r - i / 2}\delta_{i / 2}^{q_{i / 2}} + \delta_{i / 2} & \text{if $i$ is even} \\
+z^{r - 1}\delta_{i - 1}^{q_1} + \delta_1 & \text{if $i$ is odd}
 \end{cases}
 \]
-Assuming $\xi_i = x^{q^{is}}$ is already known, $\delta_i$ can be computed using the following 
-algorithm.
+Given $\xi_1, \delta_1, i$, Algorithm \ref{algorithm:xidelta} computes $\xi_i, \delta_i$.
 
 \begin{algorithm}
 	[XiDelta$(i, \xi_1,\delta_1)$]
 	\label{algorithm:xidelta}
 	\begin{algorithmic}[1]
-		\REQUIRE a positive integer $i$, $\xi_1 = x^{q^s}$, $\delta_1 = a$
+		\REQUIRE a positive integer $i$, and $\xi_1 = x^{q_1}$, $\delta_1 = a$
 		\ENSURE $\xi_i$, $\delta_i$
 		\IF {$i=1$} 
 		\RETURN $\xi_1$, $\delta_1$
@@ -754,27 +763,127 @@ algorithm.
 
 \begin{proposition}
 	\label{proposition:XiDelta}
-	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes \[O(s\CC(r)\log(r) + 
-	\MM(r)\log(q))\] operations in $F$.
+	Finding a nonzero $\theta_a$ for random $a \in F_1[\zeta]$ takes \[O(s\CC(r)\log(v) + 
+	\CC(r)\log(r) + \MM(r)\log(q))\] operations in $F$.
 \end{proposition}
 \begin{proof}
-	To compute the initial value $\xi_1 = x^{q^s}$ we first compute $x^q$, and then do $\log(s)$ 
-	modular compositions at a total cost of $O(\MM(r)\log(q) + C(r)\log(s))$ operations in $F$. 
-	Then $\theta_a = \delta_r$ is computed using Algorithm \ref{algorithm:xidelta}: the complexity 
+	To compute the initial value $\xi_1 = x^{q_1}$ we first compute $x^q$, and then do $\log(sr/v)$ 
+	modular compositions at a total cost of $O(\MM(r)\log(q) + C(r)\log(r))$ operations in $F$. 
+	Then $\theta_a = \delta_v$ is computed using Algorithm \ref{algorithm:xidelta}: the complexity 
 	of the algorithm is dominated by steps \ref{step:xi}, \ref{step:delta}. The former is a
 	modular composition in $F[X]$ which takes $C(r)$ operations in $F$. For the later suppose 
 	$\delta_j = \delta_{j,0}(x) + \delta_{j,1}(x)z + \cdots + \delta_{j,s - 1}(x)z^{s - 1}$. Then   
 	\[ \delta_j(\xi_j) = \sum_{i = 0}^{s - 1}\delta_{ij}(\xi_j)z^i, \] which is done using 
-	$O(s\CC(r))$ operations in $F$. Accounting for a recursion depth of $\log(r)$, the running 
-	time of the algorithm is then $O(s\CC(r)\log(r))$ operations in $F$. All in all, we get the 
+	$O(s\CC(r))$ operations in $F$. Accounting for a recursion depth of $\log(v)$, the running 
+	time of the algorithm is then $O(s\CC(r)\log(v))$ operations in $F$. All in all, we get the 
 	claimed 
 	complexity.
 \end{proof}
-The above running time for computing $\theta_a$ is only acceptable for small $s$. More precisely, 
-if we take $\CC(r) = O(r^{(1 + \omega) / 2})$ then the running time becomes quadratic if $s \approx 
-r^{(3 - \omega) / 2}$. We call $s$ small if $s < r^{(3 - \omega) / 2}$, and large otherwise. To 
-keep the complexity at most quadratic for all $s$, we proceed as follows. We know that 
-$T_{F_1[\zeta] / F[\zeta]}(\gamma x^\ell) \ne 0$ for at least one $1 \le \ell \le r - 1$, otherwise 
+
+
+\subsubsection{Computing the isomorphism $F_1 \rightarrow F_2$}
+
+In this section, we analyze the computational cost of building an isomorphism $\varphi: F_1 
+\rightarrow F_2$. We first construct the isomorphism $\varphi_2 \circ \psi \circ \varphi_1 : 
+F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain}), and then descend back to the 
+desired fields.
+\begin{algorithm}
+	[Isomorphism ${F_1[\zeta] \rightarrow F_2[\zeta]}$]
+	\label{algorithm:ext-iso}
+	\begin{algorithmic}[1]
+		\REQUIRE degree $r$ extensions $F_1, F_2$ of $F$
+		\ENSURE an isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$
+		\STATE\label{step:factor-cyclo} factor the cyclotomic polynomial $\Phi_v(Z)$ over $F$ to 
+		build extensions $F[\zeta],	F_1[\zeta], F_2[\zeta]$
+		\REPEAT
+		\STATE choose a random $a \in F_1[\zeta]$
+		\STATE compute $\theta_a$ using Algorithm \ref{algorithm:xidelta}
+		\UNTIL {$\theta_a \ne 0$}
+		\REPEAT
+		\STATE choose a random $b \in F_2[\zeta]$
+		\STATE compute $\theta_b$ using Algorithm \ref{algorithm:xidelta}
+		\UNTIL {$\theta_b \ne 0$}
+		\STATE\label{step:theta-pow} $\lambda_a = \theta_a^{u_1}$, $\lambda_b = \theta_b^{u_1}$
+		\STATE\label{step:lambda-pow} $\eta_a \leftarrow \lambda_a^r$ , $\eta_b \leftarrow 
+		\lambda_b^r$
+		\STATE\label{step:dlog} compute $i$ such that $\eta_a = \eta_b^i$
+		\STATE\label{step:psi} construct the isomorphism $\psi$ as in (\ref{equation:middle-isom})
+		\STATE construct $F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain})
+	\end{algorithmic}
+\end{algorithm}
+
+Let us assume for the moment that $r$ is not prime, i.e. $r = v^d$ with $d \ge 2$. Subsection 
+\ref{sec:kummer-prime} is devoted to the prime case. By \cite[Theorem 9]{shoup94} Step 
+\ref{step:factor-cyclo} takes 
+$O(v\log^2(v) + v\log(v)\log(q))$ operations in $F$. The running time of the two repeat-until 
+loops is given by Proposition \ref{proposition:XiDelta}. Since $u_1$ is bounded by $q_1$,  
+$\log(u_1)$ is bounded by $rs/v\log(q)$. So Step \ref{step:theta-pow} is done using 
+$O(rs/v\MM(rs)\log(q))$ operations in $F$. 
+
+Step \ref{step:lambda-pow} is done using $O(\MM(rs)\log(r))$ operations in $F$. For Step 
+\ref{step:dlog} we use the well-known method in \cite{Pohlig1978}. We know that $\eta_a, \eta_b$ 
+are generators of the $v$-subgroup $F[\zeta]^*$ of order $v^t$. Assume $i = \sum_{j = 0}^{t - 
+1}x_jv^j$ is the base $v$ representation of $i$. Then
+\[ \eta_a^{v^{t - 1}} = \eta_b^{iv^{t - 1}} = (\eta_b^{v^{t - 1}})^{\sum_{j = 0}^{t - 1}x_jv^j} = 
+(\eta_b^{v^{t - 1}})^{x_0} = \zeta^{x_0}.\]
+From this $x_0$ can be computed using a baby-step giant-step which takes $O(v^{1/2})$ 
+operations in $F[\zeta]$. Now if we have $x_0, x_1, \dots, x_k$, $k < m - 1$ then
+\[ (\eta_a\eta_b^{-\sum_{j = 0}^{k}x_jv^j})^{v^{t - k - 2}} = (\eta_b^{v^{t - 1}})^{x_{k + 1}} = 
+\zeta^{x_{k + 1}},\] from which $x_{k + 1}$ can be computed in a similar way. Therefore, computing 
+$i$ takes $O(t\log(v^t) + tv^{1/2})$ operations in $F[\zeta]$. 
+
+
+So, now we have an isomorphism $\phi: F_1[\zeta] \rightarrow F_2[\zeta]$ that sends $\theta_a$ to 
+some $h(z, x) \in F_2[\zeta]$. To construct the isomorphism $\varphi: F_1 \rightarrow F_2$ we the 
+technique in \cite{Allombert02}. Let 
+\[ \theta_a = \sum_{i = 0}^{s - 1}f_i(x)z^i, \quad\text{and}\quad z^s = (v(z)  \bmod g(z)) = 
+\sum_{i = 0}^{s - 1}v_iz^i. \] 
+Then since $\theta_a^{q^s} = z\theta_a$ we have
+\[ \sum_{i = 0}^{s - 1}f_i(x)^{p^s}z^i = f_{s - 1}(x)v(z) + f_0(x)z + \cdots + f_{s - 2}(x)z^{s - 
+1}.\]
+After rearranging the terms in the right hand side, this gives us the identities
+\[
+\begin{array}{ccc}
+	f_0(x)^{p^s} & = & v_0f_{s - 1}(x) \\
+	f_1(x)^{p^s} & = & f_0(x) + v_1f_{s - 1}(x) \\
+	\vdots & \vdots & \vdots \\
+	f_{s - 1}(x)^{p^s} & = & f_{s - 2}(x) + v_{s - 1}f_{s - 1}(x)
+\end{array} 
+\]
+form which we see that $f_i(x) \in F(f_0(x)) \subseteq F_1$ for all $i$. We prove $F(f_0) = 
+F_1$. Let $\sigma \in \gal(F_1(z) / F)$ be a generator, and let $j \le r$ be the smallest 
+integer such that $\sigma^jf_0 = f_0$. Then $\sigma^{js}\theta_a = \theta_a$, but $\theta_a$ is not 
+contained in any proper subfield; so $j = r$. Let $h_0$ be the constant term of $h(z, x)$. Then we 
+similarly have $F_2 = F(h_0)$. This gives us an isomorphism
+\[
+\begin{array}{rlll}
+	\phi: & F_1 & \longrightarrow & F_2 \\
+	& f_0 & \longmapsto & h_0
+\end{array}
+\]
+from which we can get an isomorphism
+\[
+\begin{array}{rlll}
+	\phi: & F_1 & \longrightarrow & F_2 \\
+	& x & \longmapsto & a(x)
+\end{array}
+\]
+using transposed modular composition.
+
+
+\subsubsection{Prime extensions}
+\label{sec:kummer-prime}
+When the extension degree is prime, i.e. $d = 1$ in $r = v^d$, we can tune different parts of 
+Algorithm \ref{algorithm:ext-iso} to get better running times.
+%
+\paragraph{Computing $\theta_a$.} 
+The running time for computing $\theta_a$ is only acceptable for small $s$. More precisely, 
+if we take $\CC(r) = O(r^{(1 + \omega) / 2})$ then the running time becomes quadratic if $s 
+\approx r^{(3 - \omega) / 2}$. We call $s$ small if $s < r^{(3 - \omega) / 2}$, and large 
+otherwise. To keep the complexity at most quadratic for all $s$, we proceed as follows. We know 
+that 
+$T_{F_1[\zeta] / F[\zeta]}(\gamma x^\ell) \ne 0$ for at least one $1 \le \ell \le r - 1$, 
+otherwise 
 $T_{F_1[\zeta] / F[\zeta]}(\gamma a) = 0$ for all $a \in F_1[\zeta]$ by linearity. Therefore, the 
 linear map 
 \[
@@ -798,14 +907,27 @@ proved the following,
 		\item $O(\MM(r^2)\log(r) + \MM(r)\log(q))$ operations in $F$ for large $s$.
 	\end{itemize}
 \end{proposition}
-
-
-
-%///////////////////////////////////////////
-
-\subsubsection{Computing $r$-th roots in $F[\zeta]$}
-\label{subsection:rth-root-fpz}
-
+%
+\paragraph{Exponentiation.}
+When the extension degree is prime, Step \ref{step:theta-pow} of Algorithm \ref{algorithm:ext-iso} 
+is done using $O(rs/v\MM(rs)\log(q)) = (s\MM(rs)\log(q))$ which is not acceptable for large $s$. On 
+the other hand we have $u_1 = u$, and $\theta_a^r$ is already a non-$r$-adic residue in 
+$\F[\zeta]$. So we can set $\eta_a = \theta_a^r$ to avoid the exponentiation altogether and still 
+be able to build the isomorphism. But this leads to $\eta_a, \eta_b$ not being in the $v$-subgroup 
+anymore, which make the discrete logarithm computation in Step \ref{step:dlog} complicated. To 
+solve this problem we replace discrete logarithm with root computation as follows. From 
+(\ref{equation:trace}) we have $\beta_a = \gamma\theta_a$,  $\beta_b = \gamma\theta_b$. Therefore, 
+\[ \eta_a\eta_b^{-1} = \beta_a^r\beta_b^{-r} = (\beta_a\beta_b^{-1})^r = c^r. \] 
+So we can construct the isomorphism
+\begin{equation*}
+	\begin{array}{rrll}
+	\psi: & F[\zeta][X] / (X^r - \eta_a) & \longrightarrow & F[\zeta][X] / (X^r - \eta_b) \\
+	& x & \longmapsto & cx
+	\end{array}
+\end{equation*}
+by computing an $r$-th root in $F[\zeta]$.
+%
+\paragraph{Computing $r$-th roots in $F[\zeta]$.}
 Let $a \in F[\zeta]$ be an $r$-th power. To compute an $r$-th root of $a$ we factor the 
 polynomial $X^r - a$ using the Equal Degree Factorization algorithm given in 
 \cite{kaltofen+shoup97}.
@@ -871,20 +993,21 @@ operations in $F$. At step $j$ of the recursion we have the following costs in $
 \end{itemize}
 The depth of the recursion is $\log(s)$, hence $\beta$ can be computed in
 \begin{itemize}
-	\item $O(\MM(s)\log(q) + n\CC(s)\log(s) + \MM(r)\MM(s)\log(s))$ operations in $F$ for small 
+	\item $O(\MM(s)\log(q) + n\CC(s)\log(s) + \MM(rs)\log(s))$ operations in $F$ for small 
 	$s$, or
-	\item $O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(r)\MM(s)\log(s))$ operations in $F$ for large 
+	\item $O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $F$ for large 
 	$s$.
 \end{itemize} 
-Finally since the depth of the recursion in Algorithm \ref{algorithm:edf} is $\log(r)$, we have the 
+Finally since the depth of the recursion in Algorithm \ref{algorithm:edf} is $\log(r)$, we have 
+the 
 following.
 \begin{proposition}
 	\label{proposition:root-fpz}
 	The total cost of root finding in $F[\zeta]$ is
 	\begin{itemize}
-		\item $O(\MM(s)\log(q)\log(r) + r\CC(s)\log(s) + \MM(r)\MM(s)\log(s)\log(r))$\\ operations 
+		\item $O(\MM(s)\log(q)\log(r) + r\CC(s)\log(s) + \MM(rs)\log(s)\log(r))$\\ operations 
 		in $F$ for small $s$, or
-		\item $O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(r)\MM(s)\log(s)\log(r))$\\ operations 
+		\item $O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(rs)\log(s)\log(r))$\\ operations 
 		in $F$ for large $s$.
 	\end{itemize}
 \end{proposition}
@@ -893,97 +1016,11 @@ following.
 
 
 
-%///////////////////////////////////////////
-
-\subsubsection{Computing the isomorphism $F_1 \rightarrow F_2$}
-
-In this section, we analyze the computational cost of building an isomorphism $\varphi: F_1 
-\rightarrow F_2$. We first construct the isomorphism $\varphi_2 \circ \psi \circ \varphi_1 : 
-F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain}), and then descend back to the 
-desired fields. The following algorithm builds the above chain of isomorphism based on the 
-observations at the start of the section. 
-\begin{algorithm}
-	[Isomorphism ${F_1[\zeta] \rightarrow F_2[\zeta]}$]
-	\label{algorithm:ext-iso}
-	\begin{algorithmic}[1]
-		\REQUIRE degree $r$ extensions $F_1, F_2$ of $F$
-		\ENSURE an isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$
-		\STATE\label{step:factor-cyclo} factor the cyclotomic polynomial $\Phi_r(Z)$ over $F$ to 
-		build extensions $F[\zeta],	F_1[\zeta], F_2[\zeta]$
-		\REPEAT
-		\STATE choose a random $a \in F_1[\zeta]$
-		\STATE compute $\theta_a$ using Algorithm \ref{algorithm:xidelta}
-		\UNTIL {$\theta_a \ne 0$}
-		\REPEAT
-		\STATE choose a random $b \in F_2[\zeta]$
-		\STATE compute $\theta_b$ using Algorithm \ref{algorithm:xidelta}
-		\UNTIL {$\theta_b \ne 0$}
-		\STATE\label{step:gamma-pow} $\eta_a \leftarrow \theta_a^r$ , $\eta_b \leftarrow \theta_b^r$
-		\STATE\label{step:psi} construct the isomorphism $\psi$ as in (\ref{equation:iso-chain})
-		\STATE construct $F_1[\zeta] \rightarrow F_2[\zeta]$ as in (\ref{equation:iso-chain})
-	\end{algorithmic}
-\end{algorithm}
-\begin{proposition}
-	Algorithm \ref{algorithm:ext-iso} computes the isomorphism $F_1[\zeta] \rightarrow F_2[\zeta]$ 
-	using
-	\begin{itemize}
-		\item $O(s\CC(r)\log(r) + \MM(r)\log(q) + \MM(s)\log(q)\log(r))$\\ operations in $F$ for 
-		small $s$, or
-		\item $O(\MM(r)\log(q) + \MM(s)\log(q)\log(r) + \MM(r^2)\log(r) +  
-		\MM(s)\MM(r)\log(s)\log(r))$\\ 
-		operations in $F$ for large $s$.
-	\end{itemize}
-\end{proposition}
-\begin{proof}
-	By \cite[Theorem 9]{shoup94} Step \ref{step:factor-cyclo} takes $O(r\log^2(r) + 
-	r\log(r)\log(q))$ operations in $F$. The running time of the two repeat...until loops is 
-	given by Proposition \ref{proposition:XiDelta-updated}. Step \ref{step:gamma-pow}
-	is done using $O(\MM(s)\MM(r)\log(r))$ operations in $F$. The running time of Step 
-	\ref{step:psi} is given by Proposition \ref{proposition:root-fpz}. Adding all these up proves 
-	the proposition.
-\end{proof}
-So, now we have an isomorphism $\phi: F_1[\zeta] \rightarrow F_2[\zeta]$ that sends $\theta_a$ to 
-some $h(z, x) \in F_2[\zeta]$. To construct the isomorphism $\varphi: F_1 \rightarrow F_2$ we the 
-technique in \cite{Allombert02}. Let 
-\[ \theta_a = \sum_{i = 0}^{s - 1}f_i(x)z^i, \quad\text{and}\quad z^s = (v(z)  \bmod g(z)) = 
-\sum_{i = 0}^{s - 1}v_iz^i. \] 
-Then since $\theta_a^{q^s} = z\theta_a$ we have
-\[ \sum_{i = 0}^{s - 1}f_i(x)^{p^s}z^i = f_{s - 1}(x)v(z) + f_0(x)z + \cdots + f_{s - 2}(x)z^{s - 
-1}.\]
-After rearranging the terms in the right hand side, this gives us the identities
-\[
-\begin{array}{ccc}
-	f_0(x)^{p^s} & = & v_0f_{s - 1}(x) \\
-	f_1(x)^{p^s} & = & f_0(x) + v_1f_{s - 1}(x) \\
-	\vdots & \vdots & \vdots \\
-	f_{s - 1}(x)^{p^s} & = & f_{s - 2}(x) + v_{s - 1}f_{s - 1}(x)
-\end{array} 
-\]
-form which we see that $f_i(x) \in F(f_0(x)) \subseteq F_1$ for all $i$. We prove $F(f_0) = 
-F_1$. Let $\sigma \in \gal(F_1(z) / F)$ be a generator, and let $j \le r$ be the smallest 
-integer such that $\sigma^jf_0 = f_0$. Then $\sigma^{js}\theta_a = \theta_a$, but $\theta_a$ is not 
-contained in any proper subfield; so $j = r$. Let $h_0$ be the constant term of $h(z, x)$. Then we 
-similarly have $F_2 = F(h_0)$. This gives us an isomorphism
-\[
-\begin{array}{rlll}
-	\phi: & F_1 & \longrightarrow & F_2 \\
-	& f_0 & \longmapsto & h_0
-\end{array}
-\]
-from which we can get an isomorphism
-\[
-\begin{array}{rlll}
-	\phi: & F_1 & \longrightarrow & F_2 \\
-	& x & \longmapsto & a(x)
-\end{array}
-\]
-using transposed modular composition.
 
 \subsubsection{The Artin-Schreier case}
 \label{sec:artin-schreier-case}
 
 \todo{We have to write at least a few paragraphs on how to handle this case.}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rains' algorithm}
