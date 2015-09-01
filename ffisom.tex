@@ -812,13 +812,11 @@ desired fields.
 	\end{algorithmic}
 \end{algorithm}
 
-Let us assume for the moment that $r$ is not prime, i.e. $r = v^d$ with $d \ge 2$. Subsection 
-\ref{sec:kummer-prime} is devoted to the prime case. By \cite[Theorem 9]{shoup94} Step 
-\ref{step:factor-cyclo} takes 
-$O(v\log^2(v) + v\log(v)\log(q))$ operations in $F$. The running time of the two repeat-until 
-loops is given by Proposition \ref{proposition:XiDelta}. Since $u_1$ is bounded by $q_1$,  
-$\log(u_1)$ is bounded by $rs/v\log(q)$. So Step \ref{step:theta-pow} is done using 
-$O(rs/v\MM(rs)\log(q))$ operations in $F$. 
+By \cite[Theorem 9]{shoup94} Step \ref{step:factor-cyclo} takes $O(v\log^2(v) + v\log(v)\log(q))$ 
+operations in $F$. The running time of the two repeat-until loops is given by Proposition 
+\ref{proposition:XiDelta}. Since $u_1$ is bounded by $q_1$, $\log(u_1)$ is bounded by 
+$rs/v\log(q)$. So Step \ref{step:theta-pow} is done using $O(rs/v\MM(rs)\log(q))$ operations in 
+$F$. 
 
 Step \ref{step:lambda-pow} is done using $O(\MM(rs)\log(r))$ operations in $F$. For Step 
 \ref{step:dlog} we use the well-known method in \cite{Pohlig1978}. We know that $\eta_a, \eta_b$ 
@@ -827,7 +825,7 @@ are generators of the $v$-subgroup $F[\zeta]^*$ of order $v^t$. Assume $i = \sum
 \[ \eta_a^{v^{t - 1}} = \eta_b^{iv^{t - 1}} = (\eta_b^{v^{t - 1}})^{\sum_{j = 0}^{t - 1}x_jv^j} = 
 (\eta_b^{v^{t - 1}})^{x_0} = \zeta^{x_0}.\]
 From this $x_0$ can be computed using a baby-step giant-step which takes $O(v^{1/2})$ 
-operations in $F[\zeta]$. Now if we have $x_0, x_1, \dots, x_k$, $k < m - 1$ then
+operations in $F[\zeta]$. Now if we have $x_0, x_1, \dots, x_k$, $k < t - 1$ then
 \[ (\eta_a\eta_b^{-\sum_{j = 0}^{k}x_jv^j})^{v^{t - k - 2}} = (\eta_b^{v^{t - 1}})^{x_{k + 1}} = 
 \zeta^{x_{k + 1}},\] from which $x_{k + 1}$ can be computed in a similar way. Therefore, computing 
 $i$ takes $O(t\log(v^t) + tv^{1/2})$ operations in $F[\zeta]$. 
@@ -868,7 +866,8 @@ from which we can get an isomorphism
 	& x & \longmapsto & a(x)
 \end{array}
 \]
-using transposed modular composition.
+using transposed modular composition. The cost of computing $\phi$ is of $O(\CC(r))$ operations in 
+$F$, which is dominated by other costs.
 
 
 \subsubsection{Prime extensions}
