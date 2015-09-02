@@ -1798,11 +1798,9 @@ $3$rd roots of unity are invovled instead of $\pm1$.
 
 \begin{proposition}
 Algorithm (\ref{algorithm:compell}) is correct. Given $m,q,r,\ell$ it computes
-its output using 
-\begin{equation}
-O(m\MM(m)\log(m)\log(q))
-\end{equation}
- operations in $\F_q$.
+its output using $O(\MM(m)(m\log{q}+r(\log{q}-\log{\ell})+
+(\ell\log{\ell})/r)+\CC(m)\log{m})$ operations in $\F_q$. If we assume $\ell <
+\sqrt{q}$, then the complexity is $\tildO(m^2\log{q})$.
 \end{proposition}
 \begin{proof}
 We can assume that we have everything we need from $E/\F_q$. More precisely, we
@@ -1811,7 +1809,7 @@ $\pi_q$ on $\Q$. Therefore, determining $\order_E:=\#E(\F_{q^r})$ is mainly a
 matter of raising $q$, $\lambda$ and $\mu\in\Q$ to $r$. Assuming that we are
 using FFT, this takes
 \begin{equation}
-O(r\log(r)\log(\log(r) d))
+O(r\log{r}\log{\log{r}}\,d)
 \end{equation}
 bit operations, where $d$ is the number of bits of $r$. Since $r$ is a divisor
 of $m$ and most of the following complexities depend on $m$, the previous
@@ -1833,30 +1831,29 @@ is on $E$.
 The first point is computing a trace on $\F_{q^r}$ form $k$. For $q_r=q^r$ and
 $m_r = m/r$, the most straightforward way to compute the trace is to compute 
 \[
-\tau = \nu + \nu^{q_r} + \nu^{q_r^2} + \dots + \nu^{q_r^{m_r-1}}
+\tau=\nu+\nu^{q_r}+\nu^{q_r^2}+\dots+\nu^{q_r^{m_r-1}}
 \]
 This requires $m_r-2$ exponentiations to the power $q_r$ and $(m_r-1)$ 
 sums of polynomial of degree less than $m$, therefore the required number of
 operations on $\F_q$ is 
 \begin{equation}
-O(m\MM(m)\log(q)).
+O(m\MM(m)\log{q}).
 \end{equation}
 the proof can be found in \cite{Shoup}.
 
 Next, we wish to compute a square root of $f_E(\tau)$ in $\F_{q^r}$, keeping in
 mind that the operations are done using elements of $k$, this can be done in 
 \begin{equation}
-O(\MM(m)\log(q) + \CC(m)\log(m))
+O(\MM(m)\log{q} + \CC(m)\log{m})
 \end{equation}
 operations on $\F_q$, using the algorithm in \cite{javad'spaper}, which is
 subquadratic in $m$; we expect a good point in $O(1)$ tries.
 
 The third and the most straightforward step is also the most expensive one. 
 We use a double and add algorithm to compute the point $[\order_E/\ell]Q$. This
-requires ? points addition and ? points doubling, which in turn requires one
-division and one squaring. This requires
+requires 
 \begin{equation}
-O(m\MM(m)\log(m))
+O(r\MM(m)(\log{q}-\log{\ell}))
 \end{equation}
 operations on $\F_q$ \cite{}.
 
@@ -1865,18 +1862,21 @@ there is essentially $(\ell-1)/(i.r)$ scalar products by elements in
 $(\Z/\ell\Z)^{\ast}$ on $E/\F_{q^r}$ and exponentiations of power $i/2$, with 
 $i=2,4$ or $6$. This takes 
 \begin{equation}
-O(\ell/r \MM(m)\log(m))
+O((\ell\MM(m)\log{\ell})/r)
 \end{equation}
-operations in $\F_q$ \cite{}. This is, as are all the previous steps of the
-algorithm, dominated by the scalar product. Therefore, the complexity of the
-whole algorithm is the one announced in the statement.
+operations in $\F_q$ \cite{}.
+
+Thus, the complexity is 
+\[
+O(\MM(m)(m\log{q}+r(\log{q}-\log{\ell})+
+(\ell\log{\ell})/r)+\CC(m)\log{m}).
+\]
+Since in practice an additionnal requirement for $\ell$ is $\ell < \sqrt{q}$,
+see section \ref{sec:selection}, the terms in $\log{\ell}$ can be ignored. 
+Morever, since $r|m$, the terms in $r$ are dominated by those in $m$. Finally, 
+$\CC(m)$ is subquadratic in $m$, it is dominated by the rest of the formula. 
+Therefore, we end up with a complexity of $O(m\MM(m)\log{q})$.
 \end{proof}
-
-\begin{remark}
-At the cost of some precalculations, we can reduce the number of operations
-required to compute the trace. \todo{Maybe look at what Rains said in his mail.}
-\end{remark}
-
 
 \section{Algorithm selection}
 \label{sec:selection}
