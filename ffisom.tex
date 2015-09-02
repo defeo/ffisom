@@ -1828,7 +1828,7 @@ is on $E$.
     \item Compute $P:=[\order_E/\ell]Q$.
 \end{enumerate}
 
-The first point is computing a trace on $\F_{q^r}$ form $k$. For $q_r=q^r$ and
+The first point is computing a trace on $\F_{q^r}$ from $k$. For $q_r=q^r$ and
 $m_r = m/r$, the most straightforward way to compute the trace is to compute 
 \[
 \tau=\nu+\nu^{q_r}+\nu^{q_r^2}+\dots+\nu^{q_r^{m_r-1}}
@@ -1849,9 +1849,8 @@ O(\MM(m)\log{q} + \CC(m)\log{m})
 operations on $\F_q$, using the algorithm in \cite{javad'spaper}, which is
 subquadratic in $m$; we expect a good point in $O(1)$ tries.
 
-The third and the most straightforward step is also the most expensive one. 
-We use a double and add algorithm to compute the point $[\order_E/\ell]Q$. This
-requires 
+Finally, we use a double and add algorithm to compute the point 
+$[\order_E/\ell]Q$. This requires 
 \begin{equation}
 O(r\MM(m)(\log{q}-\log{\ell}))
 \end{equation}
