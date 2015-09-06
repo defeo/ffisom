@@ -7,7 +7,7 @@ from sage.functions.other import sqrt
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
 import XZ
 
-def isom_elliptic(k1, k2, k = None, bound = None):
+def isom_elliptic(k1, k2, k = None, bound = None, found_m = []):
     '''
     INPUT : 
 
@@ -84,15 +84,13 @@ def isom_elliptic(k1, k2, k = None, bound = None):
     # Added the b parameter, because for some cases, like q = 2 and n = 3, there
     # were no prime of the form a*n + 1 that gave good trace candidates. Only
     # one of the form a*n + 6 work ; it's m = 9, which is a prime power and not
-    # really in the scope (theoritically) of our algorithm as of august 2015.
-    m_t = find_m(n, k, bound)
-    while m_t is None:
-        m_t = find_m(n, k, bound, b)
-        b += 1
+    # really in the scope of our algorithm as of august 2015.
+    m_t = find_m(n, k, bound, b, found_m)
+    print m_t[0]
 
     
-    if m_t is None:
-        raise RuntimeError, 'No suitable m found, increase your bound.'
+    #if m_t is None:
+    #    raise RuntimeError, 'No suitable m found, increase your bound.'
 
     # Finding the elliptic curve on which we can work. 
     E, case = find_elliptic_curve(k, k1, m_t)
@@ -233,14 +231,14 @@ def find_unique_orbit_elliptic(E, m, case = 0, one_element = 0):
                 range(order))
             elif case == 1:
                 gen_G = Integers(m).unit_gens()[0]**n
-                order = euler_phi(m)/(4*n)
+                order = euler_phi(m)/(2*n)
         
                 return sum((XZ.ladder(P, ZZ(gen_G**i), E.a4(), E.a6())[0])**2 for i in 
                     range(order))
 
             elif case == 2:
                 gen_G = Integers(m).unit_gens()[0]**n
-                order = euler_phi(m)/(6*n)
+                order = euler_phi(m)/(2*n)
 
                 return sum((XZ.ladder(P, ZZ(gen_G**i), E.a4(), E.a6())[0])**3 for i in
                 range(order))
@@ -254,7 +252,7 @@ def find_unique_orbit_elliptic(E, m, case = 0, one_element = 0):
             #
             #TODO: Look into how to react when such case arises, although the
             # case of an even degree may be reserved to the Rains cyclotomic
-            # algorithm.
+            # algorithm
             if one_element == 1:
                 return P 
 
@@ -356,8 +354,8 @@ def find_elliptic_curve(k, K, m_t):
         # centerlift instead of just c**i. But then, the bug was transferred to
         # more cases.
         #
-        # TODO: figure a way to make the program work for these cases should they
-        # come up.
+        # TODO: figure a way to make the program work for this cases should they
+        # come up
         L = [(t*(c**i).centerlift(), g**i) for i in range(4)]
 
         for i in range(4):
@@ -497,7 +495,7 @@ def find_trace(n,m,k):
 
         return set(sol)
 
-def find_m(n, k, bound = None, b = 1):
+def find_m(n, k, bound = None, b = 1, found_m = []):
     '''
     INPUT :
 
@@ -542,7 +540,7 @@ def find_m(n, k, bound = None, b = 1):
     power. When one is found, we return it with its trace class candidates.
     '''
     if bound is None:
-        bound_a = 100 # Arbitrary value.  
+        bound_a = 10**5 # Arbitrary value.  
     else:
         # if m = a*n + 1 < b, then a < (b- 1)/n.
         bound_a = (bound - 1) / n 
@@ -558,7 +556,7 @@ def find_m(n, k, bound = None, b = 1):
         # m. On the other hand, not allowing prime power makes case like q = 2
         # and n = 3 fail to find any m that works.
         # As of august 2015, I don't know if there are other cases like that.
-        if not m.is_prime():
+        if not m.is_prime_power():
             continue 
         # Dirty implementation aimed to fix the problem of n = m - 1
         elif euphin == 1:
@@ -578,5 +576,7 @@ def find_m(n, k, bound = None, b = 1):
             # soon.
             if len(S_t) < 1:   
                 continue       
+            elif m in found_m:
+                continue
             else:
-                return m, S_t
+                return m, S_t, 0
