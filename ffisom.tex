@@ -1467,7 +1467,7 @@ where $P_X$ is the abscissa of the point $P$.
 
 For the case $j\neq0,1728$, we have $\Aut(E)=\lbrace{\pm1}\rbrace$ therefore
 $\#\Aut(E)/2 = 1$. The following theorem is a secondary result of
-\cite{MiMoScho} and fall into the case $j\neq0,1728$. We first focus on
+\cite{mihailescu+morain+schost07} and fall into the case $j\neq0,1728$. We first focus on
 this case.
 
 \begin{theorem}
@@ -1652,7 +1652,8 @@ we define
 \eta_i = \sum_{\sigma\in S}{g_{\sigma}(g_{\lambda^i}(\theta))}
 \end{equation}
 reduction modulo $\mathfrak{q}$ of $\widehat{\eta}_i$. For $\ell\geq3$ odd, the
-discriminant of $\psi_\ell$ satisfies the following relation \cite{MiMoScho}
+discriminant of $\psi_\ell$ satisfies the following relation
+\cite{mihailescu+morain+schost07}
 \begin{equation}
 \text{Disc}(\psi_\ell)=
 (-1)^{(\ell-1)/2}\ell^{(\ell^2-3)/2}(-\Delta)^{(\ell^2-1)(\ell^2-3)/24}
@@ -1798,22 +1799,13 @@ $3$rd roots of unity are invovled instead of $\pm1$.
 
 \begin{proposition}
 Algorithm (\ref{algorithm:compell}) is correct. Given $m,q,r,\ell$ it computes
-its output using $O(\MM(m)(m\log{q}+r\log{q}-\log{\ell}+
-(\ell\log{\ell})/r)+\CC(m)\log{m})$ operations in $\F_q$. If we assume $\ell <
-\sqrt{q}$, then the complexity is $\O(m^2(\log{q} + \log{m}))$.
+its output using $O(\MM(m)(m\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-We can assume that we have everything we need from $E/\F_q$. More precisely, we
-already know its cardinality and the roots of the characteristic polynomial of
-$\pi_q$ on $\Q$. Therefore, determining $\order_E:=\#E(\F_{q^r})$ is mainly a 
-matter of raising $q$, $\lambda$ and $\mu\in\Q$ to $r$. Assuming that we are
-using FFT, this takes
-\begin{equation}
-O(r\log{r}\log{\log{r}}\,d)
-\end{equation}
-bit operations, where $d$ is the number of bits of $r$. Since $r$ is a divisor
-of $m$ and most of the following complexities depend on $m$, the previous
-complexity is dominated by all the other operations.
+The first thing we need to determine is the number of points of $E$ on
+$\F_{q^r}$. This can be easily determined from the trace of $E$ on $\F_q$. The
+costs of the operation is negligible compared to the rest of the aglorithm, it
+will be described in more details in section \ref{sec:selection}.
 
 The main and the most expensive step is the search for a point of order $\ell$
 in $E(\F_{q^r})$. It is important to note that we are actually working on the
@@ -1837,16 +1829,16 @@ This requires $m_r-2$ exponentiations to the power $q_r$ and $(m_r-1)$
 sums of polynomial of degree less than $m$, therefore the required number of
 operations on $\F_q$ is 
 \begin{equation}
-O(m\MM(m)\log{m}).
+O(m\MM(m)\log{q}).
 \end{equation}
-the proof can be found in \cite{Shoup}.
+
 
 Next, we wish to compute a square root of $f_E(\tau)$ in $\F_{q^r}$, keeping in
 mind that the operations are done using elements of $k$, this can be done in 
 \begin{equation}
 O(\MM(m)\log{q} + \CC(m)\log{m})
 \end{equation}
-operations on $\F_q$, using the algorithm in \cite{javad'spaper}, which is
+operations on $\F_q$, using the algorithm in \cite{doliskanischost2011}, which is
 subquadratic in $m$; we expect a good point in $O(1)$ tries.
 
 Finally, we use a double and add algorithm to compute the point 
@@ -1854,8 +1846,7 @@ $[\order_E/\ell]Q$. This requires
 \begin{equation}
 O(\MM(m)(r\log{q}-\log{\ell}))
 \end{equation}
-operations on $\F_q$ \cite{}.
-
+operations on $\F_q$.
 It only remains to compute the elliptic period itself. Depending on the case,
 there is essentially $(\ell-1)/(i.r)$ scalar products by elements in
 $(\Z/\ell\Z)^{\ast}$ on $E/\F_{q^r}$ and exponentiations of power $i/2$, with 
@@ -1863,19 +1854,17 @@ $i=2,4$ or $6$. This takes
 \begin{equation}
 O((\ell\MM(m)\log{\ell})/r)
 \end{equation}
-operations in $\F_q$ \cite{}.
+operations in $\F_q$.
 
 Thus, the complexity is 
 \[
-O(\MM(m)(m\log{m}+r\log{q}-\log{\ell}+
+O(\MM(m)(m\log{q}+r\log{q}-\log{\ell}+
 (\ell\log{\ell})/r)+\CC(m)\log{m}).
 \]
-Since in practice an additionnal requirement for $\ell$ is $\ell\in 
-O(\sqrt{q})$, see section \ref{sec:selection}, the terms in $\log{\ell}$ 
-are absorbed by those in $\log{m}$. Morever, since $r|m$, the terms in $r$ are 
-dominated by those in $m$. Finally, $\CC(m)$ is subquadratic in $m$, it is 
-dominated by the rest of the formula. Therefore, we end up with a complexity of 
-$O(m\MM(m)(\log{q} + \log{m}))$.
+Since $r|m$, the terms in $r$ are dominated by those in $m$. Finally, $\CC(m)$ 
+is subquadratic in $m$, it is dominated by the rest of the formula. Therefore,
+we end up with a complexity of 
+$O(\MM(m)(m\log{q} + (\ell/r)\log{\ell}))$.
 \end{proof}
 
 \section{Algorithm selection}
