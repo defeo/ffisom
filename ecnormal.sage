@@ -1,3 +1,10 @@
+def CounterExampleException(Exception):
+	def __init__(self, q, l, j, r):
+		self.q = q
+		self.l = l
+		self.j = j
+		self.r = r
+
 def is_normal(alpha, q, r):
 	K = alpha.parent()
 	x = polygen(K)
@@ -18,60 +25,101 @@ def check_one_curve(K = QQ, l = 5):
 	mulrat = [E.multiplication_by_m(i) for i in xrange(1, (l+1)/2)]
 	return sum(m(t) for i in mulrat)
 
-def check_ff_ec(K = GF(7), l = 5, verbose = False):
-	periods = []
+def check_ff_jinv(K = GF(7), l = 5, verbose = False):
+	cnt = 0
 	a = GF(l).multiplicative_generator()
-	for j in K:
-		if j == 0 or j == 1728:
-			continue
-		E = EllipticCurve(j=j)
-		t = E.trace_of_frobenius()
-		if t % K.characteristic() == 0:
-			continue
-		x = polygen(ZZ)
-		f = x**2-t*x+K.order()
-		fmod = f.change_ring(GF(l))
-		froots = fmod.roots()
-		if len(froots) != 2:
-			continue
-		lb = froots[0][0]
-		mu = froots[1][0]
-		r = lb.multiplicative_order()
-		s = mu.multiplicative_order()
-		if r == s:
-			continue
-		if r > s:
-			r = s
-			lb = mu
-		lb = lb.lift()
-		if r == 1 or r % 2 == 0:
-			continue
-		#if any(e > 1 for _, e in r.factor()):
-		#	continue
-		rl = ZZ((l-1)/r)
-		if (r.gcd(rl) != 1):
-			continue
-		b = a**r
-		#print "Testing: j =", j, r, rl
-		L = K.extension(r, name='z')
-		EL = E.base_extend(L)
-		m = EL.cardinality()
-		ml = ZZ(m/l)
-		P = EL(0)
-		while P == 0:
-			P = ml*EL.random_element()
-		#print [b**i for i in xrange(0,rl/2)]
-		#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
-		periods.append((sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2)), r, j))
-		if verbose:
-			print is_normal(periods[-1][0], K.order(), r), is_gen(periods[-1][0], r)
 	false = []
-	for alpha, r, j in periods:
-		if not is_gen(alpha, r):
-			false.append((j, False, False))
-		elif not is_normal(alpha, K.order(), r):
-			false.append((j, True, False))
-	return false
+	for j in K:
+		E = EllipticCurve(j=j)
+		basis = check_ff_curve(E, l)
+		if basis is None:
+			continue
+		cnt += 1
+		if verbose:
+			print E.j_invariant(), basis[1:]
+		if not basis[2]:
+			raise CounterExampleException(K.order(), l, E, basis[1])
+		if not all(basis[2:]):
+			false.append([j])
+			false[-1].extend(basis)
+	return [cnt, len(false), false]
+
+def check_ff_coeffs(K = GF(13), l = 7, verbose = False):
+	cnt = 0
+	K2 = K**2
+	false = []
+	for coeffs in K2:
+		try:
+			E = EllipticCurve(coeffs.list())
+		except ArithmeticError:
+			continue
+		basis = check_ff_curve(E, l)
+		if basis is None:
+			continue
+		cnt += 1
+		if verbose:
+			print E.j_invariant(), basis[1:]
+		if not basis[2]:
+			raise CounterExampleException(K.order(), l, E, basis[1])
+		if not all(basis[2:]):
+			false.append([E.j_invariant()])
+			false[-1].extend(basis)
+	return [cnt, len(false), false]
+
+def check_ff_curve(E, l = 5, verbose = False):
+	K = E.base_ring()
+	p = K.characteristic()
+	q = K.order()
+	a = GF(l).multiplicative_generator()
+	j = E.j_invariant()
+	if j == 0 or j == 1728:
+		return None
+	t = E.trace_of_frobenius()
+	if t % p == 0:
+		return None
+	x = polygen(ZZ)
+	f = x**2-t*x+q
+	fmod = f.change_ring(GF(l))
+	froots = fmod.roots()
+	if len(froots) != 2:
+		return None
+	lb = froots[0][0]
+	mu = froots[1][0]
+	r = lb.multiplicative_order()
+	s = mu.multiplicative_order()
+	if r == s:
+		return None
+	if r > s:
+		r = s
+		lb = mu
+	lb = lb.lift()
+	if r == 1 or r % 2 == 0:
+		return None
+	#if any(e > 1 for _, e in r.factor()):
+	#	return None
+	rl = ZZ((l-1)/r)
+	if (r.gcd(rl) != 1):
+		return None
+	b = a**r
+	#print "Testing: j =", j, r, rl
+	L = K.extension(r, name='z')
+	EL = E.base_extend(L)
+	m = EL.cardinality()
+	ml = ZZ(m/l)
+	P = EL(0)
+	while P == 0:
+		P = ml*EL.random_element()
+	#print [b**i for i in xrange(0,rl/2)]
+	#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
+	period = sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))
+	basis = [period, r]
+	if not is_gen(period, r):
+		basis.extend([False, False])
+	elif not is_normal(period, q, r):
+		basis.extend([True, False])
+	else:
+		basis.extend([True, True])
+	return basis
 
 def check_ff_cyclo(K = GF(7), l = 5):
 	periods = []
