@@ -1295,21 +1295,25 @@ questions will be analyzed in Section~\ref{sec:selection}.
 \section{Elliptic Rains' algorithm}
 \label{sec:rains-elliptic}
 
-In \cite{Pinch}, Pinch already proposed to use the torsion points of an elliptic
-curve in place of the roots of unity. Rains also mentionned this possiblity, 
-but judged that as far as he could see, it would not bring significant 
-improvements.
- 
-In practice the use of auxiliary extensions in the cyclotomic method costs a
-lot of ressources. We will see that, contrary to Rains' belief, in the cases 
-where an auxiliary extention is necessary, the elliptic variant is actually more 
-competitive.
+The Pinch/Rains' algorithm presented in the previous section relies on the use
+of the multiplicative group of finite fields.
+It is natural to try to extend it to other types of algebraic groups in
+order to cover a wider range of parameter ranges.
+And indeed Pinch~\cite{Pinch} showed how to use torsion points of elliptic
+curves in place roots of unity.
+Rains also considered this possiblity, but did not investigated it thoroughly
+as no theoretical gain was to be expected.
+However, the situation in practice is quite different.
+In particular, the need for auxiliary extensions in the cyclotomic method
+is very costly whereas the elliptic variant often leverages the need for
+an extension and is therefore very competitive.
 
-In the next sections, we first introduce the \emph{elliptic periods} which
-similarly to the Gaussian periods form a normal basis of $\F_q^r$, then we 
-describe the algorithm itself, namely how to compute two elements with a
-uniquely defined orbits.
- 
+In the next sections, we first introduce \emph{elliptic periods}, a
+straightforward generalization of Gaussian periods for torsion points
+of elliptic curves, the non-trivial part being to show that
+elliptic periods yield (power) bases of finite fields,
+then analyze the cost of their computation.
+
 \subsection{Uniquely defined orbits from elliptic periods}
 
 In the previous section, the group used to compute our generating elements was
