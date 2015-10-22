@@ -1141,8 +1141,8 @@ previous section: given $k$, $K$ and $r$,
   Lemma~\ref{th:gaussian} with $[\F_q[\mu_\ell]:\F_q]=r$;
 \item take random $\ell$-th roots of unity $\zeta_\ell\in k$ and
   $\zeta_\ell'\in K$;
-\item return the Gaussian periods $\alpha=\eta(\zeta_\ell)$ and
-  $\beta=\eta(\zeta_\ell')$.
+\item return the Gaussian periods $\alpha_r=\eta(\zeta_\ell)$ and
+  $\beta_r=\eta(\zeta_\ell')$.
 \end{enumerate}
 
 The problem with this algorithm is the vaguely defined
@@ -1178,7 +1178,7 @@ identical.
     \STATE Compute $\zeta = \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
     \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
     \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) = \sum_{\sigma\in S}\zeta^\sigma$;
-    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha = \trace_{\F_{q^{rs}}/\F_{q^r}}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
+    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha_r = \trace_{\F_{q^{rs}}/\F_{q^r}}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1192,7 +1192,7 @@ identical.
   By construction $k'$ contains a subfield isomorphic to $\F_{q^{rs}}$
   and to $\F_q[\mu_\ell]$. By Lemma~\ref{th:gaussian} $\eta(\zeta)$ is
   a normal generator of $\F_{q^{rs}}$, and
-  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a normal generator of
+  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha_r$ is a normal generator of
   $\F_{q^r}\subset k$.
 
   In the worst case $[k':k]=s$. Using the techniques
@@ -1206,7 +1206,7 @@ identical.
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
-  \[\alpha = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
+  \[\alpha_r = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of $O((\MM(ms)\ell\log\ell)/r)$.
@@ -1316,12 +1316,39 @@ then analyze the cost of their computation.
 
 \subsection{Uniquely defined orbits from elliptic periods}
 
-Throughout this section $q$ is an odd prime power, and $\ell$ is
-a prime number not dividing $q$.  If $E$ is an elliptic curve
-defined over $\F_q$ this implies that the geometric $\ell$-torsion
-$E[\ell]$ of $E$ is of rank $2$.
+Throughout this section $q$ is an odd prime power. 
 
-We also suppose that $\ell$ is an Elikies prime for the curve $E$.
+An elliptic curve $E/L$ defined over a field $L$ of characteristic
+$>2$ is an equation of the form
+\begin{equation*}
+  E\;:\; y^2 = x^3 + a_2x^2 + a_4x + a_6
+  \qquad\text{with $a_2,a_4,a_6\in L$.}
+\end{equation*}
+For any field extension $M/L$ the group of $M$-rational points of $E$
+is the set
+\begin{equation*}
+  E(M) = \{(x,y)\in M^2 \mid E(x,y) = 0\} \cup \{\mathcal{O}\}
+\end{equation*}
+endowed with the usual group law.
+
+For an integer $\ell$, we denote by $E[\ell]$ the $\ell$-torsion
+subgroup of $E(\bar{L})$, where $\bar{L}$ denotes the algebraic
+closure of $L$. In this section we are going to consider integers
+$\ell$ coprime with the characteristic of $L$, then $E[\ell]$ is a
+group of rank $2$.
+
+For an elliptic curve $E/\F_q$ defined over a finite field, we denote
+by $\pi$ its \emph{Frobenius endomorphism}. It is well known that
+$\pi$ satisfies a quadratic equation $\pi^2-t\pi+q=0$, where $t$ is
+called the \emph{trace of $E$}, and that this equation determines the
+cardinality of $E$ as $\#E(\F_q)=q+1-t$.
+
+Like in the cyclotomic case, the Frobenius endomorphism partitions
+$E[\ell]$ into orbits. Our goal is to take traces of points in
+$E[\ell]$ so that a uniquely defined orbit arises. This task is made
+more complex by the fact that $E[\ell]$ has rank 2, hence we are going
+to restrict to a family of primes $\ell$ named \emph{Elkies primes}.
+
 \begin{definition}[Elkies prime]
   Let $E/\F_q$ be an elliptic curve, let $\ell$ be a prime number not
   dividing $q$.  We say that $\ell$ is an Elkies prime for $E$ if the
@@ -1337,10 +1364,6 @@ Note that if $\ell$ is an Elkies prime for $E$,
 then $E[\ell]$ splits into two eigenspaces for $\pi$
 which are defined on extensions of $\F_q$ of degrees
 $\order_\ell(\lambda)$ and $\order_\ell(\mu)$.
-In the following we suppose that $r = \order_\ell(\lambda)$
-and $\order_\ell(\mu) \nmid r$
-to ensure that only one of the two torsion components
-is defined over $\F_{q^r}$.
 
 Another subtelity arises in comparison with multiplicative groups:
 elliptic curves always come with non trivial automorphisms. We recall
@@ -1376,21 +1399,22 @@ where $x(P)$ denotes the abscissa of $P$.
 
 \begin{theorem}
 \label{theorem:ellperiods}
-Let $\ell$ be a prime different from $p$, $r$ an odd integer, and $t, \lambda,
-\mu$ integers such that
+Let $\ell$ be a prime not dividing $q$, and let $t, \lambda, \mu$ be
+integers such that
 \begin{enumerate}
     \item $\lvert t \rvert < \sqrt{2q}$,
     \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell$,
     \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$
-for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$,
-    \item $\order_\ell(\lambda) = r$ and $\order_\ell(\mu)\nmid r$.
+for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$.
 \end{enumerate}
 
 Let $E/\F_q$ be an elliptic curve of trace $t$
-and $P \in E(\F_{q^r})[\ell]$ a point in the eigenspace
+and $P \in E[\ell]$ a point in the eigenspace
 corresponding to $\lambda$.
 
-Then the elliptic period $\eta_\lambda(P)$ generates $\F_{q^r}$ over $\F_q$.
+Then the elliptic period $\eta_\lambda(P)$ generates $\F_q[x(P)]$ over
+$\F_q$.  Furthermore, the Galois orbit of $\eta_\lambda(P)$ is
+independent of the choice of $P$.
 \end{theorem}
 
 \begin{proof}
@@ -1423,191 +1447,90 @@ Here is the rainbow diagram.
 \end{center}
 \end{proof}
 
-\subsection{Rains' elliptic algorithm}
+\subsection{Elliptic variant of Rains' algorithm}
 
-The main improvement of the elliptic variant of Rains' algorithm is the fact
-that we can work directly in the extensions we are interested in. What allows
-this to happen is that contrary to the roots of unity, there isn't only one
-elliptic curve per extension, namely there are as many elliptic curves as there
-are $j$-invariants in $\F_q$. The twists of curve will help us in 
-almost always finding a good elliptic curve. For a more detailed discussion 
-about the way to select an elliptic curve, we refer to the section 
-\ref{sec:selection}. In this section, we focus on computing elements with a 
-unique orbit. We recall that we are working in characteristic $p\geq3$.
+Rain's cyclotomic algorithm needs auxiliary extensions to accommodate
+for sufficiently small subgroups $\mu_\ell$ of the unit group. By
+replacing unit groups with torsion groups of elliptic curves, we gain
+more freedom on the choice of the size of the group, thus we are able
+to work with smaller fields.  
 
-We quickly recall the situation, we have an extension $K/k$ with $K/\F_q$ being
-of degree $n$ and $k/\F_q$ being of degree $m$ such that $m|n$. Thus we can find 
-$k'\subset K$ a subfield such that $k'\simeq k$. We wish to compute two elements 
-$\alpha\in k$ and $\beta\in k'$, such that 
-\begin{equation}
-\begin{tikzpicture}
-    \node (k) {$k$};
-    \node[left=0.1cm of k] (phi) {$\phi :$};
-    \node[below=0.1cm of k] (alpha) {$\alpha$};
-    \node[right=2cm of k] (kp) {$k'$};
-    \node[below=0cm of kp] (beta) {$\beta$};
-
-    \draw[->] (k) edge node[auto] {} (kp);
-    \draw[|->] (alpha) edge node[auto] {} (beta);
-\end{tikzpicture}
-\end{equation}
-defines an isomorphism. 
-The procedure is close to the cyclotomic variant's procedure, given $k$, $K$
-and $r$ a prime power dividing $m$ such that $(m/r,r) = 1$, we need to :
-\begin{itemize}
-    \item Find a prime $\ell$ and an elliptic curve $E$ satisfying the
-conditions of theorem \ref{theorem:ellperiods};
-    \item Take random points $P\in E(k_r)$ and $P'\in E(k'_r)$ of order $\ell$;
-    \item Compute the elliptic periods $\alpha_r := \eta_{\lambda}(P)$ and
-$\beta_r:= \eta_\lambda(P')$ for each $r$.
-\end{itemize}
-where $k_r\subset k$ and $k'_r\subset k'$ are both fields of degree $r$ on
-$\F_q$.
-
-The first operation usually takes a reasonable amount of time, on exception of a
-few particular case, see section \ref{sec:selection} for more detail. The second 
-operations is what will take the most ressources, since $k$ and $K$ are not of 
-degree $r$ on $\F_q$, we have to compute traces. The multiplication of a point 
-by a scalar also costs a lot of ressources. And we shall see that the second 
-step is dominating the whole algorithm. 
-\vspace{0.3cm}
-
-Let us assume that we have $k$, $r$ and $E/\F_q$ as above. First, we need to 
-compute a point of order $\ell$. For that we pick a point at random 
-in $E(\F_{q^r})$ and multiply it by $\#E(\F_{q^r})/\ell$. Considering the fact 
-that $\ell$ is a prime, we are assured that the resulting point $P$ is of order 
-$\ell$. Thus we need to compute $\#E(\F_{q^r})$, for that we simply use the 
-following relation
-\begin{equation}
-\#E(\F_q^r)=q^r+1-(\lambda^r+\mu^r)
-\end{equation}
-for $\lambda, \mu$ the roots of the characteristic polynomial of $\pi_q$. This
-is possible if we assume that we already have computed
-$\#E(\F_q)$, which will be the case. Moreover, since the class modulo $\ell$ of
-$\lambda$ and $\mu$ have the right proprieties from theorem 
-\ref{theorem:ellperiods}, this tells us that $P$ is indeed in 
-the eigenspace of $\lambda$ and that its elliptic period forms a normal basis of
-$\F_{q^r}$ with its conjugates. 
-
-Depending on the $j$-invariant of $E$, the elliptic periods should be computed 
-differently, see definition \ref{definition:ellperiod}. Practically, let 
-$c\in(\Z/\ell\Z)^{\ast}$ be a generator such that $s:=c^r$ is of order 
-$(\ell-1)/(r_E.r)$ in $(\Z/\ell\Z)^{\ast}/\Aut(E)$, with 
-$r_E=\#\Aut(E)$. We define $S:=\langle{s}\rangle$ and since $\lambda$ 
-is of order $r$ in $(\Z/\ell\Z)^{\ast}$, we obtain the product we want
-\[
-(\Z/\ell\Z)^{\ast}/\Aut(E)=\langle{\lambda}\rangle\times\langle{s}\rangle.
-\]
-If we recall that all the groups are cyclics, we can rewrite the elliptic 
-periods in a more computable form
-\begin{equation}
-\eta_\lambda(P)=\sum_{i=0}^{(\ell-1)/r_E.r}
-{\left([s^i]P\right)_X^{r_E/2}}.
-\end{equation}
-Thus we have the following algorithm.
-
-\begin{algorithm}
-[Computing an elliptic periods]
-\label{algorithm:compell}
-    \begin{algorithmic}[1]
-    \REQUIRE $k$ a finite field of degree $m$ on $\F_q$, $r|m$ a prime power
-such that $(m/r,r) = 1$, $E/\F_q$ an elliptic curve defined over $\F_q$ and 
-$\ell$ the Elkies prime for $E/\F_q$ both satisfying the conditions of theorem
-(\ref{theorem:ellperiods}).
-    \ENSURE $\eta$ a normal generator of $\F_{q^r}\subset k$, with a uniquely
-defined Galois orbit.
-    \STATE $\order_E\leftarrow\#E(\F_{q^r})$
-    \REPEAT
-        \STATE $Q\leftarrow\text{rand}(E(\F_{q^r}))$
-        \STATE $P\leftarrow[\dfrac{\order_E}{\ell}]Q$
-    \UNTIL{$P\neq\mathcal{O}_E$}
-    \STATE $\eta\leftarrow\sum_{\sigma\in S}{\left([\sigma]P\right)_X^{r_E/2}}$
-    \RETURN $\eta$
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{remark}
-A simple fact in favor of taking the automorphism group of $E$ into account is
-easily illustrated in the case $j\neq0,1728$. In this case, $\Aut(E) =
-\lbrace{\pm1}\rbrace$ and since $P_X = (-P)_X$, we would be actually summing the
-same element two times; which isn't necessary to what we do.
-
-However, another more pathological issue arises when we are working on the
-specific case $j = 0$ or $1728$. For example, if we consider the case $j =
-1728$, we know that an element of $\sigma\in\Aut(E)$ acts as follow
-\[
-\sigma:(x,y)\mapsto(-x,\imath y)
-\]
-Therefore, we can end up summing points with opposites abscissas, resulting in a
-$0$ sum, which isn't of great interest. A solution to this phenomenon is to
-square the abscissas. A similar phenomenon appears with $j = 0$, only this time
-$3$rd roots of unity are invovled instead of $\pm1$.
-\end{remark}
-
-\begin{proposition}
-Algorithm (\ref{algorithm:compell}) is correct. Given $m,q,r,\ell$ it computes
-its output using $O(\MM(m)(m\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$.
-\end{proposition}
-\begin{proof}
-The first thing we need to determine is the number of points of $E$ on
-$\F_{q^r}$. This can be easily determined from the trace of $E$ on $\F_q$. The
-costs of the operation is negligible compared to the rest of the aglorithm, it
-will be described in more details in section \ref{sec:selection}.
-The main and the most expensive step is the search for a point of order $\ell$
-in $E(\F_{q^r})$. It is important to note that we are actually working on the
-field $k$ and not in $\F_{q^r}$ directly. To pick a point on $E(\F_{q^r})$, we
-should proceed as follow :
+The algorithm is very similar to
+Algorithm~\ref{algorithm:rains-cyclo}, and follows immediately from
+the previous section. Given $k$, $K$ and $r$,
 \begin{enumerate}
-    \item Pick a random element $\nu\in k$ and compute its trace 
-$\tau:=\trace_{k/\F_{q^r}}(\nu)$.
-    \item Check that for $f_E$ the polynomial in $x$ of the Weierstass equation
-of $E$, the point $Q:=(\tau, \sqrt{f_E(\tau)})$ or $(\tau, -\sqrt{f_E(\tau)})$ 
-is on $E$.
-    \item Compute $P:=[\order_E/\ell]Q$.
+\item find a prime $\ell$, an elliptic curve $E$, and an eigenvalue
+  $\lambda$ of the Frobenius endomorphism, satisfying the conditions
+  of Theorem~\ref{theorem:ellperiods}, and such that
+  $\order_\ell(\lambda)=r$;
+\item take random points $P\in E(k)[\ell]$ and $P'\in E(k')[\ell]$ in
+  the eigenspace of $\lambda$;
+\item return the elliptic periods $\alpha_r := \eta_{\lambda}(P)$ and
+  $\beta_r:= \eta_\lambda(P')$.
 \end{enumerate}
 
-For $q_r=q^r$ and $m_r = m/r$, the most straightforward way to compute the trace
-$\tau$ is to compute 
-\[
-\tau=\nu+\nu^{q_r}+\nu^{q_r^2}+\dots+\nu^{q_r^{m_r-1}}.
-\]
-This requires $m_r-2$ exponentiations to the power $q_r$ and $(m_r-1)$ 
-sums of polynomial of degree less than $m$, therefore the required number of
-operations on $\F_q$ is 
-\begin{equation}
-O(m\MM(m)\log{q}).
-\end{equation}
-Keeping in mind that the operations are done using elements of $k$, computing a
-square root of $f_E(\tau)$ in $\F_{q^r}$ can be done in 
-\begin{equation}
-O(\MM(m)\log{q} + \CC(m)\log{m})
-\end{equation}
-operations on $\F_q$ using the algorithm in \cite{doliskanischost2011}. We 
-expect to find a good point in $O(1)$ tries. Finally, we use a double and add 
-algorithm to compute the point $[\order_E/\ell]Q$. This requires 
-\begin{equation}
-O(\MM(m)(r\log{q}-\log{\ell}))
-\end{equation}
-operations on $\F_q$.
+Here we are faced with a difficulty: given $E$ and $\lambda$ it is
+easy to pick a random point in $E[\ell]$, but it is potentially much
+more expensive to compute a point in the eigenspace of $\lambda$. We
+will circumvent the problem by forcing $E(\F_{q^r})[\ell]$ to be of
+rank $1$, and to coincide exactly with the eigenspace of $\lambda$.
+If we write $\mu = q/\lambda$ for the other eigenvalue of $\pi$, this
+is easily ensured by further asking that $\order_\ell(\mu) \nmid r$.
 
-The remaining step of the algorithm is the computation of the elliptic period. 
-Depending on the case, there is essentially $(\ell-1)/(i.r)$ scalar products by
-elements in $(\Z/\ell\Z)^{\ast}$ on $E/\F_{q^r}$ and exponentiations of power
-$i/2$, with $i=2,4$ or $6$. Those are mostly free compared to the scalar 
-products. Consequently, the computation costs 
-\begin{equation}
-O((\ell\MM(m)\log{\ell})/r)
-\end{equation}
-operations in $\F_q$. Thus, the complexity is 
-\begin{equation}
-O(\MM(m)(m\log{q}+r\log{q}-\log{\ell}+
-(\ell\log{\ell})/r)+\CC(m)\log{m}).
-\end{equation}
-Since $r|m$, the terms in $r$ are dominated by those in $m$. Morevover, $\CC(m)$ 
-is subquadratic in $m$, it is dominated by the rest of the formula. Therefore,
-we end up with a complexity of 
-$O(\MM(m)(m\log{q} + (\ell/r)\log{\ell}))$.
+We defer the discussion on the search for the elliptic curve $E$ to
+Section~\ref{sec:selection}. Here we suppose we are already given
+suitable parameters $\ell$, $E$ and $\lambda$, and analyze the last
+two steps of the algorithm, summarized below.  We only give the
+procedure for the smaller field $k$, the procedure for the larger
+field $K$ being identical.
+
+\begin{algorithm}[Elliptic Rain's algorithm]
+\label{algorithm:compell}
+  \begin{algorithmic}[1]
+    \REQUIRE An odd integer $r$, a field extension $\F_{q^r}/\F_q$,
+    an elliptic curve $E/\F_q$, its trace $t$, a prime $\ell$ not dividing $q$,
+    an integer $\lambda$ such that:
+    \begin{itemize}
+    \item $X^2 - tX - q = (X-\lambda)(X-q/\lambda) \mod\ell$,
+    \item $\order_\ell(\lambda)=r$, $\order_\ell(q/\lambda)\nmid r$,
+    \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$ for some $S$.
+    \end{itemize}
+    \ENSURE A generator of $\F_{q^r}\subset k$ over $\F_q$, with a uniquely defined Galois orbit.
+    \REPEAT
+    \STATE Compute $P\leftarrow[\# E(\F_{q^r})/\ell]Q$ for a random $Q\in E(\F_{q^r})$;
+    \UNTIL{$P\neq\mathcal{O}$;}
+    \RETURN $\alpha_r\leftarrow\eta_\lambda(P)$.
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  Algorithm (\ref{algorithm:compell}) is correct. On input
+  $r,q,E,t,\ell,\lambda$ it computes its output using
+  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$, or
+  $\tildO(r^2\log q)$ assuming $\ell\in o(r^2)$.
+\end{proposition}
+\begin{proof}
+  The correctness of the algorithm follows immediately from
+  Theorem~\ref{theorem:ellperiods} and the discussion above.
+
+  From the knowledge of the trace $t$, we immediately determine the
+  zeta function of $E$, and hence the cardinality $\# E(\F_{q^r})$, at
+  no algebraic cost.
+
+  To select the random point $Q\in E(\F_{q^r})$ we take a random
+  element $x\in\F_{q^r}$, then we verify that it is the abscissa of a
+  point using a squareness test, at a costs of $O(r\MM(r)\log q)$
+  operations. Then, using Montgomery's formulas for scalar
+  multiplication~\cite{montgomery}, we can compute the points $P$ and
+  $[\ell]P$ without the knowledge of the ordinate of $Q$, at a cost of
+  $O(r\MM(r)\log q)$ operations. A valid point is obtained after
+  $O(1)$ tries on average.
+
+  The elliptic period in the final step requires $O(\ell/r)$ scalar
+  multiplications by an integer less than $\ell$, for a total cost of
+  $O((\MM(r)\ell\log\ell)/r)$.
 \end{proof}
+
 
 \section{Algorithm selection}
 \label{sec:selection}
@@ -1634,15 +1557,14 @@ Given parameters $q$ and $r$, Rains' cyclotomic algorithm asks for a
 \item $\langle q \rangle = rs$ for some integer $s$.
 \end{enumerate}
 
-Since $r$ is a prime power, the second condition implies that $\ell$
-is a prime power too. Indeed if $\ell=\ell_1\ell_2$ with
-$\gcd(\ell_1,\ell_2)=1$, then $r$ would divide at least one of
-$\euler(\ell_1)$ or $\euler(\ell_2)$, and we could take that integer
-in place of $\ell$. Furthermore, if $\gcd(\ell,r)=1$, then we can take
-$\ell$ is prime, since higher powers would not help satisfying the
-conditions. On the other hand, if $\gcd(\ell,r)\ne1$, then Kummer-type
-algorithms have better complexity \todo{double-check this}, hence we
-shall take $\ell$ prime.
+Since $r$ is a prime power, the second condition lets us take a prime
+power for $\ell$ too. Indeed if
+$\Z/\ell\Z\simeq\Z/\ell_1\Z\times\Z/\ell_2\Z$, then either
+$q\bmod\ell_1$ or $q\bmod\ell_2$ has order a multiple of $r$.
+Furthermore, if $\gcd(\ell,r)=1$, then we can take $\ell$ prime, since
+higher powers would not help satisfy the conditions. On the other
+hand, if $\gcd(\ell,r)\ne1$, then Kummer-type algorithms have better
+complexity \todo{double-check this}, hence we shall take $\ell$ prime.
 
 Given the above constraints, we can rewrite the conditions as:
 \begin{enumerate}
@@ -1660,10 +1582,10 @@ Given the above constraints, we can rewrite the conditions as:
 
 In the elliptic algorithm we look for an integer $\ell$ and a curve
 $E/\F_q$ that satisfy the preconditions of
-Algorithm~\ref{algorithm:compell}, i.e. such that 
+Algorithm~\ref{algorithm:compell}, i.e., such that 
 \begin{enumerate}
-\item the Frobenius endomorphism $\pi_q$ satisfies a characteristic
-  equation $(\pi_q-\lambda)(\pi_q-\mu) = 0 \mod \ell$,
+\item the Frobenius endomorphism $\pi$ satisfies a characteristic
+  equation $(\pi-\lambda)(\pi-\mu) = 0 \mod \ell$,
 \item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times T$ for some $T$,
 \item $\#\langle\lambda\rangle=r$, and
 \item $\mu^r\ne1\mod\ell$.
@@ -1978,4 +1900,4 @@ and $E'$ have opposite trace, a well known fact.
 % End:
 
 %  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
-%  LocalWords:  endomorphism
+%  LocalWords:  endomorphism eigenspace
