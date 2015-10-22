@@ -963,7 +963,7 @@ Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations in $F$.
 We now move on to a family of algorithms based on the theory of
 algebraic groups. The simplest of these algorithms is Pinch's
 cyclotomic algorithm~\cite{Pinch}. The idea is very simple: given $r$,
-select a integer $\ell$ such that $[\F_q[\mu_\ell]:\F_q]=r$, where
+select an integer $\ell$ such that $[\F_q[\mu_\ell]:\F_q]=r$, where
 $\mu_\ell$ is the group of $\ell$-th roots of unity.  Then, any
 embedding $k\to K$ takes $\mu_\ell\subset k^\ast$ to $\mu_\ell\subset
 K^\ast$, and the minimal polynomial of any primitive $\ell$-th root of
@@ -1192,7 +1192,7 @@ identical.
   By construction $k'$ contains a subfield isomorphic to $\F_{q^{rs}}$
   and to $\F_q[\mu_\ell]$. By Lemma~\ref{th:gaussian} $\eta(\zeta)$ is
   a normal generator of $\F_{q^{rs}}$, and
-  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} is a normal generator of
+  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a normal generator of
   $\F_{q^r}\subset k$.
 
   In the worst case $[k':k]=s$. Using the techniques
@@ -1298,15 +1298,15 @@ questions will be analyzed in Section~\ref{sec:selection}.
 The Pinch/Rains' algorithm presented in the previous section relies on the use
 of the multiplicative group of finite fields.
 It is natural to try to extend it to other types of algebraic groups in
-order to cover a wider range of parameter ranges.
+order to cover a wider range of parameters.
 And indeed Pinch~\cite{Pinch} showed how to use torsion points of elliptic
 curves in place roots of unity.
-Rains also considered this possiblity, but did not investigated it thoroughly
+Rains also considered this possiblity, but did not investigate it thoroughly
 as no theoretical gain was to be expected.
 However, the situation in practice is quite different.
 In particular, the need for auxiliary extensions in the cyclotomic method
-is very costly whereas the elliptic variant often leverages the need for
-an extension and is therefore very competitive.
+is very costly, whereas the elliptic variant naturally works in the input 
+fields, and is therefore very competitive.
 
 In the next sections, we first introduce \emph{elliptic periods}, a
 straightforward generalization of Gaussian periods for torsion points
@@ -1316,77 +1316,86 @@ then analyze the cost of their computation.
 
 \subsection{Uniquely defined orbits from elliptic periods}
 
-Throughout this section, $\ell$ will be a prime number different from $p$.
-If $E$ is an elliptic curve defined over $\F_q$ this implies that the geometric
-$\ell$-torsion $E[\ell]$ of $E$ is of rank $2$.
+Throughout this section $q$ is an odd prime power, and $\ell$ is
+a prime number not dividing $q$.  If $E$ is an elliptic curve
+defined over $\F_q$ this implies that the geometric $\ell$-torsion
+$E[\ell]$ of $E$ is of rank $2$.
 
 We also suppose that $\ell$ is an Elikies prime for the curve $E$.
-\begin{definition}
-Let $E/\F_q$ be an elliptic curve, let $\ell$ be a prime, we say that $\ell$
-is an Elkies prime for $E$ if the charateristic polynomial of the Frobenius
-endomorphism $\pi_q$ splits in $\Z/\ell\Z$:
+\begin{definition}[Elkies prime]
+  Let $E/\F_q$ be an elliptic curve, let $\ell$ be a prime number not
+  dividing $q$.  We say that $\ell$ is an Elkies prime for $E$ if the
+  characteristic polynomial of the Frobenius endomorphism $\pi$ splits
+  into two distinct factors over $\Z/\ell\Z$:
 \begin{equation}
-X^2-tX+q=(X-\lambda)(X-\mu)\bmod\ell \; .
+\pi^2-t\pi+q=(\pi-\lambda)(\pi-\mu)\bmod\ell
+\qquad\text{with $\lambda\ne\mu$}.
 \end{equation}
 \end{definition}
 
 Note that if $\ell$ is an Elkies prime for $E$,
-then $E[\ell]$ splits into two eigenspaces for $\pi_q$
+then $E[\ell]$ splits into two eigenspaces for $\pi$
 which are defined on extensions of $\F_q$ of degrees
-$\order_l(\lambda)$ and $\order_l(\mu)$.
-In the following we suppose that $r = \order_l(\lambda)$
-and $\order_l(\mu) \not| r$
+$\order_\ell(\lambda)$ and $\order_\ell(\mu)$.
+In the following we suppose that $r = \order_\ell(\lambda)$
+and $\order_\ell(\mu) \nmid r$
 to ensure that only one of the two torsion components
 is defined over $\F_{q^r}$.
 
 Another subtelity arises in comparison with multiplicative groups:
-elliptic curves always come with non trivial automorphisms:
-for $p > 3$, $\# \Aut(E)$ is $2$ for $j(E) \neq 0, 1728$,
-$4$ for $j(E) = 1728$ and $6$ for $j(E) = 0$.
+elliptic curves always come with non trivial automorphisms. We recall
+that the size of the \emph{group of rational automorphisms} of a curve
+$E/\F_q$ is one of the following:
+\begin{itemize}
+\item $\#\Aut_{\F_q}(E) = 12$ if $j(E)=0$ and $q=0\mod 9$ \todo{is this correct? useful?},
+\item $\#\Aut_{\F_q}(E) = 6$ if $j(E)=0$ and $q=1\mod 3$,
+\item $\#\Aut_{\F_q}(E) = 4$ if $j(E)=1728$ and $q=1\mod 4$,
+\item $\#\Aut_{\F_q}(E) = 2$ otherwise.
+\end{itemize}
 
 \begin{definition}
 \label{definition:ellperiod}
-Let $E/\F_q$ be an elliptic curve,
-$\ell > 3$ an Elkies prime for $E$,
-$\lambda$ an eigenvalue of $\pi_q$,
-$r = \order_\ell(\lambda)$.,
-and $P_\lambda \in E(\F_{q^r})$ a point in the eigenspace corresponding
+Let $E/\F_q$ be an elliptic curve, with $j(E)\ne0$ if $3|q$.
+Let $\ell > 3$ be an Elkies prime for $E$,
+$\lambda$ an eigenvalue of $\pi$ such that $\order_\ell(\lambda)$ is odd,
+and $P \in E[\ell]$ a point in the eigenspace corresponding
 to $\lambda$.
 
-Suppose furthermore that $\# \Aut_{\F_{q^r}}(E)$ divides $\ell - 1$
-and the existence of a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that
+Let $A=\Aut_{\F_q}(E)$, and suppose that $\# A$ divides $\ell - 1$,
+and that there is a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that
 \begin{equation}
-(\Z/\ell\Z)^{\ast} / \Aut(E) = \langle{\lambda}\rangle \times S
+(\Z/\ell\Z)^{\ast} / A = \langle{\lambda}\rangle \times S.
 \end{equation}
 
 Then we define an elliptic period as
 \begin{equation}
-\eta(P_\lambda) = \sum_{\sigma\in S} {x \left([\sigma] P_\lambda \right)}
+\eta_\lambda(P) = \sum_{\sigma\in S} {x \left([\sigma] P \right)^{\# A/2}},
 \end{equation}
+where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
 
 \begin{theorem}
 \label{theorem:ellperiods}
-Let $\ell$ be a prime different from $p$, $r$ an odd integer and $t, \lambda,
-\mu$ be integers such that
+Let $\ell$ be a prime different from $p$, $r$ an odd integer, and $t, \lambda,
+\mu$ integers such that
 \begin{enumerate}
-    \item $\mid t \mid < \sqrt{2q}$,
-    \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell,$
-    \item $(\Z/\ell\Z)^{\ast}/\Aut(E) = \langle{\lambda}\rangle \times S$
+    \item $\lvert t \rvert < \sqrt{2q}$,
+    \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell$,
+    \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$
 for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$,
-    \item $\order_\ell(\lambda) = r$ and $\order_\ell(\mu)\not|r$.
+    \item $\order_\ell(\lambda) = r$ and $\order_\ell(\mu)\nmid r$.
 \end{enumerate}
 
 Let $E/\F_q$ be an elliptic curve of trace $t$
-and $P_\lambda \in E(\F_{q^r})$ in the eigenspace
+and $P \in E(\F_{q^r})[\ell]$ a point in the eigenspace
 corresponding to $\lambda$.
 
-Then the elliptic period $\eta(P_\lambda)$ generates $\F_{q^r}$ over $\F_q$.
+Then the elliptic period $\eta_\lambda(P)$ generates $\F_{q^r}$ over $\F_q$.
 \end{theorem}
 
 \begin{proof}
 We are not sure this is true!
-For sure, $\eta(P_\lambda)$ is not a normal element (in general).
+For sure, $\eta_\lambda(P)$ is not a normal element (in general).
 I'll gather some known facts here.
 Here is the rainbow diagram.
 \begin{center}
