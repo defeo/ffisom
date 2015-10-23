@@ -9,7 +9,8 @@ def is_normal(alpha, q, r):
 	K = alpha.parent()
 	x = polygen(K)
 	falpha = sum(alpha**(q**i)*x**i for i in xrange(0, r))
-	return falpha.gcd(x**r-1) == 1
+        fact = falpha.gcd(x**r-1)
+	return fact == 1, fact != x - 1
 
 def is_gen(alpha, r):
 	return alpha.minimal_polynomial().degree() == r
@@ -113,12 +114,9 @@ def check_ff_curve(E, l = 5, verbose = False):
 	#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
 	period = sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))
 	basis = [period, r]
-	if not is_gen(period, r):
-		basis.extend([False, False])
-	elif not is_normal(period, q, r):
-		basis.extend([True, False])
-	else:
-		basis.extend([True, True])
+	basis.append(is_gen(period, r))
+	if basis[-1]:
+		basis.extend(is_normal(period, q, r))
 	return basis
 
 def check_ff_cyclo(K = GF(7), l = 5):
