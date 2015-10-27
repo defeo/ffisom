@@ -15,7 +15,6 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,arrows}
 \usepackage{algorithmic}
-\usepackage{enumerate}
 
 \hypersetup{
 	unicode=true,
@@ -1829,11 +1828,10 @@ and $E'$ have opposite trace, a well known fact.
 \begin{proposition}
   \label{proposition:twisttrace}
   Let $E$ be an ordinary elliptic curve defined over a finite field
-  $\F_q$ of characteristic $p$, and denote by $t$ the trace of its
-  frobenius endomorphism.
+  $\F_q$ of characteristic $p\ne2$, and denote by $t$ the trace of its
+  Frobenius endomorphism.
 
-  Let $u\in\bar{\F}_q$ such that $u^{q-1}$ is in the prime field
-  $\F_p\subset\F_q$. Define a curve $E^u$ and an isomorphism
+  Let $u\in\bar{\F}_q$, define a curve $E^u$ and an isomorphism
   $\upsilon$ of elliptic curves by
   \begin{equation*}
     \begin{aligned}
@@ -1841,20 +1839,19 @@ and $E'$ have opposite trace, a well known fact.
       (x,y) &\mapsto (u^2x,u^3y).
     \end{aligned}
   \end{equation*}
-  
-  If $E^u$ is defined over $\F_q$, the trace $t_u$ of its frobenius
-  endomorphism is such that $t/t_u=U\bmod q$, where
-  \begin{enumerate}[a)]
-  \item $U$ is an element of $\Z/q\Z$ of the same multiplicative order
-    as $u^{1-q}\in\F_q$, and
-  \item $U=u^{1-q}\mod p$.
-  \end{enumerate}
+  If $E^u$ is defined over $\F_q$, then $u^{q-1}$ is an element of
+  $\F_p$ of multiplicative order $n\in\{1,2,3,4,6\}$.
+
+  Let $t_u$ be the trace of the Frobenius endomorphism of $E^u$, then
+  $t_u^n=t^n \bmod q$, and $t_u=u^{q-1}t\bmod p$. This is enough to
+  uniquely determine $t_u$ given $t$.
 \end{proposition}
 \begin{proof}
   Observe that if $E^u$ is a quadratic (resp. cubic, quartic, sextic)
   twist of $E$, then $u^{q-1}$ has multiplicative order $2$
-  (resp. $3,4,6$). Furthermore, since $E$ is ordinary, $u^{q-1}$ is in
-  the prime field $\F_p$ and it defines a curve automorphism
+  (resp. $3,4,6$). Furthermore, since $E$ is ordinary, $2$
+  (resp. $3,4,6$) divides $p-1$, hence $u^{q-1}$ is in the prime field
+  $\F_p$, and it defines a curve automorphism
   \begin{equation*}
     \upsilon^{q-1}:(x,y)\mapsto(u^{2q-2}x,u^{3q-3}y).
   \end{equation*}
@@ -1913,7 +1910,7 @@ and $E'$ have opposite trace, a well known fact.
   by $U$. It is evident that the multiplicative order of $U$ in $\Z/q\Z$
   is the same as that of $u^{1-q}$ in $\F_p$. Then
   \begin{equation*}
-    [t] = \upsilon^{-1}\circ[Ut_u]\circ\upsilon.
+    [t] = \upsilon^{-1}\circ[Ut_u]\circ\upsilon\mod q.
   \end{equation*}
   But $\upsilon$ is an isomorphism, thus it commutes with scalar
   multiplication, and we conclude that $t=Ut_u\bmod q$.
@@ -1928,24 +1925,31 @@ and $E'$ have opposite trace, a well known fact.
     \hat\pi\circ\pi = [t]\pi - \pi^2,
   \end{equation*}
   and similarly for $E^u$. Hence, from the diagram again,
-  \begin{equation*}
+  \begin{equation}
+    \label{eq:twisttrace:modp}
     [t] - \pi = \hat\pi = \upsilon^{-1}\circ\hat\pi_u\circ\upsilon^q 
     =  \upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q.
-  \end{equation*}
-  Let now $\omega$ be the invariant differential of $E$. We have
-  \begin{equation*}
-    ([t]-\pi^2)^\ast\omega = t\omega\in\Omega_E
-  \end{equation*}
-  because $\pi$ is inserparable. On the other hand, if we let
-  $\omega_u$ be the invariant differential of $E^u$, we have
-  \begin{multline*}
+  \end{equation}
+  Let now $\omega$ be the invariant differential of $E$, we apply the
+  pullback of Eq.~\eqref{eq:twisttrace:modp} to $\omega$. On the
+  left-hand side we have
+  \begin{equation}
+    \label{eq:twisttrace:modp-lhs}
+    ([t]-\pi)^\ast\omega = t\omega\in\Omega_E
+  \end{equation}
+  because $\pi$ is inserparable (see \cite[\S~5]{Sil}). On the
+  right-hand side, if we let $\omega_u$ be the invariant differential
+  of $E^u$, we have $(\upsilon^{-1})^\ast\omega=u\omega_u$, and
+  $(\upsilon^q)^\ast\omega_u=\omega/u^q$, hence
+  \begin{equation}
+    \label{eq:twisttrace:modp-rhs}
     (\upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q)^\ast\omega =
-    (\upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^{q-1})^\ast\omega_u =\\
-    (\upsilon^{-1}\circ([t_u] - \pi_u))^\ast u^{1-q}\omega_u =
-    (\upsilon^{-1})^\ast t_uu^{1-q}\omega_u =
-    t_uu^{1-q}\omega.
-  \end{multline*}
-  Hence $t = t_uu^{1-q} \bmod p$.
+    u(([t_u] - \pi_u)\circ\upsilon^q)^\ast\omega_u =
+    ut_u(\upsilon^q)^\ast\omega_u = u^{1-q}t_u\omega.
+  \end{equation}
+  Comparing Eqs.~\eqref{eq:twisttrace:modp-lhs}
+  and~\eqref{eq:twisttrace:modp-rhs}, we conclude that $t = u^{1-q}t_u
+  \bmod p$. Given that $\lvert t_u\rvert\le2\sqrt{q}$, we have uniquely determined $t_u$, and proven the theorem.
 \end{proof}
 
 \todo{Give a similar proposition for supersingular curves (see, e.g.,
