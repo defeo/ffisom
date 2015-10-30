@@ -1669,8 +1669,8 @@ in $(\Z/\ell\Z)^\ast$, and look for a curve of trace
 $t=\lambda+q/\lambda\bmod\ell$ for any $\lambda$ in the list. Note,
 however, that for there to be such a curve, $t$ must have a
 representative in the interval $[-2\sqrt{q},2\sqrt{q}]$. In order to
-have a good chance of finding such curves, we are going to require
-$\ell\ll\sqrt{q}$.
+have a good chance of finding such curves, we are going to set an even
+more stringent bound $\ell\in o(\sqrt[4]{q})$.
 
 We propose a procedure to simultaneously find parameters for the
 cyclotomic and the elliptic case in
@@ -1682,18 +1682,18 @@ within those bounds.
     [Parameter selection for Rains' algorithms]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-      \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}\ll\sqrt{q}$;
+      \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
       \ENSURE $\mathcal{C}$ and $\mathcal{E}$, lists of parameters for the cyclotomic and elliptic algorithm resp.
       \STATE $\mathcal{C}\leftarrow\{\}$, $\mathcal{E}\leftarrow\{\}$;
       \FOR{$u=1$ to $\bar{u}$}
       \IF{\label{alg:selectell:prime}$\ell=ur+1$ is prime}
-      \IF{$\order_\ell(q)=rs$ with $s\le\bar{s}$ and $\gcd(rs,u/s)=1$}
+      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$ and $\gcd(rs,u/s)=1$}
       \STATE Add $\ell$ to $\mathcal{C}$.
       \ENDIF
-      \IF{$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
+      \IF{\label{alg:selectell:ellorder}$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
       \STATE Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
-      \REPEAT
-      \STATE Take random $E/\F_q$ and compute its trace $t$;
+      \REPEAT\label{alg:selectell:ellloop}
+      \STATE\label{alg:selectell:ellcount} Take random $E/\F_q$ and compute its trace $t$;
       \UNTIL{$(t\bmod\ell)\in\mathcal{T}$}
       \STATE Add $(\ell,E,t)$ to $\mathcal{E}$.
       \ENDIF
@@ -1705,12 +1705,46 @@ within those bounds.
 
 \begin{proposition}
   On input $q$, $r$, $\bar{u}$ and $\bar{e}$,
-  Algorithm~\ref{algorithm:selectell} computes its output using $O()$
-  binary operations.
+  Algorithm~\ref{algorithm:selectell} computes its output using
+  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6{q}\right)$ binary
+  operations, assuming $\bar{e}\in o(\sqrt[4]{q})$.
 \end{proposition}
 \begin{proof}
   We only consider naive integer arithmetic, since it is unrealistic
-  to apply embedding algorithms to very large sizes. \todo{}
+  to apply embedding algorithms to very large sizes.
+
+  In step~\ref{alg:selectell:prime} we need to test for the primality
+  of $\ell$, while steps~\ref{alg:selectell:order}
+  and~\ref{alg:selectell:ellorder} require the factorization of
+  $\ell-1$. Both operations can be performed in
+  $\tildO(\sqrt{r\bar{u}})$ operations using naive algorithms.
+
+  In step~\label{alg:selectell:ellcount} we need to count the number
+  of points of an elliptic curve over $\F_q$. This can be done in
+  $O\left(\log^6(q)\right)$ binary operations using the
+  Schoof-Elkies-Atkin algorithm with naive integer
+  arithmetic~\cite{schoof95,lercier+sirvent08}. Knowing the trace of a
+  curve $E$ we immediately know the traces of its twists (see
+  Appendix~\ref{app:elliptic-curves}).
+
+  All other operations have negligible cost compared to these ones. We
+  finally need to account for the two loops in the algorithm. The
+  inner loop at step~\ref{alg:selectell:ellloop} stops when a curve
+  with $t\bmod\ell$ in $\mathcal{T}$ is found. The set $\mathcal{T}$
+  has size $\euler(r)$, hence, assuming that traces are evenly
+  distributed modulo $\ell$, we expect to find a suitable curve after
+  $O(\ell/r)\subset O(\bar{u})$ tries. Although it is well known that
+  traces are not evenly distributed modulo prime
+  numbers~\cite{lenstra87}, it is shown
+  in~\cite[Th.~1]{castryck+hubrechts13} that the probability that a
+  random curve has trace congruent to a fixed $t\bmod\ell$ approaches
+  $1/\ell$, as $\ell$ and $q$ go to infinity, subject to $\ell\in
+  o(\sqrt[4]{q})$. Hence, we shall assume that $\bar{e}\in
+  o(\sqrt[4]{q})$ for the complexity analysis to hold.
+
+  The outer loop multiplies the whole complexity by $\bar{u}$, we
+  conclude that the overall complexity is in
+  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6{q}\right)$.
 \end{proof}
 
 \subsection{Selecting the best algorithm}
