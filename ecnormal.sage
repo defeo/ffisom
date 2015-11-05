@@ -114,7 +114,11 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	b = a**r
 	#print "Testing: j =", j, r, rl
 	L = K.extension(r, name='z')
-	EL = E.base_extend(L)
+	if K.is_prime_field():
+		EL = E.base_extend(L)
+	else:
+		h = Hom(K, L)[0]
+		EL = EllipticCurve([h(a) for a in E.a_invariants()])
 	m = EL.cardinality()
 	ml = ZZ(m/l)
 	P = EL(0)
@@ -137,7 +141,7 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 			basis.append(False)
 	return basis
 
-def check_ff_p_l(pmin=5, pmax=Infinity, lmin=2, lmax=Infinity, prime=True):
+def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime=True):
 	for p in Primes():
 		if p < pmin:
 			continue
@@ -151,7 +155,7 @@ def check_ff_p_l(pmin=5, pmax=Infinity, lmin=2, lmax=Infinity, prime=True):
 				continue
 			if l > lmax:
 				break
-			print l, check_ff_jinv(K=GF(p), l=l, prime=prime)
+			print l, check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime)
 
 def check_ff_cyclo(K = GF(7), l = 5):
 	periods = []
