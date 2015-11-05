@@ -18,8 +18,11 @@ def is_normal(alpha, q, r):
 def is_gen(alpha, r):
 	return alpha.minimal_polynomial().degree() == r
 
-def is_gen_prime(alpha, r):
-	return alpha.polynomial().degree() >= 1
+def is_gen_prime(alpha, r, q, p):
+	if q == p:
+		return alpha.polynomial().degree() >= 1
+	else:
+		return alpha**q == alpha
 
 def check_one_curve(K = QQ, l = 5):
 	j = K.random_element()
@@ -79,6 +82,7 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	K = E.base_ring()
 	p = K.characteristic()
 	q = K.order()
+	d = K.degree()
 	a = GF(l).multiplicative_generator()
 	j = E.j_invariant()
 	if j == 0 or j == 1728:
@@ -104,7 +108,7 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	lb = lb.lift()
 	if prime and not r.is_prime():
 		return None
-	if r == 1 or r % 2 == 0:
+	if r == 1 or r % 2 == 0 or r == d:
 		return None
 	#if any(e > 1 for _, e in r.factor()):
 	#	return None
@@ -132,7 +136,7 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 		periods = [sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))]
 	basis = [periods, r]
 	if prime:
-		basis.append(all(is_gen_prime(period, r) for period in periods))
+		basis.append(all(is_gen_prime(period, r, q, p) for period in periods))
 	else:
 		basis.append(all(is_gen(period, r) for period in periods))
 		if basis[-1]:
