@@ -22,7 +22,7 @@ def is_gen_prime(alpha, r, q, p):
 	if q == p:
 		return alpha.polynomial().degree() >= 1
 	else:
-		return alpha**q == alpha
+		return alpha**q != alpha
 
 def check_one_curve(K = QQ, l = 5):
 	j = K.random_element()
