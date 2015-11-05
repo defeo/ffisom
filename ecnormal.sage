@@ -32,23 +32,25 @@ def check_one_curve(K = QQ, l = 5):
 	mulrat = [E.multiplication_by_m(i) for i in xrange(1, (l+1)/2)]
 	return sum(m(t) for i in mulrat)
 
-def check_ff_jinv(K = GF(7), l = 5, verbose = False):
+def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, verbose = False):
 	cnt = 0
 	a = GF(l).multiplicative_generator()
 	false = []
 	for j in K:
 		E = EllipticCurve(j=j)
-		basis = check_ff_curve(E, l)
-		if basis is None:
-			continue
-		cnt += 1
-		if verbose:
-			print E.j_invariant(), basis[1:]
-		if not basis[2]:
-			raise CounterExampleException(K.order(), l, E, basis[1])
-		if not all(basis[2:]):
-			false.append([j])
-			false[-1].extend(basis)
+		L = [E, E.quadratic_twist()]
+		for E in L:
+			basis = check_ff_curve(E, l, powers, prime, verbose)
+			if basis is None:
+				continue
+			cnt += 1
+			if verbose:
+				print E.j_invariant(), basis[1:]
+			if not basis[2]:
+				raise CounterExampleException(K.order(), l, E, basis[1])
+			if not all(basis[2:]):
+				false.append([j])
+				false[-1].extend(basis)
 	return [cnt, len(false), false]
 
 def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, verbose = False):
@@ -135,6 +137,22 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 			basis.append(False)
 	return basis
 
+def check_ff_p_l(pmin=5, pmax=Infinity, lmin=2, lmax=Infinity, prime=True):
+	for p in Primes():
+		if p < pmin:
+			continue
+		if p > pmax:
+			break
+		print p
+		for l in Primes():
+			if l < lmin:
+				continue
+			if l == p:
+				continue
+			if l > lmax:
+				break
+			print l, check_ff_jinv(K=GF(p), l=l, prime=prime)
+
 def check_ff_cyclo(K = GF(7), l = 5):
 	periods = []
 	a = GF(l).multiplicative_generator()
@@ -152,3 +170,4 @@ def check_ff_cyclo(K = GF(7), l = 5):
 		zeta = L.random_element()**ml
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
 	return is_normal(period, K.order(), r)
+
