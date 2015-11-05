@@ -1,19 +1,25 @@
-def CounterExampleException(Exception):
-	def __init__(self, q, l, j, r):
+class CounterExampleException(Exception):
+	def __init__(self, q, l, E, r):
 		self.q = q
 		self.l = l
-		self.j = j
+		self.E = E
 		self.r = r
+
+	def __str__(self):
+		return "q = "+str(self.q)+" l = "+str(self.l)+" E = "+str(self.E)+" r = "+str(self.r)
+
 
 def is_normal(alpha, q, r):
 	K = alpha.parent()
 	x = polygen(K)
 	falpha = sum(alpha**(q**i)*x**i for i in xrange(0, r))
-        fact = falpha.gcd(x**r-1)
-	return fact == 1, fact != x - 1
+	return falpha.gcd(x**r-1) == 1
 
 def is_gen(alpha, r):
 	return alpha.minimal_polynomial().degree() == r
+
+def is_gen_prime(alpha, r):
+	return alpha.polynomial().degree() >= 1
 
 def check_one_curve(K = QQ, l = 5):
 	j = K.random_element()
@@ -45,7 +51,7 @@ def check_ff_jinv(K = GF(7), l = 5, verbose = False):
 			false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_coeffs(K = GF(13), l = 7, verbose = False):
+def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, verbose = False):
 	cnt = 0
 	K2 = K**2
 	false = []
@@ -54,7 +60,7 @@ def check_ff_coeffs(K = GF(13), l = 7, verbose = False):
 			E = EllipticCurve(coeffs.list())
 		except ArithmeticError:
 			continue
-		basis = check_ff_curve(E, l)
+		basis = check_ff_curve(E, l, powers, prime, verbose)
 		if basis is None:
 			continue
 		cnt += 1
@@ -67,7 +73,7 @@ def check_ff_coeffs(K = GF(13), l = 7, verbose = False):
 			false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_curve(E, l = 5, verbose = False):
+def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	K = E.base_ring()
 	p = K.characteristic()
 	q = K.order()
@@ -94,6 +100,8 @@ def check_ff_curve(E, l = 5, verbose = False):
 		r = s
 		lb = mu
 	lb = lb.lift()
+	if prime and not r.is_prime():
+		return None
 	if r == 1 or r % 2 == 0:
 		return None
 	#if any(e > 1 for _, e in r.factor()):
@@ -112,11 +120,19 @@ def check_ff_curve(E, l = 5, verbose = False):
 		P = ml*EL.random_element()
 	#print [b**i for i in xrange(0,rl/2)]
 	#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
-	period = sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))
-	basis = [period, r]
-	basis.append(is_gen(period, r))
-	if basis[-1]:
-		basis.extend(is_normal(period, q, r))
+	if powers:
+		periods = [sum(((b**i).lift()*P)[0]**j for i in xrange(0,rl/2)) for j in xrange(1, l-1)]
+	else:
+		periods = [sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))]
+	basis = [periods, r]
+	if prime:
+		basis.append(all(is_gen_prime(period, r) for period in periods))
+	else:
+		basis.append(all(is_gen(period, r) for period in periods))
+		if basis[-1]:
+			basis.append(all(is_normal(period, q, r) for period in periods))
+		else:
+			basis.append(False)
 	return basis
 
 def check_ff_cyclo(K = GF(7), l = 5):
