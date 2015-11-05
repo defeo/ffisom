@@ -147,7 +147,7 @@ def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime
 			continue
 		if p > pmax:
 			break
-		print p
+		print p, extdeg
 		for l in Primes():
 			if l < lmin:
 				continue
