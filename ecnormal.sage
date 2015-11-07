@@ -35,7 +35,7 @@ def check_one_curve(K = QQ, l = 5):
 	mulrat = [E.multiplication_by_m(i) for i in xrange(1, (l+1)/2)]
 	return sum(m(t) for i in mulrat)
 
-def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, verbose = False):
+def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, norm = False, verbose = False):
 	cnt = 0
 	a = GF(l).multiplicative_generator()
 	false = []
@@ -43,7 +43,7 @@ def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, verbose = Fal
 		E = EllipticCurve(j=j)
 		L = [E, E.quadratic_twist()]
 		for E in L:
-			basis = check_ff_curve(E, l, powers, prime, verbose)
+			basis = check_ff_curve(E, l, powers, prime, norm, verbose)
 			if basis is None:
 				continue
 			cnt += 1
@@ -56,7 +56,7 @@ def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, verbose = Fal
 				false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, verbose = False):
+def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, norm = False, verbose = False):
 	cnt = 0
 	K2 = K**2
 	false = []
@@ -65,7 +65,7 @@ def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, verbose = 
 			E = EllipticCurve(coeffs.list())
 		except ArithmeticError:
 			continue
-		basis = check_ff_curve(E, l, powers, prime, verbose)
+		basis = check_ff_curve(E, l, powers, prime, norm, verbose)
 		if basis is None:
 			continue
 		cnt += 1
@@ -78,7 +78,11 @@ def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, verbose = 
 			false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
+def check_ff_curve(E, l = 5, powers = False, prime = False, norm = False, verbose = False):
+	if norm:
+		periodify = prod
+	else:
+		periodify = sum
 	K = E.base_ring()
 	p = K.characteristic()
 	q = K.order()
@@ -131,9 +135,9 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	#print [b**i for i in xrange(0,rl/2)]
 	#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
 	if powers:
-		periods = [sum(((b**i).lift()*P)[0]**j for i in xrange(0,rl/2)) for j in xrange(1, l-1)]
+		periods = [periodify(((b**i).lift()*P)[0]**j for i in xrange(0,rl/2)) for j in xrange(1, l-1)]
 	else:
-		periods = [sum(((b**i).lift()*P)[0] for i in xrange(0,rl/2))]
+		periods = [periodify(((b**i).lift()*P)[0] for i in xrange(0,rl/2))]
 	basis = [periods, r]
 	if prime:
 		basis.append(all(is_gen_prime(period, r, q, p) for period in periods))
@@ -145,7 +149,7 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 			basis.append(False)
 	return basis
 
-def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime=True):
+def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime=True, norm=False):
 	cnt = 0
 	for p in Primes():
 		pcnt = 0
@@ -161,7 +165,7 @@ def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime
 				continue
 			if l > lmax:
 				break
-			basis = check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime)
+			basis = check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime, norm=norm)
 			pcnt += basis[0]
 			print l, basis
 		cnt += pcnt
