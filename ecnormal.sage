@@ -146,12 +146,14 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, verbose = False):
 	return basis
 
 def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime=True):
+	cnt = 0
 	for p in Primes():
+		pcnt = 0
 		if p < pmin:
 			continue
 		if p > pmax:
 			break
-		print p, extdeg
+		print "p =", p, ", d =", extdeg
 		for l in Primes():
 			if l < lmin:
 				continue
@@ -159,7 +161,11 @@ def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime
 				continue
 			if l > lmax:
 				break
-			print l, check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime)
+			basis = check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime)
+			pcnt += basis[0]
+			print l, basis
+		cnt += pcnt
+		print "pcnt =", pcnt, ", cnt =", cnt
 
 def check_ff_cyclo(K = GF(7), l = 5):
 	periods = []
