@@ -11,7 +11,6 @@
 
 using namespace std;
 
-
 /**
  * Computes the dual representation of the given polynomial {@code a} modulo {@code modulus}
  * 
@@ -34,6 +33,7 @@ void FFIsomBaseChange::monomial_to_dual(mp_limb_t *dual, const nmod_poly_t a, co
 
 	nmod_poly_clear(temp);
 }
+
 /**
  * Computes the representation of the given dual {@code dual}
  * in monomial basis modulo {@code modulus} 
@@ -47,7 +47,7 @@ void FFIsomBaseChange::dual_to_monomial(nmod_poly_t result, const mp_limb_t *dua
 	slong m = nmod_poly_degree(modulus);
 	for (slong i = 0; i < m; i++)
 		nmod_poly_set_coeff_ui(temp1, i, dual[i]);
-	
+
 	nmod_poly_reverse(temp2, modulus, m + 1);
 	nmod_poly_mullow(temp1, temp1, temp2, m);
 
@@ -80,11 +80,11 @@ void FFIsomBaseChange::change_basis(nmod_poly_t result, const nmod_poly_t f, con
 	// compute 1 / rev(modulus, degree + 1) mod x^{degree - 1}
 	nmod_poly_reverse(modulus_inv_rev2, modulus, degree + 1);
 	nmod_poly_inv_series_newton(modulus_inv_rev2, modulus_inv_rev2, degree - 1);
-	
+
 	// compute the minimal polynomial of f
 	NmodMinPoly nmodMinPoly;
 	nmodMinPoly.minimal_polynomial(min_poly, f, modulus, modulus_inv_rev2);
-	
+
 	mp_limb_t *dual = new mp_limb_t[degree];
 	for (slong i = 0; i < degree; i++)
 		dual[i] = 0;

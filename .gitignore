@@ -16,3 +16,5 @@ _region_.tex
 *.cproject
 *.project
 makefile
+/ffisom_impl/nmod_poly_isom/build/
+/ffisom_impl/nmod_poly_isom/nbproject/

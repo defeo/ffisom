@@ -22,7 +22,7 @@ fq_nmod_poly_t ** fq_nmodPolyEval::init_subproduct_tree(slong num_points) {
 
 		for (slong j = 0; j < length; j++)
 			fq_nmod_poly_init(tree[i][j], ctx);
-		
+
 		length /= 2;
 	}
 
@@ -66,10 +66,10 @@ void fq_nmodPolyEval::build_subproduct_tree(fq_nmod_poly_t **tree, const fq_nmod
 		for (slong j = 0; j < length / 2; j++) {
 			fq_nmod_poly_mul(tree[i][j], tree[i - 1][2 * j], tree[i - 1][2 * j + 1], ctx);
 		}
-		
+
 		if (length % 2 != 0)
 			fq_nmod_poly_mul(tree[i][length / 2 - 1], tree[i][length / 2 - 1], tree[i - 1][length - 1], ctx);
-		
+
 		length /= 2;
 	}
 
@@ -80,7 +80,8 @@ void fq_nmodPolyEval::build_subproduct_tree(fq_nmod_poly_t **tree, const fq_nmod
 void fq_nmodPolyEval::go_down_subproduct_tree(fq_nmod_t *results, const fq_nmod_poly_t f, fq_nmod_poly_t **tree, slong num_points) {
 
 	slong k = n_flog(num_points, 2) + 1;
-	slong rev_length = n_revbin(num_points, k);;
+	slong rev_length = n_revbin(num_points, k);
+	;
 	slong length = 1;
 
 	fq_nmod_poly_rem(tree[k - 1][0], f, tree[k - 1][0], ctx);
@@ -91,10 +92,10 @@ void fq_nmodPolyEval::go_down_subproduct_tree(fq_nmod_t *results, const fq_nmod_
 			fq_nmod_poly_rem(tree[j][2 * i], tree[j + 1][i], tree[j][2 * i], ctx);
 			fq_nmod_poly_rem(tree[j][2 * i + 1], tree[j + 1][i], tree[j][2 * i + 1], ctx);
 		}
-		
+
 		if (rev_length & 1)
 			fq_nmod_poly_rem(tree[j][2 * length], tree[j + 1][length - 1], tree[j][2 * length], ctx);
-			
+
 		length = 2 * length + (rev_length & 1);
 		rev_length >>= 1;
 	}

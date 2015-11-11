@@ -28,7 +28,7 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, co
 	nmod_poly_inv_series_newton(alpha, alpha, degree - 1);
 
 	minimal_polynomial(result, f, modulus, alpha);
-	
+
 	nmod_poly_clear(alpha);
 }
 
@@ -59,7 +59,7 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, co
 
 	slong l = 0;
 	while (true) {
-		
+
 		_nmod_vec_randtest(sequence, state, 2 * degree, f->mod);
 
 		transposed_mulmod(sequence, sequence, tau, modulus, modulus_inv_rev);
@@ -99,12 +99,12 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequen
 
 	nmod_poly_init(a, result->mod.n);
 	nmod_poly_init(b, result->mod.n);
-	
+
 	slong length = 2 * degree;
 
 	for (slong i = 0; i < length; i++)
 		nmod_poly_set_coeff_ui(a, i, sequence[i]);
-	
+
 	nmod_poly_set_coeff_ui(b, length, 1);
 
 	halfgcd(R, b, a, degree);
@@ -225,7 +225,7 @@ slong NmodMinPoly::halfgcd(nmod_poly_t **R, const nmod_poly_t r0, const nmod_pol
  * Checks the base case conditions for the recursive halfgcd algorithm. 
  */
 slong NmodMinPoly::check_halfgcd_condition(nmod_poly_t **R, const nmod_poly_t r0, const nmod_poly_t r1,
-slong k) {
+		slong k) {
 	slong n0 = nmod_poly_degree(r0);
 	slong n1 = nmod_poly_degree(r1);
 
@@ -417,7 +417,7 @@ void NmodMinPoly::transposed_mulmod(mp_limb_t *result, const mp_limb_t *r, const
  * @param result	the transposed product of degree <= n
  */
 void NmodMinPoly::transposed_mul(nmod_poly_t result, const nmod_poly_t c, const nmod_poly_t a,
-slong n) {
+		slong n) {
 
 	slong m = nmod_poly_degree(a);
 	nmod_poly_t temp;
@@ -471,6 +471,6 @@ mp_limb_t NmodMinPoly::inner_product(const mp_limb_t *a, const nmod_poly_t f) {
 		temp = nmod_mul(temp, a[i], f->mod);
 		result = nmod_add(result, temp, f->mod);
 	}
-	
+
 	return result;
 }

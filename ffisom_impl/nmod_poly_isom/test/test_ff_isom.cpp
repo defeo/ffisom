@@ -6,14 +6,14 @@
 
 using namespace std;
 
-void test_build_isom(slong degree, slong prime) {
+void test_build_isom(slong degree, slong characteristic) {
 
 	Util util;
-	cout << "characteristic: " << prime << "\n";
+	cout << "characteristic: " << characteristic << "\n";
 	cout << "extension degree: " << degree << "\n";
-	cout << "cyclotomic extension degree: " << util.compute_multiplicative_order(prime, degree) << "\n";
+	cout << "cyclotomic extension degree: " << util.compute_multiplicative_order(characteristic, degree) << "\n";
 
-	mp_limb_t p = prime;
+	mp_limb_t p = characteristic;
 
 	flint_rand_t state;
 	flint_randinit(state);
@@ -49,7 +49,7 @@ void test_build_isom(slong degree, slong prime) {
 	// compute the image of x
 	ffIsomorphism.compute_isom_matrix();
 	ffIsomorphism.compute_image_using_matrix(temp, temp);
-	
+
 	// the image of x should be a root of f1 in F_p[X]/<f2>
 	nmod_poly_compose_mod(temp, f1, temp, f2);
 	if (nmod_poly_is_zero(temp))
@@ -100,38 +100,37 @@ double test_build_isom1(slong degree, slong prime) {
 	return (double) time->wall / 1000.0;
 }
 
-int main() {
+void test_prime_ext() {
 
 	flint_rand_t state;
 	flint_randinit(state);
-	
 
 	cout << "\n/////////////////////// random case //////////////////////////\n\n";
-	cout << "prime  extDegree  time \n";	
+	//	cout << "prime  extDegree  time \n";	
 	for (slong i = 30; i < 50; i++) {
 		slong prime = n_nth_prime(5 + n_randint(state, i));
 		slong degree = n_nth_prime(5 + n_randint(state, i));
-		
+
 		test_build_isom(degree, prime);
-		
-//		double time = test_build_isom1(degree, prime);
-//		cout << prime << "  " << degree << "  " << time << "\n";
+		cout << "--------------------------------\n";
+		//		double time = test_build_isom1(degree, prime);
+		//		cout << prime << "  " << degree << "  " << time << "\n";
 	}
 	flint_randclear(state);
-	
+
 	cout << "\n/////////////////////// no cyclotomic extension //////////////////////////\n\n";
-	cout << "prime  extDegree  time \n";
+	//	cout << "prime  extDegree  time \n";
 	n_factor_t factors;
 	for (slong i = 100; i < 120; i++) {//1048576
 		slong prime = n_nth_prime(i);
 		n_factor_init(&factors);
 		n_factor(&factors, prime - 1, 1);
 		slong degree = factors.p[factors.num - 1];
-		
+
 		test_build_isom(degree, prime);
-		
-//		double time = test_build_isom1(degree, prime);
-//		cout << prime << "  " << degree << "  " << time << "\n";
+		cout << "--------------------------------\n";
+		//		double time = test_build_isom1(degree, prime);
+		//		cout << prime << "  " << degree << "  " << time << "\n";
 	}
 
 	Util util;
@@ -140,15 +139,57 @@ int main() {
 	for (slong i = 20; i < 50; i++) {
 		slong prime = n_nth_prime(i);
 		slong degree = n_nth_prime(i - 5);
-		if (util.compute_multiplicative_order(prime, degree) == degree - 1) {
-			
+		if (util.compute_multiplicative_order(prime, degree) == n_euler_phi(degree)) {
+
 			test_build_isom(degree, prime);
-			
-//			double time = test_build_isom1(degree, prime);
-//			cout << prime << "  " << degree << "  " << time << "\n";
+			cout << "--------------------------------\n";
+			//			double time = test_build_isom1(degree, prime);
+			//			cout << prime << "  " << degree << "  " << time << "\n";
 		}
 	}
 
+}
+
+void test_prime_power_ext() {
+
+	flint_rand_t state;
+	flint_randinit(state);
+
+	slong exp = 2;
+	cout << "\n/////////////////////// random case //////////////////////////\n\n";
+	//	cout << "prime  extDegree  time \n";	
+	for (slong i = 2; i < 10; i++) {
+		slong prime = n_nth_prime(2 + n_randint(state, i));
+		slong degree = n_nth_prime(2 + n_randint(state, i));
+		degree = n_pow(degree, exp);
+
+		test_build_isom(degree, prime);
+		cout << "--------------------------------\n";
+		//		double time = test_build_isom1(degree, prime);
+		//		cout << prime << "  " << degree << "  " << time << "\n";
+	}
+	flint_randclear(state);
+
+	Util util;
+	cout << "\n/////////////////////// large cyclotomic extension //////////////////////////\n\n";
+	cout << "prime  extDegree  time \n";
+	for (slong i = 7; i < 15; i++) {
+		slong prime = n_nth_prime(i);
+		slong degree = n_nth_prime(i - 5);
+		degree = n_pow(degree, exp);
+		if (util.compute_multiplicative_order(prime, degree) == n_euler_phi(degree)) {
+
+			test_build_isom(degree, prime);
+			cout << "--------------------------------\n";
+			//			double time = test_build_isom1(degree, prime);
+			//			cout << prime << "  " << degree << "  " << time << "\n";
+		}
+	}
+}
+
+int main() {
+
+	test_prime_power_ext();
 	return 0;
 }
 

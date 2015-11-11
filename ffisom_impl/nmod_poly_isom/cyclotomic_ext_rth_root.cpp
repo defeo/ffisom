@@ -223,6 +223,7 @@ void CyclotomicExtRthRoot::compute_beta_coeffs(fq_nmod_poly_t beta, slong zeta_d
 	else
 		compute_beta_coeffs_large_ext(beta, zeta_degree);
 }
+
 /**
  * Computes $f(z^{z_degree))$.
  */
@@ -370,43 +371,40 @@ void CyclotomicExtRthRoot::compute_rth_root_from_factor(fq_nmod_t root, const fq
  * and let b be the constant term of factor. Then (d, r) = 1, so there are integers u, v
  * such that ud + vr = 1. This method computes (-1)^{du}b^u*a^v which is an rth root of a. 
  */
-mp_limb_t CyclotomicExtRthRoot::compute_rth_root_from_factor(const mp_limb_t a, const nmod_poly_t factor, slong r) {
+mp_limb_t CyclotomicExtRthRoot::compute_rth_root_from_factor(const mp_limb_t a, const nmod_poly_t factor) {
 	slong d = nmod_poly_degree(factor);
 	mp_limb_t u = 0;
 	mp_limb_t v = 0;
-	
+
 	// compute u, v such that ud - vr = 1
 	n_xgcd(&u, &v, d, r);
-	
+
 	mp_limb_t b = nmod_poly_get_coeff_ui(factor, 0);
 	b = nmod_pow_ui(b, u, factor->mod);
 	mp_limb_t a_inv = nmod_inv(a, factor->mod);
 	a_inv = nmod_pow_ui(a_inv, v, factor->mod);
 	b = nmod_mul(b, a_inv, factor->mod);
-	
+
 	if ((d % 2) && (u % 2))
 		b = factor->mod.n - b;
-	
+
 	return b;
 }
-
 
 void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t f) {
 
 	fq_nmod_poly_t alpha;
 	fq_nmod_poly_t trace;
+	fq_nmod_poly_t f_temp;
 	fmpz_t power;
 
 	fq_nmod_poly_init(alpha, ctx);
 	fq_nmod_poly_init(trace, ctx);
+	fq_nmod_poly_init(f_temp, ctx);
+	fq_nmod_poly_set(f_temp, f, ctx);
 
 	flint_rand_t state;
 	flint_randinit(state);
-
-	fq_nmod_poly_t f_inv_rev;
-	fq_nmod_poly_init(f_inv_rev, ctx);
-	fq_nmod_poly_reverse(f_inv_rev, f, fq_nmod_poly_length(f, ctx), ctx);
-	fq_nmod_poly_inv_series_newton(f_inv_rev, f_inv_rev, fq_nmod_poly_length(f, ctx), ctx);
 
 	while (true) {
 
@@ -414,8 +412,8 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t
 
 		// find a nonzero trace
 		while (fq_nmod_poly_is_zero(trace, ctx)) {
-			fq_nmod_poly_randtest(alpha, state, fq_nmod_poly_degree(f, ctx), ctx);
-			compute_trace(trace, alpha, f);
+			fq_nmod_poly_randtest(alpha, state, fq_nmod_poly_degree(f_temp, ctx), ctx);
+			compute_trace(trace, alpha, f_temp);
 		}
 
 		// compute power = (p - 1) / 2
@@ -423,55 +421,69 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t
 		fmpz_divexact_ui(power, power, 2);
 
 		// compute trace = trace^power
-		fq_nmod_poly_powmod_fmpz_binexp_preinv(trace, trace, power, f, f_inv_rev, ctx);
+		fq_nmod_poly_powmod_fmpz_binexp(trace, trace, power, f_temp, ctx);
 
 		fq_nmod_poly_one(alpha, ctx);
 		fq_nmod_poly_sub(trace, trace, alpha, ctx);
-		fq_nmod_poly_gcd(alpha, trace, f, ctx);
+		fq_nmod_poly_gcd(alpha, trace, f_temp, ctx);
 
-		// check if alpha is a proper factor of f
-		if (0 < fq_nmod_poly_degree(alpha, ctx) && fq_nmod_poly_degree(alpha, ctx) < fq_nmod_poly_degree(f, ctx)) {
-			compute_rth_root_from_factor(root, alpha);
-			break;
+		slong degree1 = fq_nmod_poly_degree(alpha, ctx);
+		slong degree2 = fq_nmod_poly_degree(f_temp, ctx);
+		// check if alpha is a proper factor of f_temp
+		if (0 < degree1 && degree1 < degree2) {
+			if (n_gcd_full(degree1, r) != 1) {
+				fq_nmod_poly_set(f_temp, alpha, ctx);
+			} else {
+				compute_rth_root_from_factor(root, alpha);
+				break;
+			}
 		}
 	}
 
 	fq_nmod_poly_clear(alpha, ctx);
 	fq_nmod_poly_clear(trace, ctx);
-	fq_nmod_poly_clear(f_inv_rev, ctx);
+	fq_nmod_poly_clear(f_temp, ctx);
 	fmpz_clear(power);
 	flint_randclear(state);
 }
 
 mp_limb_t CyclotomicExtRthRoot::compute_rth_root(const nmod_poly_t f) {
-	
+
 	flint_rand_t state;
 	flint_randinit(state);
 
 	nmod_poly_t a;
 	nmod_poly_t b;
-	
+	nmod_poly_t f_temp;
+
 	mp_limb_t root;
 
 	nmod_poly_init(a, f->mod.n);
 	nmod_poly_init(b, f->mod.n);
-	
-	while(true) {
-		
+	nmod_poly_init(f_temp, f->mod.n);
+	nmod_poly_set(f_temp, f);
+
+	while (true) {
+
 		nmod_poly_zero(a);
-		
+
 		// choose a random a that is not in F_p
 		while (nmod_poly_degree(a) < 1)
-			nmod_poly_randtest(a, state, nmod_poly_degree(f));
-		
-		nmod_poly_gcd(b, a, f);
+			nmod_poly_randtest(a, state, nmod_poly_degree(f_temp));
+
+		nmod_poly_gcd(b, a, f_temp);
+		slong degree = nmod_poly_degree(b);
 		if (!nmod_poly_is_one(b)) {
-			root = compute_rth_root_from_factor(f->mod.n - nmod_poly_get_coeff_ui(f, 0), b, nmod_poly_degree(f));
-			break;
+			if (n_gcd_full(degree, r) != 1) {
+				nmod_poly_set(f_temp, b);
+			} else {
+				root = compute_rth_root_from_factor(f_temp->mod.n - nmod_poly_get_coeff_ui(f, 0), b);
+				break;
+			}
 		}
-		
-		nmod_poly_powmod_ui_binexp(b, a, (f->mod.n - 1) / 2, f);
-		
+
+		nmod_poly_powmod_ui_binexp(b, a, (f_temp->mod.n - 1) / 2, f_temp);
+
 		// compute b - 1
 		mp_limb_t c = nmod_poly_get_coeff_ui(b, 0);
 		if (c == 0)
@@ -479,18 +491,23 @@ mp_limb_t CyclotomicExtRthRoot::compute_rth_root(const nmod_poly_t f) {
 		else
 			c--;
 		nmod_poly_set_coeff_ui(b, 0, c);
-		
-		nmod_poly_gcd(b, b, f);
-		if (!nmod_poly_is_one(b) && !nmod_poly_equal(b, f)) {
-			root = compute_rth_root_from_factor(f->mod.n - nmod_poly_get_coeff_ui(f, 0), b, nmod_poly_degree(f));
-			break;
+
+		nmod_poly_gcd(b, b, f_temp);
+		degree = nmod_poly_degree(b);
+		if (!nmod_poly_is_one(b) && !nmod_poly_equal(b, f_temp)) {
+			if (n_gcd_full(degree, r) != 1) {
+				nmod_poly_set(f_temp, b);
+			} else {
+				root = compute_rth_root_from_factor(f_temp->mod.n - nmod_poly_get_coeff_ui(f, 0), b);
+				break;
+			}
 		}
 	}
-	
+
 	flint_randclear(state);
 	nmod_poly_clear(a);
 	nmod_poly_clear(b);
-	
+
 	return root;
 }
 
@@ -528,15 +545,16 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_t a, s
 }
 
 mp_limb_t CyclotomicExtRthRoot::compute_rth_root(const mp_limb_t c, slong r, slong p) {
+	this->r = r;
 	nmod_poly_t f;
 	nmod_poly_init(f, p);
-	
+
 	nmod_poly_set_coeff_ui(f, 0, p - c);
 	nmod_poly_set_coeff_ui(f, r, 1);
-	
+
 	mp_limb_t root = compute_rth_root(f);
-	
+
 	nmod_poly_clear(f);
-	
+
 	return root;
 }

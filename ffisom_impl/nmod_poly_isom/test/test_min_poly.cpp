@@ -6,7 +6,7 @@ using namespace std;
 
 void test_minpoly(slong degree) {
 	cout << "degree: " << degree << "\n";
-	mp_limb_t p =  9001;
+	mp_limb_t p = 9001;
 
 	flint_rand_t state;
 	flint_randinit(state);
@@ -20,16 +20,16 @@ void test_minpoly(slong degree) {
 
 	timeit_t time;
 	timeit_start(time);
-	
+
 	NmodMinPoly nmodMinPoly;
 	nmodMinPoly.minimal_polynomial(minpoly, f, modulus);
-	
+
 	timeit_stop(time);
 	cout << "time: " << (double) time->wall / 1000.0 << "\n";
 
 	slong irr = nmod_poly_is_irreducible(minpoly);
 	nmod_poly_compose_mod(minpoly, minpoly, f, modulus);
-	
+
 	if (irr && nmod_poly_is_zero(minpoly))
 		cout << "ok\n";
 	else
@@ -41,14 +41,13 @@ void test_minpoly(slong degree) {
 	nmod_poly_clear(modulus);
 }
 
-
 int main() {
-	
-	for (slong i = 100; i < 120; i++){
+
+	for (slong i = 100; i < 120; i++) {
 		test_minpoly(i);
 		cout << "----------------------\n";
 	}
-	
+
 	return 0;
 }
 

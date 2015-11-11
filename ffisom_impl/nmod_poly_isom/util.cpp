@@ -10,12 +10,12 @@
 #include "util.h"
 #include <math.h>
 
-slong Util::compute_multiplicative_order(ulong a, ulong modulus) {
+ulong Util::compute_multiplicative_order(ulong a, ulong modulus) {
 
 	n_factor_t factors;
 	n_factor_init(&factors);
 
-	ulong order = modulus - 1;
+	ulong order = n_euler_phi(modulus);
 	n_factor(&factors, order, 1);
 
 	slong temp = 1;
@@ -35,9 +35,8 @@ slong Util::compute_multiplicative_order(ulong a, ulong modulus) {
 	return order;
 }
 
-
-bool Util::is_small_cyclotomic_ext(ulong degree, ulong p){
+bool Util::is_small_cyclotomic_ext(ulong degree, ulong p) {
 	slong s = compute_multiplicative_order(p, degree);
-	
+
 	return (s < pow(degree, EXT_COMP_EXPONENT));
 }

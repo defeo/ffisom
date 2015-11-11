@@ -1,15 +1,17 @@
 #include <iostream>
 #include "cyclotomic_ext_rth_root.h"
 #include "util.h"
+#include "nmod_cyclotomic_poly.h"
 #include <flint/profiler.h>
 
 using namespace std;
 
-void test_rth_root(slong degree, slong prime) {
+void test_rth_root(slong v, slong d, slong prime) {
 
-	cout << "degree: " << degree << "\n";
+	cout << "degree: " << v << "^" << d << "\n";
 	cout << "prime: " << prime << "\n";
-	
+
+	slong degree = n_pow(v, d);
 	mp_limb_t p = prime;
 
 	flint_rand_t state;
@@ -17,16 +19,15 @@ void test_rth_root(slong degree, slong prime) {
 
 	// build the cyclotomic extension
 	Util util;
-	slong d = util.compute_multiplicative_order(p, degree);
+	ulong s = util.compute_multiplicative_order(p, degree);
 	nmod_poly_t f;
 	nmod_poly_init(f, p);
 
-	for (slong i = 0; i < degree; i++)
-		nmod_poly_set_coeff_ui(f, i, 1);
-
+	NModCyclotomicPoly nModCyclotomicPoly;
+	nModCyclotomicPoly.construct_cyclo_prime_power_degree(f, v, d);
 	nmod_poly_factor_t factors;
 	nmod_poly_factor_init(factors);
-	nmod_poly_factor_equal_deg(factors, f, d);
+	nmod_poly_factor_equal_deg(factors, f, s);
 
 	fq_nmod_ctx_t ctx;
 	fq_nmod_ctx_init_modulus(ctx, &factors->p[0], "x");
@@ -62,56 +63,35 @@ void test_rth_root(slong degree, slong prime) {
 	fq_nmod_ctx_clear(ctx);
 }
 
-void test_rth_root_simple(slong degree, slong prime) {
-
-	cout << "degree: " << degree << "\n";
-	cout << "prime: " << prime << "\n";
-	
-	mp_limb_t p = prime;
-
-	flint_rand_t state;
-	flint_randinit(state);
-
-	mp_limb_t rth_power = n_randlimb(state) % p;
-	rth_power = n_powmod(rth_power, degree, p);
-
-	timeit_t time;
-	timeit_start(time);
-
-	CyclotomicExtRthRoot cyclotomicExtRthRoot;
-	mp_limb_t root = cyclotomicExtRthRoot.compute_rth_root(rth_power, degree, p);
-
-	timeit_stop(time);
-	cout << "time: " << (double) time->wall / 1000.0 << "\n";
-
-	root = n_powmod(root, degree, p);
-	if (root == rth_power)
-		cout << "ok" << "\n";
-	else
-		cout << "oops" << "\n";
-
-	flint_randclear(state);
-}
-
 int main() {
-	
-//	test_rth_root_simple(13, 53);
-	n_factor_t factors;
-	
+
+	cout << "/////////////////////////////////////////////////\n";
+
 	for (slong i = 10; i < 30; i++) {
 		slong p = n_nth_prime(i);
-		n_factor_init(&factors);
-		n_factor(&factors, p - 1, 1);
-		test_rth_root_simple(factors.p[factors.num - 1], p);
+		slong v = n_nth_prime(i + 5);
+		slong d = 1;
+		test_rth_root(v, d, p);
 		cout << "\n---------------------------------------\n";
 	}
 
 	cout << "/////////////////////////////////////////////////\n";
-	
-	for (slong i = 10; i < 30; i++) {
+
+	for (slong i = 2; i < 8; i++) {
 		slong p = n_nth_prime(i);
-		slong degree = n_nth_prime(i + 5);
-		test_rth_root_simple(degree, p);
+		slong v = n_nth_prime(i + 1);
+		slong d = 2;
+		test_rth_root(v, d, p);
+		cout << "\n---------------------------------------\n";
+	}
+
+	cout << "/////////////////////////////////////////////////\n";
+
+	for (slong i = 2; i < 5; i++) {
+		slong p = n_nth_prime(i);
+		slong v = n_nth_prime(i + 1);
+		slong d = 3;
+		test_rth_root(v, d, p);
 		cout << "\n---------------------------------------\n";
 	}
 

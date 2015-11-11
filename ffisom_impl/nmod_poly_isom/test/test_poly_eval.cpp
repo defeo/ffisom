@@ -35,10 +35,10 @@ void test_eval(slong degree, slong num_points) {
 
 	timeit_t time;
 	timeit_start(time);
-	
+
 	fq_nmodPolyEval fq_nmodPolyEval;
 	fq_nmodPolyEval.multipoint_eval(results, g, points, num_points, ctx);
-	
+
 	timeit_stop(time);
 	cout << "time: " << (double) time->wall / 1000.0 << "\n";
 
@@ -74,14 +74,13 @@ void test_eval(slong degree, slong num_points) {
 	fq_nmod_ctx_clear(ctx);
 }
 
-
 int main() {
-	
-	for (slong i = 100; i < 120; i++){
+
+	for (slong i = 100; i < 120; i++) {
 		test_eval(i, i / 2);
 		cout << "----------------------\n";
 	}
-	
+
 	return 0;
 }
 
