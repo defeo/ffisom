@@ -25,16 +25,16 @@ class FFEmbedding {
 public:
     
     /**
-     * @param f1 Defining modulus of the first extension
-     * @param f2 Defining modulus of the second extension
+     * @param f1 Defining modulus for the first extension k
+     * @param f2 Defining modulus for the second extension K
      */
     FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2);
     ~FFEmbedding();
 
     /**
-     * Computes generators g1 of ctx_1, and g2 of ctx_2 such that
-     * h: ctx_1 --> ctx_2
-     *       g1 --> g2
+     * Computes elements g1, g2 of k, K respectively such that
+     * h: k --> K
+     *   g1 --> g2
      * is an embedding  
      * @param g1
      * @param g2
@@ -42,25 +42,26 @@ public:
     void compute_generators(nmod_poly_t g1, nmod_poly_t g2);
     
     /**
-     * Given generators g1 of ctx_1, and g2 of ctx_2 such that
-     * h: ctx_1 --> ctx_2
+     * Given elements g1, g2 k, K respectively such that
+     * h: k --> K
      *	 g1 --> g2
-     * is an embedding, this method builds and embedding
-     * h: ctx_1 --> ctx_2
-     *        x --> g
-     * for some g.
+     * is an embedding, this method builds an embedding
+     * h: k --> K
+     *    x --> g
+     * for some g in K.
      * @param f1
      * @param f2
      */
     void build_embedding(const nmod_poly_t g1, const nmod_poly_t g2);
 
     /**
-     * @param x_image The image of x under the embedding
+     * @param x_image The image of x under the embedding k --> K.
      */
     void get_x_image(nmod_poly_t x_image);
 
     /**
-     * Computes the image of {@code f} under the embedding using modular composition.
+     * Computes the image of {@code f} under the embedding k --> K
+     * using modular composition.
      * @param image
      * @param f
      */
