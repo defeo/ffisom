@@ -11,11 +11,9 @@
 #include <flint/fq_nmod.h>
 #include <flint/fq_nmod_poly.h>
 
-class FFIsomorphism {
+class FFIsomPrimePower {
     fq_nmod_ctx_t ctx_1;
     fq_nmod_ctx_t ctx_2;
-    nmod_poly_t x_image;
-    nmod_mat_t isom_mat;
 
     fq_nmod_poly_t delta_init;
     nmod_poly_t delta_init_trivial;
@@ -49,7 +47,7 @@ public:
      * @param f1 Defining modulus of the first extension
      * @param f2 Defining modulus of the second extension
      */
-    FFIsomorphism(const nmod_poly_t f1, const nmod_poly_t f2);
+    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that
@@ -61,47 +59,7 @@ public:
      */
     void compute_generators(nmod_poly_t g1, nmod_poly_t g2);
 
-    /**
-     * Given generators g1 of ctx_1, and g2 of ctx_2 such that
-     * h: ctx_1 --> ctx_2
-     *	 g1 --> g2
-     * is an isomorphism, this method builds and isomorphism
-     * h: ctx_1 --> ctx_2
-     *        x --> g
-     * for some g.
-     * @param f1
-     * @param f2
-     */
-    void build_isomorphism(const nmod_poly_t g1, const nmod_poly_t g2);
-
-    /**
-     * For the isomorphism
-     * h: ctx_1 --> ctx_2
-     *        x --> f
-     * build the matrix of h as [f^0, f^1, ..., f^(n - 1)] where
-     * n is the deg(ctx_2).
-     */
-    void compute_isom_matrix();
-
-    /**
-     * @param x_image The image of x under the isomorphism
-     */
-    void get_x_image(nmod_poly_t x_image);
-
-    /**
-     * Computes the image of {@code f} under the isomorphism using modular composition.
-     * @param image
-     * @param f
-     */
-    void compute_image_using_modcomp(nmod_poly_t image, const nmod_poly_t f);
-
-    /**
-     * Computes the image of {@code f} under the isomorphism using matrix-vector multiplication.
-     * @param image
-     * @param f
-     */
-    void compute_image_using_matrix(nmod_poly_t image, const nmod_poly_t f);
-    ~FFIsomorphism();
+    ~FFIsomPrimePower();
 };
 
 #endif /* FFISOMORPHISM_H_ */

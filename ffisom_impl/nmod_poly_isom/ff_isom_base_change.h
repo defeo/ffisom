@@ -21,7 +21,7 @@ public:
      * Given {@code f} and {@code g} polynomials in $\mathbb{F}_p[X]/(modulus)$, computes
      * a polynomial $h \in \mathbb{F}_p[X]/(modulus)$ such that $h(f) = g$ if such polynomial exists. 
      * 
-     * @param result	the polynomial h such that $h(f) = g$ if such polynomial exists
+     * @param result	a polynomial h such that $h(f) = g$ if such polynomial exists
      */
     void change_basis(nmod_poly_t result, const nmod_poly_t f, const nmod_poly_t g,
             const nmod_poly_t modulus);

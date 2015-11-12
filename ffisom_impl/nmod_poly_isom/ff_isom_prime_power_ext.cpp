@@ -5,7 +5,7 @@
  *      Author: javad
  */
 
-#include "ff_isom.h"
+#include "ff_isom_prime_power_ext.h"
 #include "fq_nmod_poly_eval.h"
 #include "cyclotomic_ext_rth_root.h"
 #include "ff_isom_base_change.h"
@@ -22,7 +22,7 @@ using namespace std;
  * After recursion level i, $\delta_n = a + z^{r - 1}\sigma(a) + z^{r - 2}\sigma^2(a) + \cdots + 
  * z^{r - i + 1}\sigma^{i - 1}(a)$ and $\xi_i = x^{p^i}$.
  */
-void FFIsomorphism::compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx,
+void FFIsomPrimePower::compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t modulus) {
 
 	if (n == 1) {
@@ -64,7 +64,7 @@ void FFIsomorphism::compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t
 	fq_nmod_clear(temp_xi, ctx);
 }
 
-void FFIsomorphism::compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_t xi, slong n,
+void FFIsomPrimePower::compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_t xi, slong n,
 		const nmod_poly_t modulus, const mp_limb_t z) {
 
 	if (n == 1) {
@@ -113,7 +113,7 @@ void FFIsomorphism::compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_
  * z^{1}\sigma^{r - 1}(a)$ where $a \in \mathbb{F}_p[x][z]$, and $r$ is the degree of
  * the extension {@code ctx}.
  */
-void FFIsomorphism::compute_semi_trace_small_ext(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx,
+void FFIsomPrimePower::compute_semi_trace_small_ext(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t modulus) {
 
 	fq_nmod_t xi;
@@ -125,7 +125,7 @@ void FFIsomorphism::compute_semi_trace_small_ext(fq_nmod_poly_t theta, const fq_
 	fq_nmod_clear(xi, ctx);
 }
 
-void FFIsomorphism::compute_semi_trace_trivial_ext(nmod_poly_t theta, const nmod_poly_t a, const nmod_poly_t modulus,
+void FFIsomPrimePower::compute_semi_trace_trivial_ext(nmod_poly_t theta, const nmod_poly_t a, const nmod_poly_t modulus,
 		mp_limb_t z) {
 
 	// use naive linear algebra for low-degree moduli
@@ -174,7 +174,7 @@ void FFIsomorphism::compute_semi_trace_trivial_ext(nmod_poly_t theta, const nmod
 /**
  * Computes {@code xi} = {@code xi}({@code old_xi}).
  */
-void FFIsomorphism::compute_xi(fq_nmod_t xi, const fq_nmod_t old_xi, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::compute_xi(fq_nmod_t xi, const fq_nmod_t old_xi, const fq_nmod_ctx_t ctx) {
 	nmod_poly_compose_mod(xi, xi, old_xi, ctx->modulus);
 }
 
@@ -182,7 +182,7 @@ void FFIsomorphism::compute_xi(fq_nmod_t xi, const fq_nmod_t old_xi, const fq_nm
  * Given $\delta = \sum_i c_i(x)z^i$, this method computes 
  * $z^{z_degree}\delta(\xi) = z^{z_degree}\sum_i c_i(\xi)z^i$. 
  */
-void FFIsomorphism::compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx,
+void FFIsomPrimePower::compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t modulus) {
 	// temporary elements for composition
 	fq_nmod_t temp_comp;
@@ -218,7 +218,7 @@ void FFIsomorphism::compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, slon
  * z\alpha^{p^{(r - 1)}$ where $\alpha \in \mathbb{F}_p[x]$, and $r$ is the degree of
  * the extension {@code ctx}.
  */
-void FFIsomorphism::compute_semi_trace_large_ext(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
+void FFIsomPrimePower::compute_semi_trace_large_ext(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t modulus) {
 
 	slong degree = fq_nmod_ctx_degree(ctx);
@@ -248,7 +248,7 @@ void FFIsomorphism::compute_semi_trace_large_ext(fq_nmod_poly_t theta, const fq_
  * form Von Zur Gathen and Shoup, 1992. More precisely, this method implements the
  * case {q = p, R = ctx, t = p, m = r - 1} of the algorithm in the paper.
  */
-void FFIsomorphism::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s) {
+void FFIsomPrimePower::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s) {
 	fq_nmodPolyEval fq_nmodPolyEval;
 
 	fq_nmod_poly_t temp;
@@ -298,7 +298,7 @@ void FFIsomorphism::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha,
  * @param modulus	fq_nmod_poly version of the resulting cyclotomic factor
  * @param ctx		the resulting cyclotomic extension
  */
-void FFIsomorphism::build_cyclotomic_extension(fq_nmod_poly_t modulus, fq_nmod_ctx_t cyclotomic_ctx) {
+void FFIsomPrimePower::build_cyclotomic_extension(fq_nmod_poly_t modulus, fq_nmod_ctx_t cyclotomic_ctx) {
 	fq_nmod_t factor;
 	fq_nmod_init(factor, ctx_1);
 
@@ -314,7 +314,7 @@ void FFIsomorphism::build_cyclotomic_extension(fq_nmod_poly_t modulus, fq_nmod_c
 	nmod_poly_clear(factor);
 }
 
-mp_limb_t FFIsomorphism::compute_cyclotomic_root(const slong r, const mp_limb_t p) {
+mp_limb_t FFIsomPrimePower::compute_cyclotomic_root(const slong r, const mp_limb_t p) {
 	nmod_poly_t factor;
 	nmod_poly_init(factor, p);
 
@@ -332,7 +332,7 @@ mp_limb_t FFIsomorphism::compute_cyclotomic_root(const slong r, const mp_limb_t 
  * and store it in {@code result}. It is assumed that the coefficients of {@code value}
  * are in the base field.
  */
-void FFIsomorphism::convert(fq_nmod_t result, const fq_nmod_poly_t value, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::convert(fq_nmod_t result, const fq_nmod_poly_t value, const fq_nmod_ctx_t ctx) {
 	fq_nmod_t temp_coeff1;
 	mp_limb_t temp_coeff2 = 0;
 
@@ -352,7 +352,7 @@ void FFIsomorphism::convert(fq_nmod_t result, const fq_nmod_poly_t value, const 
  * Converts the element {@code value} to a polynomial over the field {@code ctx},
  * and store it in {@code result}.
  */
-void FFIsomorphism::convert(fq_nmod_poly_t result, const fq_nmod_t value, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::convert(fq_nmod_poly_t result, const fq_nmod_t value, const fq_nmod_ctx_t ctx) {
 	mp_limb_t temp_coeff = 0;
 
 	fq_nmod_t temp;
@@ -373,7 +373,7 @@ void FFIsomorphism::convert(fq_nmod_poly_t result, const fq_nmod_t value, const 
  * Compute the isomorphism between the two extensions of the form $\mathbb{F}_p[z][x] / (x^r - \eta)$.
  * The isomorphism is of the form $x \mapsto cx$ for some $c \in \mathbb{F}_p[z]$. 
  */
-void FFIsomorphism::compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b,
+void FFIsomPrimePower::compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b,
 		const fq_nmod_poly_t modulus, const fq_nmod_ctx_t cyclotomic_ctx) {
 
 	fq_nmod_poly_t eta;
@@ -416,7 +416,7 @@ void FFIsomorphism::compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t
  * 
  * @param theta		the resulting semi-trace
  */
-void FFIsomorphism::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus) {
+void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus) {
 
 	flint_rand_t state;
 	flint_randinit(state);
@@ -462,7 +462,7 @@ void FFIsomorphism::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t
 	flint_randclear(state);
 }
 
-void FFIsomorphism::compute_semi_trace(nmod_poly_t theta, const nmod_poly_t modulus, const mp_limb_t z) {
+void FFIsomPrimePower::compute_semi_trace(nmod_poly_t theta, const nmod_poly_t modulus, const mp_limb_t z) {
 	nmod_poly_t alpha;
 	nmod_poly_init(alpha, modulus->mod.n);
 
@@ -486,7 +486,7 @@ void FFIsomorphism::compute_semi_trace(nmod_poly_t theta, const nmod_poly_t modu
  * Compute the isomorphism between the cyclotomic extensions of {@code ctx_1}, {@code ctx_2}.
  * The resulting isomorphism is $f \mapsto f_{image}$.
  */
-void FFIsomorphism::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly_t f_image) {
+void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly_t f_image) {
 	fq_nmod_ctx_t cyclotomic_ctx;
 	fq_nmod_poly_t modulus;
 	fq_nmod_poly_init(modulus, ctx_1);
@@ -511,7 +511,7 @@ void FFIsomorphism::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly
 	fq_nmod_ctx_clear(cyclotomic_ctx);
 }
 
-void FFIsomorphism::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image) {
+void FFIsomPrimePower::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image) {
 	nmod_poly_t temp;
 	nmod_poly_init(temp, f->mod.n);
 
@@ -537,7 +537,7 @@ void FFIsomorphism::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_i
 	nmod_poly_clear(temp);
 }
 
-void FFIsomorphism::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
+void FFIsomPrimePower::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 
 	// check for the trivial cyclotomic extension case
 	Util util;
@@ -573,67 +573,7 @@ void FFIsomorphism::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 	fq_nmod_poly_clear(f_image, ctx_2);
 }
 
-void FFIsomorphism::build_isomorphism(const nmod_poly_t g1, const nmod_poly_t g2) {
-	fq_nmod_t x;
-	fq_nmod_init(x, ctx_1);
-	nmod_poly_set_coeff_ui(x, 1, 1);
-
-	FFIsomBaseChange ffIsomBaseChange;
-	ffIsomBaseChange.change_basis(x_image, g1, x, ctx_1->modulus);
-	nmod_poly_compose_mod(x_image, x_image, g2, ctx_2->modulus);
-
-	fq_nmod_clear(x, ctx_2);
-}
-
-void FFIsomorphism::compute_isom_matrix() {
-	slong rows = nmod_poly_degree(ctx_2->modulus);
-	nmod_poly_t temp;
-	nmod_poly_init(temp, ctx_2->mod.n);
-	nmod_poly_set(temp, x_image);
-
-	nmod_mat_entry(isom_mat, 0, 0) = 1;
-
-	for (slong i = 1; i < rows; i++) {
-		for (slong j = 0; j < rows; j++) {
-			nmod_mat_entry(isom_mat, j, i) = nmod_poly_get_coeff_ui(temp, j);
-		}
-
-		nmod_poly_mulmod(temp, temp, x_image, ctx_2->modulus);
-	}
-
-	nmod_poly_clear(temp);
-}
-
-void FFIsomorphism::get_x_image(nmod_poly_t x_image) {
-	nmod_poly_set(x_image, this->x_image);
-}
-
-void FFIsomorphism::compute_image_using_modcomp(nmod_poly_t image, const nmod_poly_t f) {
-	nmod_poly_compose_mod(image, f, x_image, ctx_2->modulus);
-}
-
-void FFIsomorphism::compute_image_using_matrix(nmod_poly_t image, const nmod_poly_t f) {
-	nmod_mat_t f_vec;
-	nmod_mat_t result_vec;
-	slong rows = nmod_poly_degree(ctx_2->modulus);
-
-	nmod_mat_init(f_vec, rows, 1, f->mod.n);
-	nmod_mat_init(result_vec, rows, 1, f->mod.n);
-
-	for (slong i = 0; i < rows; i++)
-		nmod_mat_entry(f_vec, i, 0) = nmod_poly_get_coeff_ui(f, i);
-
-	nmod_mat_mul(result_vec, isom_mat, f_vec);
-
-	nmod_poly_zero(image);
-	for (slong i = 0; i < rows; i++)
-		nmod_poly_set_coeff_ui(image, i, nmod_mat_entry(result_vec, i, 0));
-
-	nmod_mat_clear(f_vec);
-	nmod_mat_clear(result_vec);
-}
-
-FFIsomorphism::FFIsomorphism(const nmod_poly_t modulus1, const nmod_poly_t modulus2) {
+FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, const nmod_poly_t modulus2) {
 	nmod_poly_t tempf1;
 	nmod_poly_t tempf2;
 	nmod_poly_init(tempf1, modulus1->mod.n);
@@ -643,25 +583,20 @@ FFIsomorphism::FFIsomorphism(const nmod_poly_t modulus1, const nmod_poly_t modul
 
 	fq_nmod_ctx_init_modulus(ctx_1, tempf1, "x");
 	fq_nmod_ctx_init_modulus(ctx_2, tempf2, "x");
-	nmod_poly_init(x_image, modulus2->mod.n);
 	fq_nmod_poly_init(delta_init, ctx_1);
 	fq_nmod_init(xi_init, ctx_1);
 	nmod_poly_init(delta_init_trivial, modulus1->mod.n);
 	nmod_poly_init(xi_init_trivial, modulus1->mod.n);
-	slong rows = nmod_poly_degree(ctx_2->modulus);
-	nmod_mat_init(isom_mat, rows, rows, ctx_2->mod.n);
 
 	nmod_poly_clear(tempf1);
 	nmod_poly_clear(tempf2);
 }
 
-FFIsomorphism::~FFIsomorphism() {
+FFIsomPrimePower::~FFIsomPrimePower() {
 	fq_nmod_poly_clear(delta_init, ctx_1);
 	fq_nmod_clear(xi_init, ctx_1);
 	nmod_poly_clear(delta_init_trivial);
 	nmod_poly_clear(xi_init_trivial);
 	fq_nmod_ctx_clear(ctx_1);
 	fq_nmod_ctx_clear(ctx_2);
-	nmod_poly_clear(x_image);
-	nmod_mat_clear(isom_mat);
 }
