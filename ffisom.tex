@@ -1747,18 +1747,91 @@ within those bounds.
   $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6{q}\right)$.
 \end{proof}
 
+
 \subsection{Selecting the best algorithm}
 
-A natural question is: what bounds $\bar{u},\bar{s},\bar{e}$ must be
-taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ are
-non-empty? We are going to eschew this very hard question, and simply
-remark that even the condition in step~\ref{alg:selectell:prime} is
-relatively hard to meet. Heuristically, we expect that about
-$u/\log(ur)$ of those numbers are prime. However the best bound on
-primes of the form $ur+1$, even under GRH, is
-$O(r^{2.4+\epsilon})$~\cite{heath1992zero}. \todo{Shall we proceed
-  with the heuristic bound, and try to give a general statement?}
+A natural question arises: what bounds $\bar{u},\bar{s},\bar{e}$ must
+be taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ in
+Algorithm~\ref{algorithm:selectell} are non-empty?
 
+It is not easy to give a precise answer: already the condition in that
+$\ell=ur+1$, in step~\ref{alg:selectell:prime}, poses some
+difficulties. Heuristically, we expect that about
+$\bar{u}/\log(\bar{u}r)$ of those numbers are prime. However the best
+lower bound on primes of the form $\ell=ur+1$, even under GRH, is
+$\ell\in O(r^{2.4+\epsilon})$~\cite{heath1992zero}. Empirical data
+show that the reality is much closer to the heuristic bound: in
+Figure~\ref{fig:primes-arith-prog} we plot for all prime powers
+$r<10^8$ the smallest $u$ such that $ur+1$ is prime. It appears that
+$u$ is effectively bounded by $O(\log r)$ for any practical purpose.
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{arith_prog}  
+  \caption{Prime powers $r$ (abscissa) versus smallest integer $u$
+    (ordinate) such that $ur+1$ is prime. Abscissa in logarithmic
+    scale, density normalized by $\log(x)/x$ and colored in
+    logarithmic scale.}
+  \label{fig:primes-arith-prog}
+\end{figure}
+
+For the cyclotomic algorithm we also require that $\order_\ell(q)$ is
+a multiple of $r$. Assuming that $q$ is uniformly
+distributed\footnote{This assumption is obviously false for any fixed
+  $q$, but it is a good enough approximation in practice.} in
+$(\Z/\ell\Z)^\ast$, its order is exactly $\ell-1$ with probability
+$(\ell-1)/\ell$, hence we can assume that asymptotically
+$\order_\ell(q)\in O(\ell)=O(r\log r)$. Similar considerations can be
+made for the elliptic algorithm, assuming that $\ell\in
+o(\sqrt[4]{q})$.
+
+Summarizing, if we take $\bar{u},\bar{s}\in O(\log r)$, we can expect
+Algorithm~\ref{algorithm:selectell} to find suitable parameters for
+the cyclotomic algorithm, leading to expected parameters $\ell\in
+O(r\log r)$, and to an expected running time of $\tildO(\sqrt{r})$
+binary operations and $\tildO(r^2\log q)$ operations in
+$\F_q$. \todo{Shall we also consider the second variant of cyclotomic
+  algorithm?} Similarly, if we also take $\bar{e}\in O(r\log r)$,
+assuming that $r\log r\in o(\sqrt[4]{q})$, we can expect
+Algorithm~\ref{algorithm:selectell} to find suitable parameters for
+the elliptic algorithm, leading to an expected running time of
+$\tildO(\sqrt{r}+(\log r)^2(\log q)^6)$ binary operations and
+$\tildO(r^2\log q)$ operations in $\F_q$. \todo{Shall we extend the
+  applicability of the elliptic algorithm by taking small extensions
+  of the base field?}
+
+Although the complexities of both algorithms look very similar, it
+must not be neglected that the $\tildO$ notation in the cyclotomic
+algorithm hides the cost of taking an auxiliary extension of degree
+$O(\log^2r)$; whereas the elliptic algorithm, when it applies, does
+not incur such overhead. The impact of the hidden terms in the
+complexity can be extremely important, as we will show in the next
+section. 
+
+The same considerations also apply when comparing Rains' algorithms to
+the other ones: the root-based and the Kummer-type algorithms perform
+extremely well when the degree $s$ of the auxiliary extension is
+small, but become much slower as this degree increases (recall that
+asymptotically $s\in O(r)$ \todo{Make this more precise, if it is not
+  done in the previous sections}).
+
+In practice, it is hopeless to try and determine the appropriate
+bounds for each algorithm from a purely theoretical point of view. The
+best approach we can suggest, is to determine parameters at runtime,
+and set bounds and thresholds experimentally. We summarize our
+suggested approach in Algorithm~\ref{algorithm:selectalg}. 
+
+\begin{algorithm}
+  [Algorithm selection]
+  \label{algorithm:selectalg}
+  \begin{algorithmic}[1]
+    \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$, etc.
+    \STATE \todo{}
+  \end{algorithmic}
+\end{algorithm}
+
+\todo{Talk about gluing prime powers.}
 
 
 \section{Experimental Results}
