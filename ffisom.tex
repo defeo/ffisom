@@ -76,37 +76,37 @@
 \def\R{\ensuremath{\mathbb{R}}}
 \def\Z{\ensuremath{\mathbb{Z}}}
 \def\F{\ensuremath{\mathbb{F}}}
-\def\H{\ensuremath{\mathbb{H}}}
-\def\K{\ensuremath{\mathbb{K}}}
-\def\L{\ensuremath{\mathbb{L}}}
-\def\A{\ensuremath{\mathbb{A}}}
-\def\B{\ensuremath{\mathbb{B}}}
+% \def\H{\ensuremath{\mathbb{H}}}
+% \def\K{\ensuremath{\mathbb{K}}}
+% \def\L{\ensuremath{\mathbb{L}}}
+% \def\A{\ensuremath{\mathbb{A}}}
+% \def\B{\ensuremath{\mathbb{B}}}
 \def\MM{\ensuremath{\mathsf{M}}}
 \def\MMM{\ensuremath{\mathsf{MM}}}
-\def\MC{\ensuremath{\mathsf{C}}}
-\def\PC{\ensuremath{\mathsf{PC}}}
-\def\II{\ensuremath{\mathsf{I}}}
-\def\QQ{\ensuremath{\mathsf{Q}}}
+% \def\MC{\ensuremath{\mathsf{C}}}
+% \def\PC{\ensuremath{\mathsf{PC}}}
+% \def\II{\ensuremath{\mathsf{I}}}
+% \def\QQ{\ensuremath{\mathsf{Q}}}
 \def\CC{\ensuremath{\mathsf{C}}}
-\def\RR{\ensuremath{\mathsf{R}}}
-\def\AA{\ensuremath{\mathsf{A}}}
-\def\va{\ensuremath{\mathsf{a}}}
-\def\vy{\ensuremath{\mathsf{y}}}
-\def\vu{\ensuremath{\mathsf{u}}}
-\def\vb{\ensuremath{\mathsf{b}}}
-\def\vc{\ensuremath{\mathsf{c}}}
-\def\mul{\ensuremath{\mathsf{mul}}}
-\def\rem{\ensuremath{\mathsf{rem}}}
-\def\cat{\ensuremath{\mathsf{cat}}}
-\def\coeff{\ensuremath{\mathsf{coefficient}}}
-\def\mulmod{\ensuremath{\mathsf{mulmod}}}
-\def\x{\ensuremath{\mathbf{x}}}
-\def\uu{\ensuremath{\mathbf{U}}}
-\def\bb{\ensuremath{\mathbf{B}}}
-\def\bxi{\boldsymbol{\xi}}
-\def\bupsilon{\boldsymbol{\upsilon}}
-\def\bzeta{\boldsymbol{\zeta}}
-\def\blambda{\boldsymbol{\lambda}}
+% \def\RR{\ensuremath{\mathsf{R}}}
+% \def\AA{\ensuremath{\mathsf{A}}}
+% \def\va{\ensuremath{\mathsf{a}}}
+% \def\vy{\ensuremath{\mathsf{y}}}
+% \def\vu{\ensuremath{\mathsf{u}}}
+% \def\vb{\ensuremath{\mathsf{b}}}
+% \def\vc{\ensuremath{\mathsf{c}}}
+% \def\mul{\ensuremath{\mathsf{mul}}}
+% \def\rem{\ensuremath{\mathsf{rem}}}
+% \def\cat{\ensuremath{\mathsf{cat}}}
+% \def\coeff{\ensuremath{\mathsf{coefficient}}}
+% \def\mulmod{\ensuremath{\mathsf{mulmod}}}
+% \def\x{\ensuremath{\mathbf{x}}}
+% \def\uu{\ensuremath{\mathbf{U}}}
+% \def\bb{\ensuremath{\mathbf{B}}}
+% \def\bxi{\boldsymbol{\xi}}
+% \def\bupsilon{\boldsymbol{\upsilon}}
+% \def\bzeta{\boldsymbol{\zeta}}
+% \def\blambda{\boldsymbol{\lambda}}
 \def\euler{\ensuremath{\varphi}}
 
 % allow algorithms to split over multiple pages
@@ -196,8 +196,7 @@ stabilized.
 \item $\alpha,\beta$ outputs of embedding description algorithms.
 \item $\gamma,\delta$ inputs/outputs of embedding evaluation algorithms.
 \item Complexity: $O$, $\tildO$. $\MM$ polynomial multiplication,
-  $\MC$ modcomp, $\MMM(n)$ and $\MMM(m,n)$ matrix multiplication,
-  $\PC$ point counting.
+  $\CC$ modcomp, $\MMM(n)$ and $\MMM(m,n)$ matrix multiplication.
 \item Free symbols (for use internal to sections):
   $a,b,c,d,e,i,j,t,u,v,w,z$,
   $\varepsilon,\epsilon,\theta,\xi,\kappa,\nu,\rho,\chi,\upsilon,\tau$,
@@ -286,61 +285,55 @@ composition in $K[Z]$, and use $O(s^{1/2}\MM(sn) +
 s^{(\omega+1)/2}\MM(n))$ as an upper bound.
 
 
-\todo{point counting complexity}
-$\PC(1)$ is heuristically $O()$ bit-complexity
-using the SEA algorithm.
-Once the number of points over $\F_q$ is known at a $\PC(1)$ cost,
-deducing the number of points over an extension of degree $n$ is
-$O()$.
-
 \paragraph{Computing subfields.}
 Let $\F_q \subset k$ be a finite extension of degree $m$ where $k = \F_q[X] / (f)$ with $f$ monic 
-irreducible of degree $m$. Given a divisor $s$ of $m$ we want to find an intermediate extension 
-$\F_q \subset L \subset k$ of degree $s$ over $\F_q$. More precisely, we want to compute a monic 
-irreducible polynomial $g \in \F_q[X]$ of degree $s$, and a polynomial $h \in k$ such that $x 
-\mapsto h(x)$ is an embedding $L = \F_q[X] / (g) \hookrightarrow k$. We proceed as follows.
+irreducible of degree $m$. Given a divisor $r$ of $m$ we want to construct an intermediate extension 
+$\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely, we want to compute a monic 
+irreducible polynomial $g \in \F_q[X]$ of degree $r$, and a polynomial $h \in \F_q[X]$ such that $x 
+\mapsto h(x)\bmod f$ defines an embedding $L = \F_q[X] / (g) \hookrightarrow k$. We proceed as follows.
 
-Let $a \in k$ be a non-constant random polynomial. Then $a$ has a minimal polynomial of degree $m$ 
+Let $\alpha \in k$ be a non-constant random polynomial. Then $\alpha$ has a minimal polynomial of degree $m$ 
 over $\F_q$ with high probability. In other words, one needs $O(1)$ such random elements to find 
 one with degree $m$ minimal polynomial. Now, the trace
 \begin{equation}
 	\label{equ:trace-simple}
-	\trace_{k/L}(a) = a + a^{q^s} + \cdots + a^{q^{(m/s - 1)s}}
+	\trace_{k/L}(a) = a + a^{q^r} + \cdots + a^{q^{m - r}}
 \end{equation}
-has a minimal polynomial of degree $s$ over $\F_q$ with high probability as well. This means we can 
-compute the desired polynomials $h = \trace_{k/L}(a)$ and $g = \minpoly(h)$ after $O(1)$ random 
-trials.
+has a minimal polynomial of degree $r$ over $\F_q$ with high
+probability as well. This means we can compute, after $O(1)$ random
+trials, the desired polynomials $\beta = \trace_{k/L}(\alpha)$,
+$g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta$.
 \begin{proposition}
 	\label{prop:subfield}
-	Let $\F_q \subset k$ be a finite extension of degree $m$, and let $s$ be a divisor of $m$. 
+	Let $\F_q \subset k$ be a finite extension of degree $m$, and let $r$ be a divisor of $m$. 
 	Computing an intermediate field $\F_q \subset L \subset k$ takes $O(\CC(m)\log(m) + 
 	\MM(m)\log(q))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
 	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
 	see \cite{shoup93}. It remains to compute the trace (\ref{equ:trace-simple}). This can be done 
-	recursively as follows. Let $T_i(a) = a + a^{q^s} + \cdots + a^{q^{(i - 1)s}}$, and $\xi_i = 
-	x^{q^{is}}$. Then
+	recursively as follows. Let $T_i(\alpha) = \alpha + \alpha^{q^r} + \cdots + \alpha^{q^{(i - 1)r}}$, and $\xi_i = 
+	x^{q^{ir}}$. Then
 	\[
 	\xi_j = 
 	\begin{cases}
 	\xi_{j / 2}^{q^{j / 2}} & j \text{ even} \\
 	\xi_{j - 1}^q & j \text{ odd}
 	\end{cases}, \quad
-	T_j(a) = 
+	T_j(\alpha) = 
 	\begin{cases}
-	T_{j / 2}(a) + T_{j / 2}(a)^{q^{js/2}} & j \text{ even} \\
-	a + T_{j - 1}(a)^{q^s} & j \text{ odd}
+	T_{j / 2}(\alpha) + T_{j / 2}(\alpha)^{q^{jr/2}} & j \text{ even} \\
+	a + T_{j - 1}(\alpha)^{q^r} & j \text{ odd}
 	\end{cases}
 	\]
-	Raising a polynomial $b \in k$ to the power of $q^j$ is the same computing the composition 
-	$b(\xi_j)$. This means that each step of the above recursion is done using $O(1)$ modular 
+	Raising an element $\beta \in k$ to the power of $q^j$ is the same computing the composition 
+	$\beta(\xi_j)$. This means that each step of the above recursion is done using $O(1)$ modular 
 	composition in $k$. The depth of the recursion is $\log(i)$. Therefore, given the initial value 
-	$\x_1$, $T_i(a)$ is computed using $O(\CC(m)\log(i))$ operations in $\F_q$. To compute the 
-	initial value $\xi_1 = x^{q^s}$ we first compute $x^q$ using the usual binary-powering 
-	algorithm at cost of $O(\MM(n)\log(q))$ operations in $\F_q$. Then the rest is done using the 
-	same recursive technique as above at the cost of $O(\CC(m)\log(s))$ operations in $\F_q$. 
-	Therefore, computing the trace $\trace_{k/L}(a) = T_{m/s}(a)$ takes $O(\CC(m)\log(m) + 
+	$\xi_1$, $T_i(a)$ is computed using $O(\CC(m)\log(i))$ operations in $\F_q$. To compute the 
+	initial value $\xi_1 = x^{q^r}$ we first compute $x^q$ using the usual binary-powering 
+	algorithm at cost of $O(\MM(m)\log(q))$ operations in $\F_q$. Then the rest is done using the 
+	same recursive technique as above at the cost of $O(\CC(m)\log(r))$ operations in $\F_q$. 
+	Therefore, computing the trace $\trace_{k/L}(\alpha) = T_{m/r}(\alpha)$ takes $O(\CC(m)\log(m) + 
 	\MM(m)\log(q))$ operations in $\F_q$.
 \end{proof}
 
@@ -959,7 +952,7 @@ We can now extend the definition of Gaussian period to finite fields.
   \label{th:gaussian}
   Let $\ell$ be a squarefree integer such that $(\Z/\ell\Z)^\ast =
   \langle q\rangle \times S$ for some $S$.  The periods
-  $\eta_q(\zeta_\ell^\sigma)$ for $\sigma$ running through $\langle
+  $\eta_q(\zeta_\ell^\tau)$ for $\tau$ running through $\langle
   q\rangle$ form a normal basis of $\F_q[\mu_\ell]$ over $\F_q$,
   independent of the choice of $\zeta_\ell$.
 \end{lemma}
@@ -1669,18 +1662,18 @@ matrix-vector multiplication in $O(m^2)$ in $\F_q$.
 
 As an alternative to using linear algebra,
 $\phi(\gamma)$ can be computed directly using modular composition
-as $\beta(\gamma) \pmod{g}$ in $\MC(n)$ operations in $\F_q$.
+as $\beta(\gamma) \pmod{g}$ in $\CC(n)$ operations in $\F_q$.
 
 The second question can be answered by performing a modular
 exponentiation to check that $\gamma^{q^{m}} = 1$
 naively in $O(m \log q)$ operations in $K$
 or in $O(\log q)$ operations in $K$ plus
-$O(\log m) \MC(n)$ operations in $\F_q$ using modular composition.
+$O(\log m) \CC(n)$ operations in $\F_q$ using modular composition.
 
 The second and third questions can be answered using
 dual bases and power projection/transposed modular composition
 to express $\delta \in K$ as a polynomial in $\beta$ in
-$\MC(n)$ operations in $\F_q$.
+$\CC(n)$ operations in $\F_q$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
