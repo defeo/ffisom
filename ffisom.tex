@@ -69,6 +69,7 @@
 \DeclareMathOperator{\Res}{Res}
 \DeclareMathOperator{\Aut}{Aut}
 \DeclareMathOperator{\minpoly}{minpoly}
+\DeclareMathOperator{\loglog}{loglog}
 \DeclareMathOperator{\rev}{rev}
 
 \def\Q{\ensuremath{\mathbb{Q}}}
@@ -246,53 +247,54 @@ algorithms presented next.  We are going to measure all complexities
 in number of operations $+$, $\times$, $\div$ in $\F_q$, unless
 explicitly stated otherwise.
 
-We let $\MM(n)$ be a function such that polynomials in $\F_q[X]$ of
-degree less than $n$ can be multiplied in $\MM(n)$ operations in
+We let $\MM(m)$ be a function such that polynomials in $\F_q[X]$ of
+degree less than $m$ can be multiplied in $\MM(m)$ operations in
 $\F_q$, under the assumptions of~\cite[Ch.~8.3]{vzGG}. Using FFT
-multiplication, one can take $\MM(n)\in O(n\log (n) \log\log (n))$.
+multiplication, one can take $\MM(m)\in O(m\log (m) \loglog (m))$.
 
 We denote by $\omega$ the \emph{exponent of linear algebra}, i.e.\ a
-constant such that $n\times n$ matrices with coefficients in any field
-$K$ can be multiplied using $O(n^\omega)$ additions and
-multiplications in $K$.
+constant such that $m\times m$ matrices with coefficients in any field
+$k$ can be multiplied using $O(m^\omega)$ additions and
+multiplications in $k$.
 
-Some algorithms will operate in a polynomial ring $K[Z]$, where $K$ is
+Some algorithms will operate in a polynomial ring $k[Z]$, where $k$ is
 a field extension of $\F_q$. Some other algorithms will operate in
-$K[Z]/h(Z)$, where $h$ is a monic polynomial in $K[Z]$. We review the
-basic operations in these rings. We assume that $K$ is represented as
-a quotient ring $\F_q[Y]/g(Y)$, with $n=\deg g$, and we let $s=\deg h$
+$k[Z]/h(Z)$, where $h$ is a monic polynomial in $k[Z]$. We review the
+basic operations in these rings. We assume that $k$ is represented as
+a quotient ring $\F_q[X]/f(X)$, with $m=\deg f$, and we let $s=\deg h$
 in the complexity estimates.
 
-Multiplying and dividing polynomials of degree at most $s$ in $K[Z]$
-is done in $O(\MM(sn))$ operations in $\F_q$, using Kronecker's
+Multiplying and dividing polynomials of degree at most $s$ in $k[Z]$
+is done in $O(\MM(sm))$ operations in $\F_q$, using Kronecker's
 substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}.
-Multiplication in $K[Z]/h(Z)$ is also done in $O(\MM(sn))$ using the
+Multiplication in $k[Z]/h(Z)$ is also done in $O(\MM(sm))$ using the
 technique in~\cite{pascal+schost06}. By the same techniques, gcds in
-$K[Z]$ and inverses in $K[Z]/h(Z)$ are computed in $O(\MM(sn)\log(sn))$.
+$k[Z]$ and inverses in $k[Z]/h(Z)$ are computed in $O(\MM(sm)\log(sm))$.
 
-Given polynomials $f,g,h\in K[Z]$ of degree at most $s$, modular
-composition is the problem of computing $f(g) \bmod h$. An upper bound
+Given polynomials $e,g,h,\in k[Z]$ of degree at most $s$, modular
+composition is the problem of computing $e(g) \bmod h$. An upper bound
 on the algebraic complexity of modular composition is obtained by the
-Brent-Kung algorithm~\cite{brent+kung}, which takes $O(s^{1/2}\MM(sn)
-+ s^{(\omega+1)/2}\MM(n))$ operations in $\F_q$.  In the binary RAM
-complexity model, the Kedlaya-Umans algorithm~\cite{KeUm11} and its
-extension in~\cite{PoSc13a} yield an algorithm with essentially linear
-complexity in $s$, $n$ and $\log(q)$. Unfortunately, making these
-algorithms competitive in practice is challenging; we are not aware of
-any implementation of them. Hence, we will restrict to an algebraic
-complexity model, denote by $\CC(s,n)$ the complexity of modular
-composition in $K[Z]$, and use $O(s^{1/2}\MM(sn) +
-s^{(\omega+1)/2}\MM(n))$ as an upper bound.
+Brent-Kung algorithm~\cite{brent+kung}, which takes
+$O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ operations in $\F_q$.  In
+the binary RAM complexity model, the Kedlaya-Umans
+algorithm~\cite{KeUm11} and its extension in~\cite{PoSc13a} yield an
+algorithm with essentially linear complexity in $s$, $m$ and
+$\log(q)$. Unfortunately, making these algorithms competitive in
+practice is challenging; we are not aware of any implementation of
+them. Hence, we will restrict to an algebraic complexity model, denote
+by $\CC(s,m)$ the complexity of modular composition in $k[Z]$, and use
+$O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ as an upper bound.  We
+will use $\CC(s)$ as a shorthand notation for $\CC(s,1)$.
 
 
 \paragraph{Computing subfields.}
-Let $\F_q \subset k$ be a finite extension of degree $m$ where $k = \F_q[X] / (f)$ with $f$ monic 
+Let $\F_q \subset k$ be a finite extension of degree $m$ where $k = \F_q[X]/f(X)$ with $f$ monic 
 irreducible of degree $m$. Given a divisor $r$ of $m$ we want to construct an intermediate extension 
 $\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely, we want to compute a monic 
 irreducible polynomial $g \in \F_q[X]$ of degree $r$, and a polynomial $h \in \F_q[X]$ such that $x 
-\mapsto h(x)\bmod f$ defines an embedding $L = \F_q[X] / (g) \hookrightarrow k$. We proceed as follows.
+\mapsto h(x)\bmod f$ defines an embedding $L = \F_q[X] / g(X) \hookrightarrow k$. We proceed as follows.
 
-Let $\alpha \in k$ be a non-constant random polynomial. Then $\alpha$ has a minimal polynomial of degree $m$ 
+Let $\alpha\in k$ be a random element not in $\F_q$. Then $\alpha$ has a minimal polynomial of degree $m$ 
 over $\F_q$ with high probability. In other words, one needs $O(1)$ such random elements to find 
 one with degree $m$ minimal polynomial. Now, the trace
 \begin{equation}
@@ -311,9 +313,9 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 \end{proposition}
 \begin{proof}
 	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
-	see \cite{shoup93}. It remains to compute the trace (\ref{equ:trace-simple}). This can be done 
-	recursively as follows. Let $T_i(\alpha) = \alpha + \alpha^{q^r} + \cdots + \alpha^{q^{(i - 1)r}}$, and $\xi_i = 
-	x^{q^{ir}}$. Then
+	see \cite{shoup93}. It remains to compute the trace in Eq.~\eqref{equ:trace-simple}. This can be done 
+	recursively as follows. Let $x$ be the image of $X$ in $k$,
+        let $\xi_i = x^{q^{ir}}$, and let $T_i(\alpha) = \alpha + \alpha^{q^r} + \cdots + \alpha^{q^{(i - 1)r}}$. Then
 	\[
 	\xi_j = 
 	\begin{cases}
@@ -323,7 +325,7 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 	T_j(\alpha) = 
 	\begin{cases}
 	T_{j / 2}(\alpha) + T_{j / 2}(\alpha)^{q^{jr/2}} & j \text{ even} \\
-	a + T_{j - 1}(\alpha)^{q^r} & j \text{ odd}
+	\alpha + T_{j - 1}(\alpha)^{q^r} & j \text{ odd}
 	\end{cases}
 	\]
 	Raising an element $\beta \in k$ to the power of $q^j$ is the same computing the composition 
@@ -340,44 +342,41 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 
 
 
-\subsection{Polynomial factorization}
-
-We will need to factor some special polynomials in $K[Z]$. More
-precisely, we are interested in finding one factor of a polynomial
-that splits into factors of the same, known, degree. This problem is
-known as \emph{equal degree factorization}, and the best generic
-algorithm for it is the Cantor-Zassenhaus
-method~\cite{cantor1981,von1992computing}, which runs in
-$O(\MM(sn)(dn\log(q) + \log(sn)))$ operations in
+\paragraph{Polynomial factorization}
+Finally, given a field $k = \F_q[X]/f(X)$ of degree $m$ as above, we will need to
+factor some special polynomials in $k[Z]$. More precisely, we are
+interested in finding one factor of a polynomial that splits into
+factors of the same, known, degree. This problem is known as
+\emph{equal degree factorization} (EDF), and the best generic algorithm for
+it is the Cantor-Zassenhaus method~\cite{cantor1981,von1992computing},
+which runs in $O(\MM(sm)(dm\log(q) + \log(sm)))$ operations in
 $\F_q$~\cite[Th.~14.9]{vzGG}, where $s$ is the degree of the
-polynomial to factor and $d$ is the degree of the factors.
+polynomial to factor, and $d$ is the degree of the factors.
 
 More efficient variants of the Cantor-Zassenhaus method are known for
 special cases. When the degree $s$ of the polynomial is small compared
-to the extension degree $n$, Kaltofen and Shoup~\cite{kaltofen+shoup97} 
+to the extension degree $m$, Kaltofen and Shoup~\cite{kaltofen+shoup97} 
 give an efficient algorithm which is as follows.
 
 \begin{algorithm}[Kaltofen-Shoup EDF for extension fields]
 	\label{alg:ks}
 	\begin{algorithmic}[1]
-		\REQUIRE A polynomial $f$ of degree $m$ with irreducible factors of degree $d$ over $K$.
-		\ENSURE An irreducible factor of $f$ over $K$.
-		\STATE If $\deg f = d$ return $f$.
-		\STATE Take a random polynomial $h\in K[X]$ of degree less than $\deg 
-		f$,
-		\STATE\label{alg:ks-pseudotrace} Compute $\displaystyle\dot{h} 
-		\leftarrow \sum_{i=0}^{\deg 
-			g-1} h^{q^i} \mod f$,
+		\REQUIRE A polynomial $h$ of degree $s$ with irreducible factors of degree $d$ over $k$.
+		\ENSURE An irreducible factor of $h$ over $k$.
+		\STATE If $\deg h = d$ return $h$.
+		\STATE Take a random polynomial $a_0\in k[Z]$ of degree less than $s$,
+		\STATE\label{alg:ks-pseudotrace} Compute $\displaystyle a_1 
+		\leftarrow \sum_{i=0}^{[k:\F_q]d-1} a_0^{q^i} \mod h$,
 		\IF{$q$ is an even power $q=2^e$}
-		\STATE\label{alg:ks:even} Compute $\displaystyle\ddot{h} \leftarrow 
-		\sum_{i=0}^{e-1} \dot{h}^{2^i}\mod f$
+		\STATE\label{alg:ks:even} Compute $\displaystyle a_2 \leftarrow 
+		\sum_{i=0}^{e-1} a_1^{2^i}\mod h$
 		\ELSE
-		\STATE\label{alg:ks:odd} Compute $\ddot{h} \leftarrow \dot{h}^{(q-1)/2}\mod f$
+		\STATE\label{alg:ks:odd} Compute $a_2 \leftarrow a_1^{(q-1)/2}\mod h$
 		\ENDIF
-		\STATE\label{alg:ks:gcd} Compute $f_0\leftarrow\gcd(\ddot{h},f)$ and 
-		$f_1\leftarrow\gcd(\ddot{h}-1,f)$ and $f_{-1}\leftarrow f/(f_0f_1)$,
+		\STATE\label{alg:ks:gcd} Compute $h_0\leftarrow\gcd(a_2,h)$ and 
+		$h_1\leftarrow\gcd(a_2-1,h)$ and $h_{-1}\leftarrow h/(h_0h_1)$,
 		\STATE Apply recursively to the smallest non-constant polynomial among 
-		$f_0,f_1,f_{-1}$.
+		$h_0,h_1,h_{-1}$.
 	\end{algorithmic}
 \end{algorithm}
 
@@ -386,29 +385,31 @@ for the correctness of the Kaltofen-Shoup algorithm. We redo the
 complexity analysis below, to adapt to our framework.
 
 \begin{proposition}
-	Given $f$ and $g$ of degrees $m$ and $n$ respectively, the
-	Kaltofen-Shoup algorithm finds a factor of $f$ in $K=\F_q[Y]/g(Y)$
-	using $O\bigl((m\CC(n) + \CC(m,n) + \MM(mn)\log q)\log n\bigr)$
-	operations in $\F_q$.
+  Given $h$ and $f$ of degrees $s$ and $m$ respectively, the
+  Kaltofen-Shoup algorithm finds a factor of $h$ of degree $d$ in
+  $k=\F_q[X]/f(X)$ using
+  $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log q)\log(dm)\bigr)$
+  operations in $\F_q$.
 \end{proposition}
 \begin{proof}
 	It is evident that the dominating step in the Kaltofen-Shoup
 	algorithm is the computation of the trace-like function at
-	step~\ref{alg:ks-pseudotrace}. By using a divide-and-conquer
+	Step~\ref{alg:ks-pseudotrace}. By using a divide-and-conquer
 	strategy, they show in~\cite{kaltofen+shoup97} how to compute it in
-	$\log n$ steps, using at each step
+	$\log (dm)$ steps, using at each step
 	\begin{itemize}
-		\item $O(m)$ modular compositions in $\F_q[Y]$,
-		\item $O(1)$ modular compositions in $K[X]$,
-		\item $\log q$ multiplications in $K[X]/f(X)$,
+		\item $O(s)$ modular compositions in $\F_q[X]$,
+		\item $O(1)$ modular compositions in $k[Z]$,
+		\item $\log q$ multiplications in $k[Z]/h(Z)$,
 	\end{itemize}
-	for a total of $O\bigl((m\CC(n) + \CC(m,n) + \MM(mn)\log q)\log
-	n\bigr)$ operations in $\F_q$.  All other steps are easily seen to
-	be within this complexity.
+	for a total of
+        $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log q)\log(dm)\bigr)$
+        operations in $\F_q$.  All other steps are easily seen to be
+        within this complexity.
 	
 	Now we need to estimate the average number of recursive calls. The
-	probability that only one of $f_0$, $f_1$ and $f_{-1}$ is
-	non-constant is at least $1/2^{m-1}$, thus we expect that after
+	probability that only one of $h_0$, $h_1$ and $h_{-1}$ is
+	non-constant is at least $1/2^{s/d-1}$, thus we expect that after
 	$O(1)$ attempts the algorithm calls itself on a polynomial of
 	smaller degree. When the degree decreases, it decreases by at least
 	a half, thus the overall complexity is dominated by the first call.
@@ -416,50 +417,51 @@ complexity analysis below, to adapt to our framework.
 
 Now, we use Algorithm \ref{alg:ks} as our base algorithm to derive some
 special cases of polynomial factoring which we will use in subsequent sections.
-As the first special case, we consider factoring cyclotomic polynomials. Let 
-$\Phi_s(X)$ be the $s$-th cyclotomic polynomial, and let $n=\deg g$ and 
-$d=\order_sq^n$.
+As the first special case, we consider factoring cyclotomic polynomials
 
 
 \begin{proposition}
   \label{prop:cyclo}
-  Given the cyclotomic polynomial $\Phi_s(X)$, and $g$ of degree and $n$,
-  an irreducible factor of $\Phi_s$ of degree $d$ over $K=\F_q[Y]/g(Y)$ 
-  can be computed using $O(sn(\log(d)+\log(n))\log(s) + \MM(sn)\log(sn) + 
-  \MM(sn)\log(q))$ operations in $\F_q$.
+  Given the $s$-th cyclotomic polynomial $\Phi_s$ and a polynomial $f$ of degree $m$,
+  an irreducible factor of $\Phi_s$ of degree $d$ over $k=\F_q[X]/f(X)$ 
+  can be computed using $O(sm(\log(d)+\log(m))\log(s) + \MM(sm)\log(sm) + 
+  \MM(sm)\log(q))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-  We use the Algorithm \ref{alg:ks} and the optimization techniques used in
-  \cite{shoup94}. We start by analyzing the complexity of a single recursive 
-  call, and we let $t=\deg f$.
+  We use Algorithm~\ref{alg:ks} and the optimization techniques given
+  in~\cite{shoup94}. We start by analyzing the complexity of a single
+  recursive call, using the same notation as in
+  Algorithm~\ref{alg:ks}.
 
-  Since we have $X^s = 1$, the trace-like function in  
-  Step~\ref{alg:ks-pseudotrace} can be computed modulu $X^s - 1$. As remarked 
-  by Shoup~\cite{shoup94}, powerings of the form $x\mapsto x^{q^j} \mod X^s-1$ 
-  boil down to simple permutations of the coefficients, which is done using 
-  $O(sn)$ operations each. Thus, the total cost for  
-  Step~\ref{alg:ks-pseudotrace} is $O(sn(\log(d)+\log(n)))$.
+  Since we have $Z^s = 1\bmod h(Z)$, the trace-like function in
+  Step~\ref{alg:ks-pseudotrace} can be computed modulo $Z^s - 1$. As
+  remarked by Shoup~\cite{shoup94}, powerings of the form
+  $a\mapsto a^{q^j} \bmod Z^s-1$ boil down to simple permutations of
+  the coefficients, which are done using $O(sm)$ operations. After
+  computing the trace modulo $Z^s - 1$ we have to reduce it modulo $h$
+  which is done by a division with remainder using $O(\MM(sm))$
+  operations.  Thus, the total cost for Step~\ref{alg:ks-pseudotrace}
+  is $O(\MM(sm) + sm(\log(d)+\log(m)))$.
 
-  After computing the trace modulu $X^s - 1$ we have to reduce it modulu $f$
-  which is done by a division with remainder using $O(\MM(sn))$ operations.
-  The exponentiations in Steps~\ref{alg:ks:even} and~\ref{alg:ks:odd} are done in
-  $O(\MM(tn)\log(q))$ operations. Finally, the gcds in Step.~\ref{alg:ks:gcd} are computed in 
-  $O(\MM(tn)\log(tn))$.
+  If we let $t=\deg h$, the exponentiations in Steps~\ref{alg:ks:even}
+  and~\ref{alg:ks:odd} are done in $O(\MM(tm)\log(q))$
+  operations. Finally, the gcds in Step~\ref{alg:ks:gcd} are computed
+  in $O(\MM(tm)\log(tm))$.
 
   As analyzed by Shoup, the number of recursive calls is in
-  $O(\log(s))$, and at each recursive step the degree of $f$ is halved
+  $O(\log(s))$, and at each recursive step the degree of $h$ is halved
   with probability at least $1/2$. Hence, we shall multiply the
-  complexity of Steps~\ref{alg:ks-pseudotrace} and reduction of the trace$\pmod f$ by
+  complexity of Step~\ref{alg:ks-pseudotrace} by
   $\log s$, while the first call to Steps~\ref{alg:ks:even},~\ref{alg:ks:odd}
   and~\ref{alg:ks:gcd} dominates all others. Thus the total cost of the algorithm is
-  $O(sn(\log(d)+\log(n))\log(s) + \MM(sn)\log(sn) + \MM(sn)\log(q))$.
+  $O(sm(\log(d)+\log(m))\log(s) + \MM(sm)\log(sm) + \MM(sm)\log(q))$.
 \end{proof}
 
 As the next special case of Algorithm \ref{alg:ks}, we consider taking roots in cyclotomic
-extensions. Let $r$ be a prime power and let $g$ be an irreducible factor of the $r$-th
-cyclotomic polynomial $\Phi_r$ with $s = \deg(g)$. Denote $\F_q[Z] / g(Z)$ by $\F_q(\zeta)$ where 
-$\zeta = z$ is the image of $Z$ in the quotient. Given an $r$-th power $a \in \F_q(\zeta)$ we want 
-to compute an $r$-th root $a^{1 / r}$, or equivalently a linear factor of $X^r - a$ over 
+extensions. Let $r$ be a prime power and let $h$ be an irreducible factor of the $r$-th
+cyclotomic polynomial $\Phi_r$, with $s = \deg h$. Denote $\F_q[Z] / h(Z)$ by $\F_q(\zeta)$, where 
+$\zeta$ is the image of $Z$ in the quotient. Given an $r$-th power $\alpha \in \F_q(\zeta)$ we want 
+to compute an $r$-th root $\alpha^{1 / r}$, or equivalently a linear factor of $X^r - \alpha$ over 
 $\F_q(\zeta)$.
 \begin{proposition}
 	\label{prop:root-fpz}
@@ -473,15 +475,17 @@ $\F_q(\zeta)$.
 	\label{terms-l-s}
 	Considering $\CC(r) \in O(r^{(\omega + 1) / 2})$, the condition $s \in O(r^{(3 - \omega) / 
 	2})$ is proposed to keep the term $s\CC(r)$, which appears in complexity estimations of 
-	subsequent sections, at most quadratic in $r$. This also forces the term $r\CC(s)$ is 
+	subsequent sections, at most quadratic in $r$. This also forces the term $r\CC(s)$ in 
 	Proposition \ref{prop:root-fpz} to be subquadratic, hence keeping the complexity in both cases 
 	at most quadratic. 
 \end{remark}
 \begin{proof}
-Again we discuss Step \ref{alg:ks-pseudotrace} of Algorithm \ref{alg:ks} which is the dominant 
-step. For clarity, we rewrite the recursion relations in \cite{kaltofen+shoup97}. Let
-\[ \beta_i = h^q + h^{q^2} + \cdots + h^{q^i}, \quad \xi_i = x^{q^i}, \quad \zeta_i = z^{q^i}. \]
-Then we have $\beta_1 = h^q$, $\xi_1 = x^q$, $\zeta_1 = z^q$, and
+We adapt Algorithm~\ref{alg:ks} to get a linear factor of the polynomial $X^r-\alpha$. 
+Again, we discuss Step~\ref{alg:ks-pseudotrace}, which is the dominant 
+step. Let $h$ be a factor of $X^r-\alpha$, and let $x$ be the image of $X$ modulo $h$. 
+For clarity, we rewrite the recursion relations in \cite{kaltofen+shoup97}. Let
+\[ \beta_i = a_0^q + a_0^{q^2} + \cdots + a_0^{q^i}, \quad \xi_i = x^{q^i}, \quad \zeta_i = \zeta^{q^i}. \]
+Then we have $\beta_1 = h^q$, $\xi_1 = x^q$, $\zeta_1 = \zeta^q$, and
 \[
 \beta_j = 
 \begin{cases}
@@ -502,26 +506,26 @@ Then we have $\beta_1 = h^q$, $\xi_1 = x^q$, $\zeta_1 = z^q$, and
 For a positive integer $j$ we have
 \begin{equation}
 \label{equation:betaj}
-\beta_j^{q^j} = \left( \sum_{l = 0}^{n - 1}c_l(z)x^l \right)^{q^j} = \sum_{l = 0}^{n - 
-	1}c_l(z^{q^j})(x^{q^j})^l = \sum_{l = 0}^{n - 1}c_l(\zeta_j)\xi_j^l.
+\beta_j^{q^j} = \left( \sum_{\ell = 0}^{n - 1}c_\ell(\zeta)x^\ell \right)^{q^j} = \sum_{\ell = 0}^{n - 
+	1}c_\ell(\zeta^{q^j})(x^{q^j})^\ell = \sum_{\ell = 0}^{n - 1}c_\ell(\zeta_j)\xi_j^\ell.
 \end{equation}
-Now we analyze the running of computing $\dot{h} = h + \beta_{s - 1}$. First note that we always 
-have $z^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions 
+Now we analyze the running of computing $a_1 = a_0 + \beta_{s - 1}$. First note that we always 
+have $\zeta^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions 
 at the end of each step. For example $x^q = a^{\lfloor q / r\rfloor}x^{q \bmod r}$ which can be 
 computed using $O(\MM(s)\log(q))$ operations in $\F_q$. At step $j$ of the recursion we have the 
 following costs in $\F_q$:
 \begin{itemize}
-	\item $O(\MM(r) + \MM(s)\log(r))$ for computing $x^{q^j}$, and computing $z^{q^j}$ is free.
-	\item If $s \in O(r^{(3 - \omega) / 2})$ we can first reduce $z^{q^j \bmod r}$ modulo $g(Z)$, 
+	\item $O(\MM(r) + \MM(s)\log(r))$ for computing $x^{q^j}$.
+	\item If $s \in O(r^{(3 - \omega) / 2})$ we can first compute $\zeta^{q^j \bmod r}$ modulo $h$, 
 	and then do $n$ modular compositions at a total cost of $O(\MM(r) + n\CC(s))$. Otherwise, we  
-	reduce $c_l(z^{q^j \bmod r})$ modulo $g(Z)$ for all $0 \le l < n$ at a total cost of 
+	reduce $c_\ell(Z^{q^j \bmod r})$ modulo $g(Z)$ for all $0 \le \ell < n$ at a total cost of 
 	$O(n\MM(r))$.
 	\item $O(n\MM(s))$ for evaluating $\beta_j$ at $x^{q^j}$ using Horner's method.
 	\item $O(\MM(rs))$ for reducing (\ref{equation:betaj}) modulo $f$.
 \end{itemize}
-The depth of the recursion is $\log(s)$, hence $\dot{h}$ can be computed in $O(\MM(s)\log(q) + 
+The depth of the recursion is $\log(s)$, hence $a_1$ can be computed in $O(\MM(s)\log(q) + 
 n\CC(s)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or
-$O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ otherwise. Finally since 
+$O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ otherwise. Finally, since 
 the depth of the recursion in Algorithm \ref{alg:ks} is $\log(r)$, we have the desired result.
 \end{proof}
 
@@ -1500,13 +1504,13 @@ within those bounds.
   We only consider naive integer arithmetic, since it is unrealistic
   to apply embedding algorithms to very large sizes.
 
-  In step~\ref{alg:selectell:prime} we need to test for the primality
-  of $\ell$, while steps~\ref{alg:selectell:order}
+  In Step~\ref{alg:selectell:prime} we need to test for the primality
+  of $\ell$, while Steps~\ref{alg:selectell:order}
   and~\ref{alg:selectell:ellorder} require the factorization of
   $\ell-1$. Both operations can be performed in
   $\tildO(\sqrt{r\bar{u}})$ operations using naive algorithms.
 
-  In step~\label{alg:selectell:ellcount} we need to count the number
+  In Step~\label{alg:selectell:ellcount} we need to count the number
   of points of an elliptic curve over $\F_q$. This can be done in
   $O\left(\log^6(q)\right)$ binary operations using the
   Schoof-Elkies-Atkin algorithm with naive integer
@@ -1516,7 +1520,7 @@ within those bounds.
 
   All other operations have negligible cost compared to these ones. We
   finally need to account for the two loops in the algorithm. The
-  inner loop at step~\ref{alg:selectell:ellloop} stops when a curve
+  inner loop at Step~\ref{alg:selectell:ellloop} stops when a curve
   with $t\bmod\ell$ in $\mathcal{T}$ is found. The set $\mathcal{T}$
   has size $\euler(r)$, hence, assuming that traces are evenly
   distributed modulo $\ell$, we expect to find a suitable curve after
@@ -1542,7 +1546,7 @@ be taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ in
 Algorithm~\ref{algorithm:selectell} are non-empty?
 
 It is not easy to give a precise answer: already the condition in that
-$\ell=ur+1$, in step~\ref{alg:selectell:prime}, poses some
+$\ell=ur+1$, in Step~\ref{alg:selectell:prime}, poses some
 difficulties. Heuristically, we expect that about
 $\bar{u}/\log(\bar{u}r)$ of those numbers are prime. However the best
 lower bound on primes of the form $\ell=ur+1$, even under GRH, is
