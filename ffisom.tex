@@ -807,7 +807,87 @@ computing an embedding $k \hookrightarrow K$.
 \subsection{The Artin-Schreier case}
 \label{sec:artin-schreier-case}
 
-\todo{We have to write at least a few paragraphs on how to handle this case.}
+This section is devoted to the case $r = p^d$ for some positive integer $d$. The idea is to build a 
+tower inside the extension $k/\F_q$ using polynomials of the form $X^p - X - a$ where $a \in k$. To 
+start, let $a_1 \in \F_q$ be such that $\trace_{\F_q/\F_p}(a_1) \ne 0$. Let $\sigma \in 
+\gal(\F_q/\F_p)$ be a generator. Then by the additive Hilbert's theorem 90 there is no element 
+$\alpha \in \F_q$ such that $\sigma(\alpha) - \alpha = a_1$. Equivalently, the polynomial $f_1 = 
+X^p - X - a_1$ has no root in $\F_q$. By the Artin-Schreier theorem in \cite[Ch VI]{lang} $f_1$ 
+is irreducible over $\F_q$. For a root $\alpha_1 \in k$ of $f_1$ the extension $\F_q(\alpha_1) / 
+\F_q$ is of degree $p$.
+Now let $a_2 = a_1\alpha_1^{p - 1}$. Then by \cite[Lemma 5]{Adleman-Lenstra} the polynomial $f_2 = 
+X^p - X - a_2$ is irreducible over $\F_q(\alpha_1)$. So, for a root $\alpha_2 \in k$ of $f_2$ the 
+extension $\F_q(\alpha_2, \alpha_1) / \F_q(\alpha_1)$ is of degree $p$. Continuing the above 
+process we build a tower
+\begin{equation}
+	\label{equ:art-sch-tower}
+	\F_q \subset \F_q(\alpha_1)  \subset \cdots \subset \F_q(\alpha_1, \cdots, \alpha_d) = k.
+\end{equation}
+By construction, $\alpha_i \ni \F_q(\alpha_1, \cdots, \alpha_{i - 1})$ for all $1 \le i \le d$. 
+This means the minimal polynomial of $\alpha_d$ over $\F_q$ is of degree $r = p^d$. Therefore, $k = 
+\F_q(\alpha_d)$, and the element $\alpha_d \in k$ is what we are looking for.
+
+The above constructions boils down to computing a root of the polynomial $f = X^p - X - a \in 
+k[X]$. We show how to compute such root. Although we could develop our algorithm for a general base 
+field $\F_q$, we assume $q = p$ to make equations and complexity statements simpler. Let $\sigma 
+\in \gal(k/\F_q)$ be a generator. By construction, $a$ is always in an intermediate subfield $\F_q 
+\subset k' \subset k$. This means
+\[ \trace_{k / \F_q}(a) = \trace_{k' / \F_q}(\trace_{k / k'}(a)) = \trace_{k' / \F_q}(p^ia) = 0  \]
+for some $i > 0$. By Hilbert's theorem 90 there exists $\alpha \in k$ such that $\alpha - 
+\sigma(\alpha) = -a$ for a generator $\sigma \in \gal(k / \F_q)$. In other words, $\alpha^p - 
+\alpha - a = 0$. Therefore, $\alpha$ is a root of $f$. On the other hand, $\alpha$ can be 
+explicitly set as
+\begin{equation}
+	\label{equ:art-sch-hil}
+	\alpha = \frac{1}{\trace(\theta)}[a\sigma(\theta) + (a + \sigma(a))\sigma^2(\theta) + \cdots + 
+	(a + \sigma(a) + \cdots + \sigma^{r - 2}(a))\sigma^{r - 1}(\theta)]
+\end{equation}
+for a random element $\theta \in k$ with nonzero trace. To compute (\ref{equ:art-sch-hil}) 
+efficiently, we define
+\[ \xi_i = \sigma^i(x), \quad \beta_i(u) = u + \sigma(u) + \cdots + \sigma^{i - 1}(u), \quad 
+\alpha_i(v) = \beta_1(a)\sigma(v) + \cdots + \beta_i(a)\sigma^i(v). \]
+A simple calculation gives
+\[ \alpha_{j + k}(v) = \alpha_j(v) + \sigma^j(\alpha_k(v)) + \beta_j(a)\sigma^{j + 1}(\beta_k(v)). 
+\]
+From these we can extract the following recursive relations:
+\[
+\begin{aligned}
+	\xi_j & = 
+	\begin{cases}
+		\sigma^{j / 2}(\xi_{j / 2}) & j \text{ even} \\
+		\sigma(\xi_{j - 1}) & j \text{ odd}
+	\end{cases}, \\
+	\beta_j(u) & = 
+	\begin{cases}
+		\beta_{j / 2}(u) + \sigma^{j / 2}(\beta_{j / 2}(u)) & j \text{ even} \\
+		u + \sigma(\beta_{j - 1}(u)) & j \text{ odd}
+	\end{cases}, \\
+	\alpha_{j}(v) & = 
+	\begin{cases}
+		\alpha_{j / 2}(v) + \sigma^{j / 2}(\alpha_{j / 2}(v)) + \beta_{j / 2}(a)\sigma^{j / 2 + 
+		1}(\beta_{j / 2}(v)) & j \text{ even} \\
+		\alpha_1(v) + \sigma(\alpha_{j - 1}(v)) + a\sigma^2(\beta_{j - 1}(v)) & j \text{ odd} 
+	\end{cases}
+\end{aligned}
+\]
+Therefore, the values $\trace(\theta) = \beta_r(\theta)$, and $\alpha = 
+\beta_r(\theta)^{-1}\alpha_r(\theta)$ can be computed recursively, in $O(\log(r))$ steps. At step 
+$j$ of the recursive algorithm, $\xi_j, \beta_j(a), \beta_j(\theta), \alpha_j(\theta)$ are 
+computed. As before, the action of $\sigma^j$ is the same as composing with $\xi_j$. So each step 
+of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(\CC(r))$ 
+operations in $\F_q$. The initial value of $\xi_1 = x^q$ is computed using $O(\MM(r)\log(q))$ 
+operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(r) + 
+\MM(r)\log(q))$ operations in $\F_q$. Now, to compute $\alpha_d$ in (\ref{equ:art-sch-tower}) we 
+need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is computed only once. 
+\begin{proposition}
+	Let $r = p^d$ for a positive integer $d$. An isomorphism of two extensions $k / \F_q$, $K / 
+	\F_q$ of degree $r$ can be constructed using $O(\CC(r)\log^2(r) + \MM(r)\log(q))$ operations in 
+	$\F_q$.
+\end{proposition}
+
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rains' algorithm}
