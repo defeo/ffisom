@@ -823,9 +823,11 @@ process we build a tower
 	\label{equ:art-sch-tower}
 	\F_q \subset \F_q(\alpha_1)  \subset \cdots \subset \F_q(\alpha_1, \cdots, \alpha_d) = k.
 \end{equation}
-By construction, $\alpha_i \ni \F_q(\alpha_1, \cdots, \alpha_{i - 1})$ for all $1 \le i \le d$. 
-This means the minimal polynomial of $\alpha_d$ over $\F_q$ is of degree $r = p^d$. Therefore, $k = 
-\F_q(\alpha_d)$, and the element $\alpha_d \in k$ is what we are looking for.
+The idea of building such tower using the Artin-Schreier polynomials can also be found in 
+\cite{LenstraJr91, Allombert02, shoup93}. By construction, $\alpha_i \notin \F_q(\alpha_1, \cdots, 
+\alpha_{i - 1})$ for all $1 \le i \le d$. This means the minimal polynomial of $\alpha_d$ over 
+$\F_q$ is of degree $r = p^d$. Therefore, $k = \F_q(\alpha_d)$, and the element $\alpha_d \in k$ is 
+what we are looking for.
 
 The above constructions boils down to computing a root of the polynomial $f = X^p - X - a \in 
 k[X]$. We show how to compute such root. Although we could develop our algorithm for a general base 
