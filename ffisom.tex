@@ -245,7 +245,11 @@ sub-problems:
 We review the fundamental building blocks that constitute the
 algorithms presented next.  We are going to measure all complexities
 in number of operations $+$, $\times$, $\div$ in $\F_q$, unless
-explicitly stated otherwise.
+explicitly stated otherwise. Most of the algorithms we present are
+randomized; we use the \emph{big-Oh} notation $O()$ to express average
+asymptotic complexity, and we will make it clear when this complexity
+depends on heuristics. We also occasionally use the notation
+$\tildO()$ to neglect logarithmic factors in the parameters.
 
 We let $\MM(m)$ be a function such that polynomials in $\F_q[X]$ of
 degree less than $m$ can be multiplied in $\MM(m)$ operations in
@@ -288,11 +292,13 @@ will use $\CC(s)$ as a shorthand notation for $\CC(s,1)$.
 
 
 \paragraph{Computing subfields.}
-Let $\F_q \subset k$ be a finite extension of degree $m$ where $k = \F_q[X]/f(X)$ with $f$ monic 
-irreducible of degree $m$. Given a divisor $r$ of $m$ we want to construct an intermediate extension 
-$\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely, we want to compute a monic 
-irreducible polynomial $g \in \F_q[X]$ of degree $r$, and a polynomial $h \in \F_q[X]$ such that $x 
-\mapsto h(x)\bmod f$ defines an embedding $L = \F_q[X] / g(X) \hookrightarrow k$. We proceed as follows.
+With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
+divisor $r$ of $m$, and we want to construct an intermediate extension
+$\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely,
+we want to compute a monic irreducible polynomial $g \in \F_q[X]$ of
+degree $r$, and a polynomial $h \in \F_q[X]$ such that
+$x \mapsto h(x)\bmod f$ defines an embedding
+$L = \F_q[X] / g(X) \hookrightarrow k$. We proceed as follows.
 
 Let $\alpha\in k$ be a random element not in $\F_q$. Then $\alpha$ has a minimal polynomial of degree $m$ 
 over $\F_q$ with high probability. In other words, one needs $O(1)$ such random elements to find 
@@ -305,11 +311,15 @@ has a minimal polynomial of degree $r$ over $\F_q$ with high
 probability as well. This means we can compute, after $O(1)$ random
 trials, the desired polynomials $\beta = \trace_{k/L}(\alpha)$,
 $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta$.
+
 \begin{proposition}
 	\label{prop:subfield}
-	Let $\F_q \subset k$ be a finite extension of degree $m$, and let $r$ be a divisor of $m$. 
-	Computing an intermediate field $\F_q \subset L \subset k$ takes $O(\CC(m)\log(m) + 
-	\MM(m)\log(q))$ operations in $\F_q$.
+	Let $\F_q \subset k$ be a finite extension of degree $m$, and
+        let $r$ be a divisor of $m$.  Computing an intermediate field
+        $\F_q \subset L \subset k$ with $[L:\F_q]=r$ takes
+        $O(\CC(m)\log(m) + \MM(m)\log(q))$ operations in $\F_q$.  Once
+        $L$ is computed, any element $\gamma\in L$ can be lifted to
+        its image in $k$ using $C(m)$ operations.
 \end{proposition}
 \begin{proof}
 	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
@@ -330,16 +340,19 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 	\]
 	Raising an element $\beta \in k$ to the power of $q^j$ is the same computing the composition 
 	$\beta(\xi_j)$. This means that each step of the above recursion is done using $O(1)$ modular 
-	composition in $k$. The depth of the recursion is $\log(i)$. Therefore, given the initial value 
+	compositions in $k$. The depth of the recursion is $\log(i)$. Therefore, given the initial value 
 	$\xi_1$, $T_i(a)$ is computed using $O(\CC(m)\log(i))$ operations in $\F_q$. To compute the 
 	initial value $\xi_1 = x^{q^r}$ we first compute $x^q$ using the usual binary-powering 
 	algorithm at cost of $O(\MM(m)\log(q))$ operations in $\F_q$. Then the rest is done using the 
 	same recursive technique as above at the cost of $O(\CC(m)\log(r))$ operations in $\F_q$. 
 	Therefore, computing the trace $\trace_{k/L}(\alpha) = T_{m/r}(\alpha)$ takes $O(\CC(m)\log(m) + 
 	\MM(m)\log(q))$ operations in $\F_q$.
+
+        Finally, given an element $\gamma\in L$, its image in $k$ is
+        computed by evaluating $h(\gamma)$, where $h$ is the
+        polynomial representation of $\trace_{k/L}(\alpha)$. This can
+        be done by a modular composition at cost $C(m)$.
 \end{proof}
-
-
 
 
 \paragraph{Polynomial factorization}
@@ -541,16 +554,20 @@ the depth of the recursion in Algorithm \ref{alg:ks} is $\log(r)$, we have the d
 
 \part{Embedding description}
 
-Throughout this part we let $m=\deg f$ and $n=\deg g$, so that
-$m|n$. The \emph{embedding description problem} asks to find two
-elements $\alpha\in k$ and $\beta\in K$ such that $\alpha\mapsto\beta$
-for some field embedding $\phi:k\to K$. This is equivalent to
-$\alpha$ and $\beta$ having the same minimal polynomial.
+This part is devoted to the problem of describing the embedding of
+$k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; we let $m=\deg f$ and
+$n=\deg g$, so that $m|n$. The \emph{embedding description problem}
+asks to find two elements $\alpha\in k$ and $\beta\in K$ such that
+$\alpha\mapsto\beta$ for some field embedding $\phi:k\to K$. This is
+equivalent to $\alpha$ and $\beta$ having the same minimal polynomial.
 
 The most obvious way to solve this problem is to take the class of $X$
 in $k=\F_q[X]/f(X)$ for $\alpha$, and a root of $f$ in $K$ for
-$\beta$. Since $f$ splits completely in $K$, we can apply Algorithm 
-\ref{alg:ks} for the special case $d = 1$.
+$\beta$. Since $f$ splits completely in $K$, we can apply Algorithm
+\ref{alg:ks} for the special case $d = 1$, which gives an upper bound
+of $O\bigl((n\CC(m) + \CC(n,m) + \MM(nm)\log q)\log(m)\bigr)$ for the
+problem. We remark that this complexity is strictly larger than
+$\tildO(m^2)$.
 
 For a more specialized approach, we note that it is enough to solve
 the following problem: let $r$ be a prime power such that $r|m$ and
@@ -569,12 +586,17 @@ or
   \beta = \sum_{\substack{r|m,\\\gcd(r,m/r)=1}}\beta_r.
 \end{equation*}
 
-In the next sections, we present algorithms to solve this problem. All
-algorithms are going to rely on one common principle: construct an
-element in $k$ (and in $K$) such that its minimal polynomial (or,
-equivalently, its orbit under the absolute Galois group of $\F_q$) is
-uniquely defined.
+In the next sections, we present algorithms to solve this problem. To
+simplify the exposition, we will assume that $[k:\F_q]=[K:\F_q]=r$.
+Indeed, we can reduce to this situation by applying
+Proposition~\ref{prop:subfield}, at an additional cost of
+$O(\CC(n)\log(n) + \MM(n)\log(q))$ for each primary factor $r$.
 
+All algorithms presented next are going to rely on one common
+principle: construct an element in $k$ (and in $K$) such that its
+minimal polynomial (or, equivalently, its orbit under the absolute
+Galois group of $\F_q$) is uniquely (or \emph{almost} uniquely)
+defined.
 
 
 
