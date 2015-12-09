@@ -209,6 +209,7 @@ stabilized.
 
 
 \section{Introduction}
+\label{sec:introduction}
 
 Let $q$ be a prime power and let $\F_q$ be a field with $q$
 elements. Let $f$ and $g$ be irreducible polynomials over $\F_q$, with
@@ -976,93 +977,32 @@ $[\F_q[\mu_\ell]:\F_q]=r$, then the cyclotomic polynomial $\Phi_\ell$
 factors over $\F_q$ into $\euler(\ell)/r$ distinct factors of degree
 $r$. Pinch's method, by choosing random roots of $\Phi_\ell$ in $k$
 and $K$, randomly selects one of these factors as minimal polynomial.
-
 By combining the roots of $\Phi_\ell$ into Gaussian periods, Rains'
-method uniquely selects a minimal polynomial of degree $r$. The
-construction is best understood by looking at the Galois groups of
-cyclotomic fields. It is well known that the Galois group of
-$\Q[\mu_\ell]/\Q$ is canonically isomorphic to $(\Z/\ell\Z)^\ast$ via
-the mapping
-\begin{equation*}
-  \begin{aligned}
-    (\Z/\ell\Z)^\ast &\to \gal(\Q[\mu_\ell]/\Q),\\
-    e &\mapsto (\sigma_e : \zeta_\ell\mapsto\zeta_\ell^e),
-  \end{aligned}
-\end{equation*}
-where $\sigma_e$ is the map sending any $\ell$-th root of unity to its
-$e$-th power, extended by linearity to all of $\Q[\mu_\ell]$. Gaussian
-periods are defined as traces of generators of $\mu_\ell$ down to a
-subfield of $\Q[\mu_\ell]$.
+method uniquely selects a minimal polynomial of degree $r$.
 
 \begin{definition}
-  Let $S$ be a subgroup of $(\Z/\ell\Z)^\ast$, and let $L$ be the
-  subfield of $\Q[\mu_\ell]$ fixed by $S$. For any generator
-  $\zeta_\ell$ of $\mu_\ell$, define the Gaussian period
-  $\eta(\zeta_\ell)$ as
-  \begin{equation}
-    \eta(\zeta_\ell) = \trace_{\Q[\mu_\ell]/L} \zeta_\ell = \sum_{\sigma\in S}{\zeta_\ell^{\sigma}}.
-  \end{equation}
-\end{definition}
-
-By hypothesis, the prime $q$ factors as a product of $\euler(\ell)/r$
-distinct primes ideals in $\Z[\mu_\ell]$. Let $\mathfrak{q}$ be one
-such prime ideal, then $\F_q[\mu_\ell]$ is isomorphic to the residue
-field $\Z[\mu_\ell]/\mathfrak{q}$, and we can identify (canonically)
-the Galois group $\gal(\F_q[\mu_\ell]/\F_q)$ with the subgroup
-$\langle q\rangle\subset(\Z/\ell\Z)^\ast$.
-
-Now, suppose there is a group $S$ such that
-$(\Z/\ell\Z)^\ast=\langle q\rangle\times S$, let $L$ be the field fixed
-by $S$, and let $\mathcal{O}_L$ be its ring of integers. Then, the
-Galois group of $L/\Q$ is also canonically identified with $\langle
-q\rangle\subset(\Z/\ell\Z)^\ast$, the prime $q$ is inert in $L$, and
-$\mathcal{O}_L/q\mathcal{O}_L$ is isomorphic to
-$\F_q[\mu_\ell]$. While the identification of $\F_q[\mu_\ell]$ with
-$\Z[\mu_\ell]/\mathfrak{q}$ depended on the choice of the prime
-$\mathfrak{q}$, taking the trace down to $L$ and then reducing modulo
-$q$ is independent of such choice, we obtain thus a canonical
-identification between $\mathcal{O}_L/q\mathcal{O}_L$ and
-$\F_q[\mu_\ell]$. The situation is summarized in the following
-diagram:
-\begin{equation*}
-  \begin{tikzpicture}[node distance=1.7cm]
-    \node (Q) {$\Z$};
-    \node[above of=Q] (L) {$\mathcal{O}_L$};
-    \node[above of=L] (Qm) {$\Z[\mu_\ell]$};
-    \node[right=8cm of Q] (Fp) {$\F_q$};
-    \node[above of=Fp] (Fpm) {$\F_q[\mu_\ell]$};
-    \node[above of=Fpm] (Prod) {$\Z[\mu_\ell]/\mathfrak{q}_1\times\cdots\times\Z[\mu_\ell]/\mathfrak{q}_t$};
-    \draw 
-    (Q) edge node[left] {\small $\langle q\rangle$} (L)
-    (L) edge node[left] {\small $S$} (Qm)
-    (Fp) edge node[right] {\small $\langle q\rangle$} (Fpm); 
-    \draw[->>] 
-    (Q) edge node[above] {\small $\bmod\, q$} (Fp)
-    (L) edge node[above] {\small $\bmod\, q$} (Fpm)
-    (Qm) edge node[above] {\small $\bmod\, \mathfrak{q}_1\times\cdots\times\bmod\,\mathfrak{q}_t$} (Prod)
-    (Prod) edge node[right] {} (Fpm);
-  \end{tikzpicture}
-\end{equation*}
-
-We can now extend the definition of Gaussian period to finite fields.
-
-\begin{definition}
-  Suppose that there is a subgroup $S\subset(\Z/\ell\Z)^\ast$ such
-  that $(\Z/\ell\Z)^\ast=\langle q\rangle\times S$. For any generator
-  $\zeta_\ell$ of $\mu_\ell$ in $\F_q[\mu_\ell]$, define the Gaussian
-  period $\eta_q(\zeta_\ell)$ as
+  Let $q$ be a prime, and let $\ell$ be a squarefree integer such that
+  $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$.  For any
+  generator $\zeta_\ell$ of $\mu_\ell$ in $\F_q[\mu_\ell]$, define the
+  Gaussian period $\eta_q(\zeta_\ell)$ as
   \begin{equation}
     \eta_q(\zeta_\ell) = \sum_{\sigma\in S}{\zeta_\ell^{\sigma}}.
   \end{equation}
 \end{definition}
 
+It is evident from the definition that the Galois orbit of
+$\eta_q(\zeta_\ell)$ is independent of the initial choice of
+$\zeta_\ell$. Much less evident is the fact that this orbit has
+maximal size and forms a normal basis of $\F_q[\mu_\ell]$, as stated
+in the following lemma.
+
 \begin{lemma}
   \label{th:gaussian}
-  Let $\ell$ be a squarefree integer such that $(\Z/\ell\Z)^\ast =
-  \langle q\rangle \times S$ for some $S$.  The periods
-  $\eta_q(\zeta_\ell^\tau)$ for $\tau$ running through $\langle
-  q\rangle$ form a normal basis of $\F_q[\mu_\ell]$ over $\F_q$,
-  independent of the choice of $\zeta_\ell$.
+  Let $q$ be a prime, and let $\ell$ be a squarefree integer such that
+  $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$.  The
+  periods $\eta_q(\zeta_\ell^\tau)$ for $\tau$ running through
+  $\langle q\rangle$ form a normal basis of $\F_q[\mu_\ell]$ over
+  $\F_q$, independent of the choice of $\zeta_\ell$.
 \end{lemma}
 \begin{proof}
   See~\cite[Main Theorem]{feisel1999normal}.
@@ -1113,97 +1053,106 @@ results to $k$ and $K$ via a field trace. In other words, Rains'
 algorithm looks for $\ell$ such that $[\F_q[\mu_\ell]:\F_q]=rs$ for
 some small $s$. We summarize this method in
 Algorithm~\ref{algorithm:rains-cyclo}; we only give the procedure for
-the smaller field $k$, the procedure for the larger field $K$ being
-identical.
+the field $k$, the procedure for the field $K$ being identical.
 
 \begin{algorithm}[Rains' cyclotomic algorithm]
   \label{algorithm:rains-cyclo}
   \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $m$, a prime power
-    $r|m$, a prime $\ell$ such that
+    \REQUIRE A field extension $k/\F_q$ of degree $r$; a squarefree
+    integer $\ell$ such that
     \begin{itemize}
     \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
-    \item $\#\langle q\rangle = rs$ for some integer $s$.
+    \item $\#\langle q\rangle = rs$ for some integer $s$;
     \end{itemize}
-    \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
+    a polynomial $h$ of degree $s$ irreducible over $k$.
+    \ENSURE A normal generator of $k$ over $\F_q$,
     with a uniquely defined Galois orbit.
     
-    \STATE Construct the smallest field extension $k'/k$
-    containing $\F_{q^{rs}}$; 
+    \STATE Construct the field extension $k'=k[Z]/h(Z)$;
     \REPEAT
-    \STATE Compute $\zeta = \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
+    \STATE Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
     \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
-    \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) = \sum_{\sigma\in S}\zeta^\sigma$;
-    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha_r = \trace_{\F_{q^{rs}}/\F_{q^r}}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
+    \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}\zeta^\sigma$;
+    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha_r \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
   \end{algorithmic}
 \end{algorithm}
 
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
-  $m,q,r,\ell,s$ it computes its output using $O(\MM(ms)(ms\log q +
-  (\ell\log\ell)/r))$ operations in $\F_q$, or $\tildO(m^2s^2\log q)$
-  assuming $\ell\in o(mrs)$.
+  $q,r,\ell,s$ it computes its output using
+  $O(\MM(sr)(sr\log q + (\ell\log\ell)/r))$ operations in $\F_q$, or
+  $\tildO(s^2r^2\log q)$ assuming $\ell\in o(sr^2)$.
 \end{proposition}
 \begin{proof}
-  By construction $k'$ contains a subfield isomorphic to $\F_{q^{rs}}$
-  and to $\F_q[\mu_\ell]$. By Lemma~\ref{th:gaussian} $\eta(\zeta)$ is
-  a normal generator of $\F_{q^{rs}}$, and
-  by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha_r$ is a normal generator of
-  $\F_{q^r}\subset k$.
+  By construction $k'$ is isomorphic to $\F_q[\mu_\ell]$. By
+  Lemma~\ref{th:gaussian} $\eta(\zeta)$ is a normal generator of $k'$,
+  and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha_r$ is a
+  normal generator of $k$. This proves correctness.
 
-  In the worst case $[k':k]=s$. Using the techniques
-  in~\cite{couveignes+lercier11,DeDoSc13,DeFeo:2014:FAA:2608628.2608672},
-  $k'$ can be constructed, and elements can be moved between $k$ and
-  $k'$ using $O(\MM(ms))$ operations in $\F_q$ \todo{This is very
-    optimistic, esp. if $s$ is not coprime to $m$}.
-
-  The root of unity $\zeta$ is obtained after $O(1)$ tries on average,
-  at a cost of $O(\MM(ms)ms\log q)$ operations each.
+  Using the techniques of Section~\ref{sec:introduction},
+  multiplications in $k'$ cost $O(\MM(sr))$ operations in $\F_q$.
+  Hence, the root of unity $\zeta$ is obtained after $O(1)$ tries on
+  average at a cost of $O(\MM(sr)sr\log q)$ operations each.
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
   \[\alpha_r = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
-  $\ell$ in $k'$, for a total cost of $O((\MM(ms)\ell\log\ell)/r)$.
+  $\ell$ in $k'$, for a total cost of
+  $O((\MM(sr)\ell\log\ell)/r)$. The final result is obtained as an
+  element of $k$.
 \end{proof}
 
-We now present a variant of Rains' algorithm which avoids the
-construction of the field extension $k'$. 
+The attentive reader will have noticed the irreducible polynomial $h$
+of degree $s$ given as input to Rains' algorithm. Computing this
+polynomial may not be cheap. For a start, we may $s$ to be coprime
+with $r$, so that $h$ can be taken with coefficients in $\F_q$. Then,
+for small values of $s$ and $q$, one may use a table of irreducible
+polynomials. For larger values, the
+constructions~\cite{couveignes+lercier11,DeDoSc13,DeFeo:2014:FAA:2608628.2608672}
+are reasonably efficient, and yield an irreducible polynomial in time
+less than quadratic in $s$.
+
+However negligible from an asymptotic point of view, the construction
+of the polynomial $h$ and of the field $k'$ take a serious toll on the
+practical performances of Rains' algorithm. Hence, we present now a
+variant of Rains' algorithm which avoids the construction of the field
+extension $k'$ by factoring the cyclotomic polynomial
+$\Phi_\ell$. Which of the two variants performs better depends on the
+relative values of $\ell$ and $s$.
 
 \begin{algorithm}[Rains' cyclotomic algorithm variant]
   \label{algorithm:rains-cyclo-2}
   \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $m$, a prime power
-    $r|m$, a prime $\ell$ such that
+    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
     \begin{itemize}
     \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
     \item $\#\langle q\rangle = rs$ for some integer $s$.
     \end{itemize}
-    \ENSURE A normal generator of $\F_{q^r}\subset k$ over $\F_q$,
+    \ENSURE A normal generator of $k$ over $\F_q$,
     with a uniquely defined Galois orbit.
     
     \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
     \STATE Compute $\bar{h} \leftarrow \rev{h'}/\rev{h} \bmod Z^\ell$;
-    \STATE Let $s'=\gcd(s,m/r)$ and $S' = \langle q^{rs/s'}\rangle \times S$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow -\sum_{\sigma\in S'}[\bar{h}]_\sigma$.
+    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow -\sum_{\sigma\in S}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
 
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
-  $m,q,r,\ell,s$ it computes its output using $O(\ell
-  m(\log(s)+\log(m))\log(\ell) + \MM(\ell m)\log(\ell m) + \MM(\ell
-  m)\log(q))$ operations in $\F_q$.
+  $q,r,\ell,s$ it computes its output using
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations in $\F_q$, or $\tildO(\ell r\log (q))$.
 \end{proposition}
 \begin{proof}
-  Factoring $\Phi_\ell$ costs $O(\ell m(\log(s)+\log(m))\log(\ell) +
-  \MM(\ell m)\log(\ell m) + \MM(\ell m)\log(q))$ according to
+  Factoring $\Phi_\ell$ costs $O(\ell r(\log(s)+\log(r))\log(\ell) +
+  \MM(\ell r)\log(\ell r) + \MM(\ell r)\log(q))$ according to
   Proposition~\ref{prop:cyclo}.
 
-  $\bar{h}$ is computed by a Euclidean division in $O(\MM(\ell m))$
-  operations. The final sum is computed in $O(\ell m)$ operations.
+  $\bar{h}$ is computed by a Euclidean division in $O(\MM(\ell r))$
+  operations. The final sum is computed in $O(\ell r)$ operations.
 \end{proof}
 
 
@@ -1211,24 +1160,6 @@ This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
 conditions of the algorithm, and what bounds can be given on it. These
 questions will be analyzed in Section~\ref{sec:selection}.
-
-\begin{remark}
-  Various practical optimizations are possible for Rains'
-  algorithm. We list here some of them.
-  \begin{itemize}
-  \item If $s$ cannot be chosen so that $k'=k$, then it is interesting
-    to take $s$ coprime with $m$. In this case, the extension $k$' can
-    be built using a polynomial with coefficients in $\F_q$ rather
-    than $k$, and a lookup table of irreducible polynomials can be
-    established for small $s$.
-  \item Different prime powers $r_1,r_2,\dots$ can be treated
-    simultaneously in some cases. We come back to this in
-    Section~\ref{sec:selection}.
-  \item In some cases, the trace in the final step can be computed
-    more efficiently by exploiting the fact that it is a linear form,
-    as per~\cite{todo}.
-  \end{itemize}
-\end{remark}
 
 \begin{note}
   \label{note:rains-non-prime}
