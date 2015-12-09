@@ -352,7 +352,7 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
         Finally, given an element $\gamma\in L$, its image in $k$ is
         computed by evaluating $h(\gamma)$, where $h$ is the
         polynomial representation of $\trace_{k/L}(\alpha)$. This can
-        be done by a modular composition at cost $C(m)$.
+        be done by a modular composition at cost $\CC(m)$.
 \end{proof}
 
 
@@ -496,8 +496,8 @@ $\F_q(\zeta)$.
 \begin{proof}
 We adapt Algorithm~\ref{alg:ks} to get a linear factor of the polynomial $X^r-\alpha$. 
 Again, we discuss Step~\ref{alg:ks-pseudotrace}, which is the dominant 
-step. Let $h$ be a factor of $X^r-\alpha$, and let $x$ be the image of $X$ modulo $h$. 
-For clarity, we rewrite the recursion relations in \cite{kaltofen+shoup97}. Let
+step. Let $h$ be a factor of $X^r-\alpha$ of degree $n$, and let $x$ be the image of $X$ modulo 
+$h$. For clarity, we rewrite the recursion relations in \cite{kaltofen+shoup97}. Let
 \[ \beta_i = a_0^q + a_0^{q^2} + \cdots + a_0^{q^i}, \quad \xi_i = x^{q^i}, \quad \zeta_i = \zeta^{q^i}. \]
 Then we have $\beta_1 = h^q$, $\xi_1 = x^q$, $\zeta_1 = \zeta^q$, and
 \[
@@ -540,7 +540,8 @@ following costs in $\F_q$:
 The depth of the recursion is $\log(s)$, hence $a_1$ can be computed in $O(\MM(s)\log(q) + 
 n\CC(s)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or
 $O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ otherwise. Finally, since 
-the depth of the recursion in Algorithm \ref{alg:ks} is $\log(r)$, we have the desired result.
+the depth of the recursion in Algorithm \ref{alg:ks} is $\log(r)$, and the coefficient $n$ is 
+halved each time, we have the desired result.
 \end{proof}
 
 
@@ -607,132 +608,136 @@ defined.
 \section{Kummer-type algorithms}
 \label{sec:kummer}
 
-In this section we review what we call \textit{Kummer-type} approaches to the isomorphism problem. 
+In this section we review what we call \textit{Kummer-type} approaches to the embedding problem. 
 We briefly review the works of Lenstra \cite{LenstraJr91}, and Allombert \cite{Allombert02}, and at 
-the end we give a variant of these algorithms with a significantly lower running time complexity.
+the end we give a variant of these algorithms with a significantly lower running time complexity. 
+By applying the subfield technique, introduced in Section \ref{sec:introduction}, we assume the 
+following reduced version of the embedding problem in the entire section: given extensions $k, K$  
+of the same degree $r$ where $r$ is a prime power, construct an embedding $k \hookrightarrow K$.
 
-Let $F$ be an extension of degree $r$ of $F = \F_q$. In \cite{LenstraJr91}, Lenstra proves that 
+Let $k$ be an extension of degree $r$ of $\F_q$. In \cite{LenstraJr91}, Lenstra proves that 
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
 that finds an isomorphism between them. The focus of the paper is on the theoretical construction 
 of the isomorphism, and no precise complexity analysis is presented. However, since there is an 
 explicit assumption of using linear algebra in the paper, a rough analysis of the algorithm yields 
-an estimate of $O(r^3)$ operations in $F$. The idea of the algorithm is as follows. First, if 
+an estimate of $O(r^3)$ operations in $\F_q$. The idea of the algorithm is as follows. First, if 
 the extension degree is equal to the charactristic the Artin-Schreier theory is used. Therefore, we 
-assume $p \ne r$.
+assume $p \nmid r$.
 
-Let $F[\zeta]$ denote the ring extension $F[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th cyclotomic 
-polynomial. Also let $\Delta$ denote the group of automorphisms $\Aut(F[\zeta]/F)$. Then we have 
-$F[\zeta]^\Delta = F$. Let $F[\zeta][c^{1/r}]$ denote the quotient $F[\zeta][Y]/(Y^r - c)$ such 
-that $c^{1/r}$ is the residue class of $Y$. For a given element $c \in T_F$, where $T_F$ is the 
-Teichm\"{u}ller subgroup \footnote{See the reference for details.} of $F[\zeta]$, the action of 
-$\Delta$ can be extended over the ring $F[\zeta][c^{1/r}]$ by sending $c^{1/r}$ to powers 
-$(c^{1/r})^\ell$ for certain integers $\ell$. If $c_1, c_2 \in T_F$ have the same order then we can 
-find an isomorphism $F[\zeta][c_1^{1/r}] \cong F[\zeta][c_2^{1/r}]$ that is identity on $F[\zeta]$ 
-and preserves the action of $\Delta$. In fact since $c_1$ and $c_2$ both generate the same 
-subgroups, there is an integer $j > 0$ such that $c_1 = c_2^j$, and the isomorphism is given by
+Let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th 
+cyclotomic polynomial. Also let $\Delta$ denote the group of automorphisms 
+$\Aut(\F_q[\zeta]/\F_q)$. Then we have $\F_q[\zeta]^\Delta = \F_q$. Let $\F_q[\zeta][c^{1/r}]$ 
+denote the quotient $\F_q[\zeta][Y]/(Y^r - c)$ such that $c^{1/r}$ is the residue class of $Y$. For 
+a given element $c \in T_{\F_q}$, where $T_{\F_q}$ is the Teichm\"{u}ller subgroup \footnote{See 
+the reference for details.} of $\F_q[\zeta]$, the action of $\Delta$ can be extended over the ring 
+$\F_q[\zeta][c^{1/r}]$ by sending $c^{1/r}$ to powers $(c^{1/r})^\ell$ for certain integers $\ell$. 
+If $c_1, c_2 \in T_{\F_q}$ have the same order then we can find an isomorphism 
+$\F_q[\zeta][c_1^{1/r}] 
+\cong \F_q[\zeta][c_2^{1/r}]$ that is identity on $\F_q[\zeta]$ and preserves the action of 
+$\Delta$. In fact since $c_1$ and $c_2$ both generate the same subgroups, there is an integer $j > 
+0$ such that $c_1 = c_2^j$, and the isomorphism is given by
 \[
 \begin{array}{lrll}
-\psi: & F[\zeta][c_1^{1/r}] & \rightarrow & F[\zeta][c_2^{1/r}] \\
+\psi: & \F_q[\zeta][c_1^{1/r}] & \rightarrow & \F_q[\zeta][c_2^{1/r}] \\
 & c_1^{1/r} & \mapsto & (c_2^{1/r})^j
 \end{array}
 \]
-If $c$ is a generator of $T_F$ then we can show that $F[\zeta][c^{1/r}]^\Delta$ is a field 
-extension of $F$ of degree $r$. Also, we can find an element $\gamma \in F[\zeta]$ such that $c 
-= \gamma^r$ belongs to $F[\zeta]^*$ and	generates $T_F$. This gives an isomorphism $F[\zeta] \cong 
-F[\zeta][c^{1/r}]$ that is identity on $F[\zeta]$, sends $\gamma$ to $c^{1/r}$, and preserve the 
-action of $\Delta$. From this isomorphism we get the induced isomorphism $F \cong 
-F[\zeta][c^{1/r}]^\Delta$. Therefore, given extensions $F_1, F_2$ of $F$ of degree $r$, we have 
-built a chain
+If $c$ is a generator of $T_{\F_q}$ then we can show that $\F_q[\zeta][c^{1/r}]^\Delta$ is a field 
+extension of $\F_q$ of degree $r$. Also, we can find an element $\gamma \in \F_q[\zeta]$ such that 
+$c = \gamma^r$ belongs to $\F_q[\zeta]^*$ and generates $T_{\F_q}$. This gives an isomorphism 
+$\F_q[\zeta] \cong \F_q[\zeta][c^{1/r}]$ that is identity on $\F_q[\zeta]$, sends $\gamma$ to 
+$c^{1/r}$, and preserve the action of $\Delta$. From this isomorphism we get the induced 
+isomorphism $\F_q \cong \F_q[\zeta][c^{1/r}]^\Delta$. Therefore, given extensions $k, K$ of $\F_q$ 
+of degree $r$, we have built a chain
 \begin{equation*}
 	\begin{tikzpicture}
-	\node (Fc1) {$F[\zeta][c_1^{1/r}]^\Delta$};
-	\node[right = of Fc1] (Fc2) {$F[\zeta][c_2^{1/r}]^\Delta$};
-	\node[left = of Fc1] (F1) {$F_1$};
-	\node[right = of Fc2] (F2) {$F_2$};
-	\draw[->] (F1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-	sep=0.5pt] {$\varphi_1$} node[below = 3mm, inner sep=0.5pt] {$\gamma \longmapsto 
-		c_1^{1/r}$} (Fc1);
-	\draw[->] (Fc1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-	sep=0.5pt] {$ \psi $} (Fc2);
-	\draw[->] (Fc2) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-	sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$c_2^{1/r} \longmapsto 
-		\gamma_1$} (F2);
+		\node (Fc1) {$\F_q[\zeta][c_1^{1/r}]^\Delta$};
+		\node[right = of Fc1] (Fc2) {$\F_q[\zeta][c_2^{1/r}]^\Delta$};
+		\node[left = of Fc1] (F1) {$k$};
+		\node[right = of Fc2] (F2) {$K$};
+		\draw[->] (F1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
+		sep=0.5pt] {$\varphi_1$} node[below = 3mm, inner sep=0.5pt] {$\gamma \longmapsto 
+			c_1^{1/r}$} (Fc1);
+		\draw[->] (Fc1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
+		sep=0.5pt] {$ \psi $} (Fc2);
+		\draw[->] (Fc2) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
+		sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$c_2^{1/r} \longmapsto 
+			\gamma_1$} (F2);
 	\end{tikzpicture}
 \end{equation*}
 of isomorphisms. The algorithm can be summarized as follows:
 \begin{enumerate}
 	\setlength{\itemsep}{0pt}
-	\item find a generator $c_i$ of $T_{F_i}$ for $i = 1, 2$
-	\item find isomorphisms $\varphi_i: F_i \xrightarrow{\sim} F[\zeta][c_i^{1/r}]^\Delta$ for 
-	$i = 1, 2$
+	\item find a generator $c_1, c_2$ of $T_k, T_K$
+	\item find isomorphisms $\varphi_i: k \xrightarrow{\sim} \F_q[\zeta][c_1^{1/r}]^\Delta$ and 
+	$\varphi_i: K \xrightarrow{\sim} \F_q[\zeta][c_2^{1/r}]^\Delta$
 	\item compute the integer $j$ such that $c_1 = c_2^j$
-	\item build the isomorphism $\psi: F[\zeta][c_1^{1/r}]^\Delta \xrightarrow{\sim} 
-	F[\zeta][c_2^{1/r}]^\Delta$
+	\item build the isomorphism $\psi: \F_q[\zeta][c_1^{1/r}]^\Delta \xrightarrow{\sim} 
+	\F_q[\zeta][c_2^{1/r}]^\Delta$
 	\item \textbf{return} $\varphi_2 \circ \psi \circ \varphi_1$
 \end{enumerate}
 A more careful look at the above approach suggests a trade-off between determinism and 
-simplicity/practicality. For example, one can replace the ring extension $F[\zeta]$ with the field 
-extension $F[\zeta] = F[X] / g(X)$ where $g$ is an irreducible factor of $\Phi_r$. This makes 
-things simpler and more practical at the cost of factoring $\Phi_r$ which of course introduces 
-indeterminism if one choses to use efficient factoring algorithms.
+simplicity/practicality. For example, one can replace the ring extension $\F_q[\zeta]$ with the 
+field extension $\F_q[\zeta] = \F_q[X] / g(X)$ where $g$ is an irreducible factor of $\Phi_r$. This 
+makes things simpler and more practical at the cost of factoring $\Phi_r$ which of course 
+introduces indeterminism if one choses to use efficient factoring algorithms.
 
 To find generators for the Teichm\"{u}ller subgroups, Lenstra uses some trace-like formula that 
 suggests a version of Hilbert 90 Theorem over rings. Alombert's approach is more or less the same 
 as above with more focus on implementation. The idea of the algorithm is to use cyclotomic field 
 extensions which in turn allows a more explicit use of Hilbert 90 Theorem to find elements 
-$\alpha_1 \in F_1[\zeta]$, and $\alpha_2 \in F_2[\zeta]$. Then $b = \alpha_1^r / \alpha_2^r$ is an 
-$r$th power in $F[\zeta]$ from which $b^{1/r}$ can be computed using a root extraction algorithm. 
-The isomorphism $F_1[\zeta] \xrightarrow{\sim} F_2[\zeta]$ is then given by $\alpha_1 \mapsto 
-b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is presented, one can easily see 
-that the dominant cost of this algorithm is solving Hilbert 90 which is done using linear algebra. 
-Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations in $F$.
+$\alpha_1 \in k[\zeta]$, and $\alpha_2 \in K[\zeta]$. Then $b = \alpha_1^r / \alpha_2^r$ is an 
+$r$th power in $\F_q[\zeta]$ from which $b^{1/r}$ can be computed using a root extraction 
+algorithm. The isomorphism $k[\zeta] \xrightarrow{\sim} K[\zeta]$ is then given by $\alpha_1 
+\mapsto b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is presented, one can 
+easily see that the dominant cost of this algorithm is solving Hilbert 90 which is done using 
+linear algebra. Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations in $F$.
 
 
 \subsection{Fast variant}
 
 In this section, we present a fast variant of Allombert's algorithm using an explicit solution to 
-the Hilbert 90 Theorem. Let $F = \F_q$ ,and $[k: F] = r$ where $r$ is a prime power. Let $h(Z)$ be 
-an irreducible factor of the $r$-th cyclotomic polynomial over $F$. Then $h$ has degree $s$ where 
-$s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension $F(\zeta) 
-\cong F[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes F(\zeta)$ where 
-$\zeta$ is the image of $Z$ in the quotients. The action of the Galois group $\gal(k / F)$ can be 
-extended to $k[\zeta]$ by
+the Hilbert 90 Theorem. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h(Z)$ be an 
+irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
+$s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
+$\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
+\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients. The action of the Galois group 
+$\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 \[
 \begin{array}{llll}
 \sigma: & k[\zeta] & \rightarrow & k[\zeta] \\
 & x \otimes \zeta & \mapsto & x^q \otimes \zeta.
 \end{array}
 \]
-Then the fixed field of $\sigma$ is $F(\zeta)$. The same can be done for the ring $K[\zeta]$. Let 
-us restate the algorithm for clarity.
+Then the fixed field of $\sigma$ is $\F_q(\zeta)$. The same can be done for the ring $K[\zeta]$. 
+Let us restate the algorithm for clarity.
 
 \begin{algorithm}[Allombert]
 	\begin{algorithmic}[1]
-		\REQUIRE field extensions $k, K$ of $F$ of degree $r$
+		\REQUIRE field extensions $k, K$ of $\F_q$ of degree $r$
 		\ENSURE an isomorphism $k \xrightarrow{\sim} K$
-		\STATE factor the $r$th cyclotomic polynomial and make the extensions $F(\zeta), 
+		\STATE factor the $r$th cyclotomic polynomial and make the extensions $\F_q(\zeta), 
 		k[\zeta], K[\zeta]$
 		\STATE find $\theta_1 \in k[\zeta]$ such that $\sigma(\theta_1) = \zeta\theta_1$
 		\STATE find $\theta_2 \in K[\zeta]$ such that $\sigma(\theta_2) = \zeta\theta_2$
-		\STATE compute an $r$th root $c$ of $\theta_1^r / \theta_2^r$ in $F(\zeta)$
+		\STATE compute an $r$th root $c$ of $\theta_1^r / \theta_2^r$ in $\F_q(\zeta)$
 		\STATE let $\alpha_1, \alpha_2$ be the constant terms of $\theta_1, c\theta_2$ respectively
 		\RETURN the isomorphism $\alpha_1 \rightarrow \alpha_2$
 	\end{algorithmic}
 \end{algorithm}
 
-
-By symmetry, we only deal with the extension $k / F$. The dominant steps of the algorithm are 
-solving Hilbert 90, i.e. finding $\theta_1$, and taking an $r$-th root in $F(\zeta)$. By 
-Proposition \ref{prop:root-fpz} taking $r$-th roots in $F(\zeta)$ can be efficiently done using 
+By symmetry, we only deal with the extension $k / \F_q$. The dominant steps of the algorithm are 
+solving Hilbert 90, i.e. finding $\theta_1$, and taking an $r$-th root in $\F_q(\zeta)$. By 
+Proposition \ref{prop:root-fpz} taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
 Algorithm \ref{alg:ks}. We show how to efficiently find $\theta_1$. For $a \in k[\zeta]$ define
 \[ \theta_a = a + \sigma(a)\zeta^{-1} + \sigma^2(a)\zeta^{-2} + \cdots + \sigma^{r - 1}(a)\zeta^{-r 
 	+ 1}. \]
 We have $\sigma(\theta_a) = \zeta\theta_a$. Therefore, $\theta_a$ is a solution of Hilbert 90 over 
-$k[\zeta]/F(\zeta)$. This also shows that $\theta_a^r \in F(\zeta)$. We set $\theta_1 = \theta_a$ 
-for a random $a \in k[\zeta]$. If we write $\theta_1 = \sum_{i = 0}^{s - 1}f_i(x)\zeta^i$ then 
-$\alpha_1 = f_0$ is what we are looking for. To compute $\theta_a$ efficiently, we take different 
-approaches based on the bound on $s$ in Proposition \ref{prop:root-fpz}. We consider two cases: 
-case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
+$k[\zeta]/\F_q(\zeta)$. This also shows that $\theta_a^r \in \F_q(\zeta)$. We set $\theta_1 = 
+\theta_a$ for a random $a \in k[\zeta]$. If we write $\theta_1 = \sum_{i = 0}^{s - 1}f_i(x)\zeta^i$ 
+then $\alpha_1 = f_0$ is what we are looking for. To compute $\theta_a$ efficiently, we take 
+different approaches based on the bound on $s$ in Proposition \ref{prop:root-fpz}. We consider two 
+cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
 \paragraph{Case 1.} 
 Given $a \in k[\zeta]$ define 
@@ -781,18 +786,19 @@ using above relations.
 \begin{proposition}
 	\label{prop:xitheta}
 	Algorithm \ref{alg:hilbert-pst} works, and given $a,xi_1$ computes $\xi_i, \theta_{a, i}$ in  
-	$O(s\CC(r)\log(i))$ operations in $F$.
+	$O(s\CC(r)\log(i))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
 	The dominant steps of the algorithm are \ref{step:xij}, \ref{step:thetaj}. Step \ref{step:xij} 
-	takes one modular composition at the cost of $\CC(r)$ operations in $F$. Using the 
+	takes one modular composition at the cost of $\CC(r)$ operations in $\F_q$. Using the 
 	representation $a = \sum_{i = 0}^{s - 1}a_i(x)\zeta^i$ for an element $a \in k[\zeta]$, Step 
-	\ref{step:thetaj} takes $O(s)$ modular compositions over $F$ at the total cost of $O(s\CC(r))$ 
-	operations in $F$. The depth of the recursion is $\log(i)$, hence the desired result.
+	\ref{step:thetaj} takes $O(s)$ modular compositions over $\F_q$ at the total cost of 
+	$O(s\CC(r))$ operations in $\F_q$. The depth of the recursion is $\log(i)$, hence the desired 
+	result.
 \end{proof}
-Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $F$. Therefore computing 
+Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Therefore computing 
 $\theta_a = \theta_{a, r}$ using Algorithm \ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
-\MM(r)\log(q))$ operations in $F$.
+\MM(r)\log(q))$ operations in $\F_q$.
 
 \paragraph{Case 2.}
 Consider the restrictions $\sigma^i \vert_{k^*}: k^* \rightarrow k[\zeta]^*$. Adapting the same 
@@ -801,10 +807,10 @@ independent. Therefore, there exists $a(x) \in k^*$ such that
 \[ \theta_a = a(x) + a(x)^q\zeta^{-1} + a(x)^{q^2}\zeta^{-2} + \cdots + a(x)^{q^{r - 1}}\zeta^{-r 
 	+ 1}\]
 is not zero. This proves that $\theta_a: k[\zeta] \rightarrow k[\zeta]$, considered as an 
-$F(\zeta)$-linear map, is not identically zero. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+$\F_q(\zeta)$-linear map, is not identically zero. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
 a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
 3.1 in \cite{von1992computing} or \cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
-operations in $F$.
+operations in $\F_q$.
 
 Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means for a 
 random $a \in k[\zeta]$ $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only need 
@@ -812,16 +818,16 @@ $O(1)$ trial to find a nonzero $\theta_a$. Putting the above cases together we h
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Finding a nonzero $\theta_a$ for random $a \in k[\zeta]$ takes $O(s\CC(r)\log(r) + 
-	\MM(r)\log(q))$ operations in $F$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log(r) + 
-	\MM(r)\log(q))$ operations in $F$ otherwise.
+	\MM(r)\log(q))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log(r) 
+	+ \MM(r)\log(q))$ operations in $\F_q$ otherwise.
 \end{proposition}
-Combining this with the cost of taking roots in $F(\zeta)$ we get the following for the cost of 
+Combining this with the cost of taking roots in $\F_q(\zeta)$ we get the following for the cost of 
 computing an embedding $k \hookrightarrow K$.
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Computing an embedding $k \hookrightarrow K$ takes $O(s\CC(r)\log(r) + \MM(r)\log(q))$ 
-	operations in $F$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log^2(r) + 
-	\MM(r)\log(r)\log(q))$ operations in $F$ otherwise.
+	operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log^2(r) + 
+	\MM(r)\log(r)\log(q))$ operations in $\F_q$ otherwise.
 \end{proposition}
 
 
