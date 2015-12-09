@@ -1,0 +1,13 @@
+To try out the different algorithms from Sage:
+* be sure to have cloned the ffisom repo (from defeo)
+* have a very recent Sage install (at least 5.10.beta7)
+* go into this directory (ffisom/sage)
+* copy external code by:
+  * running "make download",
+  * copying ../ffisom_impl into ./javad
+    and cloning ellmul repo (from jpflori)
+* run "make" from a Sage shell (sage -sh -c make)
+* add the current directory to LD_LIBRARY_PATH
+* launch Sage
+* "import ffisom"
+* have fun
