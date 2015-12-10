@@ -1,4 +1,11 @@
-all: libjavad_nmod.so libellmul.so cythonized
+all: sage_local libjavad_nmod.so libellmul.so cythonized
+
+download:
+	cp -r ../ffisom_impl ./javad
+	git clone https://github.com/jpflori/ellmul.git ./ellmul
+
+sage_local:
+	if [ -z $(SAGE_LOCAL) ]; then echo "make should be run from within a Sage shell" >&2; exit 1; fi
 
 libjavad_nmod.so:
 	$(MAKE) -C javad
@@ -16,9 +23,13 @@ cythonized: $(CYTHON_SOURCES)
 	cp cythonized/lib.*/*.so ./
 
 clean:
-	$(MAKE) -C javad clean
+	$(MAKE) -C javad clean || true
 	$(MAKE) -C ellmul clean
 	rm -rf cythonized
 	rm -rf *.so
+	rm -rf *.pyc
 
-.PHONY: clean 
+distclean: clean
+	rm -rf javad ellmul
+
+.PHONY: clean distclean download sage_local 

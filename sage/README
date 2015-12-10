@@ -4,7 +4,7 @@ To try out the different algorithms from Sage:
 * go into this directory (ffisom/sage)
 * copy external code by:
   * running "make download",
-  * copying ../ffisom_impl into ./javad
+  * or copying ../ffisom_impl into ./javad
     and cloning ellmul repo (from jpflori)
 * run "make" from a Sage shell (sage -sh -c make)
 * add the current directory to LD_LIBRARY_PATH
