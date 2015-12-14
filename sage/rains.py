@@ -110,7 +110,6 @@ def find_root_order(p, n):
     1. the order of <p> ⊂ ℤ/m* is equal to n⋅o;
     2. gcd(n, o) = 1;
     3. ℤ/m* = <p^o> × G for some G ⊂ ℤ/m*;
-    4. m is squarefree;
 
     then return o and a set of generators for G, together with their
     respective orders.
@@ -131,9 +130,6 @@ def find_root_order(p, n):
     is cyclic, but there are easy counterexamples when it is not
     (e.g., take p=233, n=6, m=21).
 
-    The fourth condition ensures that a simple formula can be used to
-    compute Gaussian periods.
-
     The integer m and the decomposition of ℤ/m are computed by the
     function `sieve` below, with acceptance criterion given by (1),
     (2) and (3').
@@ -150,36 +146,6 @@ def find_root_order(p, n):
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
-    def accept(r, e, n):
-        '''
-        This function is passed down to `sieve`. It accepts only if:
-
-        (1)  the order of p in ℤ/r^e is a multiple of n;
-        (3') λ(r^e) / n is coprime to n (λ is the Carmichael function);
-        (4) m will be squarefree.
-
-        These first two conditions are equivalent to the conditions (1), (3)
-        above when r is prime.
-        '''
-        if e > 1:
-            return False
-
-        # Generic case
-        if r != 2 and p != r:
-            m = r**e
-            ord = (r - 1) * r**(e-1)
-            return ((ord // n.expand()).gcd(n.expand()) == 1 and          # (3')
-                    all(Zmod(m)(p)**(ord // ell) != 1 for (ell,_) in n))  # (1)
-
-        # Special treatement for ℤ/2^x
-        elif r == 2:
-            return ((e == 2 and p % 4 == 3) or
-                    (p != 2 and e - n[0][1] == 2 and     # (3')
-                     Zmod(2**e)(p)**(n.expand() // 2)))  # (1)
-
-        else:
-            return False
-
     # For each prime power, find the smallest multiplier k.
     m = sieve(n, accept)
 
@@ -196,6 +162,33 @@ def find_root_order(p, n):
     ord = R(p).multiplicative_order()
 
     return ord // n, G
+
+
+def accept(r, e, n):
+    '''
+    This function is passed down to `sieve`. It accepts only if:
+
+    (1)  the order of p in ℤ/r^e is a multiple of n;
+    (3') λ(r^e) / n is coprime to n (λ is the Carmichael function).
+
+    These first two conditions are equivalent to the conditions (1), (3)
+    above when r is prime.
+    '''
+    # Generic case
+    if r != 2 and p != r:
+        m = r**e
+        ord = (r - 1) * r**(e-1)
+        return ((ord // n.expand()).gcd(n.expand()) == 1 and          # (3')
+                all(Zmod(m)(p)**(ord // ell) != 1 for (ell,_) in n))  # (1)
+
+    # Special treatement for ℤ/2^x
+    elif r == 2:
+        return ((e == 2 and p % 4 == 3) or
+                (p != 2 and e - n[0][1] == 2 and     # (3')
+                 Zmod(2**e)(p)**(n.expand() // 2)))  # (1)
+
+    else:
+        return False
 
 
 def sieve(n, accept=None):
