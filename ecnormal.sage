@@ -1,21 +1,24 @@
+import sys
+
 class CounterExampleException(Exception):
-	def __init__(self, q, l, E, r):
+	def __init__(self, q, l, E, r, s = None, e = None):
 		self.q = q
 		self.l = l
 		self.E = E
 		self.r = r
+		self.s = s
+		self.e = e
 
 	def __str__(self):
-		return "q = "+str(self.q)+" l = "+str(self.l)+" E = "+str(self.E)+" r = "+str(self.r)
+		return "q = {}, j = {}, E = {}, #E = {}, l = {}, r = {}, rl = {}, s = {}, e = {}".format(self.q.factor(),self.E.j_invariant(),self.E.a_invariants(),self.E.cardinality().factor(),self.l,self.r,(self.l-1)/(2*self.r),self.s,self.e)
 
-
-def is_normal(alpha, q, r):
+def is_normal(alpha, r, q, p):
 	K = alpha.parent()
 	x = polygen(K)
 	falpha = sum(alpha**(q**i)*x**i for i in xrange(0, r))
 	return falpha.gcd(x**r-1) == 1
 
-def is_gen(alpha, r):
+def is_gen_all(alpha, r, q, p):
 	return alpha.minimal_polynomial().degree() == r
 
 def is_gen_prime(alpha, r, q, p):
@@ -23,6 +26,13 @@ def is_gen_prime(alpha, r, q, p):
 		return alpha.polynomial().degree() >= 1
 	else:
 		return alpha**q != alpha
+
+def is_gen_prime_extension(alpha, r, q, p, hinv):
+	try:
+		hinv(alpha)
+	except ValueError:
+		return True
+	return False
 
 def check_one_curve(K = QQ, l = 5):
 	j = K.random_element()
@@ -35,15 +45,17 @@ def check_one_curve(K = QQ, l = 5):
 	mulrat = [E.multiplication_by_m(i) for i in xrange(1, (l+1)/2)]
 	return sum(m(t) for i in mulrat)
 
-def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, norm = False, verbose = False):
+def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False):
 	cnt = 0
 	a = GF(l).multiplicative_generator()
 	false = []
 	for j in K:
+		if j**K.characteristic() == j:
+			continue
 		E = EllipticCurve(j=j)
 		L = [E, E.quadratic_twist()]
 		for E in L:
-			basis = check_ff_curve(E, l, powers, prime, norm, verbose)
+			basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
 			if basis is None:
 				continue
 			cnt += 1
@@ -56,7 +68,7 @@ def check_ff_jinv(K = GF(7), l = 5, powers = False, prime = False, norm = False,
 				false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, norm = False, verbose = False):
+def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False):
 	cnt = 0
 	K2 = K**2
 	false = []
@@ -65,7 +77,7 @@ def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, norm = Fal
 			E = EllipticCurve(coeffs.list())
 		except ArithmeticError:
 			continue
-		basis = check_ff_curve(E, l, powers, prime, norm, verbose)
+		basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
 		if basis is None:
 			continue
 		cnt += 1
@@ -78,22 +90,69 @@ def check_ff_coeffs(K = GF(13), l = 7, powers = False, prime = False, norm = Fal
 			false[-1].extend(basis)
 	return [cnt, len(false), false]
 
-def check_ff_curve(E, l = 5, powers = False, prime = False, norm = False, verbose = False):
-	if norm:
-		periodify = prod
+def periodify_trace(b, P, rl):
+		return sum(((b**i).lift()*P)[0] for i in xrange(0,rl))
+
+def periodify_norm(b, P, rl):
+		return prod(((b**i).lift()*P)[0] for i in xrange(0,rl))
+
+def periodify_all(xP, rl, s, e):
+	print rl, s, binomial(rl, s)
+	sys.stdout.flush()
+	if e == 1:
+		if s == 1:
+			return sum(xP[i] for i in xrange(0,rl))
+		elif s == rl:
+			return prod(xP[i] for i in xrange(0,rl))
+		elif s <= rl/2:
+			period = xP[0].parent()(0)
+			for c in Combinations(rl, s):
+				term = xP[0].parent()(1)
+				for i in c:
+					term *= xP[i]
+				period += term
+			return period
+			#return sum(prod(xP[i] for i in c) for c in Combinations(rl, s))
+		else:
+			period = xP[0].parent()(0)
+			for c in Combinations(rl, rl-s):
+				term = xP[0].parent()(1)
+				j = 0
+				for i in c:
+					for k in xrange(j, i):
+						term *= xP[k]
+					j = i + 1
+				period += term
+			return period
+
 	else:
-		periodify = sum
+		return sum(prod(xP[i] for i in c)**e for c in Combinations(rl, s))
+
+def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
+	if rbound is False:
+		rbound = [1, Infinity]
+	rmin = rbound[0]
+	rmax = rbound[1]
+	if sbound is False:
+		sbound = [1, 1, Infinity]
+	elif sbound is True:
+		sbound = [Infinity, Infinity, Infinity]
+	smin = sbound[0]
+	smax = sbound[1]
+	scomb = sbound[2]
+
 	K = E.base_ring()
 	p = K.characteristic()
 	q = K.order()
 	d = K.degree()
-	a = GF(l).multiplicative_generator()
+
 	j = E.j_invariant()
 	if j == 0 or j == 1728:
 		return None
 	t = E.trace_of_frobenius()
 	if t % p == 0:
 		return None
+
 	x = polygen(ZZ)
 	f = x**2-t*x+q
 	fmod = f.change_ring(GF(l))
@@ -109,47 +168,122 @@ def check_ff_curve(E, l = 5, powers = False, prime = False, norm = False, verbos
 	if r > s:
 		r = s
 		lb = mu
-	lb = lb.lift()
-	if prime and not r.is_prime():
-		return None
+
 	if r == 1 or r % 2 == 0 or r == d:
+		return None
+	if r < rmin or rmax < r:
+		return None
+	if prime and not r.is_prime():
 		return None
 	#if any(e > 1 for _, e in r.factor()):
 	#	return None
-	rl = ZZ((l-1)/r)
+
+	rl = ZZ((l-1)/(2*r))
+	if rl == 1:
+		return None
 	if (r.gcd(rl) != 1):
 		return None
+	if smin > rl and smin is not Infinity:
+		return None
+
+	if verbose:
+		print "j =", E.j_invariant(), ", r =", r, ", rl =", rl, ", p =", p, ", l =", l
+
+	if powers is False:
+		powers = [1, 1]
+	elif powers is True:
+		powers = [1, r]
+	emin = powers[0]
+	emax = powers[1]
+
+	a = GF(l).multiplicative_generator()
 	b = a**r
-	#print "Testing: j =", j, r, rl
+
 	L = K.extension(r, name='z')
 	if K.is_prime_field():
 		EL = E.base_extend(L)
 	else:
 		h = Hom(K, L)[0]
+		hinv = h.section()
 		EL = EllipticCurve([h(a) for a in E.a_invariants()])
 	m = EL.cardinality()
 	ml = ZZ(m/l)
+
 	P = EL(0)
 	while P == 0:
 		P = ml*EL.random_element()
-	#print [b**i for i in xrange(0,rl/2)]
-	#print [((b**i).lift()*P)[0]**2 for i in xrange(0,rl/2)]
-	if powers:
-		periods = [periodify(((b**i).lift()*P)[0]**j for i in xrange(0,rl/2)) for j in xrange(1, l-1)]
-	else:
-		periods = [periodify(((b**i).lift()*P)[0] for i in xrange(0,rl/2))]
-	basis = [periods, r]
+
 	if prime:
-		basis.append(all(is_gen_prime(period, r, q, p) for period in periods))
+		is_gen = is_gen_prime
+	elif d == 1:
+		is_gen = is_gen_all
 	else:
-		basis.append(all(is_gen(period, r) for period in periods))
-		if basis[-1]:
-			basis.append(all(is_normal(period, q, r) for period in periods))
+		raise NotImplementedError
+
+	if smin == smax == 1 and emin == emax == 1:
+		periodify = periodify_trace
+		period = periodify(b, P, rl)
+		basis = [[period], r, is_gen(period, r, q, p)]
+	elif smin == smax == Infinity and emin == emax == 1:
+		periodify = periodify_norm
+		period = periodify(b, P, rl)
+		basis = [[period], r, is_gen(period, r, q, p)]
+	else:
+		periodify = periodify_all
+		periods = []
+		xP = [P[0]]
+		Q = P
+		b = b.lift()
+		for i in xrange(1,rl):
+			if verbose and i % 10 == 0:
+				print i,
+				sys.stdout.flush()
+			Q = b*Q
+			xP.append(Q[0])
+		if verbose and rl >= 11:
+			print
+		for e in xrange(emin, emax+1):
+			for s in xrange(min(smin, rl), min(smax, rl+1)):
+				if binomial(rl, s) > scomb:
+					continue
+				period = periodify(xP, rl, s, e)
+				periods.append(period)
+				if abort and not is_gen(period, r, q, p):
+					raise CounterExampleException(K.order(), l, E, r, s, e)
 		else:
+			basis = [periods, r, True]
+	if not basis[-1]:
+		if abort:
+			raise CounterExampleException(K.order(), l, E, basis[1])
+		if normal:
 			basis.append(False)
+	elif normal:
+		basis.append(all(is_normal(period, r, q, p) for period in periods))
+
 	return basis
 
-def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime=True, norm=False):
+def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = False, sbound = False, powers = False, prime = True, normal = False, verbose = False):
+	if pbound is False:
+		pbound = [5, Infinity]
+	pmin = pbound[0]
+	pmax = pbound[1]
+	if dbound is False:
+		dbound = [1, 1]
+	dmin = dbound[0]
+	dmax = dbound[1]
+	if lbound is False:
+		lbound = [3, Infinity]
+	lmin = lbound[0]
+	lmax = lbound[1]
+	if rbound is False:
+		rbound = [1, Infinity, Infinity]
+	rmin = rbound[0]
+	rmax = rbound[1]
+	if sbound is False:
+		sbound = [1, 1, Infinity]
+	elif sbound is True:
+		sbound = [Infinity, Infinity, Infinity]
+
 	cnt = 0
 	for p in Primes():
 		pcnt = 0
@@ -157,17 +291,30 @@ def check_ff_range(pmin=5, pmax=Infinity, extdeg=1, lmin=2, lmax=Infinity, prime
 			continue
 		if p > pmax:
 			break
-		print "p =", p, ", d =", extdeg
+		print "p =", p, ", d =", dbound, ", sbound =", sbound, ", rbound =", rbound, ", prime =", prime
+		lcnt = 0
 		for l in Primes():
+			if l < 3:
+				continue
 			if l < lmin:
 				continue
 			if l == p:
 				continue
 			if l > lmax:
 				break
-			basis = check_ff_jinv(K=GF(p**extdeg, name='z'), l=l, prime=prime, norm=norm)
-			pcnt += basis[0]
-			print l, basis
+			if not any(rmin <= r and r <= rmax for r, _ in ZZ((l-1)/2).factor()):
+				continue
+			lcnt += 1
+			if verbose and lcnt % 100 == 0:
+				print l,
+			for d in Primes():
+				if d < dmin:
+					continue
+				if d > dmax:
+					break
+				basis = check_ff_jinv(K=GF(p**d, name='z'), l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
+				pcnt += basis[0]
+			lcnt += 1
 		cnt += pcnt
 		print "pcnt =", pcnt, ", cnt =", cnt
 
@@ -188,4 +335,3 @@ def check_ff_cyclo(K = GF(7), l = 5):
 		zeta = L.random_element()**ml
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
 	return is_normal(period, K.order(), r)
-

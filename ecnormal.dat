@@ -1,0 +1,500 @@
+###############################################################################
+###############################################################################
+###############################################################################
+#norm r=3 rl=77 l=463
+#pcnt = 107 , cnt = 1046
+#p = 67 , d = 1 , prime = True , norm = True
+#CounterExampleException: K = 67, E = (0, 0, 0, 49, 41), #E = 2^3 * 3^2, l = 463, r = 3
+#norm r=3 rl=77 l=463
+pcnt = 8 , cnt = 33
+p = 67 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 44 , r = 3 , rl = 77 , p =  67 , l = 463
+CounterExampleException: q = 67, j = 44, E = (0, 0, 0, 49, 41), #E = 2^3 * 3^2, l = 463, r = 3, rl = 77, s = 77, e = 1
+
+#s=2 r=3 rl=287 l=1723
+pcnt = 0 , cnt = 4
+p = 43 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 13 , r = 3 , rl = 287 , p =  43 , l = 1723
+CounterExampleException: q = 43, j = 13, E = (0, 0, 0, 20, 38), #E = 2 * 23, l = 1723, r = 3, rl = 287, s = 2, e = 1
+#s=2 r=3 rl=56 l=337
+#pcnt = 208 , cnt = 1957
+#p = 103 , d = 1 , prime = True , norm = 2
+#CounterExampleException: K = 103, E = (0, 0, 0, 87, 78), #E = 2^3 * 3 * 5, l = 337, r = 3
+#s=2 r=3 l=337
+pcnt = 6 , cnt = 77
+p = 103 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 92 , r = 3 , rl = 56 , p =  103 , l = 337
+CounterExampleException: q = 103, j = 92, E = (0, 0, 0, 87, 78), #E = 2^3 * 3 * 5, l = 337, r = 3, rl = 56, s = 2, e = 1
+#s=2 r=3 rl=40 l=241
+#pcnt = 1191 , cnt = 59266
+#p = 593 , d = 1 , prime = True , norm = 2
+#CounterExampleException: K = 593, E = (0, 0, 0, 377, 460), #E = 2^3 * 79, l = 241, r = 3
+
+#s=3 r=3 rl=62 l=373
+#pcnt = 42 , cnt = 233
+#p = 43 , d = 1 , prime = True , norm = 3
+#CounterExampleException: K = 43, E = (0, 0, 0, 12, 36), #E = 53, l = 373, r = 3
+#s=3, r=3 l=373
+pcnt = 59 , cnt = 233
+p = 43 , d = [1, 1] , prime = True , sbound = [1, 20, 1048576]
+j = 39 , r = 3 , rl = 124 ,p =  43 , l = 373
+CounterExampleException: q = 43, E = (0, 0, 0, 28, 9), #E = 53, l = 373, r = 3, rl = 62, s = 3, e = 1
+#s=3, r=3 rl=62 l=373
+pcnt = 2 , cnt = 5
+p = 43 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 39 , r = 3 , rl = 62 , p =  43 , l = 373
+CounterExampleException: q = 43, j = 39, E = (0, 0, 0, 27, 14), #E = 53, l = 373, r = 3, rl = 62, s = 3, e = 1
+#s=3 r=3 rl=91  l=547
+pcnt = 12 , cnt = 82
+p = 83 , d = [1, 1] , prime = True , sbound = [1, 20, 1048576]
+j = 6 , r = 3 , rl = 91 , p =  83 , l = 547
+CounterExampleException: q = 83, E = (0, 0, 0, 78, 23), #E = 3 * 29, l = 547, r = 3, rl = 91, s = 3, e = 1
+#s=3 r=3 rl=91 l=547
+pcnt = 4 , cnt = 8
+p = 83 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 6 , r = 3 , rl = 91 , p =  83 , l = 547
+CounterExampleException: q = 83, j = 6, E = (0, 0, 0, 81, 9), #E = 3 * 29, l = 547, r = 3, rl = 91, s = 3, e = 1
+#s=3 r=3 rl=103 l=619
+pcnt = 64 , cnt = 2965
+p = 937 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 751 , r = 3 , rl = 103 , p =  937 , l = 619
+CounterExampleException: q = 937, j = 751, E = (0, 0, 0, 168, 205), #E = 2 * 3 * 151, l = 619, r = 3, rl = 103, s = 3, e = 1
+
+#s=6 r=3 rl=11 l=67
+#pcnt = 77 , cnt = 751
+#p = 113 , d = 1 , prime = True , norm = 6
+#CounterExampleException: K = 113, E = (0, 0, 0, 2, 11), #E = 5^3, l = 67, r = 3
+
+#s=7 r=3 rl=16 l=97
+j = 270 , r = 3 , rl = 16 , p =  1009 , l = 97
+CounterExampleException: q = 1009, j = 270, E = (0, 0, 0, 379, 957), #E = 1039, l = 97, r = 3, rl = 16, s = 7, e = 1
+
+#s=8 r=3 rl=17 l=103
+pcnt = 90 , cnt = 791
+p = 97 , d = [1, 1] , prime = True , sbound = [1, 20, 1048576]
+j = 83 , r = 3 , rl = 17 ,p =  97 , l = 103
+CounterExampleException: q = 97, E = (0, 0, 0, 71, 60), #E = 2^4 * 7, l = 103, r = 3, rl = 17, s = 8, e = 1
+
+#s=10 r=3 rl=11 l=67
+j = 336 , r = 3 , rl = 11 , p =  487 , l = 67
+CounterExampleException: q = 487, j = 336, E = (0, 0, 0, 89, 198), #E = 3 * 5 * 31, l = 67, r = 3, rl = 11, s = 10, e = 1
+
+#s=14 r=3 rl=48 l=97
+pcnt = 9 , cnt = 56
+p = 29 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 13 , r = 3 , rl = 16 , p =  29 , l = 97
+CounterExampleException: q = 29, j = 13, E = (0, 0, 0, 11, 19), #E = 3 * 7, l = 97, r = 3, rl = 16, s = 14, e = 1
+
+#s=15 r=3 l=97
+pcnt = 25 , cnt = 25
+p = 37 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 15 , r = 3 , rl = 16 , p =  37 , l = 97
+CounterExampleException: q = 37, j = 15, E = (0, 0, 0, 14, 33), #E = 2^3 * 5, l = 97, r = 3, rl = 16, s = 15, e = 1
+
+#s=37 r=3 rl=38 l=229
+pcnt = 0 , cnt = 6
+p = 23 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 18 , r = 3 , rl = 38 , p =  23 , l = 229
+CounterExampleException: q = 23, j = 18, E = (0, 0, 0, 18, 19), #E = 2 * 3^2, l = 229, r = 3, rl = 38, s = 37, e = 1
+
+#s=54 r=3 rl=55 l=331
+pcnt = 12 , cnt = 2488
+p = 673 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prime = True
+j = 280 , r = 3 , rl = 55 , p =  673 , l = 331
+CounterExampleException: q = 673, j = 280, E = (0, 0, 0, 636, 457), #E = 2^3 * 83, l = 331, r = 3, rl = 55, s = 54, e = 1
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+#checked
+###############################################################################
+#trace prime
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), prime=True)
+p = 2753 , d = 1 , prime = True , norm = False
+pcnt = 11856 , cnt = 2581055
+check_ff_range(pmin=Integer(2754), lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=True)
+p = 4597 , d = 1 , prime = True , norm = False
+pcnt = 36494 , cnt = 4118246
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), prime=True)
+p = 1787 , d = 1 , prime = True , norm = False
+pcnt = 7557 , cnt = 863303
+check_ff_range(pmin=Integer(1788), lmin=Integer(Integer(100)), lmax=Integer(Integer(200)), prime=True)
+p = 2767 , d = 1 , prime = True , norm = False
+pcnt = 9100 , cnt = 1102946
+
+check_ff_range(lmin=Integer(200), lmax=Integer(300), prime=True)
+p = 1283 , d = 1 , prime = True , norm = False
+pcnt = 5686 , cnt = 392813
+check_ff_range(pmin=Integer(1284), lmin=Integer(Integer(200)), lmax=Integer(Integer(300)), prime=True)
+p = 2063 , d = 1 , prime = True , norm = False
+pcnt = 5823 , cnt = 537391
+
+check_ff_range(lmin=Integer(300), lmax=Integer(400), prime=True)
+p = 757 , d = 1 , prime = True , norm = False
+pcnt = 3629 , cnt = 153107
+check_ff_range(pmin=Integer(758), lmin=Integer(Integer(300)), lmax=Integer(Integer(400)), prime=True)
+p = 1171 , d = 1 , prime = True , norm = False
+pcnt = 4009 , cnt = 188576
+
+check_ff_range(lmin=Integer(400), lmax=Integer(500), prime=True)
+p = 643 , d = 1 , prime = True , norm = False
+pcnt = 1835 , cnt = 81629
+check_ff_range(pmin=Integer(644), lmin=Integer(Integer(400)), lmax=Integer(Integer(500)), prime=True)
+p = 983 , d = 1 , prime = True , norm = False
+pcnt = 1428 , cnt = 98822
+
+check_ff_range(lmin=Integer(500), lmax=Integer(600), prime=True)
+p = 467 , d = 1 , prime = True , norm = False
+pcnt = 1789 , cnt = 55918
+
+check_ff_range(lmin=Integer(600), lmax=Integer(700), prime=True)
+p = 1283 , d = 1 , prime = True , norm = False
+pcnt = 1207 , cnt = 223577
+
+check_ff_range(lmin=Integer(700), lmax=Integer(800), prime=True)
+p = 503 , d = 1 , prime = True , norm = False
+pcnt = 1416 , cnt = 46041
+
+check_ff_range(lmin=Integer(800), lmax=Integer(900), prime=True)
+p = 271 , d = 1 , prime = True , norm = False
+pcnt = 843 , cnt = 20189
+
+check_ff_range(lmin=Integer(900), lmax=Integer(1000), prime=True)
+p = 419 , d = 1 , prime = True , norm = False
+pcnt = 998 , cnt = 24707
+
+###############################################################################
+#trace all
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), prime=False)
+p = 1831 , d = 1 , prime = False , norm = False
+pcnt = 13855 , cnt = 1541988
+check_ff_range(pmin=Integer(1832),lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=False)
+p = 3581 , d = 1 , prime = False , norm = False
+pcnt = 18887 , cnt = 3925926
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), prime=False)
+p = 467 , d = 1 , prime = False , norm = False
+pcnt = 2999 , cnt = 131501
+
+check_ff_range(lbound = [Integer(0),Integer(100)], prime=False)
+p = 1753 , d = [1, 1] , sbound = [1, 1, +Infinity] , rbound = [1, +Infinity, +Infinity] , prime = False
+pcnt = 12349 , cnt = 1439322
+
+###############################################################################
+#norm all
+###############################################################################
+check_ff_range(lbound = [Integer(0),Integer(100)], sbound=True, prime=False)
+p = 1741 , d = [1, 1] , sbound = [+Infinity, +Infinity, +Infinity] , rbound = [1, +Infinity, +Infinity] , prime = False
+pcnt = 10351 , cnt = 1416205
+
+###############################################################################
+#norm prime
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=True, prime=True)
+p = 2707 , d = 1 , prime = True , norm = True
+pcnt = 9390 , cnt = 2469123
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), norm=True, prime=True)
+p = 1609 , d = 1 , prime = True , norm = True
+pcnt = 3878 , cnt = 714048
+
+check_ff_range(lmin=Integer(200), lmax=Integer(300), norm=True, prime=True)
+p = 1187 , d = 1 , prime = True , norm = True
+pcnt = 5029 , cnt = 334549
+
+check_ff_range(lmin=Integer(300), lmax=Integer(400), norm=True, prime=True)
+p = 683 , d = 1 , prime = True , norm = True
+pcnt = 1281 , cnt = 127427
+
+check_ff_range(lmin=Integer(500), lmax=Integer(600), norm=True, prime=True)
+p = 349 , d = 1 , prime = True , norm = True
+pcnt = 997 , cnt = 30573
+
+check_ff_range(pmin = Integer(68), lmin=Integer(400), lmax=Integer(500), norm=True, prime=True)
+p = 409 , d = 1 , prime = True , norm = True
+pcnt = 1191 , cnt = 35032
+
+check_ff_range(lmin=Integer(600), lmax=Integer(700), norm=True, prime=True)
+p = 929 , d = 1 , prime = True , norm = True
+pcnt = 1751 , cnt = 119380
+
+check_ff_range(lmin=Integer(700), lmax=Integer(800), norm=True, prime=True)
+p = 379 , d = 1 , prime = True , norm = True
+pcnt = 589 , cnt = 25629
+
+check_ff_range(lmin=Integer(800), lmax=Integer(900), norm=True, prime=True)
+p = 197 , d = 1 , prime = True , norm = True
+pcnt = 644 , cnt = 11375
+
+check_ff_range(lmin=Integer(900), lmax=Integer(1000), norm=True, prime=True)
+p = 293 , d = 1 , prime = True , norm = True
+pcnt = 298 , cnt = 13134
+
+###############################################################################
+#s=2 prime
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(2), prime=True)
+p = 7993 , d = 1 , prime = True , norm = 2
+pcnt = 26412 , cnt = 10318742
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), norm=Integer(2), prime=True)
+p = 5483 , d = 1 , prime = True , norm = 2
+pcnt = 14177 , cnt = 4391975
+
+!!!
+check_ff_range(pmin = Integer(594), lmin=Integer(200), lmax=Integer(300), norm=Integer(2), prime=True)
+p = 3701 , d = 1 , prime = True , norm = 2
+pcnt = 7886 , cnt = 1869830
+
+!!!
+check_ff_range(pmin=Integer(104),lmin=Integer(300), lmax=Integer(400), norm=Integer(2), prime=True)
+p = 3329 , d = 1 , prime = True , norm = 2
+pcnt = 7899 , cnt = 1378895
+
+check_ff_range(lmin=Integer(400), lmax=Integer(500), norm=Integer(2), prime=True)
+p = 3323 , d = 1 , prime = True , norm = 2
+pcnt = 3941 , cnt = 998344
+
+check_ff_range(lmin=Integer(500), lmax=Integer(600), norm=Integer(2), prime=True)
+p = 2467 , d = 1 , prime = True , norm = 2
+pcnt = 4153 , cnt = 614719
+
+check_ff_range(lmin=Integer(600), lmax=Integer(700), norm=Integer(2), prime=True)
+p = 1913 , d = 1 , prime = True , norm = 2
+pcnt = 4523 , cnt = 472511
+
+check_ff_range(lmin=Integer(700), lmax=Integer(800), norm=Integer(2), prime=True)
+p = 1567 , d = 1 , prime = True , norm = 2
+pcnt = 2617 , cnt = 288811
+
+check_ff_range(lmin=Integer(800), lmax=Integer(900), norm=Integer(2), prime=True)
+p = 2281 , d = 1 , prime = True , norm = 2
+pcnt = 3644 , cnt = 488855
+
+check_ff_range(lmin=Integer(900), lmax=Integer(1000), norm=Integer(2), prime=True)
+p = 2203 , d = 1 , prime = True , norm = 2
+pcnt = 2442 , cnt = 392749
+
+###############################################################################
+#s=3 prime
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(3), prime=True)
+p = 6829 , d = 1 , prime = True , norm = 3
+pcnt = 10459 , cnt = 5425203
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), norm=Integer(3), prime=True)
+p = 3023 , d = 1 , prime = True , norm = 3
+pcnt = 5666 , cnt = 998947
+
+check_ff_range(lmin=Integer(200), lmax=Integer(300), norm=Integer(3), prime=True)
+p = 1553 , d = 1 , prime = True , norm = 3
+pcnt = 2669 , cnt = 261482
+
+!!!
+check_ff_range(pmin=Integer(44), lmin=Integer(300), lmax=Integer(400), norm=Integer(3), prime=True)
+p = 1031 , d = 1 , prime = True , norm = 3
+pcnt = 1503 , cnt = 96532
+
+check_ff_range(lmin=Integer(400), lmax=Integer(500), norm=Integer(3), prime=True)
+p = 733 , d = 1 , prime = True , norm = 3
+pcnt = 972 , cnt = 59136
+
+###############################################################################
+#s=4 prime
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(4), prime=True)
+p = 4951 , d = 1 , prime = True , norm = 4
+pcnt = 5344 , cnt = 1654188
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), norm=Integer(4), prime=True)
+p = 1153 , d = 1 , prime = True , norm = 4
+pcnt = 1355 , cnt = 116847
+
+check_ff_range(lmin=Integer(200), lmax=Integer(300), norm=Integer(4), prime=True)
+p = 431 , d = 1 , prime = True , norm = 4
+pcnt = 403 , cnt = 14604
+
+check_ff_range(lmin=Integer(300), lmax=Integer(400), norm=Integer(4), prime=True)
+p = 241 , d = 1 , prime = True , norm = 4
+pcnt = 213 , cnt = 5368
+
+check_ff_range(lmin=Integer(400), lmax=Integer(500), norm=Integer(4), prime=True)
+p = 139 , d = 1 , prime = True , norm = 4
+pcnt = 64 , cnt = 1762
+
+###############################################################################
+#s=5 prime
+###############################################################################
+check_ff_range(lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=True, norm=Integer(5))
+p = 1319 , d = 1 , prime = True , norm = 5
+pcnt = 878 , cnt = 96921
+
+check_ff_range(lmin=Integer(Integer(100)), lmax=Integer(Integer(200)), prime=True, norm=Integer(5))
+p = 229 , d = 1 , prime = True , norm = 5
+pcnt = 219 , cnt = 4353
+
+check_ff_range(lmin=Integer(Integer(200)), lmax=Integer(Integer(300)), prime=True, norm=Integer(5))
+p = 53 , d = 1 , prime = True , norm = 5
+pcnt = 24 , cnt = 279
+
+check_ff_range(lmin=Integer(Integer(300)), lmax=Integer(Integer(400)), prime=True, norm=Integer(5))
+p = 41 , d = 1 , prime = True , norm = 5
+pcnt = 28 , cnt = 170
+
+check_ff_range(lmin=Integer(Integer(400)), lmax=Integer(Integer(500)), prime=True, norm=Integer(5))
+p = 17 , d = 1 , prime = True , norm = 5
+pcnt = 9 , cnt = 20
+
+###############################################################################
+#s=6 prime
+###############################################################################
+check_ff_range(pmin=Integer(114), lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=True, norm=Integer(6))
+p = 977 , d = 1 , prime = True , norm = 6
+pcnt = 210 , cnt = 34862
+
+check_ff_range(lmin=Integer(Integer(100)), lmax=Integer(Integer(200)), prime=True, norm=Integer(6))
+p = 89 , d = 1 , prime = True , norm = 6
+pcnt = 45 , cnt = 548
+
+check_ff_range(lmin=Integer(Integer(200)), lmax=Integer(Integer(300)), prime=True, norm=Integer(6))
+p = 19 , d = 1 , prime = True , norm = 6
+pcnt = 18 , cnt = 50
+
+check_ff_range(lmin=Integer(Integer(300)), lmax=Integer(Integer(400)), prime=True, norm=Integer(6))
+p = 13 , d = 1 , prime = True , norm = 6
+pcnt = 3 , cnt = 9
+
+check_ff_range(lbound=[Integer(400),Integer(500)], prime=True, sbound=[Integer(6),Integer(6)])
+p = 4493 , d = [1, 1] , prime = True , sbound = [6, 6]
+pcnt = 3650 , cnt = 904599
+
+###############################################################################
+#trace r=3
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(3), norm=False, prime=True)
+p = 11549 , d = 1 , prime = True , norm = False
+pcnt = 16765 , cnt = 6305941
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(3), norm=False, prime=True)
+p = 13513 , d = 1 , prime = True , norm = False
+pcnt = 2179 , cnt = 1377327
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(3), norm=False, prime=True)
+p = 11083 , d = 1 , prime = True , norm = False
+pcnt = 1417 , cnt = 1150277
+
+check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(3), norm=False, prime=True)
+p = 6551 , d = 1 , prime = True , norm = False
+pcnt = 1070 , cnt = 442503
+
+###############################################################################
+#trace r=5
+###############################################################################
+
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(5), norm=False, prime=True)
+p = 11329 , d = 1 , prime = True , norm = False
+pcnt = 16535 , cnt = 6371281
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(5), norm=False, prime=True)
+p = 13697 , d = 1 , prime = True , norm = False
+pcnt = 1259 , cnt = 1457441
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(5), norm=False, prime=True)
+p = 10937 , d = 1 , prime = True , norm = False
+pcnt = 1584 , cnt = 1174273
+
+check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(5), norm=False, prime=True)
+p = 6473 , d = 1 , prime = True , norm = False
+pcnt = 1311 , cnt = 586109
+
+###############################################################################
+#norm r=3
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(3), norm=True, prime=True)
+p = 11489 , d = 1 , prime = True , norm = True
+pcnt = 7146 , cnt = 6245077
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(3), norm=True, prime=True)
+p = 13679 , d = 1 , prime = True , norm = True
+pcnt = 1792 , cnt = 1228685
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(3), norm=True, prime=True)
+p = 9967 , d = 1 , prime = True , norm = True
+pcnt = 1935 , cnt = 951521
+
+!!!
+check_ff_range(pmin=Integer(68), lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(3), norm=True, prime=True)
+p = 6037 , d = 1 , prime = True , norm = True
+pcnt = 1314 , cnt = 378463
+
+check_ff_range(lmin=Integer(1000), lmax=Integer(3000), rfixed=Integer(3), norm=True, prime=True)
+p = 3331 , d = 1 , prime = True , norm = True
+pcnt = 357 , cnt = 135687
+
+###############################################################################
+#norm r=5
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(5), norm=True, prime=True)
+p = 11411 , d = 1 , prime = True , norm = True
+pcnt = 8153 , cnt = 6439254
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(5), norm=True, prime=True)
+p = 13781 , d = 1 , prime = True , norm = True
+pcnt = 1735 , cnt = 1297619
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(5), norm=True, prime=True)
+p = 10193 , d = 1 , prime = True , norm = True
+pcnt = 1750 , cnt = 1036173
+
+check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(5), norm=True, prime=True)
+p = 6073 , d = 1 , prime = True , norm = True
+pcnt = 1353 , cnt = 515294
+
+check_ff_range(lmin=Integer(1000), lmax=Integer(3000), rfixed=Integer(5), norm=True, prime=True)
+p = 3457 , d = 1 , prime = True , norm = True
+pcnt = 899 , cnt = 165282
+
+###############################################################################
+#norm d=2 r=3
+###############################################################################
+n=Integer(000); r=Integer(3); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 173 l = 31--
+
+n=Integer(100); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[Integer(3),Integer(3)], sbound=True, prime=True, verbose=True)
+p = 199 , l = 103--
+
+n=Integer(200); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[Integer(3),Integer(3)], sbound=True, prime=True, verbose=True)
+p = 229 , l = 223--
+
+n=Integer(300); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[Integer(3),Integer(3)], sbound=True, prime=True, verbose=True)
+p = 199 , l = 373--
+
+n=Integer(400); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[Integer(3),Integer(3)], sbound=True, prime=True, verbose=True)
+p = 223 , l = 457--
+
+###############################################################################
+#norm d=2 r=5
+###############################################################################
+n=Integer(000); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 173 l = 61--
+
+n=Integer(100); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 179 l = 131--
+
+n=Integer(200); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 167 l = 229--
+
+n=Integer(300); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 211 l = 311--
+
+n=Integer(400); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
+p = 163 l = 431--
+
+###############################################################################
+# s=all limit= d=1 r=3
+###############################################################################
+###############################################################################
