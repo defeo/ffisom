@@ -1203,9 +1203,16 @@ fields, and is therefore very competitive.
 
 In the next sections, we first introduce \emph{elliptic periods}, a
 straightforward generalization of Gaussian periods for torsion points
-of elliptic curves, the non-trivial part being to show that
-elliptic periods yield (power) bases of finite fields,
+of elliptic curves,
+%the non-trivial part being to show that
+%elliptic periods yield (power) bases of finite fields,
 then analyze the cost of their computation.
+The main problem of this generalization is that, contrary to Gaussian periods,
+elliptic periods do not yield normal bases of finite fields.
+We still provide experimental data and heuristic arguments to support the benefit
+of using them.
+Whether they always yield an element generating the right field extension,
+a weak counterpart to Lemma~\ref{th:gaussian}, is left as an open problem.
 
 \subsection{Uniquely defined orbits from elliptic periods}
 
@@ -1290,8 +1297,8 @@ Then we define an elliptic period as
 where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
 
-\begin{theorem}
-\label{theorem:ellperiods}
+\begin{conjecture}
+\label{conj:ellperiods}
 Let $\ell$ be a prime not dividing $q$, and let $t, \lambda, \mu$ be
 integers such that
 \begin{enumerate}
@@ -1306,39 +1313,36 @@ and $P \in E[\ell]$ a point in the eigenspace
 corresponding to $\lambda$.
 
 Then the elliptic period $\eta_\lambda(P)$ generates $\F_q[x(P)]$ over
-$\F_q$.  Furthermore, the Galois orbit of $\eta_\lambda(P)$ is
+$\F_q$.
+Furthermore, the Galois orbit of $\eta_\lambda(P)$ is
 independent of the choice of $P$.
-\end{theorem}
+\end{conjecture}
 
-\begin{proof}
-We are not sure this is true!
-For sure, $\eta_\lambda(P)$ is not a normal element (in general).
-I'll gather some known facts here.
-Here is the rainbow diagram.
-\begin{center}
-\begin{tikzpicture}
-\node (Kl) {$K_l = K[X] / (f_l(X)) = K_0[\Theta] = K_0[X] / (f_{l, \lambda}(X))$};
-\node [below of=Kl, node distance=3cm, align=center] (KlK) {};
-\node [below of=KlK, node distance=2cm, align=center] (K) {$K$};
-\node [right of=KlK, node distance=3cm] (K0) {$K_0 \simeq K[X]/(\Phi_l(j(E), X))$};
-\node [right of=K0, yshift=+1.5cm, node distance=2cm] (Kp) {$K'$};
-\node [right of=K0, yshift=-2cm, node distance=+6cm] (Fq) {$\mathsf{F}_q$};
-\node [right of=Kp, node distance=+4cm] (Fqr) {$\mathsf{F}_{q^r}$};
-\node [above of=Fqr, node distance=+1.5cm, align=center] (Fqrs) {$\mathsf{F}_{q^r} \times \cdots \times \mathsf{F}_{q^r}$};
-\draw (Kl) -- (K);
-\draw (K) -- (K0);
-\draw (K0) -- (Kl);
-\draw (K0) -- (Kp);
-\draw (Kp) -- (Kl);
-\draw (Kp) -- (Fqr);
-\draw (Fq) -- (Fqr);
-\draw (Fqr) -- (Fqrs);
-\draw (Kl) -- (Fqrs);
-\draw (K0) -- (Fq);
-\draw (K) -- (Fq);
-\end{tikzpicture}
-\end{center}
-\end{proof}
+There is no hope to transpose the proof of Lemma~\ref{th:gaussian} to
+prove the aforementioned conjecture.
+Indeed, the only proof we are aware of proceeds the following way for
+a squarefree $\ell$:
+\begin{enumerate}
+\item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
+a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
+of $\Q(\zeta_\ell)$;
+\item therefore normal bases of subextensions can be obtained applying the field trace
+on that basis;
+\item integrality properties of these bases for $p \neq \ell$
+and picking up a subextension where $p$ is inert show that
+the situation transposes to characteristic $p$ by reduction;
+\end{enumerate}
+and experimental data show that elliptic periods are not always normal elements
+in finite fields: such non-normal elliptic periods are easily found.
+For example, for $p = 7$, then:
+\begin{enumerate}
+\item $\ell = 31$ is an Elkies prime for $E: y^2 = x^3 + 5 x + 4$;
+\item the eigenvalues of the Frobenius modulo $\ell$ are $\lambda = 25$ of
+multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
+\item $P = (5*a^2+2*a, 4)$ is a point of order $31$ over $\F_7[x]/(x^3 + 6 x^2 + 4)$;
+\item $\eta_\lambda(P) = 5*a^2 + 5*a + 4$ is not a normal element:
+$\eta_\lambda(P) + 4*\eta_\lambda(P)**7 + 2*\eta_\lambda(P)**49 = 0$.
+\end{enumerate}
 
 \subsection{Elliptic variant of Rains' algorithm}
 
