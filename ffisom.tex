@@ -1321,7 +1321,7 @@ independent of the choice of $P$.
 There is no hope to transpose the proof of Lemma~\ref{th:gaussian} to
 prove the aforementioned conjecture.
 Indeed, the only proof we are aware of proceeds the following way for
-a squarefree $\ell$:
+a squarefree $\ell$ and $q = p$ prime:
 \begin{enumerate}
 \item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
 a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
@@ -1343,6 +1343,36 @@ multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
 \item $\eta_\lambda(P) = 5*a^2 + 5*a + 4$ is not a normal element:
 $\eta_\lambda(P) + 4*\eta_\lambda(P)**7 + 2*\eta_\lambda(P)**49 = 0$.
 \end{enumerate}
+
+It might still be the case that the elliptic period $\eta_\lambda(P)$
+generates $\F[x(P)]$.
+Heuristically it will be the case with very high probability.
+Suppose that $f_\lambda(x)$ factors as $f_\lambda(x) = h_1(x) \cdots h_d(x)$
+where every polynomial $h_i$ has degree $[\F_q[x(P)] : \F_q] = r$
+and $d \cdot r = \ell$.
+The elliptic period is nothing but the trace of $x(P)$ from the algebra
+$\F_q[x] / (f_\lambda(x)) \simeq F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_d(x))$
+down to $\F_{q^r}$.
+Considering that this trace ranges uniformly over $\F_{q^r}$, the probability that
+$\eta_\lambda(P)$ does not generate $\F_{q^r}$, or equivalently that it lies in
+a strict subfield of $\F_{q^r}$ is $q^{1-r}$ for $q$ and $r$ prime.
+Experimental data presented in Tables~\ref{} supports this heuristic.
+In fact, we found no counter-examples so far.
+
+In the case of Gaussian periods, replacing the trace by the norm
+either gives another root of unity when the computation is trivial,
+or $1$ when it is not.
+In the case of elliptic periods, there is no reason to expect such a
+phenomenon, and one might be tempted to replace the trace by
+another symmetric function as the norm.
+However for most elementary symmetric functions, except for the trace,
+couter-example where found by experiments.
+
+A final piece of evidence supports the conjecture:
+as aforementioned, one can expect that the probability that an elliptic
+period does not generate $\F_{q^r}$ drops exponentially as $q^{1-r}$.
+Therefore counter-examples should be sought for small values of
+$q$ and $r$.
 
 \subsection{Elliptic variant of Rains' algorithm}
 
