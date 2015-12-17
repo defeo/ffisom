@@ -34,23 +34,15 @@ def is_gen_prime_extension(alpha, r, q, p, hinv):
 		return True
 	return False
 
-def check_one_curve(K = QQ, l = 5):
-	j = K.random_element()
-	E = EllipticCurve(j=j)
-	fl = E.division_polynomial(l)
-	try:
-		Kl.<t> = K.extension(fl)
-	except Error:
-		return
-	mulrat = [E.multiplication_by_m(i) for i in xrange(1, (l+1)/2)]
-	return sum(m(t) for i in mulrat)
-
-def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False):
+def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True, subfield = False):
 	cnt = 0
+	d = K.degree()
+	e = [p**ZZ(d/i) for i in d.prime_divisors()]
+	p = K.characteristic()
 	a = GF(l).multiplicative_generator()
 	false = []
 	for j in K:
-		if j**K.characteristic() == j:
+		if subfield is False and d != 1 and not all(j**i == j for i in e):
 			continue
 		E = EllipticCurve(j=j)
 		L = [E, E.quadratic_twist()]
@@ -61,14 +53,16 @@ def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = Fal
 			cnt += 1
 			if verbose:
 				print E.j_invariant(), basis[1:]
-			if not basis[2]:
+			if abort and not basis[2]:
 				raise CounterExampleException(K.order(), l, E, basis[1])
 			if not all(basis[2:]):
 				false.append([j])
 				false[-1].extend(basis)
+				if abort:
+					raise CounterExampleException(K.order(), l, E, basis[1])
 	return [cnt, len(false), false]
 
-def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False):
+def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
 	cnt = 0
 	K2 = K**2
 	false = []
@@ -258,7 +252,9 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		if normal:
 			basis.append(False)
 	elif normal:
-		basis.append(all(is_normal(period, r, q, p) for period in periods))
+		if not is_normal(basis[0][0], r, q, p):
+			print P, E, basis[0][0]
+		basis.append(all(is_normal(period, r, q, p) for period in basis[0]))
 
 	return basis
 
@@ -302,16 +298,12 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 				continue
 			if l > lmax:
 				break
-			if not any(rmin <= r and r <= rmax for r, _ in ZZ((l-1)/2).factor()):
+			if not any(rmin <= r and r <= rmax for r in ZZ((l-1)/2).divisors()):
 				continue
 			lcnt += 1
 			if verbose and lcnt % 100 == 0:
 				print l,
-			for d in Primes():
-				if d < dmin:
-					continue
-				if d > dmax:
-					break
+			for d in xrange(dmin, dmax+1):
 				basis = check_ff_jinv(K=GF(p**d, name='z'), l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
 				pcnt += basis[0]
 			lcnt += 1
@@ -319,14 +311,12 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 		print "pcnt =", pcnt, ", cnt =", cnt
 
 def check_ff_cyclo(K = GF(7), l = 5):
-	periods = []
 	a = GF(l).multiplicative_generator()
 	x = polygen(ZZ)
 	r = GF(l)(K.order()).multiplicative_order()
 	rl = ZZ((l-1)/r)
 	if (r.gcd(rl) != 1):
 		return
-	print r, rl
 	b = a**r
 	L = K.extension(r, name='z')
 	ml = ZZ((L.order()-1)/l)
@@ -334,4 +324,4 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	while zeta == 1:
 		zeta = L.random_element()**ml
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
-	return is_normal(period, K.order(), r)
+	return is_normal(period, r, K.order(), K.characteristic())
