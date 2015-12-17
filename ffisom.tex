@@ -609,95 +609,68 @@ defined.
 \label{sec:kummer}
 
 In this section we review what we call \textit{Kummer-type} approaches to the embedding problem. 
-We briefly review the works of Lenstra \cite{LenstraJr91}, and Allombert \cite{Allombert02}, and at 
-the end we give a variant of these algorithms with a significantly lower running time complexity. 
-By applying the subfield technique, introduced in Section \ref{sec:introduction}, we assume the 
+We briefly review the works of Lenstra \cite{LenstraJr91}, and Allombert \cite{Allombert02}, then 
+we give a variant of these algorithms with a significantly lower running time complexity. By 
+applying the subfield technique, introduced in Section \ref{sec:introduction}, we assume the 
 following reduced version of the embedding problem in the entire section: given extensions $k, K$  
-of the same degree $r$ where $r$ is a prime power, construct an embedding $k \hookrightarrow K$.
+of the same degree $r$ where $r$ is a prime power, construct an embedding $k \hookrightarrow K$. We 
+give our fast versions of the algorithms for two separate cases: the case $p \nmid r$, where $p$ is 
+the characteristic, is treated in Section \ref{sec:fast-kummer}, and the case $r = p^d$, where $d$ 
+is a positive integer, is treated in Section \ref{sec:fast-artin-schreier}.
 
 Let $k$ be an extension of degree $r$ of $\F_q$. In \cite{LenstraJr91}, Lenstra proves that 
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
 that finds an isomorphism between them. The focus of the paper is on the theoretical construction 
 of the isomorphism, and no precise complexity analysis is presented. However, since there is an 
 explicit assumption of using linear algebra in the paper, a rough analysis of the algorithm yields 
-an estimate of $O(r^3)$ operations in $\F_q$. The idea of the algorithm is as follows. First, if 
-the extension degree is equal to the charactristic the Artin-Schreier theory is used. Therefore, we 
-assume $p \nmid r$.
+an estimate of $O(r^{\omega})$ operations in $\F_q$. The idea of the algorithm is as follows.
 
 Let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th 
-cyclotomic polynomial. Also let $\Delta$ denote the group of automorphisms 
-$\Aut(\F_q[\zeta]/\F_q)$. Then we have $\F_q[\zeta]^\Delta = \F_q$. Let $\F_q[\zeta][c^{1/r}]$ 
-denote the quotient $\F_q[\zeta][Y]/(Y^r - c)$ such that $c^{1/r}$ is the residue class of $Y$. For 
-a given element $c \in T_{\F_q}$, where $T_{\F_q}$ is the Teichm\"{u}ller subgroup \footnote{See 
-the reference for details.} of $\F_q[\zeta]$, the action of $\Delta$ can be extended over the ring 
-$\F_q[\zeta][c^{1/r}]$ by sending $c^{1/r}$ to powers $(c^{1/r})^\ell$ for certain integers $\ell$. 
-If $c_1, c_2 \in T_{\F_q}$ have the same order then we can find an isomorphism 
-$\F_q[\zeta][c_1^{1/r}] 
-\cong \F_q[\zeta][c_2^{1/r}]$ that is identity on $\F_q[\zeta]$ and preserves the action of 
-$\Delta$. In fact since $c_1$ and $c_2$ both generate the same subgroups, there is an integer $j > 
-0$ such that $c_1 = c_2^j$, and the isomorphism is given by
+cyclotomic polynomial, and let $\F_q[\zeta][c^{1/r}]$ denote the quotient $\F_q[\zeta][Y]/(Y^r - 
+c)$ such that $c^{1/r}$ is the residue class of $Y$. Then we can find $c_1, c_2 \in \F_q[\zeta]$, 
+and an integer $j > 0$ such that
 \[
 \begin{array}{lrll}
 \psi: & \F_q[\zeta][c_1^{1/r}] & \rightarrow & \F_q[\zeta][c_2^{1/r}] \\
 & c_1^{1/r} & \mapsto & (c_2^{1/r})^j
 \end{array}
 \]
-If $c$ is a generator of $T_{\F_q}$ then we can show that $\F_q[\zeta][c^{1/r}]^\Delta$ is a field 
-extension of $\F_q$ of degree $r$. Also, we can find an element $\gamma \in \F_q[\zeta]$ such that 
-$c = \gamma^r$ belongs to $\F_q[\zeta]^*$ and generates $T_{\F_q}$. This gives an isomorphism 
-$\F_q[\zeta] \cong \F_q[\zeta][c^{1/r}]$ that is identity on $\F_q[\zeta]$, sends $\gamma$ to 
-$c^{1/r}$, and preserve the action of $\Delta$. From this isomorphism we get the induced 
-isomorphism $\F_q \cong \F_q[\zeta][c^{1/r}]^\Delta$. Therefore, given extensions $k, K$ of $\F_q$ 
-of degree $r$, we have built a chain
+is an isomorphism. Next, we construct a chain	
 \begin{equation*}
 	\begin{tikzpicture}
-		\node (Fc1) {$\F_q[\zeta][c_1^{1/r}]^\Delta$};
-		\node[right = of Fc1] (Fc2) {$\F_q[\zeta][c_2^{1/r}]^\Delta$};
-		\node[left = of Fc1] (F1) {$k$};
-		\node[right = of Fc2] (F2) {$K$};
+		\node (Fc1) {$\F_q[\zeta][c_1^{1/r}]$};
+		\node[right = of Fc1] (Fc2) {$\F_q[\zeta][c_2^{1/r}]$};
+		\node[left = of Fc1] (F1) {$k[\zeta]$};
+		\node[right = of Fc2] (F2) {$K[\zeta]$};
 		\draw[->] (F1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-		sep=0.5pt] {$\varphi_1$} node[below = 3mm, inner sep=0.5pt] {$\gamma \longmapsto 
+		sep=0.5pt] {$\varphi_1$} node[below = 3mm, inner sep=0.5pt] {$\gamma_1 \longmapsto 
 			c_1^{1/r}$} (Fc1);
 		\draw[->] (Fc1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
 		sep=0.5pt] {$ \psi $} (Fc2);
 		\draw[->] (Fc2) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
 		sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$c_2^{1/r} \longmapsto 
-			\gamma_1$} (F2);
+			\gamma_2$} (F2);
 	\end{tikzpicture}
 \end{equation*}
-of isomorphisms. The algorithm can be summarized as follows:
-\begin{enumerate}
-	\setlength{\itemsep}{0pt}
-	\item find a generator $c_1, c_2$ of $T_k, T_K$
-	\item find isomorphisms $\varphi_i: k \xrightarrow{\sim} \F_q[\zeta][c_1^{1/r}]^\Delta$ and 
-	$\varphi_i: K \xrightarrow{\sim} \F_q[\zeta][c_2^{1/r}]^\Delta$
-	\item compute the integer $j$ such that $c_1 = c_2^j$
-	\item build the isomorphism $\psi: \F_q[\zeta][c_1^{1/r}]^\Delta \xrightarrow{\sim} 
-	\F_q[\zeta][c_2^{1/r}]^\Delta$
-	\item \textbf{return} $\varphi_2 \circ \psi \circ \varphi_1$
-\end{enumerate}
-A more careful look at the above approach suggests a trade-off between determinism and 
-simplicity/practicality. For example, one can replace the ring extension $\F_q[\zeta]$ with the 
-field extension $\F_q[\zeta] = \F_q[X] / g(X)$ where $g$ is an irreducible factor of $\Phi_r$. This 
-makes things simpler and more practical at the cost of factoring $\Phi_r$ which of course 
-introduces indeterminism if one choses to use efficient factoring algorithms.
+for appropriate $\gamma_1 \in k[\zeta]$, and $\gamma_2 \in K[\zeta]$, and 
+homomorphisms $\varphi_1, \varphi_2$. From this we induce an embedding $k \hookrightarrow K$.
 
-To find generators for the Teichm\"{u}ller subgroups, Lenstra uses some trace-like formula that 
-suggests a version of Hilbert 90 Theorem over rings. Alombert's approach is more or less the same 
-as above with more focus on implementation. The idea of the algorithm is to use cyclotomic field 
-extensions which in turn allows a more explicit use of Hilbert 90 Theorem to find elements 
-$\alpha_1 \in k[\zeta]$, and $\alpha_2 \in K[\zeta]$. Then $b = \alpha_1^r / \alpha_2^r$ is an 
-$r$th power in $\F_q[\zeta]$ from which $b^{1/r}$ can be computed using a root extraction 
-algorithm. The isomorphism $k[\zeta] \xrightarrow{\sim} K[\zeta]$ is then given by $\alpha_1 
+In \cite{Allombert02} Alombert gives a similar approach with more focus on implementation. The  
+algorithm evolves around solving Hilbert's theorem 90. The idea is to find elements $\alpha_1 \in 
+k[\zeta]$, and $\alpha_2 \in K[\zeta]$ such that $b = \alpha_1^r / \alpha_2^r$ is an 
+$r$th power in $\F_q[\zeta]$. From this $b^{1/r}$ can be computed using a root extraction 
+algorithm. An isomorphism $k[\zeta] \xrightarrow{\sim} K[\zeta]$ is then given by $\alpha_1 
 \mapsto b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is presented, one can 
 easily see that the dominant cost of this algorithm is solving Hilbert 90 which is done using 
-linear algebra. Therefore, the algorithm performs $O(n^{\omega + 1})$ many operations in $F$.
+linear algebra. Therefore, the algorithm runs in $O(r^{\omega})$ operations in $\F_q$. We will give 
+a more detailed description of the algorithm in the next section.
 
 
-\subsection{Fast variant}
+\subsection{Fast Kummer algorithm for $p \nmid r$}
+\label{sec:fast-kummer}
 
 In this section, we present a fast variant of Allombert's algorithm using an explicit solution to 
-the Hilbert 90 Theorem. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h(Z)$ be an 
+the Hilbert's theorem 90. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h(Z)$ be an 
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
 $s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
 $\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
@@ -761,7 +734,7 @@ z)$ with the polynomial $\xi_j(x)$. Algorithm \ref{alg:hilbert-pst} computes $\t
 using above relations.
 
 \begin{algorithm}
-	[Hilbert pseudo-trace]
+	[Hpt (Hilbert pseudo-trace)]
 	\label{alg:hilbert-pst}
 	\begin{algorithmic}[1]
 		\REQUIRE $a \in k[\zeta]$, a positive integer $i$, $\xi_1=x^q$
@@ -770,7 +743,7 @@ using above relations.
 		\RETURN $\xi_1$, $a$
 		\ENDIF
 		\STATE $j \leftarrow \lfloor i / 2 \rfloor$
-		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm XiTheta}(a, j, \xi_1)$ 
+		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm Hpt}(a, j, \xi_1)$ 
 		\STATE\label{step:xij} $\xi_{2j} \leftarrow \xi_j(\xi_j)$
 		\STATE\label{step:thetaj} $\theta_{a, 2j} \leftarrow \theta_{a, j} + \zeta^{-j}\theta_{a, 
 			j}(\xi_j)$
@@ -833,8 +806,8 @@ computing an embedding $k \hookrightarrow K$.
 
 
 
-\subsection{The Artin-Schreier case}
-\label{sec:artin-schreier-case}
+\subsection{Fast Artin-Schreier}
+\label{sec:fast-artin-schreier}
 
 This section is devoted to the case $r = p^d$ for some positive integer $d$. The idea is to build a 
 tower inside the extension $k/\F_q$ using polynomials of the form $X^p - X - a$ where $a \in k$. To 
@@ -852,29 +825,26 @@ process we build a tower
 	\label{equ:art-sch-tower}
 	\F_q \subset \F_q(\alpha_1)  \subset \cdots \subset \F_q(\alpha_1, \cdots, \alpha_d) = k.
 \end{equation}
-The idea of building such tower using the Artin-Schreier polynomials can also be found in 
+The idea of building such tower using the Artin-Schreier polynomials $f_i$ can also be found in 
 \cite{LenstraJr91, Allombert02, shoup93}. By construction, $\alpha_i \notin \F_q(\alpha_1, \cdots, 
 \alpha_{i - 1})$ for all $1 \le i \le d$. This means the minimal polynomial of $\alpha_d$ over 
 $\F_q$ is of degree $r = p^d$. Therefore, $k = \F_q(\alpha_d)$, and the element $\alpha_d \in k$ is 
 what we are looking for.
 
 The above constructions boils down to computing a root of the polynomial $f = X^p - X - a \in 
-k[X]$. We show how to compute such root. Although we could develop our algorithm for a general base 
-field $\F_q$, we assume $q = p$ to make equations and complexity statements simpler. Let $\sigma 
-\in \gal(k/\F_q)$ be a generator. By construction, $a$ is always in an intermediate subfield $\F_q 
-\subset k' \subset k$. This means
-\[ \trace_{k / \F_q}(a) = \trace_{k' / \F_q}(\trace_{k / k'}(a)) = \trace_{k' / \F_q}(p^ia) = 0  \]
+k[X]$. We show how to compute such root. By construction, $a$ is always in an intermediate subfield 
+$\F_q \subseteq k' \subset k$. This means 
+\[ \trace_{k / \F_p}(a) = \trace_{k' / \F_p}(\trace_{k / k'}(a)) = \trace_{k' / \F_p}(p^ia) = 0  \]
 for some $i > 0$. By Hilbert's theorem 90 there exists $\alpha \in k$ such that $\alpha - 
-\sigma(\alpha) = -a$ for a generator $\sigma \in \gal(k / \F_q)$. In other words, $\alpha^p - 
-\alpha - a = 0$. Therefore, $\alpha$ is a root of $f$. On the other hand, $\alpha$ can be 
-explicitly set as
+\sigma(\alpha) = -a$ for a generator $\sigma \in \gal(k / \F_p)$. In other words, $\alpha^p - 
+\alpha - a = 0$. Therefore, $\alpha$ is a root of $f$. On the other hand, for a random element 
+$\theta \in k$ with nonzero trace, $\alpha$ can be explicitly set as
 \begin{equation}
 	\label{equ:art-sch-hil}
 	\alpha = \frac{1}{\trace(\theta)}[a\sigma(\theta) + (a + \sigma(a))\sigma^2(\theta) + \cdots + 
-	(a + \sigma(a) + \cdots + \sigma^{r - 2}(a))\sigma^{r - 1}(\theta)]
+	(a + \sigma(a) + \cdots + \sigma^{rt - 2}(a))\sigma^{rt - 1}(\theta)]
 \end{equation}
-for a random element $\theta \in k$ with nonzero trace. To compute (\ref{equ:art-sch-hil}) 
-efficiently, we define
+where $t = [\F_q : \F_p]$. To compute (\ref{equ:art-sch-hil}) efficiently, we define
 \[ \xi_i = \sigma^i(x), \quad \beta_i(u) = u + \sigma(u) + \cdots + \sigma^{i - 1}(u), \quad 
 \alpha_i(v) = \beta_1(a)\sigma(v) + \cdots + \beta_i(a)\sigma^i(v). \]
 A simple calculation gives
@@ -901,19 +871,19 @@ From these we can extract the following recursive relations:
 	\end{cases}
 \end{aligned}
 \]
-Therefore, the values $\trace(\theta) = \beta_r(\theta)$, and $\alpha = 
-\beta_r(\theta)^{-1}\alpha_r(\theta)$ can be computed recursively, in $O(\log(r))$ steps. At step 
-$j$ of the recursive algorithm, $\xi_j, \beta_j(a), \beta_j(\theta), \alpha_j(\theta)$ are 
+Therefore, the values $\trace(\theta) = \beta_{rt}(\theta)$, and $\alpha = 
+\beta_{rt}(\theta)^{-1}\alpha_{rt}(\theta)$ can be computed recursively, in $O(\log(rt))$ steps. At 
+step $j$ of the recursive algorithm, $\xi_j, \beta_j(a), \beta_j(\theta), \alpha_j(\theta)$ are 
 computed. As before, the action of $\sigma^j$ is the same as composing with $\xi_j$. So each step 
 of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(\CC(r))$ 
 operations in $\F_q$. The initial value of $\xi_1 = x^q$ is computed using $O(\MM(r)\log(q))$ 
-operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(r) + 
+operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(rt) + 
 \MM(r)\log(q))$ operations in $\F_q$. Now, to compute $\alpha_d$ in (\ref{equ:art-sch-tower}) we 
 need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is computed only once. 
 \begin{proposition}
-	Let $r = p^d$ for a positive integer $d$. An isomorphism of two extensions $k / \F_q$, $K / 
-	\F_q$ of degree $r$ can be constructed using $O(\CC(r)\log^2(r) + \MM(r)\log(q))$ operations in 
-	$\F_q$.
+	Let $r = p^d$ for a positive integer $d$, and let $t = [\F_q : \F_p]$. An isomorphism of two 
+	extensions $k / \F_q$, $K / \F_q$ of degree $r$ can be constructed using 
+	$O(\CC(r)\log(rt)\log(r) + \MM(r)\log(q))$ operations in $\F_q$.
 \end{proposition}
 
 
