@@ -734,7 +734,7 @@ z)$ with the polynomial $\xi_j(x)$. Algorithm \ref{alg:hilbert-pst} computes $\t
 using above relations.
 
 \begin{algorithm}
-	[Hilbert pseudo-trace]
+	[Hpt (Hilbert pseudo-trace)]
 	\label{alg:hilbert-pst}
 	\begin{algorithmic}[1]
 		\REQUIRE $a \in k[\zeta]$, a positive integer $i$, $\xi_1=x^q$
@@ -743,7 +743,7 @@ using above relations.
 		\RETURN $\xi_1$, $a$
 		\ENDIF
 		\STATE $j \leftarrow \lfloor i / 2 \rfloor$
-		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm XiTheta}(a, j, \xi_1)$ 
+		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm Hpt}(a, j, \xi_1)$ 
 		\STATE\label{step:xij} $\xi_{2j} \leftarrow \xi_j(\xi_j)$
 		\STATE\label{step:thetaj} $\theta_{a, 2j} \leftarrow \theta_{a, j} + \zeta^{-j}\theta_{a, 
 			j}(\xi_j)$
