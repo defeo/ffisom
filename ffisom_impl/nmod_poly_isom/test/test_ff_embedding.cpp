@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 void test_build_embedding(slong m, slong n, slong characteristic) {
 
 	cout << "characteristic: " << characteristic << "\n";
@@ -59,31 +58,29 @@ void test_build_embedding(slong m, slong n, slong characteristic) {
 	nmod_poly_clear(temp);
 }
 
-
 int main() {
-	
+
 	flint_rand_t state;
 	flint_randinit(state);
 
-	for (slong i = 10; i < 20; i++) {
-		slong prime = n_nth_prime(2 + n_randint(state, i));
-		slong m = 5 + n_randint(state, i * 30);
-		slong n = m * (1 + n_randint(state, 10));
+	for (slong i = 2; i < 10; i++) {
 		
-		// clear powers of 2
-		while (m % 2 == 0)
-			m /= 2;
-		
-		// clear powers of prime
-		while (m % prime == 0)
-			m /= prime;
+//		slong prime = n_nth_prime(2 + n_randint(state, i));
+		//		slong m = 5 + n_randint(state, i * 30);
+		//		slong n = m * (1 + n_randint(state, 10));
 
-		if (m != 1) {
-			test_build_embedding(m, n, prime);
-			cout << "--------------------------------\n";
-		}
+		slong prime = n_nth_prime(i);
+		slong m = prime * prime;
+		slong n = prime * prime;
+
+//		// clear powers of 2
+//		while (m % 2 == 0)
+//			m /= 2;
+
+		test_build_embedding(m, n, prime);
+		cout << "--------------------------------\n";
 	}
-	
+
 	flint_randclear(state);
 
 	return 0;

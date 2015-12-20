@@ -3,6 +3,7 @@
 #include "nmod_min_poly.h"
 #include "ff_isom_prime_power_ext.h"
 #include "ff_isom_base_change.h"
+#include "ff_isom_artin_schreier.h"
 
 #include <iostream>
 using namespace std;
@@ -42,21 +43,21 @@ void FFEmbedding::compute_xi_init(nmod_poly_t xi_init, const nmod_poly_t modulus
 	nmod_poly_clear(temp_comp2);
 }
 
-void FFEmbedding::compute_trace(nmod_poly_t alpha, nmod_poly_t xi, const nmod_poly_t alpha_init, 
-		const nmod_poly_t xi_init, const nmod_poly_t modulus, slong i){
-	
+void FFEmbedding::compute_trace(nmod_poly_t alpha, nmod_poly_t xi, const nmod_poly_t alpha_init,
+		const nmod_poly_t xi_init, const nmod_poly_t modulus, slong i) {
+
 	if (i == 1) {
 		nmod_poly_set(alpha, alpha_init);
 		nmod_poly_set(xi, xi_init);
 		return;
 	}
-	
+
 	nmod_poly_t temp_alpha;
 	nmod_poly_t temp_xi;
-	
+
 	nmod_poly_init(temp_alpha, modulus->mod.n);
 	nmod_poly_init(temp_xi, modulus->mod.n);
-	
+
 	if (i % 2 == 0) {
 		compute_trace(temp_alpha, temp_xi, alpha_init, xi_init, modulus, i / 2);
 		nmod_poly_compose_mod(alpha, temp_alpha, temp_xi, modulus);
@@ -68,46 +69,46 @@ void FFEmbedding::compute_trace(nmod_poly_t alpha, nmod_poly_t xi, const nmod_po
 		nmod_poly_add(alpha, alpha, alpha_init);
 		nmod_poly_compose_mod(xi, temp_xi, xi_init, modulus);
 	}
-	
+
 	nmod_poly_clear(temp_alpha);
 	nmod_poly_clear(temp_xi);
 }
 
-void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedding_image, 
+void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedding_image,
 		const nmod_poly_t modulus, slong degree) {
-	
+
 	// check if the subfield is not proper
 	if (degree == nmod_poly_degree(modulus)) {
 		nmod_poly_set(subfield_modulus, modulus);
 		// set to x
 		nmod_poly_zero(embedding_image);
 		nmod_poly_set_coeff_ui(embedding_image, 1, 1);
-		
+
 		return;
 	}
-	
+
 	nmod_poly_t alpha;
 	nmod_poly_t xi;
 	nmod_poly_t alpha_init;
 	nmod_poly_t xi_init;
 	nmod_poly_t min_poly;
-	
+
 	nmod_poly_init(alpha, modulus->mod.n);
 	nmod_poly_init(xi, modulus->mod.n);
 	nmod_poly_init(alpha_init, modulus->mod.n);
 	nmod_poly_init(xi_init, modulus->mod.n);
 	nmod_poly_init(min_poly, modulus->mod.n);
-	
+
 	compute_xi_init(xi_init, modulus, degree);
-	
+
 	flint_rand_t state;
 	flint_randinit(state);
-	
+
 	NmodMinPoly nmodMinPoly;
-	
+
 	// the number of terms in the trace
 	slong n = nmod_poly_degree(modulus) / degree;
-	
+
 	while (true) {
 		nmod_poly_randtest(alpha_init, state, nmod_poly_degree(modulus));
 		compute_trace(alpha, xi, alpha_init, xi_init, modulus, n);
@@ -117,10 +118,10 @@ void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedd
 				break;
 		}
 	}
-	
+
 	nmod_poly_set(subfield_modulus, min_poly);
 	nmod_poly_set(embedding_image, alpha);
-	
+
 	nmod_poly_clear(alpha);
 	nmod_poly_clear(xi);
 	nmod_poly_clear(alpha_init);
@@ -131,45 +132,54 @@ void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedd
 
 void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 	slong m = nmod_poly_degree(modulus1);
-	
+
 	n_factor_t factors;
 	n_factor_init(&factors);
 	n_factor(&factors, m, 1);
-	
+
 	nmod_poly_t subfield_modulus1;
 	nmod_poly_t subfield_modulus2;
 	nmod_poly_t subfield_embd_img1;
 	nmod_poly_t subfield_embd_img2;
 	nmod_poly_t subfield_gen1;
 	nmod_poly_t subfield_gen2;
-	
+
 	nmod_poly_init(subfield_modulus1, modulus1->mod.n);
 	nmod_poly_init(subfield_modulus2, modulus2->mod.n);
 	nmod_poly_init(subfield_embd_img1, modulus1->mod.n);
 	nmod_poly_init(subfield_embd_img2, modulus2->mod.n);
 	nmod_poly_init(subfield_gen1, modulus1->mod.n);
 	nmod_poly_init(subfield_gen2, modulus2->mod.n);
-	
+
 	nmod_poly_zero(g1);
 	nmod_poly_zero(g2);
-	
+
 	for (slong i = 0; i < factors.num; i++) {
 		slong r = n_pow(factors.p[i], factors.exp[i]);
-		
+
 		find_subfield(subfield_modulus1, subfield_embd_img1, modulus1, r);
 		find_subfield(subfield_modulus2, subfield_embd_img2, modulus2, r);
-		
-		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2);
-		ffIsomPrimePower.compute_generators(subfield_gen1, subfield_gen2);
-		
+
+		// check the Artin-Schreier case
+		if (factors.p[i] == modulus1->mod.n) {
+			
+			FFIsomArtinSchreier ffIsomArtinSchreier(subfield_modulus1, subfield_modulus2);
+			ffIsomArtinSchreier.compute_generators(subfield_gen1, subfield_gen2);
+			
+		} else {
+
+			FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2);
+			ffIsomPrimePower.compute_generators(subfield_gen1, subfield_gen2);
+		}
+
 		// compute generator for subfields in the larger fields
 		nmod_poly_compose_mod(subfield_gen1, subfield_gen1, subfield_embd_img1, modulus1);
 		nmod_poly_compose_mod(subfield_gen2, subfield_gen2, subfield_embd_img2, modulus2);
-		
+
 		nmod_poly_add(g1, g1, subfield_gen1);
 		nmod_poly_add(g2, g2, subfield_gen2);
 	}
-	
+
 	nmod_poly_clear(subfield_modulus1);
 	nmod_poly_clear(subfield_modulus2);
 	nmod_poly_clear(subfield_embd_img1);
