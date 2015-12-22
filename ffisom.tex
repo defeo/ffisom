@@ -1186,13 +1186,11 @@ a weak counterpart to Lemma~\ref{th:gaussian}, is left as an open problem.
 
 \subsection{Uniquely defined orbits from elliptic periods}
 
-Throughout this section $q$ is an odd prime power. 
-
-An elliptic curve $E/L$ defined over a field $L$ of characteristic
-$>2$ is an equation of the form
+An elliptic curve $E/L$ defined over a field $L$ is an equation of the
+form
 \begin{equation*}
-  E\;:\; y^2 = x^3 + a_2x^2 + a_4x + a_6
-  \qquad\text{with $a_2,a_4,a_6\in L$.}
+  E\;:\; y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6
+  \qquad\text{with $a_1,a_2,a_3,a_4,a_6\in L$.}
 \end{equation*}
 For any field extension $M/L$ the group of $M$-rational points of $E$
 is the set
@@ -1230,42 +1228,80 @@ to restrict to a family of primes $\ell$ named \emph{Elkies primes}.
 \end{equation}
 \end{definition}
 
-Note that if $\ell$ is an Elkies prime for $E$,
-then $E[\ell]$ splits into two eigenspaces for $\pi$
-which are defined on extensions of $\F_q$ of degrees
-$\order_\ell(\lambda)$ and $\order_\ell(\mu)$.
-
-Another subtlety arises in comparison with multiplicative groups:
-elliptic curves always come with non trivial automorphisms. We recall
-that the size of the \emph{group of rational automorphisms} of a curve
-$E/\F_q$ is one of the following:
-\begin{itemize}
-\item $\#\Aut_{\F_q}(E) = 12$ if $j(E)=0$ and $q=0\mod 9$ \todo{is this correct? useful?},
-\item $\#\Aut_{\F_q}(E) = 6$ if $j(E)=0$ and $q=1\mod 3$,
-\item $\#\Aut_{\F_q}(E) = 4$ if $j(E)=1728$ and $q=1\mod 4$,
-\item $\#\Aut_{\F_q}(E) = 2$ otherwise.
-\end{itemize}
+Note that if $\ell$ is an Elkies prime for $E$, then $E[\ell]$ splits
+into two eigenspaces for $\pi$ which are defined on extensions of
+$\F_q$ of degrees $\order_\ell(\lambda)$ and $\order_\ell(\mu)$. We
+are now ready to define the elliptic curve analogue of Gaussian
+periods.
 
 \begin{definition}
-\label{definition:ellperiod}
-Let $E/\F_q$ be an elliptic curve, with $j(E)\ne0$ if $3|q$.
-Let $\ell > 3$ be an Elkies prime for $E$,
-$\lambda$ an eigenvalue of $\pi$ such that $\order_\ell(\lambda)$ is odd,
-and $P \in E[\ell]$ a point in the eigenspace corresponding
-to $\lambda$.
-
-Let $A=\Aut_{\F_q}(E)$, and suppose that $\# A$ divides $\ell - 1$,
-and that there is a subgroup $S$ of $(\Z/\ell\Z)^{\ast}$ such that
-\begin{equation}
-(\Z/\ell\Z)^{\ast} / A = \langle{\lambda}\rangle \times S.
-\end{equation}
-
-Then we define an elliptic period as
-\begin{equation}
-\eta_\lambda(P) = \sum_{\sigma\in S} {x \left([\sigma] P \right)^{\# A/2}},
-\end{equation}
-where $x(P)$ denotes the abscissa of $P$.
+  \label{definition:ellperiod}
+  Let $E/\F_q$ be an elliptic curve.  Let $\ell > 3$ be an Elkies
+  prime for $E$, $\lambda$ an eigenvalue of $\pi$, and $P$ a point of
+  order $\ell$ in the eigenspace corresponding to $\lambda$ (i.e.,
+  such that $\pi(P)=\lambda P$).  Suppose that there is a subgroup $S$
+  of $(\Z/\ell\Z)^{\ast}$ such that
+  \begin{equation}
+    (\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S.
+  \end{equation}
+  
+  Then we define an elliptic period as
+  \begin{equation}
+    \eta_{\lambda,S}(P) = \sum_{\sigma\in S} {x \left([\sigma] P \right)},
+  \end{equation}
+  where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
+
+\begin{lemma}
+  \label{lemma:ellperiod}
+  With the same notation as in Definition~\ref{definition:ellperiod},
+  let
+  \begin{equation*}
+    \#\langle\lambda\rangle =
+    \begin{cases}
+      2r & \text{if $-1\in\langle\lambda\rangle$,}\\
+      r & \text{otherwise.}
+    \end{cases}
+  \end{equation*}
+  Then, for any point $P$ in the eigenspace of $\lambda$, the period
+  $\eta_{\lambda,S}(P)$ is in $\F_{q^r}$, and its minimal polynomial
+  does not depend on the choice of $P$.
+\end{lemma}
+\begin{proof}
+  By construction, the Frobenius endomorphism $\pi$ acts on
+  $\langle P\rangle$ as multiplication by the scalar $\lambda$. It is
+  well known that two points have the same abscissa if and only if
+  they are opposite, hence the Galois orbit of $x(P)$ has size $r$,
+  and we conclude that both $x(P)$ and $\eta_{\lambda,S}(P)$ are in
+  $\F_{q^r}$.
+
+  Now let $P'=[a]P$ be another point in the eigenspace of
+  $\lambda$. By construction, $a=\pm \lambda^i\sigma$, for some
+  $0\le i<r$ and some $\sigma\in S$. Hence
+  $\eta_{\lambda,S}(P')=\eta_{\lambda,S}([\lambda^i]P)$, implying that
+  $\eta_{\lambda,S}(P)$ and $\eta_{\lambda,S}(P')$ are conjugates in
+  $\F_{q^r}$.
+\end{proof}
+
+We remark that the previous lemma only states that the elliptic
+periods $\eta_{\lambda,S}([\lambda^i]P)$ uniquely define an orbit
+inside $\F_{q^r}$, but gives no guarantee that they generate the whole
+$\F_{q^r}$. Indeed, for the special curves of $j$-invariant $0$ and
+$1728$, it may systematically be the case that
+$\eta_{\lambda,S}(P)=0$. To handle these corner cases, we give more
+general definitions of elliptic periods in
+Appendix~\ref{app:elliptic-curves}. In the rest of this section, we
+focus on establishing when the elliptic period $\eta_{\lambda,S}(P)$
+generates the same field extension as $x(P)$.
+
+\begin{proposition}
+  With the same notation as in Lemma~\ref{lemma:ellperiod}, for any
+  point $P$ in the eigenspace of $\lambda$, the abscissa $x(P)$ is a
+  normal element of $\F_{q^r}$ if and only if $\eta_{\lambda,S}(P)$ is.
+\end{proposition}
+\begin{proof}
+  \todo{This is true, isn't it?}
+\end{proof}
 
 \begin{conjecture}
 \label{conj:ellperiods}
@@ -1360,7 +1396,7 @@ the previous section. Given $k$, $K$ and $r$,
   $\lambda$ of the Frobenius endomorphism, satisfying the conditions
   of Theorem~\ref{theorem:ellperiods}, and such that
   $\order_\ell(\lambda)=r$;
-\item take random points $P\in E(k)[\ell]$ and $P'\in E(k')[\ell]$ in
+\item take random points $P\in E(k)[\ell]$ and $P'\in E(K)[\ell]$ in
   the eigenspace of $\lambda$;
 \item return the elliptic periods $\alpha_r := \eta_{\lambda}(P)$ and
   $\beta_r:= \eta_\lambda(P')$.
@@ -1378,13 +1414,13 @@ We defer the discussion on the search for the elliptic curve $E$ to
 Section~\ref{sec:selection}. Here we suppose we are already given
 suitable parameters $\ell$, $E$ and $\lambda$, and analyze the last
 two steps of the algorithm, summarized below.  We only give the
-procedure for the smaller field $k$, the procedure for the larger
-field $K$ being identical.
+procedure for the smaller $k$, the procedure for the field $K$ being
+identical.
 
 \begin{algorithm}[Elliptic Rain's algorithm]
 \label{algorithm:compell}
   \begin{algorithmic}[1]
-    \REQUIRE An odd integer $r$, a field extension $\F_{q^r}/\F_q$,
+    \REQUIRE A field extension $k/\F_q$ of degree $r$,
     an elliptic curve $E/\F_q$, its trace $t$, a prime $\ell$ not dividing $q$,
     an integer $\lambda$ such that:
     \begin{itemize}
@@ -1392,9 +1428,9 @@ field $K$ being identical.
     \item $\order_\ell(\lambda)=r$, $\order_\ell(q/\lambda)\nmid r$,
     \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$ for some $S$.
     \end{itemize}
-    \ENSURE A generator of $\F_{q^r}\subset k$ over $\F_q$, with a uniquely defined Galois orbit.
+    \ENSURE A generator of $k$ over $\F_q$, with a uniquely defined Galois orbit.
     \REPEAT
-    \STATE Compute $P\leftarrow[\# E(\F_{q^r})/\ell]Q$ for a random $Q\in E(\F_{q^r})$;
+    \STATE Compute $P\leftarrow[\# E(k)/\ell]Q$ for a random $Q\in E(k)$;
     \UNTIL{$P\neq\mathcal{O}$;}
     \RETURN $\alpha_r\leftarrow\eta_\lambda(P)$.
   \end{algorithmic}
@@ -1408,17 +1444,17 @@ field $K$ being identical.
 \end{proposition}
 \begin{proof}
   By construction the point $P$ has $r$ distinct conjugates in
-  $\F_{q^r}$, and, since $r$ is odd, all have distinct abscissas,
-  hence $x(P)$ generates $\F_{q^r}$.  The correctness of the algorithm
+  $k$, and, since $r$ is odd, all have distinct abscissas,
+  hence $x(P)$ generates $k$.  The correctness of the algorithm
   then follows immediately from Theorem~\ref{theorem:ellperiods} and
   the discussion above.
 
   From the knowledge of the trace $t$, we immediately determine the
-  zeta function of $E$, and hence the cardinality $\# E(\F_{q^r})$, at
+  zeta function of $E$, and hence the cardinality $\# E(k)$, at
   no algebraic cost.
 
-  To select the random point $Q\in E(\F_{q^r})$ we take a random
-  element $x\in\F_{q^r}$, then we verify that it is the abscissa of a
+  To select the random point $Q\in E(k)$ we take a random
+  element $x\in k$, then we verify that it is the abscissa of a
   point using a squareness test, at a costs of $O(r\MM(r)\log q)$
   operations. Then, using Montgomery's formulas for scalar
   multiplication~\cite{montgomery}, we can compute the points $P$ and
@@ -1752,6 +1788,19 @@ $\CC(n)$ operations in $\F_q$.
 
 \section{Elliptic curves}
 \label{app:elliptic-curves}
+
+
+% Another subtlety arises in comparison with multiplicative groups:
+% elliptic curves always come with non trivial automorphisms. We recall
+% that the size of the \emph{group of rational automorphisms} of a curve
+% $E/\F_q$ is one of the following:
+% \begin{itemize}
+% \item $\#\Aut_{\F_q}(E) = 12$ if $j(E)=0$ and $q=0\mod 9$ \todo{is this correct? useful?},
+% \item $\#\Aut_{\F_q}(E) = 6$ if $j(E)=0$ and $q=1\mod 3$,
+% \item $\#\Aut_{\F_q}(E) = 4$ if $j(E)=1728$ and $q=1\mod 4$,
+% \item $\#\Aut_{\F_q}(E) = 2$ otherwise.
+% \end{itemize}
+
 
 Recall that two elliptic curves $E$ and $E'$ over a field $k$ are said
 to be \emph{isomorphic} if there exists a linear change of variables
