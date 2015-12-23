@@ -495,6 +495,157 @@ n=Integer(400); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbo
 p = 163 l = 431--
 
 ###############################################################################
-# s=all limit= d=1 r=3
+# s=1 d=1 r=9
 ###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(200)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
+p = 2657 , l = 181--
+
+check_ff_range(lbound=[Integer(200),Integer(500)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
+p = 3889 , l = 397
+
 ###############################################################################
+# s=1 d=1 r=15
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
+p = 2593 , l = 61--
+
+check_ff_range(lbound=[Integer(500),Integer(1500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
+p = 2113 , l = 1321--
+
+###############################################################################
+# s=1 d=1 r=21
+###############################################################################
+check_ff_range(lbound=[Integer(00),Integer(1500)], rbound=[Integer(21),Integer(21)], prime=False, verbose=True)
+p = 1787 , l = 421--
+
+###############################################################################
+# s=all d=1 r=3 limit=2**20
+###############################################################################
+check_ff_range(pbound=[Integer(1010),Infinity], lbound=[Integer(0),Integer(100)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  17467 , l = 97--
+
+check_ff_range(pbound=[Integer(98),Infinity], lbound=[Integer(100),Integer(200)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2137 , l = 103--
+
+check_ff_range(pbound=[Integer(594),Infinity], lbound=[Integer(200),Integer(300)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  3557 , l = 241--
+
+check_ff_range(pbound=[Integer(674),Infinity], lbound=[Integer(300),Integer(400)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  3877 , l = 349--
+
+check_ff_range(pbound=[Integer(68),Infinity], lbound=[Integer(400),Integer(500)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  4327 , l = 499
+pcnt = 232 , cnt = 61853
+
+check_ff_range(pbound=[Integer(84),Infinity], lbound=[Integer(500),Integer(600)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  13933 , l = 547--
+
+check_ff_range(pbound=[Integer(938),Infinity], lbound=[Integer(600),Integer(700)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5857 , l = 691
+pcnt = 259 , cnt = 86553
+
+check_ff_range(lbound=[Integer(700),Integer(800)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5279 , l = 751--
+
+check_ff_range(lbound=[Integer(800),Integer(900)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5419 , l = 859--
+
+check_ff_range(lbound=[Integer(900),Integer(1000)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5167 , l = 967--
+
+check_ff_range(lbound=[Integer(1000),Integer(1500)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2473 , l = 1231--
+
+check_ff_range(pbound=[Integer(44),Infinity], lbound=[Integer(1500),Integer(3000)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  3761 , l = 2311--
+
+###############################################################################
+# s=all d=1 r=5 limit=2**20
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(100)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  34159 , l = 71
+pcnt = 22246 , cnt = 33395404
+
+check_ff_range(lbound=[Integer(0),Integer(100)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p = 1627 , l = 191--
+
+check_ff_range(lbound=[Integer(200),Integer(300)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  1949 , l = 211--
+
+check_ff_range(lbound=[Integer(300),Integer(400)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  4111 , l = 331--
+
+check_ff_range(lbound=[Integer(400),Integer(500)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  3121 , l = 431--
+
+check_ff_range(lbound=[Integer(500),Integer(600)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5153 , l = 571--
+
+check_ff_range(lbound=[Integer(600),Integer(700)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2767 , l = 661--
+
+check_ff_range(lbound=[Integer(700),Integer(800)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  20747 , l = 761--
+
+check_ff_range(lbound=[Integer(800),Integer(900)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  11483 , l = 821--
+
+check_ff_range(lbound=[Integer(900),Integer(1000)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  7499 , l = 911--
+
+check_ff_range(lbound=[Integer(1000),Integer(1500)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2609 , l = 1321--
+
+check_ff_range(lbound=[Integer(1500),Integer(3000)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2213 , l = 2111--
+
+###############################################################################
+# s=all d=1 r=7 limit=2**20
+###############################################################################
+check_ff_range(lbound=[0,100], rbound=[7,7], prime=True, sbound=[1, Infinity, 2**20], verbose=True)
+p =  35051 , l = 43--
+
+check_ff_range(lbound=[Integer(100),Integer(200)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  47521 , l = 127--
+
+check_ff_range(lbound=[Integer(200),Integer(300)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  4639 , l = 281--
+
+check_ff_range(lbound=[Integer(300),Integer(400)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2333 , l = 379--
+
+check_ff_range(lbound=[Integer(400),Integer(500)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2789 , l = 463--
+
+check_ff_range(lbound=[Integer(500),Integer(600)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5261 , l = 547--
+
+check_ff_range(lbound=[Integer(600),Integer(700)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  5701 , l = 617--
+
+check_ff_range(lbound=[Integer(700),Integer(800)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  4783 , l = 757--
+
+check_ff_range(lbound=[Integer(800),Integer(900)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  7297 , l = 827--
+
+check_ff_range(lbound=[Integer(900),Integer(1000)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  2939 , l = 953--
+
+check_ff_range(lbound=[Integer(1000),Integer(1500)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  3391 , l = 1499--
+
+check_ff_range(lbound=[Integer(1500),Integer(3000)], rbound=[Integer(7),Integer(7)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  1321 , l = 2591--
+
+###############################################################################
+# s=all d=1 r=11 limit=2**20
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(2000)], rbound=[Integer(11),Integer(11)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  1193 , l = 881--
+
+###############################################################################
+# s=all d=1 r=13,17 limit=2**20
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(2000)], rbound=[Integer(13),Integer(17)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
+p =  751 , l = 547--
