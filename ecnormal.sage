@@ -252,7 +252,7 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		if normal:
 			basis.append(False)
 	elif normal:
-		if not is_normal(basis[0][0], r, q, p):
+		if verbose and not is_normal(basis[0][0], r, q, p):
 			print P, E, basis[0][0]
 		basis.append(all(is_normal(period, r, q, p) for period in basis[0]))
 
