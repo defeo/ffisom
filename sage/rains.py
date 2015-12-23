@@ -147,7 +147,7 @@ def find_root_order(p, n):
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
     # For each prime power, find the smallest multiplier k.
-    m = sieve(n, accept)
+    m = sieve(n, p, accept)
 
     # Construct ℤ/m* as the product of the factors ℤ/f*
     R = Zmod(prod(r for r, _, _ in m))
@@ -164,7 +164,7 @@ def find_root_order(p, n):
     return ord // n, G
 
 
-def accept(r, e, n):
+def accept(r, e, n, p):
     '''
     This function is passed down to `sieve`. It accepts only if:
 
@@ -191,7 +191,7 @@ def accept(r, e, n):
         return False
 
 
-def sieve(n, accept=None):
+def sieve(n, char, accept=None):
     '''
     Given n, find the smallest integer m such that there exist an
     element of multiplicative order n in ℤ/m.
@@ -322,7 +322,7 @@ def sieve(n, accept=None):
     '''
     # If accept is not given, always accept
     if accept is None:
-        accept = lambda p, e, o : True
+        accept = lambda p, e, o, q : True
 
     class factorization:
         '''
@@ -421,7 +421,7 @@ def sieve(n, accept=None):
                 optima[S] = end
                 break
             # Test primes
-            elif m.is_prime() and accept(m, 1, Sfact):
+            elif m.is_prime() and accept(m, 1, Sfact, char):
                 optima[S] = factorization({m:(1, o)})
                 break
             # Test powers of `P`
@@ -429,7 +429,7 @@ def sieve(n, accept=None):
             d = k*c + 1
             if (powers and d.is_power_of(P) and
                 (P != 2 or E == 1 or k > 1) and
-                accept(P, E + d.valuation(P), Sfact)):
+                accept(P, E + d.valuation(P), Sfact, char)):
                 optima[S] = factorization({P:(E + d.valuation(P), o)})
                 break
 
