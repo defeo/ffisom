@@ -64,21 +64,10 @@ int main() {
 	flint_randinit(state);
 
 	for (slong i = 2; i < 10; i++) {
-		
-//		slong prime = n_nth_prime(2 + n_randint(state, i));
-		//		slong m = 5 + n_randint(state, i * 30);
-		//		slong n = m * (1 + n_randint(state, 10));
-
-		slong prime = n_nth_prime(i);
-		slong m = prime * prime;
-		slong n = prime * prime;
-
-//		// clear powers of 2
-//		while (m % 2 == 0)
-//			m /= 2;
-
-		test_build_embedding(m, n, prime);
-		cout << "--------------------------------\n";
+		slong p = n_nth_prime(50 + i);
+		slong m = 10 + n_randint(state, 50);
+		slong n = m * (1 + n_randint(state, 10));
+		test_build_embedding(m, n, p);
 	}
 
 	flint_randclear(state);
