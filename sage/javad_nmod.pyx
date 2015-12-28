@@ -61,7 +61,10 @@ cdef class FFEmbWrapper:
 
         return xim
 
-def find_gens(k1, k2):
+def find_gen(k1, r = 0):
+    raise NotImplementedError
+
+def find_gens(k1, k2, int r = 0):
     return FFEmbWrapper(k1, k2).get_gens()
 
 def find_emb(k1, k2):

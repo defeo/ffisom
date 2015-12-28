@@ -26,6 +26,9 @@ cdef GEN intlist_to_Flx(list L):
         #a[i] = mpz_get_ui((<Integer> L[i-2]).value)
     return a
 
+def find_gen(domain, r = 0):
+    raise NotImplementedError
+
 def find_gens(domain, codomain, int r = 0):
     cdef PariInstance PI = sage.libs.pari.pari_instance.pari
     cdef int i
@@ -46,14 +49,14 @@ def find_gens(domain, codomain, int r = 0):
         r = domain.degree()
     #    r = mpz_get_ui((<Integer>domain.degree()).value)
 
+    sig_on()
     P = intlist_to_Flx(domain.modulus().change_ring(ZZ).list())
     Q = intlist_to_Flx(codomain.modulus().change_ring(ZZ).list())
-    sig_on()
     Flx_ffintersect(P, Q, r, l, &SP, &SQ, NULL, NULL)
-    a = [(<unsigned long *>SP)[i] for i in xrange(2, lg(SP))]
-    b = [(<unsigned long *>SQ)[i] for i in xrange(2, lg(SQ))]
     sig_off()
     sig_on()
+    a = [(<unsigned long *>SP)[i] for i in xrange(2, lg(SP))]
+    b = [(<unsigned long *>SQ)[i] for i in xrange(2, lg(SQ))]
     PI.clear_stack()
 
     return domain(a), codomain(b)
