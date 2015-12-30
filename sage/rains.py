@@ -16,6 +16,7 @@ The algorithm for finding the generators α and β is implemented by
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod_ring import Zmod
+from sage.rings.arith import gcd, lcm
 from sage.rings.integer_ring import crt_basis
 from sage.rings.finite_rings.constructor import GF
 from sage.misc.cachefunc import cached_method
@@ -50,116 +51,137 @@ def test_gens(p, n):
     assert(P(b) == 0)
 
 
-def find_gen(k, r = 0):
+def find_gens_list(klist, r = 0, verbose = True):
     '''
-    Use Rain's method to find generators α ∈ k₁ and β ∈ k₂ such that
-    α ↦ β defines a valid isomorphism.
+    Use Rain's method to find a generator of a subfield of degree r
+    within the ambient fields in klist.
 
     The algorithm is done in two steps:
 
     1. Find a small integer m, such that the m-th roots of unity
-       generate an extension of k₁ and k₂, together with some
+       generate an extension of the subfields, together with some
        additional constraints detailed below. This is done by
        `find_root_order`.
 
-    2. For each of k₁ and k₂, find a uniquely defined Galois orbit of
-       m-th Gaussian periods. Return arbitrary elements of those
-       orbits. This is done by `find_unique_orbit`.
+    2. Find a uniquely defined Galois orbit of m-th Gaussian periods.
+       Return arbitrary elements of these orbits.
+       This is done by `find_unique_orbit`.
 
     Read the docstrings of `find_root_order` and `find_unique_orbit`
     to find out more on the algorithm.
     '''
-    p = ZZ(k.characteristic())
-    n = ZZ(k.degree())
+    p = klist[0].characteristic()
+    ngcd = gcd([k.degree() for k in klist])
+    nlcm = lcm([k.degree() for k in klist])
     if r == 0:
-        r = n
-    assert n % r == 0
+        r = ngcd
+    assert all(k.degree() % r == 0 for k in klist)
 
     # Find a suitable m, see doc below
-    o, G = find_root_order(p, n, r)
+    o, G = find_root_order(p, [ngcd, nlcm], r)
 
-    # Construct extension of k, if needed
+    # Construct extension of the fields, if needed
     #
     # Note: `find_unique_orbit` is horribly slow if k is not a
     # field. Some composita tricks would be welcome.
-    P = None
-    if (o > 1):
-        print "Using auxiliary extension of degree {}".format(o)
+    return tuple(find_gen_with_data(k, r, o, G) for k in klist)
+
+def find_gen(k, r = 0):
+    return find_gens_list([k], r)[0]
+
+def find_gens(k1, k2, r = 0):
+    return find_gens_list([k1, k2], r)
+
+def find_gen_with_data(k, r, o, G, verbose = True):
+    p = k.characteristic()
+    n = k.degree()
+    ro = r*o
+    o = ro // ro.gcd(n)
+
+    if o > 1:
+        if verbose:
+            print "Using auxiliary extension of degree {}".format(o)
         P = GF(p**o, 'z').polynomial()
         from embed import computeR
         Pext = computeR(k.polynomial(), P)
         kext = GF(p**(n*o), 'zext', modulus=Pext)
         #kext = k.extension(P)
 
-    # Return the unique (up to Galois action) elements, descended to
-    # k₁ and k₂, if needed.
-    from embed import inverse_embed
-#    return map(lambda x: x if P is None else x[0],
-#               [find_unique_orbit(k, G)])
-
+    # Compute the unique (up to Galois action) elements, descended to
+    # k, if needed.
     if o == 1:
-        return find_unique_orbit(k, G)
+        u = find_unique_orbit(k, G)
     else:
         u = find_unique_orbit(kext, G)
         R = k.polynomial_ring()
-        return inverse_embed(R(u), k.polynomial(), R(P), R(kext.polynomial()))
+        from embed import inverse_embed
+        u = k(inverse_embed(R(u), k.polynomial(), R(P), R(kext.polynomial())))
+
+    return u
 
 
-def find_gens(k1, k2):
+def accept(p, n, r, l, e, s):
     '''
-    Use Rain's method to find generators α ∈ k₁ and β ∈ k₂ such that
-    α ↦ β defines a valid isomorphism.
+    This function is passed down to `sieve`. It accepts only if:
 
-    The algorithm is done in two steps:
+    (1)  the order t of p in ℤ/l^e is a multiple of s;
+    (2)  gcd(n, t / gcd(t, n)) = 1 for n in (ngcd, nlcm).
 
-    1. Find a small integer m, such that the m-th roots of unity
-       generate an extension of k₁ and k₂, together with some
-       additional constraints detailed below. This is done by
-       `find_root_order`.
-
-    2. For each of k₁ and k₂, find a uniquely defined Galois orbit of
-       m-th Gaussian periods. Return arbitrary elements of those
-       orbits. This is done by `find_unique_orbit`.
-
-    Read the docstrings of `find_root_order` and `find_unique_orbit`
-    to find out more on the algorithm.
+    These two conditions imply the conditions (1)-(3) above assuming
+    l is prime.
     '''
-    p = ZZ(k1.characteristic())
-    n = ZZ(k1.degree())
-    assert (p, n) == (k2.characteristic(), k2.degree())
+    # Degrees of the ambient fields
+    ngcd, nlcm = n
 
-    # Find a suitable m, see doc below
-    o, G = find_root_order(p, n)
+    # Generic case
+    if l != 2 and p != l:
+        m = l**e
+        phi = (l - 1) * l**(e-1)
+        ord = Zmod(m)(p).multiplicative_order()
+        return ((ord % s.expand() == 0) and
+                ((ord // (ord.gcd(ngcd))).gcd(ngcd) == 1) and
+                ((ord // (ord.gcd(nlcm))).gcd(nlcm) == 1))
 
-    # Construct extensions of k₁ and k₂, if needed
-    #
-    # Note: `find_unique_orbit` is horribly slow if k₁ and k₂ are not
-    # fields. Some composita tricks would be welcome.
-    P = None
-    if (o > 1):
-        print "Using auxiliary extension, this might be slow"
-        P = GF(p**o, 'z').polynomial()
-        from embed import computeR
-        P1, P2 = [computeR(k.polynomial(), P) for k in (k1, k2)]
-        k1ext, k2ext = [GF(p**(n*o), 'zext', modulus=P) for P in (P1, P2)]
-        #k1, k2 = [k.extension(P) for k in (k1, k2)]
 
-    # Return the unique (up to Galois action) elements, descended to
-    # k₁ and k₂, if needed.
-    from embed import inverse_embed
-#    return map(lambda x: x if P is None else x[0],
-#               [find_unique_orbit(k, G) for k in (k1, k2)])
+    # Special treatement for ℤ/2^x
+    elif l == 2:
+        return ((e == 2 and p % 4 == 3) or
+                (p != 2 and e - s[0][1] == 2 and
+                 Zmod(2**e)(p)**(s.expand() // 2)))
 
-    if o == 1:
-        return [find_unique_orbit(k, G) for k in (k1, k2)]
     else:
-        u, v = [find_unique_orbit(k, G) for k in (k1ext, k2ext)]
-        R1, R2 = [k.polynomial_ring() for k in (k1, k2)]
-        return [inverse_embed(R1(u), k1.polynomial(), R1(P), R1(k1ext.polynomial())),
-                inverse_embed(R2(v), k2.polynomial(), R2(P), R2(k2ext.polynomial()))]
+        return False
+
+def accept_noglue(p, n, r, l, e, s):
+    '''
+    This function is passed down to `sieve`. It accepts only if:
+
+    (1)  the order of p in ℤ/l^e is a multiple of s;
+    (3') λ(l^e) / s is coprime to s (λ is the Carmichael function).
+
+    These two conditions imply the conditions (1)-(3) above assuming
+    l is prime.
+    No gluing can be performed on accepted values if condition (2) above
+    has to be preserved.
+    '''
+    # Generic case
+    if l != 2 and p != l:
+        m = l**e
+        ord = (l - 1) * l**(e-1)
+        return ((ord // s.expand()).gcd(s.Expand()) == 1 and          # (3')
+                all(Zmod(m)(p)**(ord // ell) != 1 for (ell, _) in s)) # (1)
+
+    # Special treatement for ℤ/2^x
+    elif l == 2:
+        return ((e == 2 and p % 4 == 3) or
+                (p != 2 and e - s[0][1] == 2 and     # (3')
+                 Zmod(2**e)(p)**(s.expand() // 2)))  # (1)
+
+    else:
+        return False
 
 
-def find_root_order(p, n, r = 0):
+def find_root_order(p, n, r = 0, accept = accept, verbose = True):
     '''
     Assuming that r divides n and p is prime,
     search for a small integer m such that:
@@ -175,12 +197,12 @@ def find_root_order(p, n, r = 0):
     a superfield of F_{p^r}.
 
     The second condition is not strictly necessary, but it makes
-    the algorithm much more efficient by insuring that the superfield
+    the algorithm much more efficient by ensuring that the superfield
     is generated over F_{p^n} by a polynomial with coefficients in F_p.
 
     When r strictly divides n, the weaker condition:
 
-    2'. gcd(n, r⋅o / gcd(n, r⋅o)) = 1;
+    2'. gcd(n, r⋅o / gcd(n, r⋅o)) = 1; 
 
     can be used to work in a smaller superfield.
 
@@ -200,7 +222,7 @@ def find_root_order(p, n, r = 0):
 
     To conclude: bounds on m, hard to tell. When r is prime, m must be
     prime, and under GRH the best bound is m ∈ O(r^{2.4 + ε})
-    [1]. Heuristically m ∈ O(n log n).  Pinch [2] and Rains give some
+    [1]. Heuristically m ∈ O(r log r).  Pinch [2] and Rains give some
     tabulations.
 
     Note: this algorithm loops forever if p=2 and 8|r. Rains proposes
@@ -210,12 +232,11 @@ def find_root_order(p, n, r = 0):
     the least prime in an arithmetic progression
     [2]: R. G. E. Pinch. Recognizing elements of finite fields.
     '''
-    # Actual extension degree within the ambient field
-    if r == 0:
-        r = n
-
     # For each prime power dividing r, find the smallest multiplier k.
     m = sieve(p, n, r, accept)
+
+    if verbose:
+         print "Using roots of unity of order {}".format(m)
 
     # Construct ℤ/m* as the product of the factors ℤ/f*
     R = Zmod(prod(f for f, _, _ in m))
@@ -228,38 +249,12 @@ def find_root_order(p, n, r = 0):
     assert(all(g**e == 1 for (g, e) in G))
 
     ord = R(p).multiplicative_order()
+    assert ord % r == 0
 
     return ord // r, G
 
 
-def accept(p, n, l, e, s):
-    '''
-    This function is passed down to `sieve`. It accepts only if:
-
-    (1)  the order of p in ℤ/l^e is a multiple of s;
-    (3') λ(l^e) / s is coprime to s (λ is the Carmichael function).
-
-    These first two conditions are equivalent to the conditions (1)-(3')
-    above when l is prime and r == n.
-    '''
-    # Generic case
-    if l != 2 and p != l:
-        m = l**e
-        ord = (l - 1) * l**(e-1)
-        return ((ord // s.expand()).gcd(s.expand()) == 1 and          # (3')
-                all(Zmod(m)(p)**(ord // ell) != 1 for (ell, _) in s)) # (1)
-
-    # Special treatement for ℤ/2^x
-    elif l == 2:
-        return ((e == 2 and p % 4 == 3) or
-                (p != 2 and e - s[0][1] == 2 and     # (3')
-                 Zmod(2**e)(p)**(s.expand() // 2)))  # (1)
-
-    else:
-        return False
-
-
-def sieve(p, n, r, accept=None):
+def sieve(p, n, r = 0, accept = None):
     '''
     Given p, n and r, find the smallest integer m such that there
     exists an element of multiplicative order r in ℤ/m.
@@ -279,27 +274,27 @@ def sieve(p, n, r, accept=None):
     additional constraints on m. If it is given, it must be a function
     satisfying:
 
-    - it takes four arguments (p, n, l, e, s), where p, n, l and e are integers
-      and s is the factorization of an integer (a `Factorization` object);
+    - it takes six arguments (p, n, r, l, e, s), where p, n, r, l and e
+      are integers and s is the factorization of an integer
+      (a `Factorization` object);
     - it returns a boolean;
-    - let s and t be coprime, accept(p, n, l, e, s·t) returns `True` iff
-      accept(p, n, l, e, s) and accept(p, n, l, e, t) also return `True`.
+    - let s and t be coprime, accept(p, n, r, l, e, s·t) returns `True` iff
+      accept(p, n, r, l, e, s) and accept(p, n, r, l, e, t) also return `True`.
 
     Then, assuming m_i = l_i^e_i, with l_i prime, the output also
     satisfies
 
-    - accept(p, n, l_i, e_i, r_i) returns `True` for any i.
+    - accept(p, n, r, l_i, e_i, r_i) returns `True` for any i.
 
     The obvious use case for `accept` is to ensure that a specific
     element of ℤ/m has order r (or divisible by r), instead of any
     element, e.g. p in the case of Rains' algorithm.
 
-
     ## Algorithm
 
     The algorithm starts by factoring r into prime powers r_i. For
     each r_i, it finds the smallest prime power m_i = l_i^e_i such
-    that r_i|φ(m_i) and `accept(p, n, l_i, e_i, r_i)` returns `True`
+    that r_i|φ(m_i) and `accept(p, n, r, l_i, e_i, r_i)` returns `True`
     (if `accept` is provided).
 
     At this point, the lcm of all the m_i is an acceptable value for
@@ -387,9 +382,16 @@ def sieve(p, n, r, accept=None):
     fast in practice, and can handle sizes which are way beyond the
     tractability of the other steps of Rains' algorithm.
     '''
+    # Degrees of the the ambient fields.
+    ngcd, nlcm = n
+
+    # Actual extension degree within the ambient fields
+    if r == 0:
+        r = ngcd
+
     # If accept is not given, always accept
     if accept is None:
-        accept = lambda p, n, l, e, r : True
+        accept = lambda p, n, r, l, e, s : True
 
     class factorization:
         '''
@@ -439,7 +441,7 @@ def sieve(p, n, r, accept=None):
     optima = {}
 
     # Main loop, execute for each subset `S` ⊂ `fact`
-    # It assumes subset are enumerated by growing size.
+    # It assumes subsets are enumerated by growing size
     for S in fact.subsets():
         # ignore the empty set
         if S.is_empty():
@@ -479,7 +481,6 @@ def sieve(p, n, r, accept=None):
         # and powers of `L` of the form
         #    k·s + L^E
         # if `powers` is true.
-
         # We determine the starting `k`
         k = start // s or 1
         while True:
@@ -490,7 +491,7 @@ def sieve(p, n, r, accept=None):
                 optima[S] = end
                 break
             # Test primes
-            elif m.is_prime() and accept(p, n, m, 1, Sfact):
+            elif m.is_prime() and accept(p, n, r, m, 1, Sfact):
                 optima[S] = factorization({m : (1, s)})
                 break
             # Test powers of `L`
@@ -498,7 +499,7 @@ def sieve(p, n, r, accept=None):
             d = k*c + 1
             if (powers and d.is_power_of(L) and
                 (L != 2 or E == 1 or k > 1) and
-                accept(p, n, L, E + d.valuation(L), Sfact)):
+                accept(p, n, r, L, E + d.valuation(L), Sfact)):
                 optima[S] = factorization({L : (E + d.valuation(L), s)})
                 break
 
@@ -515,7 +516,7 @@ def find_unique_orbit(k, G):
     satisfying the conditions of `find_root_order`, i.e.
 
     1. <p> ⊂ ℤ/m* is of order r⋅o,
-    2. gcd(n, r⋅o / gcd(n, r⋅o)) = 1,
+    2. gcd(n, o) = 1,
     3. ℤ/m* = <p^o> × G,
 
     return a Gaussian period of m-th roots of unity of k that is

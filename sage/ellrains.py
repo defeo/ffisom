@@ -1,57 +1,42 @@
-from sage.rings.finite_rings.constructor import GF
 from sage.rings.integer_ring import ZZ
+from sage.rings.arith import gcd, lcm
+from sage.rings.finite_rings.constructor import GF
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
 
-def find_gens(k1, k2, k = None, bound = None):
-    '''
-    Compute elements of k1 and k2 with the same minimal polynomial using
-    an elliptic curve variation of Rains' algorithm.
+def find_gens_list(klist, r = 0, bound = None, verbose = True):
+    """
+    Use an elliptic curve variation of Rain's method to find a generator
+    of a subfield of degree r within the ambient fields in klist.
+    """
+    p = klist[0].characteristic()
+    ngcd = gcd([k.degree() for k in klist])
+    nlcm = lcm([k.degree() for k in klist])
+    if r == 0:
+        r = ngcd
+    assert all(k.degree() % r == 0 for k in klist)
 
-    INPUT:
+    # This might be useful if elliptic curves defined over an 
+    # extension of F_p are used.
+    kb = k.base_ring()
 
-    - ``k1`` -- an extension of degree r of k.
-
-    - ``k2`` -- an extension of degree r of k.
-
-    - ``k`` -- (default : None) the base field.
-
-    - ``bound`` -- (default : None) maximal value for torsion.
-
-    EXAMPLES::
-
-        sage: from ellrains import find_gens
-        sage: R.<X> = PolynomialRing(GF(5))
-        sage: f = X^19 + X^16 + 3*X^15 + 4*X^14 + 3*X^12 + 3*X^9 + 2*X^8 + 2*X^7 + 2*X^4 + X^3 + 4*X^2 + 4*X + 2
-        sage: g = X^19 + 2*X^18 + 2*X^17 + 4*X^16 + X^15 + 3*X^14 + 2*X^13 + X^12 + 2*X^11 + 2*X^10 + 2*X^9 + X^8 + 4*X^6 + X^5 + 3*X^4 + 2*X^2 + 4*X + 4
-        sage: k1 = GF(5**19, name = 'x', modulus = f)
-        sage: k2 = GF(5**19, name = 'y', modulus = g)
-        sage: tuple = find_gens(k1, k2)
-        sage: tuple[0].minpoly() == tuple[1].minpoly()
-        True
-    '''
-    if k is None:
-        k = k1.base_ring()
-    p = k.characteristic()
-    q = k.cardinality()
-
-    if k1.degree() != k2.degree():
-        raise NotImplementedError
-    r = k1.degree()
-    
     # List of candidates for l.
-    lT = find_l(k, r, bound)
+    lT = find_l(kb, r, bound)
     if lT is None:
         raise RuntimeError, "no suitable l found"
 
     # Find an elliptic curve with the given trace. 
-    E = find_elliptic_curve(k, lT)
+    E = find_elliptic_curve(kb, lT)
     if E is None:
         raise RuntimeError, "no suitable elliptic curve found"
 
-    Ek1 = E.change_ring(k1)
-    Ek2 = E.change_ring(k2)
+    return tuple(find_unique_orbit(E.change_ring(k), lT[0], r) for k in klist)
 
-    return (find_unique_orbit(Ek1, lT[0], r), find_unique_orbit(Ek2, lT[0], r))
+def find_gen(k, r = 0, bound = None):
+    return find_gens_list([k], r, bound)
+
+def find_gens(k1, k2, r = 0, bound = None):
+    return find_gens_list([k1, k2], r, bound)
+
 
 def find_unique_orbit(E, l, r):
     '''
@@ -105,6 +90,7 @@ def find_unique_orbit(E, l, r):
 
     return period#, P, E, l
 
+
 def find_elliptic_curve(k, lT):
     '''
     Find elliptic curve with given trace mod l.
@@ -138,6 +124,7 @@ def find_elliptic_curve(k, lT):
             return E.quadratic_twist()
 
     return None
+
 
 def find_traces(k, r, l, rl = None):
     '''
@@ -186,6 +173,7 @@ def find_traces(k, r, l, rl = None):
 
     return T
 
+
 def find_l(k, r, bound = None):
     '''
     Compute a prime l such that r divides (l-1) and the corresponding traces.
@@ -231,6 +219,7 @@ def find_l(k, r, bound = None):
             continue       
         
         return l, T
+
 
 # Assume l is prime
 def find_torsion_point(E, mul_ltr, l):
