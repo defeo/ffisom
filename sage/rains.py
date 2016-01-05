@@ -125,7 +125,7 @@ def accept(p, n, r, l, e, s):
     This function is passed down to `sieve`. It accepts only if:
 
     (1)  the order t of p in ℤ/l^e is a multiple of s;
-    (2)  gcd(n, t / gcd(t, n)) = 1 for n in (ngcd, nlcm).
+    (2)  gcd(nlcm, t / gcd(t, ngcd)) = 1.
 
     These two conditions imply the conditions (1)-(3) above assuming
     l is prime.
@@ -139,9 +139,7 @@ def accept(p, n, r, l, e, s):
         phi = (l - 1) * l**(e-1)
         ord = Zmod(m)(p).multiplicative_order()
         return ((ord % s.expand() == 0) and
-                ((ord // (ord.gcd(ngcd))).gcd(ngcd) == 1) and
-                ((ord // (ord.gcd(nlcm))).gcd(nlcm) == 1))
-
+                ((ord // (ord.gcd(ngcd))).gcd(nlcm) == 1))
 
     # Special treatement for ℤ/2^x
     elif l == 2:
