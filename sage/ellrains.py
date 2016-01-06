@@ -2,6 +2,32 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.arith import gcd, lcm
 from sage.rings.finite_rings.constructor import GF
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
+
+def test_ellrains(pbound = 2**62, nbound = 100):
+    import sys
+    from sage.sets.primes import Primes
+    for p in Primes():
+        if p < 4:
+            continue
+        if p > pbound:
+            break
+        for n in xrange(2, nbound):
+            k = GF(p**n, name='z')
+            K = FiniteField_flint_fq_nmod(p, k.modulus(), name='z')
+            try:
+                print "Testing p = {} and n = {}".format(p, n)
+                sys.stdout.flush()
+                a, b = find_gens(K, K)
+                print "Computing minpol...",
+                sys.stdout.flush()
+                f = a.minpoly()
+                assert f.degree() == n
+                g = b.minpoly()
+                assert f == g
+                print "done"
+            except RuntimeError:
+                print "Oops, no parameters found"
 
 def find_gens_list(klist, r = 0, bound = None, verbose = True):
     """
@@ -62,7 +88,6 @@ def find_unique_orbit(E, l, r):
         sage: elem1.minpoly() == elem2.minpoly()
         True
     '''
-    from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
     K = E.base_ring()
     p = K.characteristic()
 
@@ -156,16 +181,18 @@ def find_traces(k, r, l, rl = None):
         rl = ZZ((l-1)/r)
 
     # Primitive root of unity of order r
-    zeta = L.multiplicative_generator()**(ZZ((l-1)/r))
+    zeta = L.multiplicative_generator()**rl
     # Candidate eigenvalue
     lmbd = L(1)
     # Traces
     T = []
-    for i in xrange(r-1):
+    for i in xrange(1, r):
         lmbd *= zeta
         # Ensure that the order is r
         if r.gcd(i) != 1:
             continue
+        if not lmbd.multiplicative_order() == r:
+             print l, r, i
         trc = lmbd + q/lmbd
         # Check Hasse bound
         if trc.centerlift()**2 < bound:
@@ -208,7 +235,9 @@ def find_l(k, r, bound = None):
         # l prime
         if not l.is_prime():
             continue
-
+        # Avoid characteristic of the base field
+        if q % l == 0:
+            continue
         # Orders of eigenvalues not dividing each other
         if r % GF(l)(q).multiplicative_order() == 0:
             continue
