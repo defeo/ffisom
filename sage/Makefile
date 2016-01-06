@@ -5,7 +5,7 @@ download:
 	git clone https://github.com/jpflori/ellmul.git ./ellmul
 
 sage_local:
-	if [ -z $(SAGE_LOCAL) ]; then echo "make should be run from within a Sage shell" >&2; exit 1; fi
+	@if [ -z $(SAGE_LOCAL) ]; then echo "make should be run from within a Sage shell" >&2; exit 1; fi
 
 libjavad_nmod.so:
 	$(MAKE) -C javad
