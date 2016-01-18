@@ -569,6 +569,9 @@ pcnt = 22246 , cnt = 33395404
 check_ff_range(lbound=[Integer(0),Integer(100)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p = 1627 , l = 191--
 
+check_ff_range(lbound=[100,200], rbound=[5,5], prime=True, sbound=[1, Infinity, 2**20], verbose=True)
+p = 7211 , l = 191--
+
 check_ff_range(lbound=[Integer(200),Integer(300)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p =  1949 , l = 211--
 
