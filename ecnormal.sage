@@ -15,7 +15,7 @@ class CounterExampleException(Exception):
 def is_normal(alpha, r, q, p):
 	K = alpha.parent()
 	x = polygen(K)
-	falpha = sum(alpha**(q**i)*x**i for i in xrange(0, r))
+	falpha = sum(alpha**(p**i)*x**i for i in xrange(0, r))
 	return falpha.gcd(x**r-1) == 1
 
 def is_gen_all(alpha, r, q, p):
