@@ -1,57 +1,68 @@
-from sage.rings.finite_rings.constructor import GF
 from sage.rings.integer_ring import ZZ
+from sage.rings.arith import gcd, lcm
+from sage.rings.finite_rings.constructor import GF
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
+from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
 
-def find_gens(k1, k2, k = None, bound = None):
-    '''
-    Compute elements of k1 and k2 with the same minimal polynomial using
-    an elliptic curve variation of Rains' algorithm.
+def test_ellrains(pbound = 2**62, nbound = 100):
+    import sys
+    from sage.sets.primes import Primes
+    for p in Primes():
+        if p < 4:
+            continue
+        if p > pbound:
+            break
+        for n in xrange(2, nbound):
+            k = GF(p**n, name='z')
+            K = FiniteField_flint_fq_nmod(p, k.modulus(), name='z')
+            try:
+                print "Testing p = {} and n = {}".format(p, n)
+                sys.stdout.flush()
+                a, b = find_gens(K, K)
+                print "Computing minpol...",
+                sys.stdout.flush()
+                f = a.minpoly()
+                assert f.degree() == n
+                g = b.minpoly()
+                assert f == g
+                print "done"
+            except RuntimeError:
+                print "Oops, no parameters found"
 
-    INPUT:
+def find_gens_list(klist, r = 0, bound = None, verbose = True):
+    """
+    Use an elliptic curve variation of Rain's method to find a generator
+    of a subfield of degree r within the ambient fields in klist.
+    """
+    p = klist[0].characteristic()
+    ngcd = gcd([k.degree() for k in klist])
+    nlcm = lcm([k.degree() for k in klist])
+    if r == 0:
+        r = ngcd
+    assert all(k.degree() % r == 0 for k in klist)
 
-    - ``k1`` -- an extension of degree r of k.
+    # This might be useful if elliptic curves defined over an 
+    # extension of F_p are used.
+    kb = k.base_ring()
 
-    - ``k2`` -- an extension of degree r of k.
-
-    - ``k`` -- (default : None) the base field.
-
-    - ``bound`` -- (default : None) maximal value for torsion.
-
-    EXAMPLES::
-
-        sage: from ellrains import find_gens
-        sage: R.<X> = PolynomialRing(GF(5))
-        sage: f = X^19 + X^16 + 3*X^15 + 4*X^14 + 3*X^12 + 3*X^9 + 2*X^8 + 2*X^7 + 2*X^4 + X^3 + 4*X^2 + 4*X + 2
-        sage: g = X^19 + 2*X^18 + 2*X^17 + 4*X^16 + X^15 + 3*X^14 + 2*X^13 + X^12 + 2*X^11 + 2*X^10 + 2*X^9 + X^8 + 4*X^6 + X^5 + 3*X^4 + 2*X^2 + 4*X + 4
-        sage: k1 = GF(5**19, name = 'x', modulus = f)
-        sage: k2 = GF(5**19, name = 'y', modulus = g)
-        sage: tuple = find_gens(k1, k2)
-        sage: tuple[0].minpoly() == tuple[1].minpoly()
-        True
-    '''
-    if k is None:
-        k = k1.base_ring()
-    p = k.characteristic()
-    q = k.cardinality()
-
-    if k1.degree() != k2.degree():
-        raise NotImplementedError
-    r = k1.degree()
-    
     # List of candidates for l.
-    lT = find_l(k, r, bound)
+    lT = find_l(kb, r, bound)
     if lT is None:
         raise RuntimeError, "no suitable l found"
 
     # Find an elliptic curve with the given trace. 
-    E = find_elliptic_curve(k, lT)
+    E = find_elliptic_curve(kb, lT)
     if E is None:
         raise RuntimeError, "no suitable elliptic curve found"
 
-    Ek1 = E.change_ring(k1)
-    Ek2 = E.change_ring(k2)
+    return tuple(find_unique_orbit(E.change_ring(k), lT[0], r) for k in klist)
 
-    return (find_unique_orbit(Ek1, lT[0], r), find_unique_orbit(Ek2, lT[0], r))
+def find_gen(k, r = 0, bound = None):
+    return find_gens_list([k], r, bound)
+
+def find_gens(k1, k2, r = 0, bound = None):
+    return find_gens_list([k1, k2], r, bound)
+
 
 def find_unique_orbit(E, l, r):
     '''
@@ -77,7 +88,6 @@ def find_unique_orbit(E, l, r):
         sage: elem1.minpoly() == elem2.minpoly()
         True
     '''
-    from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
     K = E.base_ring()
     p = K.characteristic()
 
@@ -104,6 +114,7 @@ def find_unique_orbit(E, l, r):
                xrange(ZZ((l-1)/(2*r))))
 
     return period#, P, E, l
+
 
 def find_elliptic_curve(k, lT):
     '''
@@ -139,6 +150,7 @@ def find_elliptic_curve(k, lT):
 
     return None
 
+
 def find_traces(k, r, l, rl = None):
     '''
     Compute traces such that the charpoly of the Frobenius has a root of order n
@@ -169,22 +181,25 @@ def find_traces(k, r, l, rl = None):
         rl = ZZ((l-1)/r)
 
     # Primitive root of unity of order r
-    zeta = L.multiplicative_generator()**(ZZ((l-1)/r))
+    zeta = L.multiplicative_generator()**rl
     # Candidate eigenvalue
     lmbd = L(1)
     # Traces
     T = []
-    for i in xrange(r-1):
+    for i in xrange(1, r):
         lmbd *= zeta
         # Ensure that the order is r
         if r.gcd(i) != 1:
             continue
+        if not lmbd.multiplicative_order() == r:
+             print l, r, i
         trc = lmbd + q/lmbd
         # Check Hasse bound
         if trc.centerlift()**2 < bound:
            T.append(trc)
 
     return T
+
 
 def find_l(k, r, bound = None):
     '''
@@ -220,7 +235,9 @@ def find_l(k, r, bound = None):
         # l prime
         if not l.is_prime():
             continue
-
+        # Avoid characteristic of the base field
+        if q % l == 0:
+            continue
         # Orders of eigenvalues not dividing each other
         if r % GF(l)(q).multiplicative_order() == 0:
             continue
@@ -231,6 +248,7 @@ def find_l(k, r, bound = None):
             continue       
         
         return l, T
+
 
 # Assume l is prime
 def find_torsion_point(E, mul_ltr, l):

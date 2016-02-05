@@ -11,8 +11,7 @@ from sage.rings.integer cimport Integer
 import sage.libs.pari.pari_instance
 from sage.libs.pari.pari_instance cimport PariInstance
 from sage.libs.pari.types cimport GEN, t_VECSMALL, evalvarn, lg
-from sage.libs.pari.paridecl cimport avma, cgetg, Flx_ffisom, Flx_ffintersect, ZX_to_Flx
-from sage.libs.pari.paridecl cimport pari_printf, Flx_is_irred
+from sage.libs.pari.paridecl cimport avma, cgetg, gel, Flx_ffisom, Flx_ffintersect, ZX_to_Flx, Flx_factorff_irred
 
 # Dirty stack
 cdef GEN intlist_to_Flx(list L):
@@ -53,10 +52,8 @@ def find_gens(domain, codomain, int r = 0):
     P = intlist_to_Flx(domain.modulus().change_ring(ZZ).list())
     Q = intlist_to_Flx(codomain.modulus().change_ring(ZZ).list())
     Flx_ffintersect(P, Q, r, l, &SP, &SQ, NULL, NULL)
-    sig_off()
-    sig_on()
-    a = [(<unsigned long *>SP)[i] for i in xrange(2, lg(SP))]
-    b = [(<unsigned long *>SQ)[i] for i in xrange(2, lg(SQ))]
+    a = [(<unsigned long *> SP)[i] for i in xrange(2, lg(SP))]
+    b = [(<unsigned long *> SQ)[i] for i in xrange(2, lg(SQ))]
     PI.clear_stack()
 
     return domain(a), codomain(b)
@@ -76,15 +73,36 @@ def find_emb(domain, codomain):
     #l = mpz_get_ui(p.value)
     l = domain.characteristic()
 
+    sig_on()
     P = intlist_to_Flx(domain.modulus().change_ring(ZZ).list())
     Q = intlist_to_Flx(codomain.modulus().change_ring(ZZ).list())
-    pari_printf("%Ps\n",P);
-    pari_printf("%Ps\n",Q);
-    sig_on()
     xim = Flx_ffisom(P, Q, l)
-    a = [(<unsigned long *>xim)[i] for i in xrange(2, lg(xim))]
-    sig_off()
-    sig_on()
+    a = [(<unsigned long *> xim)[i] for i in xrange(2, lg(xim))]
     PI.clear_stack()
 
     return codomain(a)
+
+def find_root(poly, domain):
+    cdef PariInstance PI = sage.libs.pari.pari_instance.pari
+    cdef int i
+    #cdef Integer p
+    cdef unsigned long l
+    cdef GEN P, Q
+    cdef GEN factors, root
+    cdef list a
+
+    #p = domain.characteristic()
+    #if not mpz_fits_ulong_p(p.value):
+    #    raise ValueError
+    #l = mpz_get_ui(p.value)
+    l = domain.characteristic()
+
+    sig_on()
+    P = intlist_to_Flx(poly.change_ring(ZZ).list())
+    Q = intlist_to_Flx(domain.modulus().change_ring(ZZ).list())
+    factors = Flx_factorff_irred(P, Q, l)
+    root = <GEN> (<GEN> factors[2])[2]
+    a = [l-(<unsigned long *> root)[i] for i in xrange(2, lg(root))]
+    PI.clear_stack()
+
+    return domain(a)
