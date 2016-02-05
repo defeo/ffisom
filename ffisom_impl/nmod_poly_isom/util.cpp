@@ -23,7 +23,7 @@ ulong Util::compute_multiplicative_order(ulong a, ulong modulus) {
 		while (temp == 1 && factors.exp[i] > 0) {
 			order /= factors.p[i];
 			factors.exp[i]--;
-			temp = n_powmod(a, order, modulus);
+			temp = n_powmod(a % modulus, order, modulus);
 		}
 
 		if (temp != 1) {

@@ -40,7 +40,7 @@ void CyclotomicExtRthRoot::compute_trace(fq_nmod_poly_t beta, fq_nmod_poly_t xi,
 		fq_nmod_poly_set(temp_beta, beta, ctx);
 		fq_nmod_poly_set(temp_xi, xi, ctx);
 		// compute z's degree = p^(n / 2) mod r
-		z_degree = n_powmod(fmpz_fdiv_ui(fq_nmod_ctx_prime(ctx), r), n / 2, r);
+		z_degree = n_powmod(fmpz_fdiv_ui(fq_nmod_ctx_prime(ctx), r) % r, n / 2, r);
 
 	} else {
 

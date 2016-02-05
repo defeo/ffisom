@@ -77,7 +77,7 @@ void NModCyclotomicPoly::compute_power(nmod_poly_t result, const nmod_poly_t g, 
 	nmod_poly_init(temp, g->mod.n);
 
 	// compute p^i mod n
-	slong q = n_powmod(g->mod.n, k, n);
+	ulong q = n_powmod(g->mod.n % n, k, n);
 
 	for (slong i = 0; i < n; i++) {
 		slong b = q * i % n;
