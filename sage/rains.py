@@ -16,7 +16,7 @@ The algorithm for finding the generators α and β is implemented by
 
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod_ring import Zmod
-from sage.rings.arith import gcd, lcm
+from sage.arith.all import gcd, lcm
 from sage.rings.integer_ring import crt_basis
 from sage.rings.finite_rings.constructor import GF
 from sage.misc.cachefunc import cached_method
@@ -26,6 +26,7 @@ from sage.structure.factorization import Factorization
 from sage.categories.cartesian_product import cartesian_product as CProd
 from sage.misc.all import prod
 from sage.misc.misc import cputime, walltime
+from sage.rings.infinity import Infinity
 
 class FalseConjecture(Exception):
     pass
@@ -51,7 +52,7 @@ def test_gens(p, n):
     assert(P(b) == 0)
 
 
-def find_gens_list(klist, r = 0, verbose = True):
+def find_gens_list(klist, r = 0, verbose = False, omax = Infinity):
     '''
     Use Rain's method to find a generator of a subfield of degree r
     within the ambient fields in klist.
@@ -78,21 +79,23 @@ def find_gens_list(klist, r = 0, verbose = True):
     assert all(k.degree() % r == 0 for k in klist)
 
     # Find a suitable m, see doc below
-    o, G = find_root_order(p, [ngcd, nlcm], r)
+    o, G = find_root_order(p, [ngcd, nlcm], r, verbose=verbose)
+    if o > omax:
+        raise RuntimeError
 
     # Construct extension of the fields, if needed
     #
     # Note: `find_unique_orbit` is horribly slow if k is not a
     # field. Some composita tricks would be welcome.
-    return tuple(find_gen_with_data(k, r, o, G) for k in klist)
+    return tuple(find_gen_with_data(k, r, o, G, verbose=verbose) for k in klist)
 
 def find_gen(k, r = 0):
     return find_gens_list([k], r)[0]
 
-def find_gens(k1, k2, r = 0):
-    return find_gens_list([k1, k2], r)
+def find_gens(k1, k2, r = 0, omax = Infinity, verbose = False):
+    return find_gens_list([k1, k2], r, omax = omax, verbose = verbose)
 
-def find_gen_with_data(k, r, o, G, verbose = True):
+def find_gen_with_data(k, r, o, G, verbose = False):
     p = k.characteristic()
     n = k.degree()
     ro = r*o
@@ -126,8 +129,10 @@ def accept(p, n, r, l, e, s):
 
     (1)  the order t of p in ℤ/l^e is a multiple of s;
     (2)  gcd(nlcm, t / gcd(t, ngcd)) = 1.
+    (3)  gcd(s, φ(m)/s) = 1.
+    (4)  gcd(t/s, p) = 1.
 
-    These two conditions imply the conditions (1)-(3) above assuming
+    These three conditions imply the conditions (1)-(3) above assuming
     l is prime.
     '''
     # Degrees of the ambient fields
@@ -138,14 +143,14 @@ def accept(p, n, r, l, e, s):
         m = l**e
         phi = (l - 1) * l**(e-1)
         ord = Zmod(m)(p).multiplicative_order()
-        return ((ord % s.expand() == 0) and
-                ((ord // (ord.gcd(ngcd))).gcd(nlcm) == 1))
+        return (ord % s.expand() == 0 and
+                (phi // s.expand()).gcd(s.expand()) == 1 and
+                (ord // (ord.gcd(ngcd))).gcd(nlcm) == 1 and
+                (ord // s.expand()).gcd(p) == 1)
 
     # Special treatement for ℤ/2^x
     elif l == 2:
-        return ((e == 2 and p % 4 == 3) or
-                (p != 2 and e - s[0][1] == 2 and
-                 Zmod(2**e)(p)**(s.expand() // 2)))
+        return NotImplementedError
 
     else:
         return False
@@ -166,7 +171,7 @@ def accept_noglue(p, n, r, l, e, s):
     if l != 2 and p != l:
         m = l**e
         ord = (l - 1) * l**(e-1)
-        return ((ord // s.expand()).gcd(s.Expand()) == 1 and          # (3')
+        return ((ord // s.expand()).gcd(s.expand()) == 1 and          # (3')
                 all(Zmod(m)(p)**(ord // ell) != 1 for (ell, _) in s)) # (1)
 
     # Special treatement for ℤ/2^x

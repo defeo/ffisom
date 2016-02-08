@@ -1,5 +1,5 @@
 from sage.rings.integer_ring import ZZ
-from sage.rings.arith import gcd, lcm
+from sage.arith.all import gcd, lcm
 from sage.rings.finite_rings.constructor import GF
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
 from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
@@ -16,9 +16,8 @@ def test_ellrains(pbound = 2**62, nbound = 100):
             k = GF(p**n, name='z')
             K = FiniteField_flint_fq_nmod(p, k.modulus(), name='z')
             try:
-                print "Testing p = {} and n = {}".format(p, n)
-                sys.stdout.flush()
                 a, b = find_gens(K, K)
+                print "Testing p = {} and n = {}".format(p, n)
                 print "Computing minpol...",
                 sys.stdout.flush()
                 f = a.minpoly()
@@ -27,7 +26,7 @@ def test_ellrains(pbound = 2**62, nbound = 100):
                 assert f == g
                 print "done"
             except RuntimeError:
-                print "Oops, no parameters found"
+                pass
 
 def find_gens_list(klist, r = 0, bound = None, verbose = True):
     """
@@ -195,7 +194,7 @@ def find_traces(k, r, l, rl = None):
              print l, r, i
         trc = lmbd + q/lmbd
         # Check Hasse bound
-        if trc.centerlift()**2 < bound:
+        if trc.lift_centered()**2 < bound:
            T.append(trc)
 
     return T

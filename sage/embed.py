@@ -1,5 +1,5 @@
 from sage.misc.sage_timeit import sage_timeit
-from sage.rings.arith import inverse_mod
+from sage.arith.all import inverse_mod
 
 ############################################################
 ############################################################
