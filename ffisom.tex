@@ -1771,28 +1771,77 @@ $\CC(n)$ operations in $\F_q$.
 In one of their article \cite{}, Kaltofen and Shoup proposed a subquadratic
 implementation of the Black Box Berkelamp Algorithm, a probalistic algorithm to
 factor a monic square free polynomial over finite fields. They mention that
-these implementations can be used to solve the conversion to a normal basis
-coordinates problem. For a complete description of the factorization algorithm,
-we redirect the reader to the section 3 of \cite{}. We focus on describing their 
-implementation to help solve our problem.
+an implementation of an automorphism projection algorithm can be used to solve 
+the conversion to a normal basis coordinates problem. For a complete description
+of the factorization algorithm, we redirect the reader to the section 3 of 
+\cite{}. We focus on describing their implementation to help solve our problem.
 
-The problem is as follow. Given an irreducible polynomial $f\in\F_q[x]$ of
-degree $n$, a normal element $\eta$ and an element $\gamma\in\F_q[x]/f(x)$, we 
-wish to compute $c_0,\dots,c_{n-1}\in\F_q$ such that :
+Given an irreducible polynomial $f\in\F_q[X]$ of degree $n$, a normal element 
+$\eta$ and an element $\gamma\in\F_q[X]/f(X)$, we wish to compute $c_0,\dots,
+c_{n-1}\in\F_q$ such that :
 \begin{equation}
 \label{eq:eqnorm}
 \gamma=c_0\eta+\dots+c_{n-1}\eta^{q^{n-1}}.
 \end{equation}
-They claim and prove the following result.
+Let $u$ be a projection map from $\F_{q^n}$ to $\F_q$. To solve this problem, 
+We apply $n-1$ times the $q$-th power to (\ref{eq:eqnorm}), and apply $u$ to 
+to each equations to obtain the following system in $\F_q$
+\begin{equation}
+\label{eq:systemnormal}
+u(\gamma^{q^j})=\sum_{i=0}^{n-1}{c_iu(\eta^{q^{i+j}})}\qquad(0\leq j<n).
+\end{equation}
+We introduce the $n\times n$ matrix $Q$ used in the Berlekamp algorithm, its
+$q_{i,j}$'s are the coefficients of
+$X^{iq}=q_{i,n-1}X^{n-1}+q_{i,n-2}X^{n-1}+\dots+q_{i,0}\bmod f(X)$. It 
+is the representation of the $q$-th power map on $\F_q[X]/f(X)$.
+We can then rewrite (\ref{eq:systemnormal}) as
+\begin{equation}
+\label{eq:linalgnormal}
+\vec{u}^\top Q^j\vec{\gamma}= \vec{c}\,(\vec{u}^\top Q^{i+j}\vec{\eta})_{i,j}
+\qquad(0\leq j<n, 0\leq i<n),
+\end{equation}
+where $\vec{c}^\top=(c_0,c_1,\dots,c_{n-1})$, $\vec{\gamma}$ and $\vec{\eta}$
+are the vectors containing the coordinates of $\gamma$ and $\eta$, respectively, 
+in respect with the power basis.
+
+The algorithm we are interested in focuses on computing the elements of the form 
+$\vec{u}^\top Q^j\vec{\gamma}$, \emph{i.e.} solves the automorphism projection 
+problem. To optimize the computation, the algorithm is be paramterized by a
+$0\leq\beta\leq1$. We split the computation in several parts, set 
+$t=\lceil{n^\beta}\rceil$ and $m=\lceil{k/t}\rceil$, where $k=o(n)$, the 
+elements we want to compute are
+\begin{equation}
+\label{eq:normalsplit}
+(\vec{u}^\top Q^{tj})\cdot(Q^l\vec{\gamma})\qquad(0\leq j<m, 0\leq l <t).
+\end{equation}
+In our case, we fix $k=n$.
+
+\begin{algorithm}
+  [Automorphism Projection]
+  \label{algorithm:autoproj}
+  \begin{algorithmic}[1]
+    \REQUIRE $u$ defined as above, $\gamma$ an element of $\F_q[X]/f(X)$ and 
+$0\leq\beta\leq1$.
+    \ENSURE $(\vec{u}^\top Q^i\vec{\gamma})$ for $0\leq i<k$.
+    \STATE $b_l\leftarrow Q^l\vec{\gamma}$ for $0\leq l<t$.
+    \STATE Compute $X^{q^t}\bmod f(X)$.
+    \STATE $a_j\leftarrow\vec{u}^\top Q^{tj}$ for $0\leq j<m$.
+    \RETURN $(a_j.b_l)_{l+tj=i}$ for $0\leq l<n$.
+  \end{algorithmic}
+\end{algorithm}
+
+The first step is done using a simple square and multiply algorithm, since
+the left mulitplication by $Q$ is equivalent to raising to $q$. For the second 
+step we use the Algorithm 5.2 from \cite{} of von Zur Gathen and Shoup. It only 
+remains to compute $m-1$ transposed modular composition to carry out the right 
+multiplications by $Q^t$. We have the following result :
 
 \begin{theorem}
 There exist probabilistic algorithms that can solve the above problem in 
-
 \begin{equation}
 O(n^{(\omega+1)/2+(1-\beta)(\omega-1)/2+o(1)}+n^{1+\beta+o(1)}\log{q})
 \end{equation}
 arithmetic operations in $\F_q$ for any $\beta$ with $0\leq\beta\leq1$.
-
 Furthermore, for a specific choice of parameters, the cost of operations is
 exactly $O(n^{1.815})\log{q}$.
 \end{theorem}
@@ -1800,48 +1849,6 @@ exactly $O(n^{1.815})\log{q}$.
 \begin{proof}
 See~\cite[Theorem 6]{}
 \end{proof}
-Let $Q$ be the $n \times n$ matrix representing the $q$-th power map $\sigma$ on
-$\F_q[x]/f(x)$, with respect to the natural power basis. Let $u$ be a projection
-map from $\F_{q^n}$ to $\F_q$. We successively apply the $q$-th power $n-1$ 
-times to (\ref{eq:eqnorm}), then we apply $u$ so we obtain the following 
-\begin{equation}
-u(\gamma^{q^j})=\sum_{i=0}^{n-1}{c_iu(\eta^{q^{i+j}})}\text{ for }0\leq j<n.
-\end{equation}
-To find the $c_i$'s, we will use the Algorithm AP from \cite{}. 
-
-The inputs are an element $\gamma\in\F_q[X]/f(X)$, $u$ and $Q$ as previously 
-described. It computes 
-\begin{equation}
-\label{eq;outputAP}
-\vec{u}^{T}Q^i\vec{\gamma}
-\end{equation}
-for $0\leq i < k$ for $k = o(n)$, with $\vec{\gamma}$ the vector of the
-coordinates of $\gamma$ and $\vec{u}$ the vector representing $u$ in the power
-basis.
-
-The algorithm is parameterized by a constant $\beta$, $0\leq\beta\leq1$. If we
-set $t=\lceil{\gamma^\beta}\rceil$ and $m=\lceil{k/t}\rceil$, we can rewrite
-(\ref{eq:outputAP}) as
-\begin{equation}
-\label{eq:outputAP2}
-(\vec{u}^TQ^{ij})\cdot(Q^i\vec{\gamma})
-\end{equation}
-for $0\leq j<m)$ and $0\leq i<t$.  The steps are :
-\begin{enumerate}
-    \item Compute the vectors $Q^i\vec{\gamma}$ for $0\leq i<t$ by a squaring
-algorithm $t-1$ times.
-
-    \item Using \cite[Algorithm 5.2]{}, we compute $x^{q^t}\bmod f$.
-
-    \item Compute the vectors $\vec{u}Q^{tj}$ for $0\leq j<m$ by computing
-$m-1$ transposed modular compositions for the right multiplications by $Q^t$.
-
-    \item Using the values computed in steps $1$ and $2$, we compute all the
-values of(\ref{eq:outputAP2}) by multiplying $m\times n$ matrices by $n\times t$
-matrices. 
-\end{enumerate}
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
