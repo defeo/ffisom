@@ -984,7 +984,10 @@ in the following lemma.
   $\F_q$, independent of the choice of $\zeta_\ell$.
 \end{lemma}
 \begin{proof}
-  See~\cite[Main Theorem]{feisel1999normal}.
+  See~\cite[Main Theorem]{feisel1999normal},
+  the main ideas of the proof are to show that cyclotomic units
+  are normal in characteristic zero and that integrality conditions
+  make the situation reduce to positive characteristic.
 \end{proof}
 
 In what follows we are going to write $\eta(\zeta_\ell)$ when $q$ is
@@ -1166,13 +1169,14 @@ of the multiplicative group of finite fields.
 It is natural to try to extend it to other types of algebraic groups in
 order to cover a wider range of parameters.
 And indeed Pinch~\cite{Pinch} showed how to use torsion points of elliptic
-curves in place roots of unity.
+curves in place of roots of unity.
 Rains also considered this possiblity, but did not investigate it thoroughly
 as no theoretical gain was to be expected.
 However, the situation in practice is quite different.
 In particular, the need for auxiliary extensions in the cyclotomic method
-is very costly, whereas the elliptic variant naturally works in the input 
-fields, and is therefore very competitive.
+is very costly, whereas the elliptic variant has naturally more chances
+to work in the input fields (there is only one multiplicative group,
+but several elliptic curves!), and to be therefore very competitive.
 
 In the next sections, we first introduce \emph{elliptic periods}, a
 straightforward generalization of Gaussian periods for torsion points
@@ -1189,8 +1193,8 @@ a weak counterpart to Lemma~\ref{th:gaussian}, is left as an open problem.
 
 \subsection{Uniquely defined orbits from elliptic periods}
 
-An elliptic curve $E/L$ defined over a field $L$ is an equation of the
-form
+An elliptic curve $E/L$ defined over a field $L$ is given by an
+equation of the form
 \begin{equation*}
   E\;:\; y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6
   \qquad\text{with $a_1,a_2,a_3,a_4,a_6\in L$.}
@@ -1291,70 +1295,149 @@ periods $\eta_{\lambda,S}([\lambda^i]P)$ uniquely define an orbit
 inside $\F_{q^r}$, but gives no guarantee that they generate the whole
 $\F_{q^r}$. Indeed, for the special curves of $j$-invariant $0$ and
 $1728$, it may systematically be the case that
-$\eta_{\lambda,S}(P)=0$. To handle these corner cases, we give more
-general definitions of elliptic periods in
-Appendix~\ref{app:elliptic-curves}. In the rest of this section, we
-focus on establishing when the elliptic period $\eta_{\lambda,S}(P)$
-generates the same field extension as $x(P)$.
+$\eta_{\lambda,S}(P)=0$.
+To handle these corner cases, we give more general definitions of elliptic
+periods in Appendix~\ref{app:elliptic-curves}.
+In the rest of this section, we focus on studying the question of
+when the elliptic period $\eta_{\lambda,S}(P)$ generates the same field
+as $x(P)$.
 
-\begin{proposition}
-  With the same notation as in Lemma~\ref{lemma:ellperiod}, for any
-  point $P$ in the eigenspace of $\lambda$, the abscissa $x(P)$ is a
-  normal element of $\F_{q^r}$ if and only if $\eta_{\lambda,S}(P)$ is.
-\end{proposition}
-\begin{proof}
-  \todo{This is true, isn't it?}
-\end{proof}
-
+First there is no hope to prove a complete counterpart to
+Lemma~\ref{thm:gaussian}.
+It is indeed easy to find examples where elliptic periods are not normal
+generators of $\F_q[x(P)]$.
+For example, for $p = 7$:
+\begin{enumerate}
+\item $\ell = 31$ is an Elkies prime for $E: y^2 = x^3 + 5 x + 4$;
+\item the eigenvalues of the Frobenius modulo $\ell$ are $\lambda = 25$ of
+multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
+\item $P = (5 a^2+2 a, 4)$ is a point of order $31$ over $\F_7[x]/(x^3 + 6 x^2 + 4)$;
+\item $\eta_\lambda(P) = 5 a^2 + 5 a + 4$ is not a normal element:
+$\eta_{\lambda,S}(P) + 4 \eta_{\lambda,S}(P)^7 + 2 \eta_{\lambda(P),S}^49 = 0$.
+\end{enumerate}
+Nonetheless, it might still be the case that the elliptic period
+$\eta_{\lambda,S}(P)$ generates $\F[x(P)]$ (as a field),
+and experimental evidence described in Appendix~\ref{} suggests
+that it might always be the case which would give
+the following weak counterpart to Lemma~\ref{th:gaussian}.
 \begin{conjecture}
 \label{conj:ellperiods}
-Let $\ell$ be a prime not dividing $q$, and let $t, \lambda, \mu$ be
-integers such that
-\begin{enumerate}
-    \item $\lvert t \rvert < \sqrt{2q}$,
-    \item $X^2 - tX + q = (X - \lambda)(X - \mu)\bmod \ell$,
-    \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$
-for $S$ a subgroup of $(\Z/\ell\Z)^{\ast}$.
-\end{enumerate}
-
-Let $E/\F_q$ be an elliptic curve of trace $t$
-and $P \in E[\ell]$ a point in the eigenspace
-corresponding to $\lambda$.
-
-Then the elliptic period $\eta_\lambda(P)$ generates $\F_q[x(P)]$ over
-$\F_q$.
-Furthermore, the Galois orbit of $\eta_\lambda(P)$ is
-independent of the choice of $P$.
+With the above notation, the elliptic period $\eta_{\lambda,S}(P)$
+generates $\F_q[x(P)]$ over $\F_q$.
+(Furthermore, the Galois orbit of $\eta_{\lambda,S}(P)$ is
+independent of the choice of $P$.)
 \end{conjecture}
 
-There is no hope to transpose the proof of Lemma~\ref{th:gaussian} to
-prove the aforementioned conjecture.
+Unfortunately the fact that elliptic periods are not normal leaves
+little hope to transpose the proof of Lemma~\ref{th:gaussian}
+to prove the aforementioned conjecture.
 Indeed, the only proof we are aware of proceeds the following way for
 a squarefree $\ell$ and $q = p$ prime:
 \begin{enumerate}
 \item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
 a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
 of $\Q(\zeta_\ell)$;
-\item therefore normal bases of subextensions can be obtained applying the field trace
-on that basis;
+\item Gaussian periods seen as field traces of roots of unity
+then yield normal bases of subextensions;
 \item integrality properties of these bases for $p \neq \ell$
 and picking up a subextension where $p$ is inert show that
-the situation transposes to characteristic $p$ by reduction;
+the situation transposes to characteristic $p$ by reduction.
 \end{enumerate}
-and experimental data show that elliptic periods are not always normal elements
-in finite fields: such non-normal elliptic periods are easily found.
-For example, for $p = 7$, then:
-\begin{enumerate}
-\item $\ell = 31$ is an Elkies prime for $E: y^2 = x^3 + 5 x + 4$;
-\item the eigenvalues of the Frobenius modulo $\ell$ are $\lambda = 25$ of
-multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
-\item $P = (5*a^2+2*a, 4)$ is a point of order $31$ over $\F_7[x]/(x^3 + 6 x^2 + 4)$;
-\item $\eta_\lambda(P) = 5*a^2 + 5*a + 4$ is not a normal element:
-$\eta_\lambda(P) + 4*\eta_\lambda(P)**7 + 2*\eta_\lambda(P)**49 = 0$.
-\end{enumerate}
+The second step of the proof crucially relies on the normality
+as no such result is true for plain field generators.
+Therefore, if a proof exists, it seems plausible it does not involve
+lifting to characteristic zero and takes place in positive characteristic
+only.
+Using the polynomially cyclic algebras setting of \cite{},
+which we now describe in our specific setting,
+looks like a reasonable approach.
 
-It might still be the case that the elliptic period $\eta_\lambda(P)$
-generates $\F[x(P)]$.
+Let $f_\lambda$ be the kernel polynomial of the isogeny corresponding
+to the eigenspace of $\lambda$ and $A$ be the (polynomially cyclic)
+algebra
+\[
+A = \F_q[x]/(f_\lambda(x)) \; .
+\]
+
+By hypothesis $\lambda$ is of order $r$ modulo $q$ so that
+the kernel polynomial $f_\lambda$ splits as
+\[
+f_\lambda = h_1 \cdots h_d
+\]
+where the $h_i$ are pairwise coprime irreducible polynomial of degree $r$
+(and $d r = (l-1)/2$).
+Therefore the algebra $A$ splits as
+\[
+A \simeq \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_d(x)) \; .
+\]
+The $h_i$ correspond to the different Galois orbits of the abscissae
+of the eigenpoints of $\lambda$.
+
+Let $c$ be a generator of $(\Z/\ell\Z)^{\ast}/\{\pm 1\}$.
+The multiplication-by-$c$ map on $E$ cyclicly permutes the
+abscissae of the eigenpoints of $\lambda$ and
+induces a cyclic automorphism $\nu$ of the algebra $A$.
+Up to permutation of indices, we can suppose that $\nu$
+sends roots of $h_i$ onto roots of $h_{i+1}$.
+Let $C$ be the sole polynomial of degree less than $(l-1)/2$
+describing $\nu$ on $A$ (that is the one obtained by taking the
+rational fraction expressing multiplication-by-$c$ and inverting
+its denominator modulo $f_\lambda$).
+(Given a polynomial $g$ representing an element of $A$, note that
+$\nu$ acts by composing $g$ with $C$: $\nu(g) = g(C)$.)
+Recall that
+$(\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S$
+and let $s = c^r$ be a generator of $S$.
+We denote by $\sigma$ the automorphism of algebra $\nu^{(r)}$
+and by $S$ the corresponding polynomial
+(there should be no confusion with the subgroup $S$).
+Note that $\nu^d$ is the Frobenius automorphism of $A$.
+
+Gathering the two above paragraphs we obtain the following diagram:
+\begin{center}
+\begin{tikzpicture}
+\node (A) {$A=\F_q[x]/(f_\lambda(x))$};
+\node[below=.3em of A] (Ax) {$x$};
+\node[right=8em of A] (CRT) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_2(x)) \times \cdots \times \F_q[x]/(h_d(x))$};
+\node[below=.3em of CRT] (CRTx) {$(x, x, \ldots, x)$};
+\node[below=6em of A] (T) {$A^S \simeq \F_{q^r}$};
+\node[below=.3em of T] (Tx) {$\mathrm{Tr}(x) = \sum_{i = 0}^{d-1} S^{(i)}(x)$};
+\node[below=6em of CRT] (C) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_1(x))$};
+\node[below=.3em of C] (Cx) {$(x, S(x), \ldots, S^{(d-1)}(x))$};
+\draw[->, shorten >= .5em, shorten <= .5em] (A) -- (CRT);
+\draw[->, shorten >= .5em, shorten <= .5em] (Ax) -- (T);
+\draw[->, shorten >= .5em, shorten <= .5em] (CRTx) -- (C);
+\end{tikzpicture}
+\end{center}
+
+\begin{proposition}
+If $x \in A$ is a normal element,
+then $\eta_{\lambda,S}(P)$ is a normal element in $\F_{q^r}$.
+\end{proposition}
+
+\begin{proof}
+Suppose that $x$ is normal in $A$, then so is its trace in $A^S$.
+But taking the trace of $x$ in $A$ and going through the two isomorphisms
+of the diagram is the same thing as computing the period in the above
+$d$ different representations of $\F_{q^r}$:
+\[
+x \mapsto \sum_{i=0}^{d-1} S^{(i)}(x) \mapsto
+\left( \sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_1(x)}, \ldots,
+\sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_d(x)} \right) \; .
+\]
+If a linear relation existed between $\eta_{\lambda,S}(P) \in \F_q[x(P)]$
+and its Galois conjugates,
+it would transpose to the $d$ representations of $\F_{q^r}$
+above and lift up to $A$ implying the same linear relation for
+$\mathrm{Tr}(x)$ and its Galois conjugates.
+Therefore $\eta_{\lambda,S}(P)$ is normal in $\F_q[x(P)]$.
+\end{proof}
+
+The converse is easily shown not to be true by experimentation.
+There is also no relation between the normality of $x(P)$ and
+of $\eta_{\lambda,S}(P)$ in $\F_q[x(P)]$.
+
+\todo: Move the following.
 Heuristically it will be the case with very high probability.
 Suppose that $f_\lambda(x)$ factors as $f_\lambda(x) = h_1(x) \cdots h_d(x)$
 where every polynomial $h_i$ has degree $[\F_q[x(P)] : \F_q] = r$
