@@ -344,7 +344,7 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 	compositions in $k$. The depth of the recursion is $\log(i)$. Therefore, given the initial value 
 	$\xi_1$, $T_i(a)$ is computed using $O(\CC(m)\log(i))$ operations in $\F_q$. To compute the 
 	initial value $\xi_1 = x^{q^r}$ we first compute $x^q$ using the usual binary-powering 
-	algorithm at cost of $O(\MM(m)\log(q))$ operations in $\F_q$. Then the rest is done using the 
+	algorithm at a cost of $O(\MM(m)\log(q))$ operations in $\F_q$. Then the rest is done using the 
 	same recursive technique as above at the cost of $O(\CC(m)\log(r))$ operations in $\F_q$. 
 	Therefore, computing the trace $\trace_{k/L}(\alpha) = T_{m/r}(\alpha)$ takes $O(\CC(m)\log(m) + 
 	\MM(m)\log(q))$ operations in $\F_q$.
@@ -656,7 +656,7 @@ for appropriate $\gamma_1 \in k[\zeta]$, and $\gamma_2 \in K[\zeta]$, and
 homomorphisms $\varphi_1, \varphi_2$. From this we induce an embedding $k \hookrightarrow K$.
 
 In \cite{Allombert02} Alombert gives a similar approach with more focus on implementation. The  
-algorithm evolves around solving Hilbert's theorem 90. The idea is to find elements $\alpha_1 \in 
+algorithm revolves around solving Hilbert's theorem 90. The idea is to find elements $\alpha_1 \in 
 k[\zeta]$, and $\alpha_2 \in K[\zeta]$ such that $b = \alpha_1^r / \alpha_2^r$ is an 
 $r$th power in $\F_q[\zeta]$. From this $b^{1/r}$ can be computed using a root extraction 
 algorithm. An isomorphism $k[\zeta] \xrightarrow{\sim} K[\zeta]$ is then given by $\alpha_1 
@@ -674,7 +674,7 @@ the Hilbert's theorem 90. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
 $s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
 $\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
-\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients. The action of the Galois group 
+\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients \todo{$k[\zeta]$ is typically used for the FIELD obtained by adjoining $\zeta$ to $k$, this notation is confusing}. The action of the Galois group 
 $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 \[
 \begin{array}{llll}
@@ -703,8 +703,7 @@ Let us restate the algorithm for clarity.
   least mention it is possible.}
 
 By symmetry, we only deal with the extension $k / \F_q$. The dominant steps of the algorithm are 
-solving Hilbert 90, i.e. finding $\theta_1$, and taking an $r$-th root in $\F_q(\zeta)$. By 
-Proposition \ref{prop:root-fpz} taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
+solving Hilbert 90, i.e. finding $\theta_1$, and taking an $r$-th root in $\F_q(\zeta)$. Taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
 Algorithm \ref{alg:ks}. We show how to efficiently find $\theta_1$. For $a \in k[\zeta]$ define
 \[ \theta_a = a + \sigma(a)\zeta^{-1} + \sigma^2(a)\zeta^{-2} + \cdots + \sigma^{r - 1}(a)\zeta^{-r 
 	+ 1}. \]
@@ -733,7 +732,7 @@ a + \zeta^{-1}\sigma(\theta_{a, j - 1}) & j \text{ odd}
 \end{cases}
 \]
 Applying $\sigma^j$ to an element $b \in k[\zeta]$ is the same as composing the polynomial $b(x, 
-z)$ with the polynomial $\xi_j(x)$. Algorithm \ref{alg:hilbert-pst} computes $\theta_{a, i}$ 
+z)$ with the polynomial $\xi_j(x)$ \todo{in which argument?}. Algorithm \ref{alg:hilbert-pst} computes $\theta_{a, i}$ 
 using above relations.
 
 \begin{algorithm}
@@ -783,14 +782,14 @@ independent. Therefore, there exists $a(x) \in k^*$ such that
 \[ \theta_a = a(x) + a(x)^q\zeta^{-1} + a(x)^{q^2}\zeta^{-2} + \cdots + a(x)^{q^{r - 1}}\zeta^{-r 
 	+ 1}\]
 is not zero. This proves that $\theta_a: k[\zeta] \rightarrow k[\zeta]$, considered as an 
-$\F_q(\zeta)$-linear map, is not identically zero. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+$\F_q(\zeta)$-linear map, is not identically zero \todo{shouldn't this go before Case 1?}. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
 a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
 3.1 in \cite{von1992computing} or \cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
 operations in $\F_q$.
 
-Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means for a 
-random $a \in k[\zeta]$ $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only need 
-$O(1)$ trial to find a nonzero $\theta_a$. Putting the above cases together we have
+Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means that, for a 
+random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only need 
+$O(1)$ trials to find a nonzero $\theta_a$. Putting the above cases together we have
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Finding a nonzero $\theta_a$ for random $a \in k[\zeta]$ takes $O(s\CC(r)\log(r) + 
