@@ -20,7 +20,7 @@ class FFIsomPrimePower {
     fq_nmod_t xi_init;
     nmod_poly_t xi_init_trivial;
 
-    const static int TRACE_THRESHOLD = 1000;
+    const static int TRACE_THRESHOLD = 0;
 
     void compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_t xi, slong n, const nmod_poly_t modulus, const mp_limb_t z);
