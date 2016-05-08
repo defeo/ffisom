@@ -8,13 +8,16 @@
 \usepackage{amssymb}
 \usepackage{mathrsfs}
 \usepackage{url}
-\usepackage{subfig}
-\usepackage{xfrac}
-\usepackage[sectionbib]{chapterbib}
+%\usepackage{subfig}
+%\usepackage{xfrac}
+%\usepackage[sectionbib]{chapterbib}
 \usepackage{hyperref}
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,arrows}
 \usepackage{algorithmic}
+\usepackage{afterpage}
+\usepackage{pdflscape}
+\usepackage{subcaption}
 
 \hypersetup{
 	unicode=true,
@@ -1793,6 +1796,143 @@ suggested approach in Algorithm~\ref{algorithm:selectalg}.
 
 \section{Experimental Results}
 
+To validate our results, we implemented the algorithms described in
+the previous sections, and compared them to the implementation of
+Allombert's algorithm available in Pari/GP~\cite{Pari}. The variants
+of Allombert's algorithm described in Section~\ref{sec:fast-kummer}
+were implemented in C on top of the Flint
+library~\cite{hart2010flint}. Rains' cyclotomic and elliptic
+algorithms were implemented in Sage~\cite{Sage} (which itself uses
+Pari and Flint for representing finite fields), with critical code
+rewritten in C/Cython (\todo{JP, do you want to give a better pointer
+  to ellmul?}). Our code only handles $q$ prime and $m,n$ odd.
+
+We ran tests for a wide range of primes $q$ between $5$ and
+$2^{60}+3175$, and prime powers $r$ between $5$ and $1021$. All tests
+were run on an Intel \todo{JP, what can you tell us?}. We report in
+Figure~\ref{fig:bench} statistics only on the runs for
+$2^{10}<q<2^{13}$; other ranges show very similar trends. The source
+code and the full datasets can be downloaded at
+\url{https://github.com/defeo/ffisom}.
+
+
+
+\begin{figure}
+  \newlength{\mywidth}
+  \setlength{\mywidth}{8cm}
+  \centering
+
+  \begin{subfigure}{.48\textwidth}
+    \includegraphics[width=\mywidth]{bench-allombert}
+    \caption{Pari/GP and our own variants of Allombert's algorithm.
+      Auxiliary extension degrees $s$ range between $1$ and $6$.}
+    \label{fig:bench:allombert}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.48\textwidth}
+    \noindent
+    \includegraphics[width=\mywidth]{bench-rains}
+    \caption{Cyclotomic and elliptic variants of Rains' algorithm.
+      Auxiliary extension degrees $s$ for cyclotomic Rains' range
+      between $1$ and $8$.}
+    \label{fig:bench:rains}
+  \end{subfigure}
+  
+  \begin{subfigure}{.48\textwidth}
+    \noindent
+    \includegraphics[width=\mywidth]{bench-all}
+    \caption{Comparison of Allombert's and Rains' algorithms at some
+      fixed, small, auxiliary extension degrees $s$.}
+    \label{fig:bench:all}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}{.48\textwidth}
+    \noindent
+    \includegraphics[width=\mywidth]{bench-allombert-vs-ell}
+    \caption{Ratio between running time of Allombert's algorithm and
+      average running time of elliptic Rains' algorithm at same degree
+      $r$.}
+    \label{fig:bench:allombert-vs-ell}
+  \end{subfigure}
+
+  \caption{Benchmarks for Rains' and Allombert's algorithms. $q$ is a
+    prime between $2^{10}$ and $2^{13}$, $r$ is an odd prime power varying
+    between $5$ and $509$.  Lines represent a batch of runs with
+    constant auxiliary degree $s$ ($s$ is $\order_r(q)$ for
+    Allombert's algorithm, $\order_\ell(q)/r$ for Rains' algorithm),
+    averaged over the abscissa. Dots represent individual runs.
+    Plots~\subref{fig:bench:allombert},~\subref{fig:bench:rains}
+    and~\subref{fig:bench:all} are in doubly logarithmic scale. Full
+    dataset available at \url{https://github.com/defeo/ffisom}.}
+  \label{fig:bench}
+\end{figure}
+
+In Figure~\ref{fig:bench:allombert} we compare the implementation of
+Allombert's algorithm in Pari/GP with our own, specifically the
+variant which is dubbed \emph{``case 2''} in
+Section~\ref{sec:fast-kummer}. Each continuous line represents a batch
+of runs of the cyclotomic variant with constant auxiliary degree
+$s=\order_r(q)$, ranging from $1$ to $6$; runs with the same degree
+$r$ are averaged together. In both implementations we observe a large
+gap between $s=1$ and other values of $s$, due to the added cost of
+computing in extension rings. While our variant performs better for
+very small degree, it quickly catches and surpasses Pari in most
+cases. However, our variant is considerably faster than Pari's when
+the parameter $s$ gets larger, as we shall discuss in a few moments.
+
+In Figure~\ref{fig:bench:rains} we compare the cyclotomic and elliptic
+variants of Rains' algorithm. Each continuous line represents a batch
+of runs of the cyclotomic variant with constant auxiliary degree
+$s=\order_\ell(q)$, ranging from $1$ to $8$; runs with the same degree
+$r$ are averaged together. Lines are clearly stacked on top of one
+another according to their parameter $s$, only with occasional
+crossings. We observe a very large gap between $s=1$ and larger $s$
+($s=2$ is $8-16$ times slower). This is partly due to the fact that we
+use generic Python code to construct auxiliary extensions, rather than
+dedicated C; however a large gap is unavoidable, due to the added cost
+of computing in extension fields. Dots represent individual runs of
+the elliptic variant. We observe that on average it runs at a speed
+which is intermediate between the cyclotomic variant with $s=2$ and
+$s=3$. We wrote dedicated C code with optimized formulas for the
+elliptic curve group operation, thus it seems difficult to improve the
+gap between the elliptic and the cyclotomic variant. In conclusion the
+cyclotomic variant only looks preferable to the elliptic one for very
+small $s$, or when the elliptic variant does not apply.
+
+To get a global view, we graph all algorithms in
+Figure~\ref{fig:bench:all}. It appears that Allombert's algorithm
+performs generally better than Rains' cyclotomic algorithm for small
+auxiliary extension degree. Only when the $s$ parameter for
+Allombert's algorithm reaches about $10$, it gets slower than Rains'
+algorithm with $s=1$. The elliptic variant is even further up the
+scale.
+
+To more accurately determine the cross-points between the algorithms
+we need to change picture. In Figure~\ref{fig:bench:allombert-vs-ell},
+for every degree $r$ we compute the average running time of the
+elliptic variant, then for each run of Allombert's algorithm (both in
+Pari and in our version) we plot the ratio between its running time
+and the average running time of the elliptic variant for the same
+degree. We sort the ratios by increasing auxiliary extension degree
+$s$ for Allombert's algorithm. It is then apparent that Pari's
+implementation has a linear dependency in $s$, while our variant only
+depends on it sub-linearly, as expected. This trend is even more
+apparent with smaller primes $q$ and larger degrees $r$. The point
+where both algorithms cross the elliptic variant of Rains' happens
+around $s=100$. By postulating a constant ratio between Rains'
+cyclotomic and elliptic variants, this graph can be used to determine
+a cross-point for Allombert's \emph{versus} Rains' cyclotomic
+algorithm too.
+
+Obviously, these comparisons are only relevant to our own code and
+test conditions. Other implementations and benchmarks will likely find
+slightly different cross-points for the algorithms. Our goal here is
+simply to show that all algorithms presented in this paper are
+practical, that for each one there are specific parameters where it
+performs best, and that our proposed variants constitute an
+improvement over the state of the art.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1940,7 +2080,7 @@ See~\cite[Theorem 6]{}
 
 \section{Experimental results}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 \section{Conclusion}
 
@@ -2128,4 +2268,4 @@ and $E'$ have opposite trace, a well known fact.
 % End:
 
 %  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
-%  LocalWords:  endomorphism eigenspace
+%  LocalWords:  endomorphism eigenspace Allombert's
