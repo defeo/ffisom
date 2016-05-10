@@ -1,7 +1,5 @@
 #clib pari gmp
-#from sage.env import SAGE_ENV
-#include SAGE_ENV["SITE_PACKAGES"]+"sage/ext/interrupt.pxi"
-include "sage/ext/interrupt.pxi"
+include "cysignals/signals.pxi" 
 
 from sage.libs.gmp.mpz cimport mpz_fits_ulong_p, mpz_get_ui
 

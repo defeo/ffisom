@@ -1,6 +1,5 @@
 # distutils: language = c++
-
-include "sage/ext/interrupt.pxi"
+include "cysignals/signals.pxi"
 
 def find_root(poly, k):
     cdef zz_pEPush pEPushed

@@ -1,6 +1,6 @@
 from sage.rings.integer_ring import ZZ
 from sage.arith.all import gcd, lcm
-from sage.rings.finite_rings.constructor import GF
+from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.schemes.elliptic_curves.constructor import EllipticCurve
 from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod
 

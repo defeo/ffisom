@@ -1,6 +1,6 @@
 # distutils: language = c++
-include "sage/ext/interrupt.pxi"
 include "sage/ext/stdsage.pxi"
+include "cysignals/signals.pxi"
 
 from finite_field_flint_fq_nmod cimport FiniteField_flint_fq_nmod
 from element_flint_fq_nmod cimport FiniteFieldElement_flint_fq_nmod

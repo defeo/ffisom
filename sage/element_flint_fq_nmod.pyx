@@ -16,9 +16,10 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-include "sage/ext/interrupt.pxi"
 include "sage/ext/stdsage.pxi"
-include "sage/libs/pari/decl.pxi"
+include "cysignals/signals.pxi"
+
+from sage.libs.pari.paridecl cimport *
 
 from sage.libs.gmp.all cimport *
 from sage.libs.flint.types cimport *

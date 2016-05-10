@@ -18,7 +18,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod_ring import Zmod
 from sage.arith.all import gcd, lcm
 from sage.rings.integer_ring import crt_basis
-from sage.rings.finite_rings.constructor import GF
+from sage.rings.finite_rings.finite_field_constructor import GF
 from sage.misc.cachefunc import cached_method
 from sage.sets.set import Set
 from sage.combinat.set_partition import SetPartitions
