@@ -28,6 +28,7 @@ def test_ellrains(pbound = 2**62, nbound = 100):
             except RuntimeError:
                 pass
 
+
 def find_gens_list(klist, r = 0, bound = None, verbose = True):
     """
     Use an elliptic curve variation of Rain's method to find a generator
