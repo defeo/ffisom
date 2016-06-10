@@ -1860,7 +1860,7 @@ code and the full datasets can be downloaded at
   \centering
 
   \begin{subfigure}{.48\textwidth}
-    \includegraphics[width=\mywidth]{bench-allombert}
+%    \includegraphics[width=\mywidth]{bench-allombert}
     \caption{Pari/GP and our own variants of Allombert's algorithm.
       Auxiliary extension degrees $s$ range between $1$ and $6$.}
     \label{fig:bench:allombert}
@@ -1868,7 +1868,7 @@ code and the full datasets can be downloaded at
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
-    \includegraphics[width=\mywidth]{bench-rains}
+%    \includegraphics[width=\mywidth]{bench-rains}
     \caption{Cyclotomic and elliptic variants of Rains' algorithm.
       Auxiliary extension degrees $s$ for cyclotomic Rains' range
       between $1$ and $8$.}
@@ -1877,7 +1877,7 @@ code and the full datasets can be downloaded at
   
   \begin{subfigure}{.48\textwidth}
     \noindent
-    \includegraphics[width=\mywidth]{bench-all}
+%    \includegraphics[width=\mywidth]{bench-all}
     \caption{Comparison of Allombert's and Rains' algorithms at some
       fixed, small, auxiliary extension degrees $s$.}
     \label{fig:bench:all}
@@ -1885,7 +1885,7 @@ code and the full datasets can be downloaded at
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
-    \includegraphics[width=\mywidth]{bench-allombert-vs-ell}
+%    \includegraphics[width=\mywidth]{bench-allombert-vs-ell}
     \caption{Ratio between running time of Allombert's algorithm and
       average running time of elliptic Rains' algorithm at same degree
       $r$.}
@@ -1977,7 +1977,34 @@ improvement over the state of the art.
 \label{part:eval}
 
 
-\subsubsection{Linear algebra}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Monomial-dual bases pairs}
+
+
+Up to this point we have build an embedding $\phi: k \hookrightarrow K$ that sends a generator $\alpha \in k$ to an element $\beta \in K$. These elements are both polynomials $\alpha = g(x), \beta = h(x)$. A standard representation of an isomorphism is usually in terms of its actions on a given basis, which is the monomial basis here. This makes thing more convinient both computaionally and theoretically. Given $\phi$ as above, in this section, we show how to efficiently determine its action on $x$. To do this we exploit dual representations in dual spaces.
+
+Let $V$ be finite-dimentional vector space over a field $F$, and let $V^*$ be its dual. Suppose we have a nondegenerate bilinear form $\ang{,}_V: V \times V \rightarrow F$. This is equivalent to having an isomorphism $\mu_V: V \rightarrow V^*$. Similarly, let $W$ be a finite-dimientional $F$-vector space with a bilinear form $\ang{,}_W$. We say that an $F$-linear map $T: V \rightarrow W$ preserves bilinear forms if $\ang{Tv_1, Tv_2}_W = \ang{v_1, v_2}_V$ for all $v_1, v_2 \in V$. In other words, $T^*(\mu_W(Tv)) = \mu_V(v)$ for all $v \in V$, where $T^*$ is the duall of $T$. This gives a commutative diagram
+\begin{center}
+	\begin{tikzpicture}
+		\node (V) {$V$};
+		\node[below = 2cm of V] (W) {$W$};
+		\node[right = 2cm of V] (Vd) {$V^*$};
+		\node[right = 2cm of W] (Wd) {$W^*$};
+		\draw[->] (V) -- node[above]{$\mu_V$} (Vd);
+		\draw[->] (V) -- node[left]{$T$} (W);
+		\draw[->] (W) -- node[above]{$\mu_W$} (Wd);
+		\draw[->] (Wd) -- node[right]{$T^*$} (Vd);
+	\end{tikzpicture}
+\end{center}
+Formally, the above says that in the category of finite-dimensional vector spaces with nondegenerate bilinear forms and morphisms that preserve bilinear forms, we have a natural isomorphism between the identity functor and the dual functor. In such a construction, $T^*$ is identified as the transpose of $T$.
+
+Now let us specialize the above to our scenario. Let $V = W = k$, and let $F = \F_q$. Define $\tau: k \times k \rightarrow \F_q$ as $\tau(a, b) = \trace_{k / \F_q}(ab)$. This a nondegenerate bilinear form. Also define $T$ as modular composition with $g$, i.e. $T(f) = f(g)$. It is not hard to show that this $T$ preserves $\tau$. The transposed linear map $T^*$ is called power projection \cite{shoup95}. Our goal is to compute $f(x) \in k$ such that $f(g(x)) = x$. The embedding $\phi$ will then be $x \mapsto f(h)$. According to the above diagram we should have $f = \mu_k^{-1}(T^*(\mu_k(x)))$. In other words, we first compute the dual of $x$, and then do a power projection, and convert the result back to monomial basis.
+
+The conversions between monomial and dual bases is done efficiently using the method of \cite{DeDoSc2014}. The power projection is computed efficiently using a divide-and-conquer technique used for computing modular composition \cite{shoup95}. Altogether, the cost of computing $f, f(h)$ is dominated by the cost of computations in the previous sections.
+
+
+\section{Linear algebra}
 
 Once $\beta \in K$ has been computed as a polynomial in $Y$,
 one can compute the powers
@@ -2005,7 +2032,7 @@ can be deduced from an an LU or similar matrix decompostions of $M$.
 For $\delta \in K$, $\phi^{-1}(\delta)$ can then be computed by a
 matrix-vector multiplication in $O(m^2)$ in $\F_q$.
 
-\subsubsection{Modular composition}
+\section{Modular composition}
 
 As an alternative to using linear algebra,
 $\phi(\gamma)$ can be computed directly using modular composition
@@ -2109,20 +2136,7 @@ exactly $O(n^{1.815})\log{q}$.
 See~\cite[Theorem 6]{}
 \end{proof}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Monomial-dual bases pairs}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Experimental results}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
-\section{Conclusion}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
 \part*{Appendices}
