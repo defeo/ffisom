@@ -1252,18 +1252,17 @@ periods.
   such that $\pi(P)=\lambda P$).  Suppose that there is a subgroup $S$
   of $(\Z/\ell\Z)^{\ast}$ such that
   \begin{equation}
-    (\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S.
+    (\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S.
   \end{equation}
   
   Then we define an elliptic period as
   \begin{equation}
-    \eta_{\lambda,S}(P) = \sum_{\sigma\in S} {x \left([\sigma] P \right)},
+    \eta_{\lambda,S}(P) = \sum_{\sigma\in S/\{\pm1\}} {x \left([\sigma] P \right)},
   \end{equation}
   where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
 
 \begin{lemma}
-  \label{lemma:ellperiod}
   With the same notation as in Definition~\ref{definition:ellperiod},
   let
   \begin{equation*}
@@ -1515,16 +1514,17 @@ to work with smaller fields.
 
 The algorithm is very similar to
 Algorithm~\ref{algorithm:rains-cyclo}, and follows immediately from
-the previous section. Given $k$, $K$ and $r$,
+the previous section. For simplicity, we are going to state it only
+for $r$ odd. Given $k$, $K$ and $r$,
 \begin{enumerate}
 \item find a prime $\ell$, an elliptic curve $E$, and an eigenvalue
   $\lambda$ of the Frobenius endomorphism, satisfying the conditions
-  of Theorem~\ref{theorem:ellperiods}, and such that
+  of Definition~\ref{definition:ellperiod}, and such that
   $\order_\ell(\lambda)=r$;
 \item take random points $P\in E(k)[\ell]$ and $P'\in E(K)[\ell]$ in
   the eigenspace of $\lambda$;
-\item return the elliptic periods $\alpha_r := \eta_{\lambda}(P)$ and
-  $\beta_r:= \eta_\lambda(P')$.
+\item return the elliptic periods $\alpha_r := \eta_{\lambda,S}(P)$ and
+  $\beta_r:= \eta_{\lambda,S}(P')$.
 \end{enumerate}
 
 Here we are faced with a difficulty: given $E$ and $\lambda$ it is
@@ -1545,19 +1545,19 @@ identical.
 \begin{algorithm}[Elliptic Rain's algorithm]
 \label{algorithm:compell}
   \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $r$,
+    \REQUIRE A field extension $k/\F_q$ of odd degree $r$,
     an elliptic curve $E/\F_q$, its trace $t$, a prime $\ell$ not dividing $q$,
     an integer $\lambda$ such that:
     \begin{itemize}
     \item $X^2 - tX - q = (X-\lambda)(X-q/\lambda) \mod\ell$,
     \item $\order_\ell(\lambda)=r$, $\order_\ell(q/\lambda)\nmid r$,
-    \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$ for some $S$.
+    \item $(\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S$ for some $S$.
     \end{itemize}
     \ENSURE A generator of $k$ over $\F_q$, with a uniquely defined Galois orbit.
     \REPEAT
     \STATE Compute $P\leftarrow[\# E(k)/\ell]Q$ for a random $Q\in E(k)$;
     \UNTIL{$P\neq\mathcal{O}$;}
-    \RETURN $\alpha_r\leftarrow\eta_\lambda(P)$.
+    \RETURN $\alpha_r\leftarrow\eta_{\lambda,S}(P)$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1611,11 +1611,12 @@ description problem.
 
 \subsection{Finding parameters for Rains' algorithms}
 
-Given parameters $q$ and $r$, Rains' cyclotomic algorithm asks for a
-\emph{small} parameter $\ell$ such that:
+Given parameters $q=p^d$ and $r$, Rains' cyclotomic algorithm asks for
+a \emph{small} parameter $\ell$ such that:
 \begin{enumerate}
 \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
-\item $\langle q \rangle = rs$ for some integer $s$.
+\item $\langle q \rangle = rs$ for some integer $s$,
+\item $\gcd(\euler(\ell),d)=1$ (see Note~\ref{note:rains-non-prime}).
 \end{enumerate}
 
 Since $r$ is a prime power, the second condition lets us take a prime
@@ -1623,14 +1624,17 @@ power for $\ell$ too. Indeed if
 $\Z/\ell\Z\simeq\Z/\ell_1\Z\times\Z/\ell_2\Z$, then either
 $q\bmod\ell_1$ or $q\bmod\ell_2$ has order a multiple of $r$.
 Furthermore, if $\gcd(\ell,r)=1$, then we can take $\ell$ prime, since
-higher powers would not help satisfy the conditions. On the other
-hand, if $\gcd(\ell,r)\ne1$, then Kummer-type algorithms have better
-complexity \todo{double-check this}, hence we shall take $\ell$ prime.
+higher powers would not help satisfy the conditions. On the other hand
+if $\gcd(\ell,r)\ne1$, then $s\sim r$ when $r$ is prime, and the
+complexity of Rain's algorithm becomes much worse than Allombert's in
+this case. \todo{Say something on $r$ a high power of a prime}. Hence
+we shall take $\ell$ prime.
 
 Given the above constraints, we can rewrite the conditions as:
 \begin{enumerate}
-\item $\ell = rsu + 1$ for some $s,u$ such that $\gcd(rs,u)=1$,
-\item $\order_\ell(q) = rs$.
+\item $\ell = rsv + 1$ for some $s,u$ such that $\gcd(rs,v)=1$,
+\item $\order_\ell(q) = rs$,
+\item $\gcd(rsv,d)=1$.
 \end{enumerate}
 
 \begin{remark}
@@ -1638,7 +1642,7 @@ Given the above constraints, we can rewrite the conditions as:
   than $4$, no $\ell$ can satisfy these constraints because $2$ is a
   quadratic residue modulo any prime of the form $8u+1$. This case,
   however, is covered by the Artin-Schreier technique in
-  Section~\ref{sec:artin-schreier-case}, we thus ignore it.
+  Section~\ref{sec:fast-artin-schreier}, we thus ignore it.
 \end{remark}
 
 In the elliptic algorithm we look for an integer $\ell$ and a curve
@@ -1647,16 +1651,14 @@ Algorithm~\ref{algorithm:compell}, i.e., such that
 \begin{enumerate}
 \item the Frobenius endomorphism $\pi$ satisfies a characteristic
   equation $(\pi-\lambda)(\pi-\mu) = 0 \mod \ell$,
-\item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times T$ for some $T$,
+\item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times S$ for some $S$,
 \item $\#\langle\lambda\rangle=r$, and
 \item $\mu^r\ne1\mod\ell$.
 \end{enumerate}
 
-As before, we only need to look at prime $\ell$. For simplicity, we
-also exclude the case where $r$ is a power of $2$, which is easily
-dealt with Kummer-type algorithms. Because $\mu=q/\lambda$, the last
-condition is equivalent to $q^r\ne1\bmod\ell$. Hence, we can restate
-the conditions on $\ell$ as
+As before, we only need to look at prime $\ell$. Because
+$\mu=q/\lambda$, the last condition is equivalent to
+$q^r\ne1\bmod\ell$. Hence, we can restate the conditions on $\ell$ as
 \begin{enumerate}
 \item $\ell = ru+1$ for some $u$ such that $\gcd(r,u)=1$,
 \item $q^r\ne1\mod\ell$.
@@ -1679,12 +1681,12 @@ within those bounds.
     [Parameter selection for Rains' algorithms]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-      \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
+      \REQUIRE Integers $q=p^d$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
       \ENSURE $\mathcal{C}$ and $\mathcal{E}$, lists of parameters for the cyclotomic and elliptic algorithm resp.
       \STATE $\mathcal{C}\leftarrow\{\}$, $\mathcal{E}\leftarrow\{\}$;
       \FOR{$u=1$ to $\bar{u}$}
       \IF{\label{alg:selectell:prime}$\ell=ur+1$ is prime}
-      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$ and $\gcd(rs,u/s)=1$}
+      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$, and $\gcd(rs,u/s)=1$, and $\gcd(ur,d)=1$}
       \STATE Add $\ell$ to $\mathcal{C}$.
       \ENDIF
       \IF{\label{alg:selectell:ellorder}$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
@@ -1751,7 +1753,7 @@ A natural question arises: what bounds $\bar{u},\bar{s},\bar{e}$ must
 be taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ in
 Algorithm~\ref{algorithm:selectell} are non-empty?
 
-It is not easy to give a precise answer: already the condition in that
+It is not easy to give a precise answer: already the condition that
 $\ell=ur+1$, in Step~\ref{alg:selectell:prime}, poses some
 difficulties. Heuristically, we expect that about
 $\bar{u}/\log(\bar{u}r)$ of those numbers are prime. However the best
@@ -1794,9 +1796,7 @@ assuming that $r\log r\in o(\sqrt[4]{q})$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
 the elliptic algorithm, leading to an expected running time of
 $\tildO(\sqrt{r}+(\log r)^2(\log q)^6)$ binary operations and
-$\tildO(r^2\log q)$ operations in $\F_q$. \todo{Shall we extend the
-  applicability of the elliptic algorithm by taking small extensions
-  of the base field?}
+$\tildO(r^2\log q)$ operations in $\F_q$.
 
 Although the complexities of both algorithms look very similar, it
 must not be neglected that the $\tildO$ notation in the cyclotomic
@@ -1807,28 +1807,63 @@ complexity can be extremely important, as we will show in the next
 section. 
 
 The same considerations also apply when comparing Rains' algorithms to
-the other ones: the root-based and the Kummer-type algorithms perform
-extremely well when the degree $s$ of the auxiliary extension is
-small, but become much slower as this degree increases (recall that
-asymptotically $s\in O(r)$ \todo{Make this more precise, if it is not
-  done in the previous sections}).
+Allombert's. Indeed, the latter performs extremely well when the
+degree $s$ of the auxiliary extension is small, but becomes slower as
+this degree increases.
 
 In practice, it is hopeless to try and determine the appropriate
 bounds for each algorithm from a purely theoretical point of view. The
 best approach we can suggest, is to determine parameters at runtime,
-and set bounds and thresholds experimentally. We summarize our
-suggested approach in Algorithm~\ref{algorithm:selectalg}. 
+and set bounds and thresholds experimentally. To summarize, we suggest
+the following approach: given parameters $q$ and $r$,
+\begin{enumerate}
+\item If $\gcd(q,r)\ne 1$, run the Artin-Schreier algorithm of
+  Section~\ref{sec:fast-artin-schreier}.
+\item \todo{If $r$ is a high power of a small prime}.
+\item Determine the order $s$ of $q$ in $(\Z/r\Z)^\ast$. If it is
+  small enough, run one of the two variants of Allombert's algorithm
+  presented in Section~\ref{sec:kummer}.
+\item Run Algorithm~\ref{algorithm:selectell} with bounds $\bar{u}$,
+  $\bar{s}$ and $\bar{e}$ determined according to $s$. Depending on
+  the best parameters found by Algorithm~\ref{algorithm:selectell},
+  run the best option among Rains' cyclotomic algorithm, Rains'
+  elliptic algorithm, and Allombert's algorithm.
+\end{enumerate}
 
-\begin{algorithm}
-  [Algorithm selection]
-  \label{algorithm:selectalg}
-  \begin{algorithmic}[1]
-    \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$, etc.
-    \STATE \todo{}
-  \end{algorithmic}
-\end{algorithm}
+In the next section we shall compare our implementations of the
+algorithms above, thus giving an estimate of the various thresholds
+between them.  However we stress that these thresholds are bound to
+vary depending on the implementation and the target platform, thus it
+is the implementer responsibility to determine them at the moment of
+configuring the system.
 
-\todo{Talk about gluing prime powers.}
+\begin{remark}
+  Although our exposition focused on the case where $r$ is a prime
+  power and $k\simeq K$, most of the algorithms presented here can be
+  easily adapted to work more generally.
+
+  In particular, it is a non-negligible practical improvement to work
+  with composite $r$ by ``gluing'' together many prime powers. For
+  example, let $r$ and $r'$ be two prime powers, and let $\ell$ and
+  $\ell'$ be two primes selected for use in Rains' cyclotomic
+  algorithm. If $\ell=\ell'$, then $\#\langle q\rangle=rr's$ for some
+  $s$, and Rains' algorithm can be run only once for both $r$ and $r'$
+  at the same time, with the added benefit of requiring a smaller
+  auxiliary extension. Similarly, if $\ell\ne\ell'$, then we can run
+  only once a straightforward generalization of Rains' algorithm using
+  $(\ell\ell')$-th roots of unity; this is especially advantageous
+  when $\order_\ell(q) = rs$ and $\order_{\ell'}(q) = r's$, so that
+  the degree of the auxiliary extension is unchanged.
+
+  In general, given the output of Algorithm~\ref{alg:selectell} for
+  many prime powers, combining the results to obtain the best
+  ``gluing'' requires solving an integer linear program (ILP). Given
+  the availability of very fast ILP solvers, the practical speed-up
+  can be significant.  Similar techniques also apply to Allombert's
+  algorithm. On the other hand, it seems much more unlikely to apply
+  them to the elliptic Rains' algorithm.
+\end{remark}
+
 
 
 \section{Experimental Results}
@@ -1860,7 +1895,7 @@ code and the full datasets can be downloaded at
   \centering
 
   \begin{subfigure}{.48\textwidth}
-%    \includegraphics[width=\mywidth]{bench-allombert}
+    \includegraphics[width=\mywidth]{bench-allombert}
     \caption{Pari/GP and our own variants of Allombert's algorithm.
       Auxiliary extension degrees $s$ range between $1$ and $6$.}
     \label{fig:bench:allombert}
@@ -1868,7 +1903,7 @@ code and the full datasets can be downloaded at
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
-%    \includegraphics[width=\mywidth]{bench-rains}
+    \includegraphics[width=\mywidth]{bench-rains}
     \caption{Cyclotomic and elliptic variants of Rains' algorithm.
       Auxiliary extension degrees $s$ for cyclotomic Rains' range
       between $1$ and $8$.}
@@ -1877,7 +1912,7 @@ code and the full datasets can be downloaded at
   
   \begin{subfigure}{.48\textwidth}
     \noindent
-%    \includegraphics[width=\mywidth]{bench-all}
+    \includegraphics[width=\mywidth]{bench-all}
     \caption{Comparison of Allombert's and Rains' algorithms at some
       fixed, small, auxiliary extension degrees $s$.}
     \label{fig:bench:all}
@@ -1885,7 +1920,7 @@ code and the full datasets can be downloaded at
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
-%    \includegraphics[width=\mywidth]{bench-allombert-vs-ell}
+    \includegraphics[width=\mywidth]{bench-allombert-vs-ell}
     \caption{Ratio between running time of Allombert's algorithm and
       average running time of elliptic Rains' algorithm at same degree
       $r$.}
