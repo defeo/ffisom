@@ -8,8 +8,12 @@ using namespace std;
 
 void test_build_embedding(slong m, slong n, slong characteristic) {
 
+	slong linear_alg_threshold = 1000;
+	slong multi_point_threshold = 1;
 	cout << "characteristic: " << characteristic << "\n";
 	cout << "extension degrees: " << m << ", " << n << "\n";
+	cout << "linear algebra threshold: " << linear_alg_threshold << "\n";
+	cout << "multipoint threshold: " << multi_point_threshold << "\n";
 
 	mp_limb_t p = characteristic;
 
@@ -30,7 +34,7 @@ void test_build_embedding(slong m, slong n, slong characteristic) {
 	timeit_t time;
 	timeit_start(time);
 	FFEmbedding ffEmbedding(f1, f2);
-	ffEmbedding.compute_generators(g1, g2);
+	ffEmbedding.compute_generators(g1, g2, linear_alg_threshold, multi_point_threshold);
 	ffEmbedding.build_embedding(g1, g2);
 	timeit_stop(time);
 	cout << "time: " << (double) time->wall / 1000.0 << "\n";
@@ -63,7 +67,7 @@ int main() {
 	flint_rand_t state;
 	flint_randinit(state);
 
-	for (slong i = 2; i < 10; i++) {
+	for (slong i = 10; i < 20; i++) {
 		slong p = n_nth_prime(50 + i);
 		slong m = 10 + n_randint(state, 50);
 		slong n = m * (1 + n_randint(state, 10));

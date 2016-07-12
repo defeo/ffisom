@@ -677,7 +677,7 @@ the Hilbert's theorem 90. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
 $s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
 $\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
-\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients \todo{$k[\zeta]$ is typically used for the FIELD obtained by adjoining $\zeta$ to $k$, this notation is confusing}. The action of the Galois group 
+\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients. The action of the Galois group 
 $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 \[
 \begin{array}{llll}
@@ -715,9 +715,25 @@ $k[\zeta]/\F_q(\zeta)$. This also shows that $\theta_a^r \in \F_q(\zeta)$. We se
 \theta_a$ for a random $a \in k[\zeta]$. If we write $\theta_1 = \sum_{i = 0}^{s - 1}f_i(x)\zeta^i$ 
 then $\alpha_1 = f_0$ is what we are looking for. To compute $\theta_a$ efficiently, we take 
 different approaches based on the bound on $s$ in Proposition \ref{prop:root-fpz}. We consider two 
-cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
+cases: case 1 is when $s \notin O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
-\paragraph{Case 1.} 
+\paragraph{Case 1.}
+Consider the restrictions $\sigma^i \vert_{k^*}: k^* \rightarrow k[\zeta]^*$. Adapting the same 
+idea of the proof \cite[Ch VI, Theorem 4.1]{lang}, one checks that these mappings are linearly 
+independent. Therefore, there exists $a(x) \in k^*$ such that 
+\[ \theta_a = a(x) + a(x)^q\zeta^{-1} + a(x)^{q^2}\zeta^{-2} + \cdots + a(x)^{q^{r - 1}}\zeta^{-r 
+	+ 1}\]
+is not zero. This proves that $\theta_a: k[\zeta] \rightarrow k[\zeta]$, considered as an 
+$\F_q(\zeta)$-linear map, is not identically zero. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
+3.1 in \cite{von1992computing} or \cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
+operations in $\F_q$.
+
+Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means for a 
+random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only 
+need $O(1)$ trials to find a nonzero $\theta_a$.
+
+\paragraph{Case 2.} 
 Given $a \in k[\zeta]$ define 
 \[ \theta_{a, j} = a + \sigma(a)\zeta^{-1} + \cdots + \sigma^{j - 1}(a)\zeta^{-j + 1}, \quad \xi_j 
 = x^{q^j}. \]
@@ -735,8 +751,8 @@ a + \zeta^{-1}\sigma(\theta_{a, j - 1}) & j \text{ odd}
 \end{cases}
 \]
 Applying $\sigma^j$ to an element $b \in k[\zeta]$ is the same as composing the polynomial $b(x, 
-z)$ with the polynomial $\xi_j(x)$ \todo{in which argument?}. Algorithm \ref{alg:hilbert-pst} computes $\theta_{a, i}$ 
-using above relations.
+z)$ with the polynomial $\xi_j(x)$ in the first argument. Algorithm \ref{alg:hilbert-pst} computes 
+$\theta_{a, i}$ using above relations.
 
 \begin{algorithm}
 	[Hpt (Hilbert pseudo-trace)]
@@ -778,21 +794,7 @@ Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Ther
 $\theta_a = \theta_{a, r}$ using Algorithm \ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
 \MM(r)\log(q))$ operations in $\F_q$.
 
-\paragraph{Case 2.}
-Consider the restrictions $\sigma^i \vert_{k^*}: k^* \rightarrow k[\zeta]^*$. Adapting the same 
-idea of the proof \cite[Ch VI, Theorem 4.1]{lang}, one checks that these mappings are linearly 
-independent. Therefore, there exists $a(x) \in k^*$ such that 
-\[ \theta_a = a(x) + a(x)^q\zeta^{-1} + a(x)^{q^2}\zeta^{-2} + \cdots + a(x)^{q^{r - 1}}\zeta^{-r 
-	+ 1}\]
-is not zero. This proves that $\theta_a: k[\zeta] \rightarrow k[\zeta]$, considered as an 
-$\F_q(\zeta)$-linear map, is not identically zero \todo{shouldn't this go before Case 1?}. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
-a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
-3.1 in \cite{von1992computing} or \cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
-operations in $\F_q$.
-
-Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means that, for a 
-random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only need 
-$O(1)$ trials to find a nonzero $\theta_a$. Putting the above cases together we have
+Putting the above cases together we have
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Finding a nonzero $\theta_a$ for random $a \in k[\zeta]$ takes $O(s\CC(r)\log(r) + 
@@ -1186,14 +1188,15 @@ of elliptic curves,
 %the non-trivial part being to show that
 %elliptic periods yield (power) bases of finite fields,
 then analyze the cost of their computation.
-The main problem of this generalization is that, contrary to Gaussian periods,
+The main issue with this generalization is that, contrary to Gaussian periods,
 elliptic periods do not yield normal bases of finite fields.
-We still provide experimental data and heuristic arguments to support the benefit
-of using them.
+We still provide experimental data and heuristic arguments
+to support the benefit of using them.
 Whether they always yield an element generating the right field extension,
 a weak counterpart to Lemma~\ref{th:gaussian}, is left as an open problem.
 
 \subsection{Uniquely defined orbits from elliptic periods}
+\label{sec:ellperiods}
 
 An elliptic curve $E/L$ defined over a field $L$ is given by an
 equation of the form
@@ -1251,18 +1254,21 @@ periods.
   such that $\pi(P)=\lambda P$).  Suppose that there is a subgroup $S$
   of $(\Z/\ell\Z)^{\ast}$ such that
   \begin{equation}
-    (\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S.
+    (\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S.
   \end{equation}
   
   Then we define an elliptic period as
   \begin{equation}
-    \eta_{\lambda,S}(P) = \sum_{\sigma\in S} {x \left([\sigma] P \right)},
+    \eta_{\lambda,S}(P) =
+    \begin{cases}
+      \sum_{\sigma\in S/\{\pm1\}} {x \left([\sigma] P \right)} & \text{if $-1\in S$,}\\
+      \sum_{\sigma\in S} {x \left([\sigma] P \right)} & \text{otherwise,}
+    \end{cases}
   \end{equation}
   where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
 
 \begin{lemma}
-  \label{lemma:ellperiod}
   With the same notation as in Definition~\ref{definition:ellperiod},
   let
   \begin{equation*}
@@ -1305,7 +1311,7 @@ when the elliptic period $\eta_{\lambda,S}(P)$ generates the same field
 as $x(P)$.
 
 First, note that there is no hope to prove a complete counterpart to
-Lemma~\ref{thm:gaussian}, that is that elliptic periods are normal generators
+Lemma~\ref{th:gaussian}, that is that elliptic periods are normal generators
 of $\F_q[x(P)]$.
 It is indeed easy to find examples where elliptic periods are not normal.
 For example, for $p = 7$:
@@ -1319,9 +1325,11 @@ $\eta_{\lambda,S}(P) + 4 \eta_{\lambda,S}(P)^7 + 2 \eta_{\lambda(P),S}^{49} = 0$
 \end{enumerate}
 Nonetheless, it might still be the case that the elliptic period
 $\eta_{\lambda,S}(P)$ generates $\F_q[x(P)]$ (as a field),
-and the discussion below together with experimental evidence suggest
-that it might always be the case which would give
-the following weak counterpart to Lemma~\ref{th:gaussian}.
+and the discussion and experimental evidence
+presented in Appendix~\ref{app:ellprdsdata}
+suggest that it might always be the case.
+The following weak counterpart to Lemma~\ref{th:gaussian} would then
+be true.
 \begin{conjecture}
 \label{conj:ellperiods}
 With the above notation, the elliptic period $\eta_{\lambda,S}(P)$
@@ -1329,184 +1337,10 @@ generates $\F_q[x(P)]$ over $\F_q$.
 (Furthermore, the Galois orbit of $\eta_{\lambda,S}(P)$ is
 independent of the choice of $P$.)
 \end{conjecture}
-
-Unfortunately the fact that elliptic periods are not normal leaves
-little hope to transpose the proof of Lemma~\ref{th:gaussian}
-to prove the aforementioned conjecture.
-Indeed, the only proof we are aware of proceeds as follows for
-a squarefree $\ell$ and $q = p$ prime:
-\begin{enumerate}
-\item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
-a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
-of $\Q(\zeta_\ell)$;
-\item Gaussian periods seen as field traces of roots of unity
-then yield normal bases of subextensions;
-\item integrality properties of these bases for $p \neq \ell$
-and picking up a subextension where $p$ is inert show that
-the situation transposes to characteristic $p$ by reduction.
-\end{enumerate}
-The second step of the proof crucially relies on the normality
-as no such result is true for plain field generators.
-Therefore, if a proof exists, it seems plausible it does not involve
-lifting to characteristic zero and takes place in positive characteristic
-only.
-Using the polynomially cyclic algebras setting of \cite{Mihailescu2010825},
-which we now describe in our specific setting,
-looks like a reasonable approach.
-
-Let $f_\lambda$ be the kernel polynomial of the isogeny corresponding
-to the eigenspace of $\lambda$ and $A$ be the (polynomially cyclic)
-algebra
-\[
-A = \F_q[x]/(f_\lambda(x)) \; .
-\]
-
-By hypothesis $\lambda$ is of order $r$ modulo $q$ so that
-the kernel polynomial $f_\lambda$ splits as
-\[
-f_\lambda = h_1 \cdots h_d
-\]
-where the $h_i$ are pairwise coprime irreducible polynomial of degree $r$
-(and $d r = (l-1)/2$).
-Therefore the algebra $A$ splits as
-\[
-A \simeq \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_d(x)) \; .
-\]
-The $h_i$ correspond to the different Galois orbits of the abscissae
-of the eigenpoints of $\lambda$.
-
-Let $c$ be a generator of $(\Z/\ell\Z)^{\ast}/\{\pm 1\}$.
-The multiplication-by-$c$ map on $E$ cyclicly permutes the
-abscissae of the eigenpoints of $\lambda$ and
-induces a cyclic automorphism $\nu$ of the algebra $A$.
-Up to permutation of indices, we can suppose that $\nu$
-sends roots of $h_i$ onto roots of $h_{i+1}$.
-Let $C$ be the sole polynomial of degree less than $(l-1)/2$
-describing $\nu$ on $A$ (that is the one obtained by taking the
-rational fraction expressing multiplication-by-$c$ and inverting
-its denominator modulo $f_\lambda$).
-Given a polynomial $g$ representing an element of $A$, note that
-$\nu$ acts by composing $g$ with $C$: $\nu(g) = g(C)$.
-
-Recall that
-$(\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S$
-and let $s = c^r$ be a generator of $S$.
-We denote by $\sigma$ the automorphism of algebra $\nu^{(r)}$
-and by $S$ the corresponding polynomial
-(there should be no confusion with the subgroup $S$).
-Note that $\nu^d$ is the Frobenius automorphism of $A$.
-
-Gathering the above remarks we obtain the following diagram:
-\begin{center}
-\begin{tikzpicture}
-\node (A) {$A=\F_q[x]/(f_\lambda(x))$};
-\node[below=.3em of A] (Ax) {$x$};
-\node[right=8em of A] (CRT) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_2(x)) \times \cdots \times \F_q[x]/(h_d(x))$};
-\node[below=.3em of CRT] (CRTx) {$(x, x, \ldots, x)$};
-\node[below=6em of A] (T) {$A^S \simeq \F_{q^r}$};
-\node[below=.3em of T] (Tx) {$\mathrm{Tr}(x) = \sum_{i = 0}^{d-1} S^{(i)}(x)$};
-\node[below=6em of CRT] (C) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_1(x))$};
-\node[below=.3em of C] (Cx) {$(x, S(x), \ldots, S^{(d-1)}(x))$};
-\draw[->, shorten >= .5em, shorten <= .5em] (A) -- (CRT);
-\draw[->, shorten >= .5em, shorten <= .5em] (Ax) -- (T);
-\draw[->, shorten >= .5em, shorten <= .5em] (CRTx) -- (C);
-\end{tikzpicture}
-\end{center}
-
-\begin{proposition}
-\label{prop:xnormal}
-If $x \in A$ is a normal element,
-then $\eta_{\lambda,S}(P)$ is a normal element in $\F_{q^r}$
-for any eigenpoint $P$ of $\lambda$.
-\end{proposition}
-
-\begin{proof}
-Suppose that $x$ is normal in $A$, then so is its trace in $A^S$.
-But taking the trace of $x$ in $A$ and going through the two isomorphisms
-of the diagram is the same thing as computing the period in the
-$d$ different representations of $\F_{q^r}$:
-\[
-x \mapsto \sum_{i=0}^{d-1} S^{(i)}(x) \mapsto
-\left( \sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_1(x)}, \ldots,
-\sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_d(x)} \right) \; .
-\]
-If a linear relation existed between $\eta_{\lambda,S}(P) \in \F_q[x(P)]$
-and its Galois conjugates for any eigenpoint $P$ of $\lambda$,
-it would be verified in the $d$ different representations of $\F_{q^r}$
-and lift up to $A$ implying the same linear relation for
-$\mathrm{Tr}(x)$ and its Galois conjugates.
-Therefore, if $x$ is normal in $A$,
-then $\eta_{\lambda,S}(P)$ is normal in $\F_q[x(P)]$.
-\end{proof}
-
-The converse is easily shown not to be true by experimentation.
-There is also no relation between the normality of $x \in A$
-and $x(P) \in \F_q[x(P)]$ for any eigenpoint $P$ of $\lambda$,
-or between the normality of $x(P)$ and that of $\eta_{\lambda,S}(P)$.
-
-Nonetheless, Proposition~\ref{prop:xnormal} shows that heuristically
-$\eta_{\lambda,S}(P)$ has a high probability to be normal and therefore
-to generate $\F_q[x(P)]$.
-Indeed, supposing that $x \in A$ behaves as a random element
-as far as normality is concerned, it has a rather high probability
-of begin normal as the following lemma shows.
-\begin{lemma}
-\label{lemma:euleralgebra}
-Let $A$ be a polynomially cyclic algebra of degree $dr$
-over the finite field $\F_q$.
-The number of normal elements in $A$ is the same as the
-number of normal elements in $\F_{q^{dr}}$:
-$\Phi_q(x^{dr}-1)$ where $\Phi_q$ is the Euler function
-for polynomials.
-\end{lemma}
-\begin{proof}
-There is at least one normal element in $A$~\cite[Theorem 4]{Mihailescu2010825}
-(and it can be constructed from one in $\F_q$).
-One such element $\alpha$ can be used to count the number of normal elements
-as in the finite field case:
-\begin{enumerate}
-\item every element $a$ can be written using the normal basis
-associated to $\alpha$: $a = \sum_{i=0}^{dr-1} a_i \nu^{(i)}(\alpha)$;
-\item as the Galois group of $A$ is cyclic, the decomposition
-of the Galois conjugates of $a$ is obtained by shifting the coefficients $a_i$;
-\item the circulant matrix $M_a$ associated to the $a_i$'s is invertible
-if and only if $a$ is a normal element;
-\item the polynomial $\sum_{i=0}^{dr-1} a_i x^i$ in $\F_q[x] / (x^{dr}-1)$
-is invertible if and only if $M_a$ is.
-\end{enumerate}
-Therefore normal elements in $A$ are in one-to-one correspondence
-with units of $\F_q[x] / (x^{dr}-1)$.
-\end{proof}
-
-Another heuristic argument follows, supporting the fact that
-elliptic periods should generate $\F_{q^r}$ in general,
-at least when $q$ and $r$ are prime, so it can be adapted to
-a more general setting:
-considering that $\eta_{\lambda, S}(P)$ behaves as a random
-element of $\F_{q^r}$, the probability that it does not
-generate $\F_{q^r}$, or equivalently that it lies in
-the only strict subfield of $\F_{q^r}$ which is $\F_q$,
-is $q^{1-r}$.
-Therefore, counterexamples should be seeked for small values
-of $q$ and $r$, but we found none so far.
-\todo{give actual numbers, don't remember where I've put them}
-
-Another idea to produce a counterexample would be to reduce
-an elliptic curve defined over $\Q$ with suitable torsion
-and division polynomial.
-\todo{add experiment data}
-
-To conclude this section, note that one might be tempted to
-replace the trace above by any symmetric function of the
-Galois conjugates of $x \in A$ such as the norm.
-In the case of cyclotomic Gaussian periods,
-replacing the trace by the norm either gives another root of unity
-when the computation is trivial, or $1$ when it is not,
-so such an operation has no sense.
-But in the case of elliptic periods, there is no reason to expect such a
-phenomenon.
-However for most elementary symmetric functions, except for the trace,
-couterexamples were found by small scale experiments.
+%Unfortunately the fact that elliptic periods are not normal leaves
+%little hope to transpose the proof of Lemma~\ref{th:gaussian}.
+%Possible approaches to prove Conjecture~\ref{conj:ellperiods} are discussed
+%in Appendix~\ref{app:ellprdsdata}.
 
 \subsection{Elliptic variant of Rains' algorithm}
 
@@ -1518,16 +1352,17 @@ to work with smaller fields.
 
 The algorithm is very similar to
 Algorithm~\ref{algorithm:rains-cyclo}, and follows immediately from
-the previous section. Given $k$, $K$ and $r$,
+the previous section. For simplicity, we are going to state it only
+for $r$ odd. Given $k$, $K$ and $r$,
 \begin{enumerate}
 \item find a prime $\ell$, an elliptic curve $E$, and an eigenvalue
   $\lambda$ of the Frobenius endomorphism, satisfying the conditions
-  of Theorem~\ref{theorem:ellperiods}, and such that
+  of Definition~\ref{definition:ellperiod}, and such that
   $\order_\ell(\lambda)=r$;
 \item take random points $P\in E(k)[\ell]$ and $P'\in E(K)[\ell]$ in
   the eigenspace of $\lambda$;
-\item return the elliptic periods $\alpha_r := \eta_{\lambda}(P)$ and
-  $\beta_r:= \eta_\lambda(P')$.
+\item return the elliptic periods $\alpha_r := \eta_{\lambda,S}(P)$ and
+  $\beta_r:= \eta_{\lambda,S}(P')$.
 \end{enumerate}
 
 Here we are faced with a difficulty: given $E$ and $\lambda$ it is
@@ -1548,19 +1383,19 @@ identical.
 \begin{algorithm}[Elliptic Rain's algorithm]
 \label{algorithm:compell}
   \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $r$,
+    \REQUIRE A field extension $k/\F_q$ of odd degree $r$,
     an elliptic curve $E/\F_q$, its trace $t$, a prime $\ell$ not dividing $q$,
     an integer $\lambda$ such that:
     \begin{itemize}
     \item $X^2 - tX - q = (X-\lambda)(X-q/\lambda) \mod\ell$,
     \item $\order_\ell(\lambda)=r$, $\order_\ell(q/\lambda)\nmid r$,
-    \item $(\Z/\ell\Z)^{\ast}/\Aut_{\F_q}(E) = \langle{\lambda}\rangle \times S$ for some $S$.
+    \item $(\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S$ for some $S$.
     \end{itemize}
     \ENSURE A generator of $k$ over $\F_q$, with a uniquely defined Galois orbit.
     \REPEAT
     \STATE Compute $P\leftarrow[\# E(k)/\ell]Q$ for a random $Q\in E(k)$;
     \UNTIL{$P\neq\mathcal{O}$;}
-    \RETURN $\alpha_r\leftarrow\eta_\lambda(P)$.
+    \RETURN $\alpha_r\leftarrow\eta_{\lambda,S}(P)$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1614,11 +1449,12 @@ description problem.
 
 \subsection{Finding parameters for Rains' algorithms}
 
-Given parameters $q$ and $r$, Rains' cyclotomic algorithm asks for a
-\emph{small} parameter $\ell$ such that:
+Given parameters $q=p^d$ and $r$, Rains' cyclotomic algorithm asks for
+a \emph{small} parameter $\ell$ such that:
 \begin{enumerate}
 \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
-\item $\langle q \rangle = rs$ for some integer $s$.
+\item $\langle q \rangle = rs$ for some integer $s$,
+\item $\gcd(\euler(\ell),d)=1$ (see Note~\ref{note:rains-non-prime}).
 \end{enumerate}
 
 Since $r$ is a prime power, the second condition lets us take a prime
@@ -1626,14 +1462,17 @@ power for $\ell$ too. Indeed if
 $\Z/\ell\Z\simeq\Z/\ell_1\Z\times\Z/\ell_2\Z$, then either
 $q\bmod\ell_1$ or $q\bmod\ell_2$ has order a multiple of $r$.
 Furthermore, if $\gcd(\ell,r)=1$, then we can take $\ell$ prime, since
-higher powers would not help satisfy the conditions. On the other
-hand, if $\gcd(\ell,r)\ne1$, then Kummer-type algorithms have better
-complexity \todo{double-check this}, hence we shall take $\ell$ prime.
+higher powers would not help satisfy the conditions. On the other hand
+if $\gcd(\ell,r)\ne1$, then $s\sim r$ when $r$ is prime, and the
+complexity of Rain's algorithm becomes much worse than Allombert's in
+this case. \todo{Say something on $r$ a high power of a prime}. Hence
+we shall take $\ell$ prime.
 
 Given the above constraints, we can rewrite the conditions as:
 \begin{enumerate}
-\item $\ell = rsu + 1$ for some $s,u$ such that $\gcd(rs,u)=1$,
-\item $\order_\ell(q) = rs$.
+\item $\ell = rsv + 1$ for some $s,u$ such that $\gcd(rs,v)=1$,
+\item $\order_\ell(q) = rs$,
+\item $\gcd(rsv,d)=1$.
 \end{enumerate}
 
 \begin{remark}
@@ -1641,7 +1480,7 @@ Given the above constraints, we can rewrite the conditions as:
   than $4$, no $\ell$ can satisfy these constraints because $2$ is a
   quadratic residue modulo any prime of the form $8u+1$. This case,
   however, is covered by the Artin-Schreier technique in
-  Section~\ref{sec:artin-schreier-case}, we thus ignore it.
+  Section~\ref{sec:fast-artin-schreier}, we thus ignore it.
 \end{remark}
 
 In the elliptic algorithm we look for an integer $\ell$ and a curve
@@ -1650,16 +1489,14 @@ Algorithm~\ref{algorithm:compell}, i.e., such that
 \begin{enumerate}
 \item the Frobenius endomorphism $\pi$ satisfies a characteristic
   equation $(\pi-\lambda)(\pi-\mu) = 0 \mod \ell$,
-\item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times T$ for some $T$,
+\item $(\Z/\ell\Z)^\ast = \langle\lambda\rangle\times S$ for some $S$,
 \item $\#\langle\lambda\rangle=r$, and
 \item $\mu^r\ne1\mod\ell$.
 \end{enumerate}
 
-As before, we only need to look at prime $\ell$. For simplicity, we
-also exclude the case where $r$ is a power of $2$, which is easily
-dealt with Kummer-type algorithms. Because $\mu=q/\lambda$, the last
-condition is equivalent to $q^r\ne1\bmod\ell$. Hence, we can restate
-the conditions on $\ell$ as
+As before, we only need to look at prime $\ell$. Because
+$\mu=q/\lambda$, the last condition is equivalent to
+$q^r\ne1\bmod\ell$. Hence, we can restate the conditions on $\ell$ as
 \begin{enumerate}
 \item $\ell = ru+1$ for some $u$ such that $\gcd(r,u)=1$,
 \item $q^r\ne1\mod\ell$.
@@ -1682,12 +1519,12 @@ within those bounds.
     [Parameter selection for Rains' algorithms]
     \label{algorithm:selectell}
     \begin{algorithmic}[1]
-      \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
+      \REQUIRE Integers $q=p^d$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
       \ENSURE $\mathcal{C}$ and $\mathcal{E}$, lists of parameters for the cyclotomic and elliptic algorithm resp.
       \STATE $\mathcal{C}\leftarrow\{\}$, $\mathcal{E}\leftarrow\{\}$;
       \FOR{$u=1$ to $\bar{u}$}
       \IF{\label{alg:selectell:prime}$\ell=ur+1$ is prime}
-      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$ and $\gcd(rs,u/s)=1$}
+      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$, and $\gcd(rs,u/s)=1$, and $\gcd(ur,d)=1$}
       \STATE Add $\ell$ to $\mathcal{C}$.
       \ENDIF
       \IF{\label{alg:selectell:ellorder}$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
@@ -1754,7 +1591,7 @@ A natural question arises: what bounds $\bar{u},\bar{s},\bar{e}$ must
 be taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ in
 Algorithm~\ref{algorithm:selectell} are non-empty?
 
-It is not easy to give a precise answer: already the condition in that
+It is not easy to give a precise answer: already the condition that
 $\ell=ur+1$, in Step~\ref{alg:selectell:prime}, poses some
 difficulties. Heuristically, we expect that about
 $\bar{u}/\log(\bar{u}r)$ of those numbers are prime. However the best
@@ -1797,9 +1634,7 @@ assuming that $r\log r\in o(\sqrt[4]{q})$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
 the elliptic algorithm, leading to an expected running time of
 $\tildO(\sqrt{r}+(\log r)^2(\log q)^6)$ binary operations and
-$\tildO(r^2\log q)$ operations in $\F_q$. \todo{Shall we extend the
-  applicability of the elliptic algorithm by taking small extensions
-  of the base field?}
+$\tildO(r^2\log q)$ operations in $\F_q$.
 
 Although the complexities of both algorithms look very similar, it
 must not be neglected that the $\tildO$ notation in the cyclotomic
@@ -1810,28 +1645,63 @@ complexity can be extremely important, as we will show in the next
 section. 
 
 The same considerations also apply when comparing Rains' algorithms to
-the other ones: the root-based and the Kummer-type algorithms perform
-extremely well when the degree $s$ of the auxiliary extension is
-small, but become much slower as this degree increases (recall that
-asymptotically $s\in O(r)$ \todo{Make this more precise, if it is not
-  done in the previous sections}).
+Allombert's. Indeed, the latter performs extremely well when the
+degree $s$ of the auxiliary extension is small, but becomes slower as
+this degree increases.
 
 In practice, it is hopeless to try and determine the appropriate
 bounds for each algorithm from a purely theoretical point of view. The
 best approach we can suggest, is to determine parameters at runtime,
-and set bounds and thresholds experimentally. We summarize our
-suggested approach in Algorithm~\ref{algorithm:selectalg}. 
+and set bounds and thresholds experimentally. To summarize, we suggest
+the following approach: given parameters $q$ and $r$,
+\begin{enumerate}
+\item If $\gcd(q,r)\ne 1$, run the Artin-Schreier algorithm of
+  Section~\ref{sec:fast-artin-schreier}.
+\item \todo{If $r$ is a high power of a small prime}.
+\item Determine the order $s$ of $q$ in $(\Z/r\Z)^\ast$. If it is
+  small enough, run one of the two variants of Allombert's algorithm
+  presented in Section~\ref{sec:kummer}.
+\item Run Algorithm~\ref{algorithm:selectell} with bounds $\bar{u}$,
+  $\bar{s}$ and $\bar{e}$ determined according to $s$. Depending on
+  the best parameters found by Algorithm~\ref{algorithm:selectell},
+  run the best option among Rains' cyclotomic algorithm, Rains'
+  elliptic algorithm, and Allombert's algorithm.
+\end{enumerate}
 
-\begin{algorithm}
-  [Algorithm selection]
-  \label{algorithm:selectalg}
-  \begin{algorithmic}[1]
-    \REQUIRE Integers $q$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$, etc.
-    \STATE \todo{}
-  \end{algorithmic}
-\end{algorithm}
+In the next section we shall compare our implementations of the
+algorithms above, thus giving an estimate of the various thresholds
+between them.  However we stress that these thresholds are bound to
+vary depending on the implementation and the target platform, thus it
+is the implementer responsibility to determine them at the moment of
+configuring the system.
 
-\todo{Talk about gluing prime powers.}
+\begin{remark}
+  Although our exposition focused on the case where $r$ is a prime
+  power and $k\simeq K$, most of the algorithms presented here can be
+  easily adapted to work more generally.
+
+  In particular, it is a non-negligible practical improvement to work
+  with composite $r$ by ``gluing'' together many prime powers. For
+  example, let $r$ and $r'$ be two prime powers, and let $\ell$ and
+  $\ell'$ be two primes selected for use in Rains' cyclotomic
+  algorithm. If $\ell=\ell'$, then $\#\langle q\rangle=rr's$ for some
+  $s$, and Rains' algorithm can be run only once for both $r$ and $r'$
+  at the same time, with the added benefit of requiring a smaller
+  auxiliary extension. Similarly, if $\ell\ne\ell'$, then we can run
+  only once a straightforward generalization of Rains' algorithm using
+  $(\ell\ell')$-th roots of unity; this is especially advantageous
+  when $\order_\ell(q) = rs$ and $\order_{\ell'}(q) = r's$, so that
+  the degree of the auxiliary extension is unchanged.
+
+  In general, given the output of Algorithm~\ref{alg:selectell} for
+  many prime powers, combining the results to obtain the best
+  ``gluing'' requires solving an integer linear program (ILP). Given
+  the availability of very fast ILP solvers, the practical speed-up
+  can be significant.  Similar techniques also apply to Allombert's
+  algorithm. On the other hand, it seems much more unlikely to apply
+  them to the elliptic Rains' algorithm.
+\end{remark}
+
 
 
 \section{Experimental Results}
@@ -1980,7 +1850,34 @@ improvement over the state of the art.
 \label{part:eval}
 
 
-\subsubsection{Linear algebra}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Monomial-dual bases pairs}
+
+
+Up to this point we have build an embedding $\phi: k \hookrightarrow K$ that sends a generator $\alpha \in k$ to an element $\beta \in K$. These elements are both polynomials $\alpha = g(x), \beta = h(x)$. A standard representation of an isomorphism is usually in terms of its actions on a given basis, which is the monomial basis here. This makes thing more convinient both computaionally and theoretically. Given $\phi$ as above, in this section, we show how to efficiently determine its action on $x$. To do this we exploit dual representations in dual spaces.
+
+Let $V$ be finite-dimentional vector space over a field $F$, and let $V^*$ be its dual. Suppose we have a nondegenerate bilinear form $\ang{,}_V: V \times V \rightarrow F$. This is equivalent to having an isomorphism $\mu_V: V \rightarrow V^*$. Similarly, let $W$ be a finite-dimientional $F$-vector space with a bilinear form $\ang{,}_W$. We say that an $F$-linear map $T: V \rightarrow W$ preserves bilinear forms if $\ang{Tv_1, Tv_2}_W = \ang{v_1, v_2}_V$ for all $v_1, v_2 \in V$. In other words, $T^*(\mu_W(Tv)) = \mu_V(v)$ for all $v \in V$, where $T^*$ is the duall of $T$. This gives a commutative diagram
+\begin{center}
+	\begin{tikzpicture}
+		\node (V) {$V$};
+		\node[below = 2cm of V] (W) {$W$};
+		\node[right = 2cm of V] (Vd) {$V^*$};
+		\node[right = 2cm of W] (Wd) {$W^*$};
+		\draw[->] (V) -- node[above]{$\mu_V$} (Vd);
+		\draw[->] (V) -- node[left]{$T$} (W);
+		\draw[->] (W) -- node[above]{$\mu_W$} (Wd);
+		\draw[->] (Wd) -- node[right]{$T^*$} (Vd);
+	\end{tikzpicture}
+\end{center}
+Formally, the above says that in the category of finite-dimensional vector spaces with nondegenerate bilinear forms and morphisms that preserve bilinear forms, we have a natural isomorphism between the identity functor and the dual functor. In such a construction, $T^*$ is identified as the transpose of $T$.
+
+Now let us specialize the above to our scenario. Let $V = W = k$, and let $F = \F_q$. Define $\tau: k \times k \rightarrow \F_q$ as $\tau(a, b) = \trace_{k / \F_q}(ab)$. This a nondegenerate bilinear form. Also define $T$ as modular composition with $g$, i.e. $T(f) = f(g)$. It is not hard to show that this $T$ preserves $\tau$. The transposed linear map $T^*$ is called power projection \cite{shoup95}. Our goal is to compute $f(x) \in k$ such that $f(g(x)) = x$. The embedding $\phi$ will then be $x \mapsto f(h)$. According to the above diagram we should have $f = \mu_k^{-1}(T^*(\mu_k(x)))$. In other words, we first compute the dual of $x$, and then do a power projection, and convert the result back to monomial basis.
+
+The conversions between monomial and dual bases is done efficiently using the method of \cite{DeDoSc2014}. The power projection is computed efficiently using a divide-and-conquer technique used for computing modular composition \cite{shoup95}. Altogether, the cost of computing $f, f(h)$ is dominated by the cost of computations in the previous sections.
+
+
+\section{Linear algebra}
 
 Once $\beta \in K$ has been computed as a polynomial in $Y$,
 one can compute the powers
@@ -2008,7 +1905,7 @@ can be deduced from an an LU or similar matrix decompostions of $M$.
 For $\delta \in K$, $\phi^{-1}(\delta)$ can then be computed by a
 matrix-vector multiplication in $O(m^2)$ in $\F_q$.
 
-\subsubsection{Modular composition}
+\section{Modular composition}
 
 As an alternative to using linear algebra,
 $\phi(\gamma)$ can be computed directly using modular composition
@@ -2112,20 +2009,7 @@ exactly $O(n^{1.815})\log{q}$.
 See~\cite[Theorem 6]{}
 \end{proof}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Monomial-dual bases pairs}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Experimental results}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-
-\section{Conclusion}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \appendix
 \part*{Appendices}
@@ -2293,6 +2177,464 @@ and $E'$ have opposite trace, a well known fact.
 
 \todo{Give a similar proposition for supersingular curves (see, e.g.,
   Menezes-Okamoto-Vanstone)}
+
+\section{Elliptic periods and polynomial bases}
+\label{app:ellprdsdata}
+
+In this section, we discuss theoretical and experimental aspects
+of the validity of Conjecture~\ref{conj:ellperiods}.
+
+\subsection{Heuristic arguments}
+
+As far as cyclotomic periods are concerned,
+the only proof of the fact that they generate the desired extension
+we are aware of proceeds as follows.
+For a squarefree $\ell$ and $q = p$ prime:
+\begin{enumerate}
+\item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
+a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
+of $\Q(\zeta_\ell)$;
+\item Gaussian periods seen as field traces of roots of unity
+then yield normal bases of subextensions;
+\item integrality properties of these bases for $p \neq \ell$
+and picking up a subextension where $p$ is inert show that
+the situation transposes to characteristic $p$ by reduction.
+\end{enumerate}
+The second step of the proof crucially relies on the normality
+as no such result is true for plain field generators.
+Therefore, there is little hope to transpose this
+proof to elliptic periods.
+If a proof exists for elliptic periods,
+it seems plausible it does not involve
+lifting to characteristic zero and takes place in positive characteristic
+only.
+Using the polynomially cyclic algebras setting of \cite{Mihailescu2010825},
+which we now describe in our specific setting,
+looks like a reasonable approach.
+
+Let $f_\lambda$ be the kernel polynomial of the isogeny corresponding
+to the eigenspace of $\lambda$ and $A$ be the (polynomially cyclic)
+algebra
+\[
+A = \F_q[x]/(f_\lambda(x)) \; .
+\]
+
+By hypothesis $\lambda$ is of order $r$ modulo $q$ so that
+the kernel polynomial $f_\lambda$ splits as
+\[
+f_\lambda = h_1 \cdots h_d
+\]
+where the $h_i$ are pairwise coprime irreducible polynomial of degree $r$
+(and $d r = (l-1)/2$).
+Therefore the algebra $A$ splits as
+\[
+A \simeq \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_d(x)) \; .
+\]
+The $h_i$ correspond to the different Galois orbits of the abscissae
+of the eigenpoints of $\lambda$.
+
+Let $c$ be a generator of $(\Z/\ell\Z)^{\ast}/\{\pm 1\}$.
+The multiplication-by-$c$ map on $E$ cyclicly permutes the
+abscissae of the eigenpoints of $\lambda$ and
+induces a cyclic automorphism $\nu$ of the algebra $A$.
+Up to permutation of indices, we can suppose that $\nu$
+sends roots of $h_i$ onto roots of $h_{i+1}$.
+Let $C$ be the sole polynomial of degree less than $(l-1)/2$
+describing $\nu$ on $A$ (that is the one obtained by taking the
+rational fraction expressing multiplication-by-$c$ and inverting
+its denominator modulo $f_\lambda$).
+Given a polynomial $g$ representing an element of $A$, note that
+$\nu$ acts by composing $g$ with $C$: $\nu(g) = g(C)$.
+
+Recall that
+$(\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S$
+and let $s = c^r$ be a generator of $S$.
+We denote by $\sigma$ the automorphism of algebra $\nu^{(r)}$
+and by $S$ the corresponding polynomial
+(there should be no confusion with the subgroup $S$).
+Note that $\nu^d$ is the Frobenius automorphism of $A$.
+
+Gathering the above remarks we obtain the following diagram:
+\begin{center}
+\begin{tikzpicture}
+\node (A) {$A=\F_q[x]/(f_\lambda(x))$};
+\node[below=.3em of A] (Ax) {$x$};
+\node[right=8em of A] (CRT) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_2(x)) \times \cdots \times \F_q[x]/(h_d(x))$};
+\node[below=.3em of CRT] (CRTx) {$(x, x, \ldots, x)$};
+\node[below=6em of A] (T) {$A^S \simeq \F_{q^r}$};
+\node[below=.3em of T] (Tx) {$\mathrm{Tr}(x) = \sum_{i = 0}^{d-1} S^{(i)}(x)$};
+\node[below=6em of CRT] (C) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_1(x))$};
+\node[below=.3em of C] (Cx) {$(x, S(x), \ldots, S^{(d-1)}(x))$};
+\draw[->, shorten >= .5em, shorten <= .5em] (A) -- (CRT);
+\draw[->, shorten >= .5em, shorten <= .5em] (Ax) -- (T);
+\draw[->, shorten >= .5em, shorten <= .5em] (CRTx) -- (C);
+\end{tikzpicture}
+\end{center}
+
+\begin{proposition}
+\label{prop:xnormal}
+If $x \in A$ is a normal element,
+then $\eta_{\lambda,S}(P)$ is a normal element in $\F_{q^r}$
+for any eigenpoint $P$ of $\lambda$.
+\end{proposition}
+
+\begin{proof}
+Suppose that $x$ is normal in $A$, then so is its trace in $A^S$.
+But taking the trace of $x$ in $A$ and going through the two isomorphisms
+of the diagram is the same thing as computing the period in the
+$d$ different representations of $\F_{q^r}$:
+\[
+x \mapsto \sum_{i=0}^{d-1} S^{(i)}(x) \mapsto
+\left( \sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_1(x)}, \ldots,
+\sum_{i=0}^{d-1} S^{(i)}(x) \pmod{h_d(x)} \right) \; .
+\]
+If a linear relation existed between $\eta_{\lambda,S}(P) \in \F_q[x(P)]$
+and its Galois conjugates for any eigenpoint $P$ of $\lambda$,
+it would be verified in the $d$ different representations of $\F_{q^r}$
+and lift up to $A$ implying the same linear relation for
+$\mathrm{Tr}(x)$ and its Galois conjugates.
+Therefore, if $x$ is normal in $A$,
+then $\eta_{\lambda,S}(P)$ is normal in $\F_q[x(P)]$.
+\end{proof}
+
+The converse is easily shown not to be true by experimentation.
+There is also no relation between the normality of $x \in A$
+and $x(P) \in \F_q[x(P)]$ for any eigenpoint $P$ of $\lambda$,
+or between the normality of $x(P)$ and that of $\eta_{\lambda,S}(P)$.
+
+Nonetheless, Proposition~\ref{prop:xnormal} shows that heuristically
+$\eta_{\lambda,S}(P)$ has a high probability to be normal and therefore
+to generate $\F_q[x(P)]$.
+Indeed, supposing that $x \in A$ behaves as a random element
+as far as normality is concerned, it has a rather high probability
+of begin normal as the following lemma shows.
+\begin{lemma}
+\label{lemma:euleralgebra}
+Let $A$ be a polynomially cyclic algebra of degree $dr$
+over the finite field $\F_q$.
+The number of normal elements in $A$ is the same as the
+number of normal elements in $\F_{q^{dr}}$:
+$\Phi_q(x^{dr}-1)$ where $\Phi_q$ is the Euler function
+for polynomials.
+\end{lemma}
+\begin{proof}
+There is at least one normal element in $A$~\cite[Theorem 4]{Mihailescu2010825}
+(and it can be constructed from one in $\F_q$).
+One such element $\alpha$ can be used to count the number of normal elements
+as in the finite field case:
+\begin{enumerate}
+\item every element $a$ can be written using the normal basis
+associated to $\alpha$: $a = \sum_{i=0}^{dr-1} a_i \nu^{(i)}(\alpha)$;
+\item as the Galois group of $A$ is cyclic, the decomposition
+of the Galois conjugates of $a$ is obtained by shifting the coefficients $a_i$;
+\item the circulant matrix $M_a$ associated to the $a_i$'s is invertible
+if and only if $a$ is a normal element;
+\item the polynomial $\sum_{i=0}^{dr-1} a_i x^i$ in $\F_q[x] / (x^{dr}-1)$
+is invertible if and only if $M_a$ is.
+\end{enumerate}
+Therefore normal elements in $A$ are in one-to-one correspondence
+with units of $\F_q[x] / (x^{dr}-1)$.
+\end{proof}
+
+Another heuristic argument supporting the fact that
+elliptic periods should generate $\F_{q^r}$
+(at least when $q$ and $r$ are prime although it can be adapted to
+a more general setting) follows:
+considering that $\eta_{\lambda, S}(P)$ behaves as a random
+element of $\F_{q^r}$, the probability that it does not
+generate $\F_{q^r}$, or equivalently that it lies in
+the only strict subfield of $\F_{q^r}$ which is $\F_q$,
+is $q^{1-r}$.
+Therefore, counterexamples should be seeked for small values
+of $q$ and $r$, but as stated in Appendix~\ref{app:ellprdsdata}
+we found none so far.
+
+To conclude this theoretical discussion, note that one might be tempted to
+replace the trace above by any symmetric function of the
+Galois conjugates of $x \in A$ such as the norm.
+In the case of cyclotomic Gaussian periods,
+replacing the trace by the norm either gives another root of unity
+when the computation is trivial, or $1$ when it is not,
+so such an operation has no sense.
+But in the case of elliptic periods, there is no reason to expect such a
+phenomenon.
+However for most elementary symmetric functions, except for the trace,
+couterexamples were found by small scale experiments.
+
+\subsection{Searching for counterexamples}
+
+We now present experimental evidence supporting the validity of
+Conjecture~\ref{conj:ellperiods}.
+As discussed above, if counterexamples to
+Conjecture~\ref{conj:ellperiods} are to be found, they should be seeked
+for small values of $q$ and $r$ as the probability that a random element
+does not generate $\F_{q^r}$ is expected to decrease as $q^{-r}$.
+
+There is variety of ways to check Conjecture~\ref{conj:ellperiods}:
+\begin{itemize}
+\item in general, compute a point of $l$-torsion defined
+over $\F_{q^r}$, the associated elliptic period and its minimal polynomial.
+\item when $q$ and $r$ are prime (and elements of $\F_{q^r}$ are represented
+as polynomials of degree less than $r$ over $\F_{q}$), it is enough to
+check whether the elliptic period is a scalar (that is a constant polynomial)
+or not.
+\end{itemize}
+
+It is also possible to avoid the computation of an actual $l$-torsion point
+and of minimal polynomials.
+For example, let $r$ be a prime such that $l = 4 r + 1$ is prime
+and suppose that $l$ is an Elkies prime for $E$:
+the $l$-division polynomial $f_l$ of $E$ has two factors
+$f_\lambda$ and $h_\lambda$ of degree $r$ over $\F_{q}$.
+The elliptic period is defined as $x(P) + x([i] P)$ for some
+$i \in \left(Z / l \Z\right)^*$ such that $i^2 \equiv -1 \pmod{l}$
+and any $P \in E(\F_{q^r}[l]$
+and the mapping $x + m_i(x)$ sends the roots of $f_\lambda$
+and the roots of $h_\lambda$ onto the ellptic periods.
+If we suppose that the period is not generating $\F_{q}$ which implies that
+$\Res_x(f_\lambda(x),y-x-m_i(x)) = \Res_x(h_\lambda(x),y-x-m_i(x))$
+splits over $\F_{q}$,
+then by Galois invariance $x + m_i(x) \equiv t \pmod{f_\lambda}$
+for a constant $t \in \F_{q}$,
+and since the periods do not depend on the initial choice of $f_\lambda$
+or $h_\lambda$,
+we conclude that $m_i(x) \equiv (t-x) \pmod{f_\lambda h_\lambda}$.
+Hence, we can just compute $x + m_i(x) \pmod{f_\lambda h_\lambda}$
+and see if it is a constant.
+The dominating step in this approach is the factorization of $f_l$.
+For large values of $q$ it could be replaced by using modular polynomials
+and isogeny computations \`a la SEA, but the chances of finding counterexamples
+are higher for small $q$'s.
+
+Finally, remark that we can apply the above approach to elliptic curves
+defined over the rationals and known to have rational $l$-torsion
+over an extension of degree $r$.
+One looks for a prime number $q$
+(outside primes of bad reduction or
+with reduction giving more than a couple of automorphisms)
+such that $q$ divides the content of $x + m_i(x)$.
+If one is found, it disproves the conjecture over $\F_q$.
+
+One such curve is curve~\texttt{147b1} in Cremona's table~\cite{} which is
+defined over $\Q$ and has $13$-torsion in a cubic extension.
+Actually, for $l=13$ and $r=3$, all such curves belong to a parametrized family
+exhibited by Sutherland et al.~\cite{} with $j$-invariant:
+\[
+j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)} \enspace .
+\]
+\todo{Give bounds on what was checked, speak of http://arxiv.org/abs/1607.01920 }
+
+\section{Iterated root taking algorithm}
+
+In this section, we propose an algorithm that is in particular efficient for when the extension 
+degree $r$ is a high prime-power.
+The idea is to extract successive roots until we find a desired 
+generator. An overview of the construction is 
+as follows. Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Suppose we 
+are given extensions $k/F$ of degree $r$. Let $s$ be the order of $q$ in $\Z / v\Z$, 
+and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to cyclotomic field extensions 
+$F(\zeta), k(\zeta)$ of degree $s$ over $F, k$ respectively, by obtaining an irreducible factor of 
+the $v$th cyclotomic polynomial over $F$. Then we obtain a  non-$v$-adic residue $\eta \in 
+F(\zeta)$. 
+
+We have $[k(\zeta): F] = rs$, and $q^{rs} - 1 = u_1v^{d + t}$ with $(u_1, v) = 1$. So we can 
+compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$. This is done using $d$ successive $v$-th 
+root extractions in $k(\zeta)$. We give an efficient algorithm for extracting $v$-th root in 
+$k(\zeta)$ in Section \ref{subsec:vthroot}. Therefore, $\theta$ is a generator 
+for the unique subgroup of $k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of 
+$\theta$ is such that $k = F(\alpha)$. The main result of this section is as follows.
+\begin{theorem}
+	\label{theorem:isom-root}
+	Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
+	order of $q$ in $\Z / v\Z$. Given an extension $k/\F_q$ of degree $r$, a canonical element 
+	$\alpha \in k$, such that $k = \F_q(\alpha)$, can be constructed at the cost of 
+	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+\end{theorem}
+
+
+
+\subsection{Computing $v$-th roots in $k(\zeta)$}
+\label{subsec:vthroot}
+
+We adapt the root extraction algorithm in \cite{doliskanischost2011} to compute a $v$-th roots in 
+$k(\zeta)$. 
+The root extraction algorithm will require computing an expression of the form
+$$
+\alpha_i(\lambda) = \lambda^{1 + q^s} + \lambda^{1 + q^s + q^{2s}} + \cdots + \lambda^{1 + q^s + 
+	q^{2s} + \cdots + q^{is}}
+$$
+for given $\lambda \in k(\zeta)$ and integers $i, s > 0$. This can be computed using the same 
+recursive formulation of the previous section. Let
+$$
+\xi_i = x^{q^{is}},
+\quad 
+\zeta_i(\lambda) = \lambda^{q^s + q^{2s} + \cdots + q^{is}} 
+\quad\text{and}\quad 
+\delta_i(\lambda) = \lambda^{q^s} + \lambda^{q^s + q^{2s}} + \cdots + \lambda^{q^s + q^{2s} + 
+	\cdots + q^{is}},
+$$ 
+We have $\alpha_i=\lambda \delta_i$, and the following relations:
+$$\xi_1 = x^{q^s}, \quad \zeta_1 = \lambda^{q^s}, \quad \delta_1 = \lambda^{q^s}$$
+and
+$$
+\xi_i =
+\begin{cases}
+\xi_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
+\xi_{i - 1}^{q^s} & \text{if $i$ is odd,}
+\end{cases} \quad
+\zeta_i = 
+\begin{cases}
+\zeta_{i / 2}\zeta_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
+\zeta_1\zeta_{i - 1}^{q^s} & \text{if $i$ is odd,}
+\end{cases} \quad
+\delta_i = 
+\begin{cases}
+\delta_{i / 2} + \zeta_{i / 2}\delta_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
+\delta_{i-1} + \zeta_i & \text{if $i$ is odd.}
+\end{cases}$$
+Note that an element $a \in k(\zeta)$ can be written as $a = a_0(x) + a_1(x)z + \cdots + a_{s - 
+	1}(x)z^{s - 1}$. Raising $a$ to the power of $q^{is}$ gives
+\[a^{q^{is}} = \sum_{j = 0}^{s - 1} a_j(x^{q^{is}})z^j = \sum_{j = 0}^{s - 1} a_j(\xi_i)z^j = 
+a(\xi_i).\]
+Assuming that $\xi_1=x^{q^s}$ and $\zeta_1=\lambda^{q^s}$ are already known, the above 
+relations give the following algorithm.
+
+\begin{algorithm}
+	[XiZetaDelta$(\lambda,i,\xi_1,\zeta_1)$]
+	\label{algorithm:xizetadelta}
+	\begin{algorithmic}[1]
+		\REQUIRE $\lambda$, a positive integer $i$, $\xi_1=x^{q^s}$, $\zeta_1=\lambda^{q^s}$
+		\ENSURE $\xi_i$, $\zeta_i$, $\delta_i$
+		\IF {$i=1$} 
+		\RETURN $\xi_1$, $\zeta_1$, $\zeta_1$
+		\ENDIF
+		\STATE $j \leftarrow \lfloor i/2\rfloor$
+		\STATE $\xi_{j},\zeta_{j},\delta_j \leftarrow {\rm XiZetaDelta}(\lambda,j,\xi_1,\zeta_1)$ 
+		\STATE $\xi_{2j} \leftarrow \xi_j(\xi_j)$
+		\STATE\label{step:zetaj} $\zeta_{2j} \leftarrow \zeta_j\cdot \zeta_j(\xi_j)$
+		\STATE\label{step:deltaj} $\delta_{2j}\leftarrow \delta_j+\zeta_j \delta_j(\xi_j)$
+		\IF {$i$ is even} 
+		\RETURN $\xi_{2j}$, $\zeta_{2j}$, $\delta_{2j}$
+		\ENDIF
+		\STATE $\xi_i \leftarrow \xi_{2j}(\xi_1)$
+		\STATE $\zeta_i \leftarrow \zeta_1\cdot \zeta_{2j}(\xi_1)$
+		\STATE $\delta_i \leftarrow \delta_{2j}+\zeta_i$
+		\RETURN $\xi_i$, $\zeta_i$, $\delta_i$
+	\end{algorithmic}
+\end{algorithm}
+The complexity is dominated by Steps \ref{step:zetaj}, \ref{step:deltaj}. They require $O(1)$ 
+addition and multiplication in $k(\zeta)$ at the cost of $O(\MM(rs))$, and $s$ modular 
+composition in $F_1$ at the cost of $O(s\CC(r))$ operations in $F$. The depth of the recursion is 
+$\log(i)$ which give the total running time $O(\MM(rs)\log(i) + s\CC(r)\log(i)) = 
+O(s\CC(r)\log(i))$. Now $\alpha_i(\lambda)$ can be computed using the following algorithm.
+
+\begin{algorithm}
+	[Alpha$(\lambda,i)$]
+	\label{algorithm:alpha}
+	\begin{algorithmic}[1]
+		\REQUIRE $\lambda$, a positive integer $i$
+		\ENSURE $\alpha_i$
+		\STATE $\xi_1 \leftarrow x^{q^s}$
+		\STATE $\zeta_1 \leftarrow \lambda^{q^s}$
+		\STATE $\xi_i$, $\zeta_i$, $\delta_i \leftarrow {\rm XiZetaDelta}(\lambda,i,\xi_1,\zeta_1)$ 
+		\RETURN $\lambda \delta_i$
+	\end{algorithmic}
+\end{algorithm}
+To compute $x^{q^s}$ we first compute $x^q$ using $O(\MM(r)\log(q))$ operations in $F$, and then do 
+$\log(s)$ modular compositions in $F_1$. Then $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ 
+operations in $F$. Therefore, Algorithm \ref{algorithm:alpha} runs in $O(s\CC(r)\log(i) + 
+\MM(r)\log(q))$ operations in $F$.
+
+Let $a \in k(\zeta)$ be a $v$-th power. Let $\gamma \in k(\zeta)$ be a $v$-th root of $a$, and 
+let $\beta = T_{k(\zeta) / F(\zeta)}(\gamma)$, where $T_{k(\zeta) / F(\zeta)}(\gamma): 
+k(\zeta) \to F(\zeta)$ is the trace linear form. We have
+\begin{align*}
+	\label{equation:tr-square}
+	\beta 
+	& = \sum_{i = 0}^{r - 1} \gamma^{q^{is}} \\
+	& = \gamma(1 + \gamma^{q^s - 1} + \gamma^{q^{2s} - 1} + \cdots + \gamma^{q^{(r - 1)s} - 1}) \\
+	& = \gamma(1 + a^{(q^s - 1) / v} + a^{(q^{2s} - 1) / v} + \cdots + a^{(q^{(r - 1)s} -1) / v}).
+\end{align*}
+This gives an equation $\beta = \gamma b$ where $b = 1 + a^{(q^s - 1) / v} + a^{(q^{2s} - 1) / v} + 
+\cdots + a^{(q^{(r - 1)s} -1) / v}$. Raising both sides to the power of $v$ we get $\beta^v = ab^v$ 
+in which the right hand side is known. From this we can compute $\beta$ by taking a $v$-th root in 
+$F(\zeta)$. We can assume $b \ne 0$, otherwise we replace $a$ by $ac^t$ for a random $c \in 
+k(\zeta)$ until $b \ne 0$. Therefore, $\gamma = \beta b^{-1}$. Now if we set $\lambda =
+a^{(q^s - 1) / v}$ then $b = 1 + \lambda + \alpha_{r - 2}(\lambda)$. The following algorithm 
+computes a $v$-th root in $k(\zeta)$.
+
+\begin{algorithm}
+	[$v$-th root in ${k(\zeta)}$]
+	\label{algorithm:root-F1z}
+	\begin{algorithmic}[1]
+		\REQUIRE $a \in (k(\zeta)^*)^v$
+		\ENSURE a $v$-th root of $a$
+		\REPEAT
+		\STATE choose a random $c \in k(\zeta)$
+		\STATE\label{step:root-rand} $a'\leftarrow ac^v$
+		\STATE\label{step:shoup-pow} $\lambda \leftarrow {a'}^{(q^s-1)/v}$
+		\STATE\label{step:b-tr} $b \leftarrow 1+\lambda+{\rm Alpha}(\lambda, r-2)$
+		\UNTIL {$b \ne 0$}
+		\STATE $\beta \leftarrow (a'b^v)^{1/v}$ in $F(\zeta)$
+		\RETURN $\beta b^{-1}c^{-1}$
+	\end{algorithmic}
+\end{algorithm}
+
+Step \ref{step:shoup-pow} can be done using the technique in \cite[Lemma 14]{shoup94} as follows. 
+We have $(q^s-1)/v = \lfloor q^s / v \rfloor$. Let $\alpha \in k(\zeta)$, and assume 
+$\alpha^{\lfloor q / v \rfloor}$ is given. We want to compute $\alpha^{\lfloor q^s / v \rfloor}$. 
+For $u \ge 1$, define integers $A_u, B_u$ as follows
+\[q^u = A_uv + B_u, \quad 0\le B_u < v.\]
+Assuming that we have $\alpha^{A_u}, \alpha^{A_v}$ it can be shown that
+\[ \alpha^{A_{u + v}} = 
+\left(\alpha^{A_v}\right)^{q^u}\left(\alpha^{A_u}\right)^{B_v}\alpha^{\lfloor B_uB_v / v \rfloor}. 
+\]
+As seen above, raising an element of $k(\zeta)$to the power of $q^u$ takes $s\CC(r)$ operations 
+in $F$. Therefore, computing $\alpha^{A_{u + v}}$ from $\alpha^{A_u}, \alpha^{A_v}$ takes 
+$O(\MM(rs)\log(v) + s\CC(r))$ operations in $F$. Now $A_1 = \alpha^{\lfloor q / v \rfloor}$ can is 
+computed using $O(\MM(rs)\log(q)))$ operations in $F$, and using a repeated-doubling algorithm 
+$A_s$ can be computed using $O(\MM(rs)\log(v)\log(s) + s\CC(r)\log(s) + \MM(rs)\log(q))$ operations 
+in $F$.
+
+Step \ref{step:b-tr} is done using Algorithm \ref{algorithm:alpha} which takes $O(s\CC(r)\log(r) + 
+\MM(r)\log(q))$ operations in $F$. The rest of the algorithm is dominated by the above. Therefore, 
+Algorithm \ref{algorithm:root-F1z} runs in $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + 
+\MM(rs)\log(q))$ operations in $F$. 
+
+
+%///////////////////////////////////////////
+
+
+\subsection{Constructing $\alpha$}
+
+We first build the extension $k(\zeta) / F(\zeta)$ as follows. Let $\eta$ be a 
+non-$v$-adic residue in $F(\zeta)$. Then $\eta$ is an $r$-power in $k(\zeta)$. To obtain an 
+$r$-th root $\theta$ of $\eta$ we take $d$ successive $v$-th roots using Algorithm 
+\ref{algorithm:root-F1z}. 
+
+\begin{algorithm}
+	[Find $\alpha \in k$ such that $k = F(\alpha)$]
+	\label{algorithm:alpha-root}
+	\begin{algorithmic}[1]
+		\REQUIRE an extension $k / F$ of degree prime-power $r = v^d$
+		\ENSURE an element $\alpha \in k$ such that $k = F(\alpha)$
+		\STATE\label{step:factor-cyclo} factor the $v$th cyclotomic polynomial $F$ to 
+		build the extension $k(\zeta) / F(\zeta)$
+		\STATE\label{step:non-v-res} find a non-$v$-adic residue $\eta \in F(\zeta)$
+		\STATE\label{step:rep-root1} compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$
+		\RETURN the constant term of $\theta$
+	\end{algorithmic}
+\end{algorithm}
+
+Step \ref{step:factor-cyclo} is done using by Algorithm \ref{alg:ks} which, by Proposition 
+\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $F$. By \cite[Lemma 15]{shoup94} Step 
+\ref{step:non-v-res} takes $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
+$F$. Step \ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ applications of Algorithm 
+\ref{algorithm:root-F1z}. Therefore Algorithm \ref{algorithm:alpha-root} runs in 
+$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $F$. 
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

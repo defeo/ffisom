@@ -129,7 +129,7 @@ void FFIsomPrimePower::compute_semi_trace_trivial_ext(nmod_poly_t theta, const n
 		mp_limb_t z) {
 
 	// use naive linear algebra for low-degree moduli
-	if (nmod_poly_degree(modulus) < TRACE_THRESHOLD) {
+	if (nmod_poly_degree(modulus) < linear_alg_threshold) {
 		slong rows = nmod_poly_degree(modulus);
 		nmod_mat_t frob_auto;
 		nmod_mat_init(frob_auto, rows, rows, modulus->mod.n);
@@ -433,7 +433,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 	nmod_poly_set_coeff_ui(alpha, 1, 1);
 	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
 
-	if (util.is_small_cyclotomic_ext(degree, ctx->modulus->mod.n)) {
+	if ((slong) util.compute_multiplicative_order(ctx->modulus->mod.n, degree) < multi_point_threshold) {
 		fq_nmod_poly_t alpha;
 		fq_nmod_poly_init(alpha, ctx);
 
@@ -573,13 +573,17 @@ void FFIsomPrimePower::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 	fq_nmod_poly_clear(f_image, ctx_2);
 }
 
-FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, const nmod_poly_t modulus2) {
+FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, 
+		const nmod_poly_t modulus2, slong linear_alg_threshold, 
+		slong multi_point_threshold) {
 	nmod_poly_t tempf1;
 	nmod_poly_t tempf2;
 	nmod_poly_init(tempf1, modulus1->mod.n);
 	nmod_poly_init(tempf2, modulus2->mod.n);
 	nmod_poly_set(tempf1, modulus1);
 	nmod_poly_set(tempf2, modulus2);
+	this->linear_alg_threshold = linear_alg_threshold;
+	this->multi_point_threshold = multi_point_threshold;
 
 	fq_nmod_ctx_init_modulus(ctx_1, tempf1, "x");
 	fq_nmod_ctx_init_modulus(ctx_2, tempf2, "x");

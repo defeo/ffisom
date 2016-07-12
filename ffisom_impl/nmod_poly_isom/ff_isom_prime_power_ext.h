@@ -20,7 +20,8 @@ class FFIsomPrimePower {
     fq_nmod_t xi_init;
     nmod_poly_t xi_init_trivial;
 
-    const static int TRACE_THRESHOLD = 0;
+    slong linear_alg_threshold;
+    slong multi_point_threshold;
 
     void compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_t xi, slong n, const nmod_poly_t modulus, const mp_limb_t z);
@@ -47,7 +48,8 @@ public:
      * @param f1 Defining modulus of the first extension
      * @param f2 Defining modulus of the second extension
      */
-    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2);
+    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, 
+	    slong linear_alg_threshold, slong multi_point_threshold);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that

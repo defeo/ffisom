@@ -38,7 +38,8 @@ public:
      * @param g1
      * @param g2
      */
-    void compute_generators(nmod_poly_t g1, nmod_poly_t g2);
+    void compute_generators(nmod_poly_t g1, nmod_poly_t g2,
+	slong linear_alg_threshold, slong multi_point_threshold);
 
     /**
      * Let r be a prime-power, and let k1, K1 be subfields of k, K of degree r 
@@ -52,7 +53,8 @@ public:
      * @param g1
      * @param g2
      */
-    void compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r);
+    void compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r, 
+	    slong linear_alg_threshold, slong multi_point_threshold);
 
     /**
      * Given elements g1, g2 k, K respectively such that
