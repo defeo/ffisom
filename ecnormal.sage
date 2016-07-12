@@ -22,17 +22,8 @@ def is_gen_all(alpha, r, q, p):
 	return alpha.minimal_polynomial().degree() == r
 
 def is_gen_prime(alpha, r, q, p):
-	if q == p:
-		return alpha.polynomial().degree() >= 1
-	else:
-		return alpha**q != alpha
-
-def is_gen_prime_extension(alpha, r, q, p, hinv):
-	try:
-		hinv(alpha)
-	except ValueError:
-		return True
-	return False
+	# only for r and q prime
+	return alpha.polynomial().degree() >= 1
 
 def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True, subfield = False):
 	cnt = 0
@@ -118,7 +109,6 @@ def periodify_all(xP, rl, s, e):
 					j = i + 1
 				period += term
 			return period
-
 	else:
 		return sum(prod(xP[i] for i in c)**e for c in Combinations(rl, s))
 
@@ -140,6 +130,7 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 	q = K.order()
 	d = K.degree()
 
+	# Exclude special curves
 	j = E.j_invariant()
 	if j == 0 or j == 1728:
 		return None
@@ -163,10 +154,12 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		r = s
 		lb = mu
 
-	if r == 1 or r % 2 == 0 or r == d:
+	# Exclude trivial and even cases
+	if r == 1 or r % 2 == 0 or r.gcd(d) != 1:
 		return None
 	if r < rmin or rmax < r:
 		return None
+
 	if prime and not r.is_prime():
 		return None
 	#if any(e > 1 for _, e in r.factor()):
@@ -198,7 +191,6 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		EL = E.base_extend(L)
 	else:
 		h = Hom(K, L)[0]
-		hinv = h.section()
 		EL = EllipticCurve([h(a) for a in E.a_invariants()])
 	m = EL.cardinality()
 	ml = ZZ(m/l)
@@ -207,7 +199,7 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 	while P == 0:
 		P = ml*EL.random_element()
 
-	if prime:
+	if prime and q == p:
 		is_gen = is_gen_prime
 	elif d == 1:
 		is_gen = is_gen_all
@@ -287,8 +279,8 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 			continue
 		if p > pmax:
 			break
-                linfty = p.n()**(rmax*dmax)+2*p.n()**(1/2*rmax*dmax)
-                if verbose:
+		linfty = p.n()**(rmax*dmax)+2*p.n()**(1/2*rmax*dmax)
+		if verbose:
 			print "p =", p, ", d =", dbound, ", l =", lbound, ", linfty =", linfty, ", sbound =", sbound, ", rbound =", rbound, ", prime =", prime
 		ldcnt = 0
 		lpcnt = 0

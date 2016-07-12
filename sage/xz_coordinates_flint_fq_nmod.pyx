@@ -1,4 +1,4 @@
-include "sage/ext/interrupt.pxi"
+include "cysignals/signals.pxi"
 
 from sage.libs.flint.fmpz cimport *
 from sage.libs.flint.fq_nmod cimport *
