@@ -1217,7 +1217,8 @@ is the set
 \begin{equation*}
   E(M) = \{(x,y)\in M^2 \mid E(x,y) = 0\} \cup \{\mathcal{O}\}
 \end{equation*}
-endowed with the usual group law.
+endowed with the usual group law, where $\mathcal{O}$ is the point at
+infinity.
 
 For an integer $\ell$, we denote by $E[\ell]$ the $\ell$-torsion
 subgroup of $E(\bar{L})$, where $\bar{L}$ denotes the algebraic
@@ -1282,8 +1283,8 @@ periods.
   \begin{equation*}
     \#\langle\lambda\rangle =
     \begin{cases}
-      2r & \text{if $-1\in\langle\lambda\rangle$,}\\
-      r & \text{otherwise.}
+      r & \text{if $-1\notin\langle\lambda\rangle$,}\\
+      2r & \text{otherwise.}
     \end{cases}
   \end{equation*}
   Then, for any point $P$ in the eigenspace of $\lambda$, the period
@@ -1323,14 +1324,14 @@ Lemma~\ref{th:gaussian}, that is that elliptic periods are normal generators
 of $\F_q(x(P))$.
 It is indeed easy to find examples where elliptic periods are not normal.
 For example, for $p = 7$:
-\begin{enumerate}
+\begin{itemize}
 \item $\ell = 31$ is an Elkies prime for $E: y^2 = x^3 + 5 x + 4$;
 \item the eigenvalues of the Frobenius modulo $\ell$ are $\lambda = 25$ of
 multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
 \item $P = (5 a^2+2 a, 4)$ is a point of order $31$ over $\F_7[x]/(x^3 + 6 x^2 + 4)$;
 \item $\eta_{\lambda,S}(P) = 5 a^2 + 5 a + 4$ is not a normal element:
-$\eta_{\lambda,S}(P) + 4 \eta_{\lambda,S}(P)^7 + 2 \eta_{\lambda(P),S}^{49} = 0$.
-\end{enumerate}
+$\eta_{\lambda,S}(P) + 4 \eta_{\lambda,S}(P)^7 + 2 \eta_{\lambda,S}(P)^{49} = 0$.
+\end{itemize}
 Nonetheless, it might still be the case that the elliptic period
 $\eta_{\lambda,S}(P)$ generates $\F_q(x(P))$ (as a field),
 and the discussion and experimental evidence
@@ -2396,7 +2397,7 @@ the $l$-division polynomial $f_l$ of $E$ has two factors
 $f_\lambda$ and $h_\lambda$ of degree $r$ over $\F_{q}$.
 The elliptic period is defined as $x(P) + x([i] P)$ for some
 $i \in \left(Z / l \Z\right)^*$ such that $i^2 \equiv -1 \pmod{l}$
-and any $P \in E(\F_{q^r}[l]$
+and any $P \in E(\F_{q^r})[l]$
 and the mapping $x + m_i(x)$ sends the roots of $f_\lambda$
 and the roots of $h_\lambda$ onto the ellptic periods.
 If we suppose that the period is not generating $\F_{q}$ which implies that
