@@ -1448,8 +1448,11 @@ identical.
   at a cost of  $O(\CC(r))$ operations in $\F_q$~\cite{shoup93}.
   According to the experimental data and heuristics presented in
   Appendix~\ref{app:ellprdsdata},
-  $O(1)$ runs of Algorithm~\ref{algorithm:compell} should be
+  $O(1)$ tries should be
   sufficient to get an elliptic period generating $k/\F_q$.
+  Therefore, making sure that Algorithm~\ref{algorithm:compell}
+  returns a generating element of $k/\F_q$
+  does not change the global complexity of the algorithm.
 \end{remark}
 
 \section{Algorithm selection}
