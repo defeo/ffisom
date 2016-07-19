@@ -119,7 +119,7 @@ cdef class FiniteField_flint_fq_nmod(FiniteField):
             sage: k = FiniteField_flint_fq_nmod(3, x^2 + 2*x + 2, 'a'); k
             Finite Field in a of size 3^2
         """
-        from sage.rings.finite_rings.constructor import GF
+        from sage.rings.finite_rings.finite_field_constructor import GF
         #from sage.rings.integer import Integer
         from sage.structure.proof.all import arithmetic
         import sys

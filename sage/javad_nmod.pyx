@@ -8,7 +8,7 @@ from sage.libs.flint.nmod_poly cimport *
 from sage.libs.flint.fq_nmod cimport *
 
 # Thresholds for linalg and multipoint eval
-LATHR = 1<<20
+LATHR = 0
 MPTHR = 1<<20
 
 cdef class FFEmbWrapper:
@@ -29,15 +29,15 @@ cdef class FFEmbWrapper:
         nmod_poly_clear(self.g2)
         nmod_poly_clear(self.xim)
 
-    def compute_gens(self):
-        self.wrp.compute_generators(self.g1, self.g2, LATHR, MPTHR)
+    def compute_gens(self, lathr = LATHR, mpthr = MPTHR):
+        self.wrp.compute_generators(self.g1, self.g2, lathr, mpthr)
         self.initialized = 1
 
-    def get_gens(self):
+    def get_gens(self, lathr = LATHR, mpthr = MPTHR):
         cdef FiniteFieldElement_flint_fq_nmod g1, g2
 
         if self.initialized < 1:
-            self.compute_gens()
+            self.compute_gens(lathr, mpthr)
 
         g1 = self.domain(0)
         g1.set_from_fq_nmod(<fq_nmod_t>(self.g1))
@@ -68,8 +68,8 @@ cdef class FFEmbWrapper:
 def find_gen(k1, r = 0):
     raise NotImplementedError
 
-def find_gens(k1, k2, int r = 0):
-    return FFEmbWrapper(k1, k2).get_gens()
+def find_gens(k1, k2, int r = 0, lathr = LATHR, mpthr = MPTHR):
+    return FFEmbWrapper(k1, k2).get_gens(lathr, mpthr)
 
 def find_emb(k1, k2):
     return FFEmbWrapper(k1, k2).get_emb()

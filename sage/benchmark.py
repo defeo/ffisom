@@ -10,8 +10,8 @@ from sage.rings.finite_rings.finite_field_constructor import GF
 import sys
 from sage.misc.misc import cputime
 
-# p n o rains ellrains pari javad
-def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = True, overwrite = False, verbose = True):
+# p n o c rains ellrains pari javad
+def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -99,5 +99,102 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
                 f.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tjavad))
             else:
                 sys.stdout.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tjavad))
+    if write:
+        f.close()
+
+def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+    if write:
+        mode = 'w' if overwrite else 'a'
+        f = open(fname, mode, 0)
+    pmin, pmax = pbound
+    nmin, nmax = nbound
+    for p in xrange(pmin, pmax):
+        p = ZZ(p)
+        if not p.is_prime():
+            continue
+        for n in xrange(nmin, nmax):
+            n = ZZ(n)
+            if prime and not is_prime(n):
+                continue
+            if n % p == 0:
+                continue
+            if (not even) and (n % 2 == 0):
+                continue
+            k = GF(p**n, name='z')
+            k_flint = GF_flint(p, k.modulus(), name='z')
+            o, _ = find_root_order(p, [n, n], n, verbose=False)
+            c = Mod(p,n).multiplicative_order()
+            if c > cmax:
+                continue
+            if verbose:
+                print p, n, o, c
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                a, b = find_gens_pari(k, k)
+                tloops += cputime() - t
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tpari = tloops / (l+1)
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                # MC, MP
+                a, b = find_gens_javad(k_flint, k_flint, n, 0, 0)
+                tloops += cputime() - t
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tjavadmcmp = tloops / (l+1)
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                # MC, no MP
+                a, b = find_gens_javad(k_flint, k_flint, n, 0, 1<<30)
+                tloops += cputime() - t
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tjavadmc = tloops / (l+1)
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                # LA, MP
+                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 1<<30)
+                tloops += cputime() - t
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tjavadlamp = tloops / (l+1)
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                # LA, no MP
+                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 0)
+                tloops += cputime() - t
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tjavadla = tloops / (l+1)
+            if write:
+                f.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tjavadmcmp, tjavadmc, tjavadlamp, tjavadla))
+            else:
+                sys.stdout.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tjavadmcmp, tjavadmc, tjavadlamp, tjavadla))
     if write:
         f.close()
