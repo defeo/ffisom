@@ -331,7 +331,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
         fq_nmod_set(x.val, self.val, x._cparent)
         return x
 
-    cpdef int _cmp_(FiniteFieldElement_flint_fq_nmod self, Element other) except -2:
+    cpdef int _cmp_(self, other) except -2:
         """
         Comparison of finite field elements.
 
@@ -357,7 +357,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                 return r
             return cmp(self.polynomial(), other.polynomial())
 
-    cpdef ModuleElement _add_(FiniteFieldElement_flint_fq_nmod self, ModuleElement right):
+    cpdef ModuleElement _add_(self, right):
         """
         Addition.
 
@@ -373,7 +373,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                       self._cparent)
         return x
 
-    cpdef ModuleElement _sub_(FiniteFieldElement_flint_fq_nmod self, ModuleElement right):
+    cpdef ModuleElement _sub_(self, right):
         """
         Subtraction.
 
@@ -389,7 +389,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                       self._cparent)
         return x
 
-    cpdef RingElement _mul_(FiniteFieldElement_flint_fq_nmod self, RingElement right):
+    cpdef _mul_(self, right):
         """
         Multiplication.
 
@@ -405,7 +405,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                       self._cparent)
         return x
 
-    cpdef RingElement _div_(FiniteFieldElement_flint_fq_nmod self, RingElement right):
+    cpdef _div_(self, right):
         """
         Division.
 

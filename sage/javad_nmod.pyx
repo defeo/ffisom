@@ -7,6 +7,10 @@ from element_flint_fq_nmod cimport FiniteFieldElement_flint_fq_nmod
 from sage.libs.flint.nmod_poly cimport *
 from sage.libs.flint.fq_nmod cimport *
 
+# Thresholds for linalg and multipoint eval
+LATHR = 1<<20
+MPTHR = 1<<20
+
 cdef class FFEmbWrapper:
     def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2):
         self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus)
@@ -26,7 +30,7 @@ cdef class FFEmbWrapper:
         nmod_poly_clear(self.xim)
 
     def compute_gens(self):
-        self.wrp.compute_generators(self.g1, self.g2)
+        self.wrp.compute_generators(self.g1, self.g2, LATHR, MPTHR)
         self.initialized = 1
 
     def get_gens(self):
