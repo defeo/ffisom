@@ -619,62 +619,75 @@ defined.
 \section{Kummer-type algorithms}
 \label{sec:kummer}
 
-In this section we review what we call \textit{Kummer-type} approaches to the embedding problem. 
-We briefly review the works of Lenstra \cite{LenstraJr91}, and Allombert \cite{Allombert02}, then 
-we give a variant of these algorithms with a significantly lower running time complexity. By 
-applying the subfield technique, introduced in Section \ref{sec:introduction}, we assume the 
-following reduced version of the embedding problem in the entire section: given extensions $k, K$  
-of the same degree $r$ where $r$ is a prime power, construct an embedding $k \hookrightarrow K$. We 
-give our fast versions of the algorithms for two separate cases: the case $p \nmid r$, where $p$ is 
-the characteristic, is treated in Section \ref{sec:fast-kummer}, and the case $r = p^d$, where $d$ 
-is a positive integer, is treated in Section \ref{sec:fast-artin-schreier}.
+In this section we review what we call \emph{Kummer-type} approaches to the embedding problem. 
+We briefly review the works of Lenstra~\cite{LenstraJr91}, and Allombert~\cite{Allombert02}, then 
+we give a variant of these algorithms with a significantly lower running time complexity.
+As stated above, we let $k,K$ be degree $r$ extensions of $\F_q$, and we let $p$ be their
+characteristic.
+We give our fast versions of the algorithms for two separate cases: the case $p \nmid r$
+is treated in Section~\ref{sec:fast-kummer}, and the case $r = p^d$, where $d$ 
+is a positive integer, is treated in Section~\ref{sec:fast-artin-schreier}.
 
-Let $k$ be an extension of degree $r$ of $\F_q$. In \cite{LenstraJr91}, Lenstra proves that 
+In~\cite{LenstraJr91}, Lenstra proves that 
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
-that finds an isomorphism between them. The focus of the paper is on the theoretical construction 
-of the isomorphism, and no precise complexity analysis is presented. However, since there is an 
-explicit assumption of using linear algebra in the paper, a rough analysis of the algorithm yields 
-an estimate of $O(r^{\omega})$ operations in $\F_q$. The idea of the algorithm is as follows.
+that finds an isomorphism between them. The focus of the paper is on the theoretical computational
+complexity problem; in particular, it avoids using Las Vegas subroutines, such as polynomial
+factorization. 
+In~\cite{Allombert02}, Allombert gives a similar approach with more focus on practical efficiency.
+In particular, he makes use of polynomial factorization in the first stage, thus obtaining a
+polynomial time Las Vegas algorithm, rather than a deterministic one.
+Even though neither of the two algorithms is given a detailed complexity analyses, both rely
+on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
+in $\F_q$ in both cases.
 
-Let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th 
-cyclotomic polynomial, and let $\F_q[\zeta][c^{1/r}]$ denote the quotient $\F_q[\zeta][Y]/(Y^r - 
-c)$ such that $c^{1/r}$ is the residue class of $Y$. Then we can find $c_1, c_2 \in \F_q[\zeta]$, 
-and an integer $j > 0$ such that
+The idea of Lenstra's algorithm is as follows.
+Assume that $r$ is prime, and
+let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th 
+cyclotomic polynomial. 
+Let $\tau$ be a non $r$-adic residue\footnote{In the paper's terminology, $\tau$ (denoted $c$ in the paper) is a generator of the Teichm\"uller subgroup of $\F_q[\zeta]$.} of $\F_q[\zeta]$,
+and let $\F_q[\zeta][\theta]$ denote the quotient $\F_q[\zeta][Y]/(Y^r - 
+\tau)$ such that $\theta=\tau^{1/r}$ is the residue class of $Y$, 
+Lenstra shows that $\F_q[\zeta][\theta]$ is isomorphic to $k[\zeta]$ as a ring.
+Furthermore, the algorithm constructs non $r$-adic residues in such a way that for any $\tau_1, \tau_2 \in \F_q[\zeta]$, 
+an integer $j > 0$ such that
 \[
 \begin{array}{lrll}
-\psi: & \F_q[\zeta][c_1^{1/r}] & \rightarrow & \F_q[\zeta][c_2^{1/r}] \\
-& c_1^{1/r} & \mapsto & (c_2^{1/r})^j
+\psi: & \F_q[\zeta][\theta_1] & \rightarrow & \F_q[\zeta][\theta_2] \\
+& \theta_1 & \mapsto & \theta_2^j
 \end{array}
 \]
-is an isomorphism. Next, we construct a chain	
-\begin{equation*}
-	\begin{tikzpicture}
-		\node (Fc1) {$\F_q[\zeta][c_1^{1/r}]$};
-		\node[right = of Fc1] (Fc2) {$\F_q[\zeta][c_2^{1/r}]$};
-		\node[left = of Fc1] (F1) {$k[\zeta]$};
-		\node[right = of Fc2] (F2) {$K[\zeta]$};
-		\draw[->] (F1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-		sep=0.5pt] {$\varphi_1$} node[below = 3mm, inner sep=0.5pt] {$\gamma_1 \longmapsto 
-			c_1^{1/r}$} (Fc1);
-		\draw[->] (Fc1) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-		sep=0.5pt] {$ \psi $} (Fc2);
-		\draw[->] (Fc2) edge node[above, inner sep=0.5pt] {$\sim$} node[above = 3mm, inner 
-		sep=0.5pt] {$ \varphi_2 $} node[below = 3mm, inner sep=0.5pt] {$c_2^{1/r} \longmapsto 
-			\gamma_2$} (F2);
-	\end{tikzpicture}
-\end{equation*}
-for appropriate $\gamma_1 \in k[\zeta]$, and $\gamma_2 \in K[\zeta]$, and 
-homomorphisms $\varphi_1, \varphi_2$. From this we induce an embedding $k \hookrightarrow K$.
+is an isomorphism of rings can be found.
+Finally, denoting by $\Delta$ the automorphism group of $k[\zeta]$
+over $k$, an embedding $k \hookrightarrow K$ is obtained by
+restricting the above isomorphism $\psi$ to the fixed field
+$k[\zeta]^\Delta$.
+To summarize, the algorithm is made of three steps:
+\begin{itemize}
+\item Construct elements $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$;
+\item Letting $\tau_i=\theta_i^r$, find the integer $j$ such that
+  $\tau_1=\tau_2^j$ by a discrete logarithm computation in
+  $\F_q[\zeta]$;
+\item Compute $\alpha\in k$ and $\beta\in K$ as some functions of
+  $\theta_1,\theta_2^j$ invariant under $\Delta$.
+\end{itemize}
+The algorithm is readily generalized to prime powers $r$ by iterating
+this procedure.
 
-In \cite{Allombert02} Alombert gives a similar approach with more focus on implementation. The  
-algorithm revolves around solving Hilbert's theorem 90. The idea is to find elements $\alpha_1 \in 
-k[\zeta]$, and $\alpha_2 \in K[\zeta]$ such that $b = \alpha_1^r / \alpha_2^r$ is an 
-$r$th power in $\F_q[\zeta]$. From this $b^{1/r}$ can be computed using a root extraction 
-algorithm. An isomorphism $k[\zeta] \xrightarrow{\sim} K[\zeta]$ is then given by $\alpha_1 
-\mapsto b^{1/r}\alpha_2$. Although again no rigorous complexity analysis is presented, one can 
-easily see that the dominant cost of this algorithm is solving Hilbert 90 which is done using 
-linear algebra. Therefore, the algorithm runs in $O(r^{\omega})$ operations in $\F_q$. We will give 
-a more detailed description of the algorithm in the next section.
+Allombert's algorithm differs from Lenstra's in two key steps, both
+resorting to polynomial factorization.  First, he computes an
+irreducible factor $h$ of the cyclotomic polynomial $\Phi_r$, so to
+construct a field extension $\F_q(\zeta)$ as $\F_q[Z]/h(Z)$.  Then he
+defines $k[\zeta]=k[Z]/h(Z)$ and $K[\zeta]=K[Z]/h(Z)$ (note that these
+are not fields if $r$ is not prime), and constructs
+$\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$ in a way equivalent
+to Lenstra's.  At this point, rather then computing a discrete
+logarithm, Allombert points out that there exists a $c\in\F_q(\zeta)$
+such that $\theta_1\mapsto c\theta_2$, and that such value can be
+computed as the $r$-th root of $\theta_1^r/\theta_2^r$.
+Finally, by making the automorphism group of $k[\zeta]$ over $k$ act
+on $\theta_1$ and $\theta_2$, we obtain an embedding $k \hookrightarrow K$.
+We will give a more detailed description of Allombert's algorithm in the next section.
+
 
 
 \subsection{Fast Kummer algorithm for $p \nmid r$}
