@@ -625,17 +625,19 @@ we give a variant of these algorithms with a significantly lower running time co
 As stated above, we let $k,K$ be degree $r$ extensions of $\F_q$, and we let $p$ be their
 characteristic.
 We give our fast versions of the algorithms for two separate cases: the case $p \nmid r$
-is treated in Section~\ref{sec:fast-kummer}, and the case $r = p^d$, where $d$ 
+is treated in Section~\ref{sec:fast-kummer}, the case $r = p^d$, where $d$ 
 is a positive integer, is treated in Section~\ref{sec:fast-artin-schreier}.
+Finally, in Section~\ref{sec:fast-algor-large} we give a variant of the case
+$p \nmid r$ better suited for the case where $r$ is a high-degree prime power.
 
 In~\cite{LenstraJr91}, Lenstra proves that 
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
 that finds an isomorphism between them. The focus of the paper is on the theoretical computational
-complexity problem; in particular, it avoids using Las Vegas subroutines, such as polynomial
+complexity problem; in particular, it avoids using randomized subroutines, such as polynomial
 factorization. 
 In~\cite{Allombert02}, Allombert gives a similar approach with more focus on practical efficiency.
-In particular, he makes use of polynomial factorization in the first stage, thus obtaining a
-polynomial time Las Vegas algorithm, rather than a deterministic one.
+In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
+polynomial time Las Vegas.
 Even though neither of the two algorithms is given a detailed complexity analyses, both rely
 on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
 in $\F_q$ in both cases.
@@ -646,17 +648,17 @@ let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$
 cyclotomic polynomial. 
 Let $\tau$ be a non $r$-adic residue\footnote{In the paper's terminology, $\tau$ (denoted $c$ in the paper) is a generator of the Teichm\"uller subgroup of $\F_q[\zeta]$.} of $\F_q[\zeta]$,
 and let $\F_q[\zeta][\theta]$ denote the quotient $\F_q[\zeta][Y]/(Y^r - 
-\tau)$ such that $\theta=\tau^{1/r}$ is the residue class of $Y$, 
+\tau)$ such that $\theta=\tau^{1/r}$ is the residue class of $Y$.
 Lenstra shows that $\F_q[\zeta][\theta]$ is isomorphic to $k[\zeta]$ as a ring.
 Furthermore, the algorithm constructs non $r$-adic residues in such a way that for any $\tau_1, \tau_2 \in \F_q[\zeta]$, 
-an integer $j > 0$ such that
+an integer $j > 0$  can be found such that
 \[
 \begin{array}{lrll}
 \psi: & \F_q[\zeta][\theta_1] & \rightarrow & \F_q[\zeta][\theta_2] \\
 & \theta_1 & \mapsto & \theta_2^j
 \end{array}
 \]
-is an isomorphism of rings can be found.
+is an isomorphism of rings.
 Finally, denoting by $\Delta$ the automorphism group of $k[\zeta]$
 over $k$, an embedding $k \hookrightarrow K$ is obtained by
 restricting the above isomorphism $\psi$ to the fixed field
@@ -685,16 +687,26 @@ logarithm, Allombert points out that there exists a $c\in\F_q(\zeta)$
 such that $\theta_1\mapsto c\theta_2$, and that such value can be
 computed as the $r$-th root of $\theta_1^r/\theta_2^r$.
 Finally, by making the automorphism group of $k[\zeta]$ over $k$ act
-on $\theta_1$ and $\theta_2$, we obtain an embedding $k \hookrightarrow K$.
+on $\theta_1$ and $\theta_2$, he obtains an embedding $k \hookrightarrow K$.
 We will give a more detailed description of Allombert's algorithm in the next section.
 
 
 
-\subsection{Fast Kummer algorithm for $p \nmid r$}
+\subsection{Fast Kummer-type algorithm for $p \nmid r$}
 \label{sec:fast-kummer}
 
-In this section, we present a fast variant of Allombert's algorithm using an explicit solution to 
-the Hilbert's theorem 90. Let $[k: \F_q] = r$ where $r$ is a prime power. Let $h(Z)$ be an 
+In this section, we present a variant of Allombert's algorithm with the
+best known asymptotic complexity. The main difference with respect to the 
+version presented in~\cite{Allombert02} is in the way we find a solution
+to Hilbert's theorem 90.
+Whereas Allombert resorts to linear algebra, we rely instead on a classical
+formula, inspired by Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
+Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described 
+a variant which is similar to the present one, in the specific case 2 with $s=1$ 
+we describe below.
+
+Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
+Let $h(Z)$ be an 
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
 $s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
 $\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
@@ -709,50 +721,49 @@ $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 Then the fixed field of $\sigma$ is $\F_q(\zeta)$. The same can be done for the ring $K[\zeta]$. 
 Let us restate the algorithm for clarity.
 
-\begin{algorithm}[Allombert]
+\begin{algorithm}[Allombert's algorithm]
 	\begin{algorithmic}[1]
-		\REQUIRE field extensions $k, K$ of $\F_q$ of degree $r$
-		\ENSURE an isomorphism $k \xrightarrow{\sim} K$
-		\STATE factor the $r$th cyclotomic polynomial and make the extensions $\F_q(\zeta), 
-		k[\zeta], K[\zeta]$
-		\STATE find $\theta_1 \in k[\zeta]$ such that $\sigma(\theta_1) = \zeta\theta_1$
-		\STATE find $\theta_2 \in K[\zeta]$ such that $\sigma(\theta_2) = \zeta\theta_2$
-		\STATE compute an $r$th root $c$ of $\theta_1^r / \theta_2^r$ in $\F_q(\zeta)$
-		\STATE let $\alpha_1, \alpha_2$ be the constant terms of $\theta_1, c\theta_2$ respectively
-		\RETURN the isomorphism $\alpha_1 \rightarrow \alpha_2$
+		\REQUIRE Field extensions $k, K$ of $\F_q$ of degree $r$.
+		\ENSURE The description of a field embedding $k\to K$.
+		\STATE Factor the $r$th cyclotomic polynomial and make the extensions $\F_q(\zeta), 
+		k[\zeta], K[\zeta]$;
+		\STATE Find $\theta_1 \in k[\zeta]$ such that $\sigma(\theta_1) = \zeta\theta_1$;
+		\STATE Find $\theta_2 \in K[\zeta]$ such that $\sigma(\theta_2) = \zeta\theta_2$;
+		\STATE Compute an $r$th root $c$ of $\theta_1^r / \theta_2^r$ in $\F_q(\zeta)$;
+		\STATE Let $\alpha, \beta$ be the constant terms of $\theta_1, c\theta_2$ respectively;
+		\RETURN The field embedding defined by $\alpha\mapsto\beta$.
 	\end{algorithmic}
 \end{algorithm}
 
-\todo{Restate this algorithm to only depend on one field $k,K$, or at
-  least mention it is possible.}
+By symmetry, we only deal with the extension $k / \F_q$.
+The cyclotomic polynomial $\Phi_r$ is factored using Proposition~\ref{prop:cyclo}, while
+taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
+Algorithm~\ref{alg:ks}.
 
-By symmetry, we only deal with the extension $k / \F_q$. The dominant steps of the algorithm are 
-solving Hilbert 90, i.e. finding $\theta_1$, and taking an $r$-th root in $\F_q(\zeta)$. Taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
-Algorithm \ref{alg:ks}. We show how to efficiently find $\theta_1$. For $a \in k[\zeta]$ define
+We are left with the problem of finding $\theta_1$, that is, an instance of Hilbert's theorem 90.
+We now show how to do it. For $a \in k[\zeta]$ define
 \[ \theta_a = a + \sigma(a)\zeta^{-1} + \sigma^2(a)\zeta^{-2} + \cdots + \sigma^{r - 1}(a)\zeta^{-r 
 	+ 1}. \]
-We have $\sigma(\theta_a) = \zeta\theta_a$. Therefore, $\theta_a$ is a solution of Hilbert 90 over 
-$k[\zeta]/\F_q(\zeta)$. This also shows that $\theta_a^r \in \F_q(\zeta)$. We set $\theta_1 = 
-\theta_a$ for a random $a \in k[\zeta]$. If we write $\theta_1 = \sum_{i = 0}^{s - 1}f_i(x)\zeta^i$ 
-then $\alpha_1 = f_0$ is what we are looking for. To compute $\theta_a$ efficiently, we take 
-different approaches based on the bound on $s$ in Proposition \ref{prop:root-fpz}. We consider two 
+We obviously have $\sigma(\theta_a) = \zeta\theta_a$, and this also shows that $\theta_a^r \in \F_q(\zeta)$.
+Therefore $\theta_a$ is a solution to the problem, as long it is non-zero. 
+Artin's theorem on character independence (see~\cite[Ch VI, Theorem 4.1]{lang})
+shows that the maps $\sigma^i$ are linearly 
+independent, therefore the map $a\mapsto\theta_a$ is not identically zero. 
+
+In practice, we take $a \in k[\zeta]$ at random until
+$\theta_a\ne0$. Since the map $a\mapsto\theta_a$ is
+$\F_q(\zeta)$-linear and non-zero, its kernel has codimension at most 1, thus for a
+random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q^s$. Therefore, we only 
+need $O(1)$ trials to find $\theta_1$.
+To compute $\theta_a$ efficiently, we take 
+different approaches based on the bound on $s$ in Proposition~\ref{prop:root-fpz}. We consider two 
 cases: case 1 is when $s \notin O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
 \paragraph{Case 1.}
-Consider the restrictions $\sigma^i \vert_{k^*}: k^* \rightarrow k[\zeta]^*$. Adapting the same 
-idea of the proof \cite[Ch VI, Theorem 4.1]{lang}, one checks that these mappings are linearly 
-independent. Therefore, there exists $a(x) \in k^*$ such that 
-\[ \theta_a = a(x) + a(x)^q\zeta^{-1} + a(x)^{q^2}\zeta^{-2} + \cdots + a(x)^{q^{r - 1}}\zeta^{-r 
-	+ 1}\]
-is not zero. This proves that $\theta_a: k[\zeta] \rightarrow k[\zeta]$, considered as an 
-$\F_q(\zeta)$-linear map, is not identically zero. Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
 a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
-3.1 in \cite{von1992computing} or \cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
+3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
 operations in $\F_q$.
-
-Since $\theta_a$ is not identically zero, $\#\{k[\zeta] / \ker \theta_a \} > q$. This means for a 
-random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only 
-need $O(1)$ trials to find a nonzero $\theta_a$.
 
 \paragraph{Case 2.} 
 Given $a \in k[\zeta]$ define 
@@ -772,47 +783,47 @@ a + \zeta^{-1}\sigma(\theta_{a, j - 1}) & j \text{ odd}
 \end{cases}
 \]
 Applying $\sigma^j$ to an element $b \in k[\zeta]$ is the same as composing the polynomial $b(x, 
-z)$ with the polynomial $\xi_j(x)$ in the first argument. Algorithm \ref{alg:hilbert-pst} computes 
+z)$ with the polynomial $\xi_j(x)$ in the first argument. Algorithm~\ref{alg:hilbert-pst} computes 
 $\theta_{a, i}$ using above relations.
 
 \begin{algorithm}
-	[Hpt (Hilbert pseudo-trace)]
+	[Hilbert pseudo-trace (Hpt)]
 	\label{alg:hilbert-pst}
 	\begin{algorithmic}[1]
-		\REQUIRE $a \in k[\zeta]$, a positive integer $i$, $\xi_1=x^q$
-		\ENSURE $\xi_i$, $\theta_{a, i}$
-		\IF {$i=1$} 
-		\RETURN $\xi_1$, $a$
+		\REQUIRE $a \in k[\zeta]$, a positive integer $i$, $\xi_1=x^q$.
+		\ENSURE $\xi_i$, $\theta_{a, i}$.
+		\IF {$i=1$}
+		\RETURN $\xi_1$, $a$;
 		\ENDIF
-		\STATE $j \leftarrow \lfloor i / 2 \rfloor$
-		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm Hpt}(a, j, \xi_1)$ 
-		\STATE\label{step:xij} $\xi_{2j} \leftarrow \xi_j(\xi_j)$
+		\STATE $j \leftarrow \lfloor i / 2 \rfloor$;
+		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm Hpt}(a, j, \xi_1)$;
+		\STATE\label{step:xij} $\xi_{2j} \leftarrow \xi_j(\xi_j)$;
 		\STATE\label{step:thetaj} $\theta_{a, 2j} \leftarrow \theta_{a, j} + \zeta^{-j}\theta_{a, 
-			j}(\xi_j)$
-		\IF {$i$ is even} 
-		\RETURN $\xi_{2j}$, $\zeta_{2j}$, $\delta_{2j}$
+			j}(\xi_j)$;
+		\IF {$i$ is even}
+		\RETURN $\xi_{2j}$, $\zeta_{2j}$, $\delta_{2j}$;
 		\ENDIF
-		\STATE $\xi_i \leftarrow \xi_{2j}(\xi_1)$
-		\STATE $\theta_{a, i} \leftarrow a + \zeta^{-1}\theta_{a, 2j}(\xi_1)$
-		\RETURN $\xi_i$, $\theta_{a, i}$
+		\STATE $\xi_i \leftarrow \xi_{2j}(\xi_1)$;
+		\STATE $\theta_{a, i} \leftarrow a + \zeta^{-1}\theta_{a, 2j}(\xi_1)$;
+		\RETURN $\xi_i$, $\theta_{a, i}$.
 	\end{algorithmic}
 \end{algorithm}
 
 \begin{proposition}
 	\label{prop:xitheta}
-	Algorithm \ref{alg:hilbert-pst} works, and given $a,xi_1$ computes $\xi_i, \theta_{a, i}$ in  
+	Algorithm~\ref{alg:hilbert-pst} works, and given $a,xi_1$ computes $\xi_i, \theta_{a, i}$ in  
 	$O(s\CC(r)\log(i))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-	The dominant steps of the algorithm are \ref{step:xij}, \ref{step:thetaj}. Step \ref{step:xij} 
+	The dominant steps of the algorithm are~\ref{step:xij},~\ref{step:thetaj}. Step~\ref{step:xij} 
 	takes one modular composition at the cost of $\CC(r)$ operations in $\F_q$. Using the 
-	representation $a = \sum_{i = 0}^{s - 1}a_i(x)\zeta^i$ for an element $a \in k[\zeta]$, Step 
-	\ref{step:thetaj} takes $O(s)$ modular compositions over $\F_q$ at the total cost of 
+	representation $a = \sum_{i = 0}^{s - 1}a_i(x)\zeta^i$ for an element $a \in k[\zeta]$, Step~\ref{step:thetaj} 
+	takes $O(s)$ modular compositions over $\F_q$ at the total cost of 
 	$O(s\CC(r))$ operations in $\F_q$. The depth of the recursion is $\log(i)$, hence the desired 
 	result.
 \end{proof}
 Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Therefore computing 
-$\theta_a = \theta_{a, r}$ using Algorithm \ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
+$\theta_a = \theta_{a, r}$ using Algorithm~\ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
 \MM(r)\log(q))$ operations in $\F_q$.
 
 Putting the above cases together we have
@@ -822,8 +833,8 @@ Putting the above cases together we have
 	\MM(r)\log(q))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log(r) 
 	+ \MM(r)\log(q))$ operations in $\F_q$ otherwise.
 \end{proposition}
-Combining this with the cost of taking roots in $\F_q(\zeta)$ we get the following for the cost of 
-computing an embedding $k \hookrightarrow K$.
+Combining this with Proposition~\ref{prop:cyclo} and with the cost of taking roots in $\F_q(\zeta)$ we get the following for the cost of 
+computing an embedding $k \hookrightarrow K$ using Allombert's algorithm.
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Computing an embedding $k \hookrightarrow K$ takes $O(s\CC(r)\log(r) + \MM(r)\log(q))$ 
@@ -833,19 +844,27 @@ computing an embedding $k \hookrightarrow K$.
 
 
 
-
-\subsection{Fast Artin-Schreier}
+\subsection{Fast Artin-Schreier-type for $r=p^d$}
 \label{sec:fast-artin-schreier}
 
-This section is devoted to the case $r = p^d$ for some positive integer $d$. The idea is to build a 
+This section is devoted to the case $r = p^d$ for some positive integer $d$.
+The technique we present here originates in~\cite[Lemma 5]{Adleman-Lenstra},
+and appears again in~\cite{LenstraJr91} and~\cite{Allombert02}.
+The chief difference with previous work consists in replacing linear algebra
+with a technique to solve Hilbert's additive theorem 90 similar to the one in
+the previous section.
+Recently, Narayanan~\cite[Sec.~4]{narayanan2016fast} independently described
+a related variant with a similar complexity.
+
+The idea is to build a 
 tower inside the extension $k/\F_q$ using polynomials of the form $X^p - X - a$ where $a \in k$. To 
 start, let $a_1 \in \F_q$ be such that $\trace_{\F_q/\F_p}(a_1) \ne 0$. Let $\sigma \in 
 \gal(\F_q/\F_p)$ be a generator. Then by the additive Hilbert's theorem 90 there is no element 
 $\alpha \in \F_q$ such that $\sigma(\alpha) - \alpha = a_1$. Equivalently, the polynomial $f_1 = 
-X^p - X - a_1$ has no root in $\F_q$. By the Artin-Schreier theorem in \cite[Ch VI]{lang} $f_1$ 
+X^p - X - a_1$ has no root in $\F_q$. By the Artin-Schreier theorem in~\cite[Ch VI]{lang} $f_1$ 
 is irreducible over $\F_q$. For a root $\alpha_1 \in k$ of $f_1$ the extension $\F_q(\alpha_1) / 
 \F_q$ is of degree $p$.
-Now let $a_2 = a_1\alpha_1^{p - 1}$. Then by \cite[Lemma 5]{Adleman-Lenstra} the polynomial $f_2 = 
+Now let $a_2 = a_1\alpha_1^{p - 1}$. Then by~\cite[Lemma 5]{Adleman-Lenstra} the polynomial $f_2 = 
 X^p - X - a_2$ is irreducible over $\F_q(\alpha_1)$. So, for a root $\alpha_2 \in k$ of $f_2$ the 
 extension $\F_q(\alpha_2, \alpha_1) / \F_q(\alpha_1)$ is of degree $p$. Continuing the above 
 process we build a tower
@@ -853,11 +872,11 @@ process we build a tower
 	\label{equ:art-sch-tower}
 	\F_q \subset \F_q(\alpha_1)  \subset \cdots \subset \F_q(\alpha_1, \cdots, \alpha_d) = k.
 \end{equation}
-The idea of building such tower using the Artin-Schreier polynomials $f_i$ can also be found in 
-\cite{LenstraJr91, Allombert02, shoup93}. By construction, $\alpha_i \notin \F_q(\alpha_1, \cdots, 
+The idea of building such tower using the Artin-Schreier polynomials $f_i$ can also be found
+in~\cite{LenstraJr91, Allombert02, shoup93}. By construction, $\alpha_i \notin \F_q(\alpha_1, \cdots, 
 \alpha_{i - 1})$ for all $1 \le i \le d$. This means the minimal polynomial of $\alpha_d$ over 
-$\F_q$ is of degree $r = p^d$. Therefore, $k = \F_q(\alpha_d)$, and the element $\alpha_d \in k$ is 
-what we are looking for.
+$\F_q$ is of degree $r = p^d$. Therefore, $k = \F_q(\alpha_d)$, and the element $\alpha_d$ is 
+uniquely defined up to $\F_q$-isomorphism.
 
 The above constructions boils down to computing a root of the polynomial $f = X^p - X - a \in 
 k[X]$. We show how to compute such root. By construction, $a$ is always in an intermediate subfield 
@@ -872,7 +891,7 @@ $\theta \in k$ with nonzero trace, $\alpha$ can be explicitly set as
 	\alpha = \frac{1}{\trace(\theta)}[a\sigma(\theta) + (a + \sigma(a))\sigma^2(\theta) + \cdots + 
 	(a + \sigma(a) + \cdots + \sigma^{rt - 2}(a))\sigma^{rt - 1}(\theta)]
 \end{equation}
-where $t = [\F_q : \F_p]$. To compute (\ref{equ:art-sch-hil}) efficiently, we define
+where $t = [\F_q : \F_p]$. To compute Eq.~\eqref{equ:art-sch-hil} efficiently, we define
 \[ \xi_i = \sigma^i(x), \quad \beta_i(u) = u + \sigma(u) + \cdots + \sigma^{i - 1}(u), \quad 
 \alpha_i(v) = \beta_1(a)\sigma(v) + \cdots + \beta_i(a)\sigma^i(v). \]
 A simple calculation gives
@@ -906,7 +925,7 @@ computed. As before, the action of $\sigma^j$ is the same as composing with $\xi
 of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(\CC(r))$ 
 operations in $\F_q$. The initial value of $\xi_1 = x^q$ is computed using $O(\MM(r)\log(q))$ 
 operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(rt) + 
-\MM(r)\log(q))$ operations in $\F_q$. Now, to compute $\alpha_d$ in (\ref{equ:art-sch-tower}) we 
+\MM(r)\log(q))$ operations in $\F_q$. Now, to compute $\alpha_d$ in Eq.~\eqref{equ:art-sch-tower} we 
 need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is computed only once. 
 \begin{proposition}
 	Let $r = p^d$ for a positive integer $d$, and let $t = [\F_q : \F_p]$. An isomorphism of two 
@@ -914,6 +933,96 @@ need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is 
 	$O(\CC(r)\log(rt)\log(r) + \MM(r)\log(q))$ operations in $\F_q$.
 \end{proposition}
 
+
+
+\subsection{Faster algorithm for large powers}
+\label{sec:fast-algor-large}
+
+\todo{Javad: can we get rid of $v\ne2$?}
+
+We end this section, with an algorithm that is particularly efficient when the extension 
+degree $r$ is a prime power. Allombert's algorithm works well in this case, however its
+complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for some prime $v\ne2,p$,
+it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ instead.
+The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
+extractions.
+We are not aware of this algorithm appearing anywhere in the literature, however we
+do not claim it to be fully original.
+We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published a radically
+different generalization of Allombert's algorithm with a very similar complexity in $r$
+(his algorithm has much worse complexity in $q$, though).
+
+An overview of the construction is as follows. Let $r = v^d$ where $v \ne 2, p$ is a 
+prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
+the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
+cyclotomic field extensions $\F_q(\zeta), k(\zeta)$ of degree $s$ over $\F_q, k$ respectively, by 
+obtaining an irreducible factor of the $v$th cyclotomic polynomial over $\F_q$. Then we obtain a  
+non-$v$-adic residue $\eta \in F(\zeta)$. 
+
+We have $[k(\zeta): \F_q(\zeta)] = r$, so we can 
+compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$ using $d$ successive $v$-th 
+root extractions in $k(\zeta)$. Therefore, $\theta$ is a generator for the unique subgroup of 
+$k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of $\theta$ is such that $k = 
+F(\alpha)$. The main result of this section is given in Theorem~\ref{theorem:isom-root} below.
+By applying it to both $k$ and $K$, we immediately obtain an embedding description algorithm.
+
+\begin{theorem}
+	\label{theorem:isom-root}
+	Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
+	order of $q$ in $\Z / v\Z$. Given an extension $k/\F_q$ of degree $r$, a generator 
+	$\alpha$ of $k$, such that its orbit under $\gal(k/\F_q)$ is uniquely defined,
+        can be constructed at the cost of 
+	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+\end{theorem}
+
+
+\paragraph{Computing $v$-th roots in $k(\zeta)$}
+We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} to compute a $v$-th 
+roots in $k(\zeta)$. Note that an element $a \in k(\zeta)$ can be written as $a = a_0(x) + a_1(x)z 
++ \cdots + a_{s - 	1}(x)z^{s - 1}$, 
+where $x$ is the image of $X$ in $k=\F_q[X]/f(X)$.
+Raising $a$ to the power of $q^{is}$ gives
+\[a^{q^{is}} = \sum_{j = 0}^{s - 1} a_j(x^{q^{is}})z^j = \sum_{j = 0}^{s - 1} a_j(\xi_i)z^j = 
+a(\xi_i).\]
+This can be done in $O(s\CC(r))$ operations in $\F_q$. Also, to compute $x^{q^s}$ we first compute 
+$x^q$ using $O(\MM(r)\log(q))$ operations in $\F_q$, and then do $\log(s)$ modular compositions in 
+$k$. Then $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ operations in $\F_q$. Therefore, the 
+complexity of~\cite[Algorithm~2]{doliskanischost2011} will be $O(s\CC(r)\log(i) + 
+\MM(r)\log(q))$ operations in $\F_q$.
+
+Step 6 of~\cite[Algorithm~3]{doliskanischost2011} can be done using the technique
+in~\cite[Lemma~14]{shoup94}. A simple analysis shows that this can be done in $O(\MM(rs)\log(v)\log(s) + 
+s\CC(r)\log(s) + \MM(rs)\log(q))$ operations in $\F_q$. Therefore, the complexity
+of~\cite[Algorithm~3]{doliskanischost2011} will be $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + 
+\MM(rs)\log(q))$ operations in $\F_q$.
+
+\begin{proof}[Proof of Theorem~\ref{theorem:isom-root}]
+Now, we can construct $\alpha$ in Theorem~\ref{theorem:isom-root} as follows. We first build the 
+extension $k(\zeta) / \F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in $\F_q(\zeta)$. 
+Then $\eta$ is an $r$-power in $k(\zeta)$. To obtain an $r$-th root $\theta$ of $\eta$ we take $d$ 
+successive $v$-th roots using the algorithm sketched above. 
+
+\begin{algorithm}
+	[Kummer-type algorithm for extension towers]
+	\label{algorithm:alpha-root}
+	\begin{algorithmic}[1]
+		\REQUIRE An extension $k / \F_q$ of degree prime-power $r = v^d$, with $v\ne2,p$.
+		\ENSURE An element $\alpha \in k$, with uniquely defined Galois orbit, such that $k = \F_q(\alpha)$.
+		\STATE\label{step:factor-cyclo} Factor the $v$th cyclotomic polynomial $\F_q$ to 
+		build the extension $k(\zeta) / \F_q(\zeta)$;
+		\STATE\label{step:non-v-res} Find a non-$v$-adic residue $\eta \in \F_q(\zeta)$;
+		\STATE\label{step:rep-root1} Compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$;
+		\RETURN The constant term of $\theta$.
+	\end{algorithmic}
+\end{algorithm}
+
+Step \ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Proposition 
+\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $F$. By~\cite[Lemma 15]{shoup94} Step 
+\ref{step:non-v-res} takes $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
+$\F_q$. Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root 
+extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\log^2(r) + 
+\MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+\end{proof}
 
 
 
@@ -2460,215 +2569,6 @@ exhibited by Sutherland et al.~\cite{} with $j$-invariant:
 j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)} \enspace .
 \]
 \todo{Give bounds on what was checked, speak of http://arxiv.org/abs/1607.01920 }
-
-\section{Iterated root taking algorithm}
-
-In this section, we propose an algorithm that is in particular efficient for when the extension 
-degree $r$ is a high prime-power.
-The idea is to extract successive roots until we find a desired 
-generator. An overview of the construction is 
-as follows. Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Suppose we 
-are given extensions $k/F$ of degree $r$. Let $s$ be the order of $q$ in $\Z / v\Z$, 
-and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to cyclotomic field extensions 
-$F(\zeta), k(\zeta)$ of degree $s$ over $F, k$ respectively, by obtaining an irreducible factor of 
-the $v$th cyclotomic polynomial over $F$. Then we obtain a  non-$v$-adic residue $\eta \in 
-F(\zeta)$. 
-
-We have $[k(\zeta): F] = rs$, and $q^{rs} - 1 = u_1v^{d + t}$ with $(u_1, v) = 1$. So we can 
-compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$. This is done using $d$ successive $v$-th 
-root extractions in $k(\zeta)$. We give an efficient algorithm for extracting $v$-th root in 
-$k(\zeta)$ in Section \ref{subsec:vthroot}. Therefore, $\theta$ is a generator 
-for the unique subgroup of $k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of 
-$\theta$ is such that $k = F(\alpha)$. The main result of this section is as follows.
-\begin{theorem}
-	\label{theorem:isom-root}
-	Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
-	order of $q$ in $\Z / v\Z$. Given an extension $k/\F_q$ of degree $r$, a canonical element 
-	$\alpha \in k$, such that $k = \F_q(\alpha)$, can be constructed at the cost of 
-	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
-\end{theorem}
-
-
-
-\subsection{Computing $v$-th roots in $k(\zeta)$}
-\label{subsec:vthroot}
-
-We adapt the root extraction algorithm in \cite{doliskanischost2011} to compute a $v$-th roots in 
-$k(\zeta)$. 
-The root extraction algorithm will require computing an expression of the form
-$$
-\alpha_i(\lambda) = \lambda^{1 + q^s} + \lambda^{1 + q^s + q^{2s}} + \cdots + \lambda^{1 + q^s + 
-	q^{2s} + \cdots + q^{is}}
-$$
-for given $\lambda \in k(\zeta)$ and integers $i, s > 0$. This can be computed using the same 
-recursive formulation of the previous section. Let
-$$
-\xi_i = x^{q^{is}},
-\quad 
-\zeta_i(\lambda) = \lambda^{q^s + q^{2s} + \cdots + q^{is}} 
-\quad\text{and}\quad 
-\delta_i(\lambda) = \lambda^{q^s} + \lambda^{q^s + q^{2s}} + \cdots + \lambda^{q^s + q^{2s} + 
-	\cdots + q^{is}},
-$$ 
-We have $\alpha_i=\lambda \delta_i$, and the following relations:
-$$\xi_1 = x^{q^s}, \quad \zeta_1 = \lambda^{q^s}, \quad \delta_1 = \lambda^{q^s}$$
-and
-$$
-\xi_i =
-\begin{cases}
-\xi_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
-\xi_{i - 1}^{q^s} & \text{if $i$ is odd,}
-\end{cases} \quad
-\zeta_i = 
-\begin{cases}
-\zeta_{i / 2}\zeta_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
-\zeta_1\zeta_{i - 1}^{q^s} & \text{if $i$ is odd,}
-\end{cases} \quad
-\delta_i = 
-\begin{cases}
-\delta_{i / 2} + \zeta_{i / 2}\delta_{i / 2}^{q^{is / 2}} & \text{if $i$ is even}  \\
-\delta_{i-1} + \zeta_i & \text{if $i$ is odd.}
-\end{cases}$$
-Note that an element $a \in k(\zeta)$ can be written as $a = a_0(x) + a_1(x)z + \cdots + a_{s - 
-	1}(x)z^{s - 1}$. Raising $a$ to the power of $q^{is}$ gives
-\[a^{q^{is}} = \sum_{j = 0}^{s - 1} a_j(x^{q^{is}})z^j = \sum_{j = 0}^{s - 1} a_j(\xi_i)z^j = 
-a(\xi_i).\]
-Assuming that $\xi_1=x^{q^s}$ and $\zeta_1=\lambda^{q^s}$ are already known, the above 
-relations give the following algorithm.
-
-\begin{algorithm}
-	[XiZetaDelta$(\lambda,i,\xi_1,\zeta_1)$]
-	\label{algorithm:xizetadelta}
-	\begin{algorithmic}[1]
-		\REQUIRE $\lambda$, a positive integer $i$, $\xi_1=x^{q^s}$, $\zeta_1=\lambda^{q^s}$
-		\ENSURE $\xi_i$, $\zeta_i$, $\delta_i$
-		\IF {$i=1$} 
-		\RETURN $\xi_1$, $\zeta_1$, $\zeta_1$
-		\ENDIF
-		\STATE $j \leftarrow \lfloor i/2\rfloor$
-		\STATE $\xi_{j},\zeta_{j},\delta_j \leftarrow {\rm XiZetaDelta}(\lambda,j,\xi_1,\zeta_1)$ 
-		\STATE $\xi_{2j} \leftarrow \xi_j(\xi_j)$
-		\STATE\label{step:zetaj} $\zeta_{2j} \leftarrow \zeta_j\cdot \zeta_j(\xi_j)$
-		\STATE\label{step:deltaj} $\delta_{2j}\leftarrow \delta_j+\zeta_j \delta_j(\xi_j)$
-		\IF {$i$ is even} 
-		\RETURN $\xi_{2j}$, $\zeta_{2j}$, $\delta_{2j}$
-		\ENDIF
-		\STATE $\xi_i \leftarrow \xi_{2j}(\xi_1)$
-		\STATE $\zeta_i \leftarrow \zeta_1\cdot \zeta_{2j}(\xi_1)$
-		\STATE $\delta_i \leftarrow \delta_{2j}+\zeta_i$
-		\RETURN $\xi_i$, $\zeta_i$, $\delta_i$
-	\end{algorithmic}
-\end{algorithm}
-The complexity is dominated by Steps \ref{step:zetaj}, \ref{step:deltaj}. They require $O(1)$ 
-addition and multiplication in $k(\zeta)$ at the cost of $O(\MM(rs))$, and $s$ modular 
-composition in $F_1$ at the cost of $O(s\CC(r))$ operations in $F$. The depth of the recursion is 
-$\log(i)$ which give the total running time $O(\MM(rs)\log(i) + s\CC(r)\log(i)) = 
-O(s\CC(r)\log(i))$. Now $\alpha_i(\lambda)$ can be computed using the following algorithm.
-
-\begin{algorithm}
-	[Alpha$(\lambda,i)$]
-	\label{algorithm:alpha}
-	\begin{algorithmic}[1]
-		\REQUIRE $\lambda$, a positive integer $i$
-		\ENSURE $\alpha_i$
-		\STATE $\xi_1 \leftarrow x^{q^s}$
-		\STATE $\zeta_1 \leftarrow \lambda^{q^s}$
-		\STATE $\xi_i$, $\zeta_i$, $\delta_i \leftarrow {\rm XiZetaDelta}(\lambda,i,\xi_1,\zeta_1)$ 
-		\RETURN $\lambda \delta_i$
-	\end{algorithmic}
-\end{algorithm}
-To compute $x^{q^s}$ we first compute $x^q$ using $O(\MM(r)\log(q))$ operations in $F$, and then do 
-$\log(s)$ modular compositions in $F_1$. Then $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ 
-operations in $F$. Therefore, Algorithm \ref{algorithm:alpha} runs in $O(s\CC(r)\log(i) + 
-\MM(r)\log(q))$ operations in $F$.
-
-Let $a \in k(\zeta)$ be a $v$-th power. Let $\gamma \in k(\zeta)$ be a $v$-th root of $a$, and 
-let $\beta = T_{k(\zeta) / F(\zeta)}(\gamma)$, where $T_{k(\zeta) / F(\zeta)}(\gamma): 
-k(\zeta) \to F(\zeta)$ is the trace linear form. We have
-\begin{align*}
-	\label{equation:tr-square}
-	\beta 
-	& = \sum_{i = 0}^{r - 1} \gamma^{q^{is}} \\
-	& = \gamma(1 + \gamma^{q^s - 1} + \gamma^{q^{2s} - 1} + \cdots + \gamma^{q^{(r - 1)s} - 1}) \\
-	& = \gamma(1 + a^{(q^s - 1) / v} + a^{(q^{2s} - 1) / v} + \cdots + a^{(q^{(r - 1)s} -1) / v}).
-\end{align*}
-This gives an equation $\beta = \gamma b$ where $b = 1 + a^{(q^s - 1) / v} + a^{(q^{2s} - 1) / v} + 
-\cdots + a^{(q^{(r - 1)s} -1) / v}$. Raising both sides to the power of $v$ we get $\beta^v = ab^v$ 
-in which the right hand side is known. From this we can compute $\beta$ by taking a $v$-th root in 
-$F(\zeta)$. We can assume $b \ne 0$, otherwise we replace $a$ by $ac^t$ for a random $c \in 
-k(\zeta)$ until $b \ne 0$. Therefore, $\gamma = \beta b^{-1}$. Now if we set $\lambda =
-a^{(q^s - 1) / v}$ then $b = 1 + \lambda + \alpha_{r - 2}(\lambda)$. The following algorithm 
-computes a $v$-th root in $k(\zeta)$.
-
-\begin{algorithm}
-	[$v$-th root in ${k(\zeta)}$]
-	\label{algorithm:root-F1z}
-	\begin{algorithmic}[1]
-		\REQUIRE $a \in (k(\zeta)^*)^v$
-		\ENSURE a $v$-th root of $a$
-		\REPEAT
-		\STATE choose a random $c \in k(\zeta)$
-		\STATE\label{step:root-rand} $a'\leftarrow ac^v$
-		\STATE\label{step:shoup-pow} $\lambda \leftarrow {a'}^{(q^s-1)/v}$
-		\STATE\label{step:b-tr} $b \leftarrow 1+\lambda+{\rm Alpha}(\lambda, r-2)$
-		\UNTIL {$b \ne 0$}
-		\STATE $\beta \leftarrow (a'b^v)^{1/v}$ in $F(\zeta)$
-		\RETURN $\beta b^{-1}c^{-1}$
-	\end{algorithmic}
-\end{algorithm}
-
-Step \ref{step:shoup-pow} can be done using the technique in \cite[Lemma 14]{shoup94} as follows. 
-We have $(q^s-1)/v = \lfloor q^s / v \rfloor$. Let $\alpha \in k(\zeta)$, and assume 
-$\alpha^{\lfloor q / v \rfloor}$ is given. We want to compute $\alpha^{\lfloor q^s / v \rfloor}$. 
-For $u \ge 1$, define integers $A_u, B_u$ as follows
-\[q^u = A_uv + B_u, \quad 0\le B_u < v.\]
-Assuming that we have $\alpha^{A_u}, \alpha^{A_v}$ it can be shown that
-\[ \alpha^{A_{u + v}} = 
-\left(\alpha^{A_v}\right)^{q^u}\left(\alpha^{A_u}\right)^{B_v}\alpha^{\lfloor B_uB_v / v \rfloor}. 
-\]
-As seen above, raising an element of $k(\zeta)$to the power of $q^u$ takes $s\CC(r)$ operations 
-in $F$. Therefore, computing $\alpha^{A_{u + v}}$ from $\alpha^{A_u}, \alpha^{A_v}$ takes 
-$O(\MM(rs)\log(v) + s\CC(r))$ operations in $F$. Now $A_1 = \alpha^{\lfloor q / v \rfloor}$ can is 
-computed using $O(\MM(rs)\log(q)))$ operations in $F$, and using a repeated-doubling algorithm 
-$A_s$ can be computed using $O(\MM(rs)\log(v)\log(s) + s\CC(r)\log(s) + \MM(rs)\log(q))$ operations 
-in $F$.
-
-Step \ref{step:b-tr} is done using Algorithm \ref{algorithm:alpha} which takes $O(s\CC(r)\log(r) + 
-\MM(r)\log(q))$ operations in $F$. The rest of the algorithm is dominated by the above. Therefore, 
-Algorithm \ref{algorithm:root-F1z} runs in $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + 
-\MM(rs)\log(q))$ operations in $F$. 
-
-
-%///////////////////////////////////////////
-
-
-\subsection{Constructing $\alpha$}
-
-We first build the extension $k(\zeta) / F(\zeta)$ as follows. Let $\eta$ be a 
-non-$v$-adic residue in $F(\zeta)$. Then $\eta$ is an $r$-power in $k(\zeta)$. To obtain an 
-$r$-th root $\theta$ of $\eta$ we take $d$ successive $v$-th roots using Algorithm 
-\ref{algorithm:root-F1z}. 
-
-\begin{algorithm}
-	[Find $\alpha \in k$ such that $k = F(\alpha)$]
-	\label{algorithm:alpha-root}
-	\begin{algorithmic}[1]
-		\REQUIRE an extension $k / F$ of degree prime-power $r = v^d$
-		\ENSURE an element $\alpha \in k$ such that $k = F(\alpha)$
-		\STATE\label{step:factor-cyclo} factor the $v$th cyclotomic polynomial $F$ to 
-		build the extension $k(\zeta) / F(\zeta)$
-		\STATE\label{step:non-v-res} find a non-$v$-adic residue $\eta \in F(\zeta)$
-		\STATE\label{step:rep-root1} compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$
-		\RETURN the constant term of $\theta$
-	\end{algorithmic}
-\end{algorithm}
-
-Step \ref{step:factor-cyclo} is done using by Algorithm \ref{alg:ks} which, by Proposition 
-\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $F$. By \cite[Lemma 15]{shoup94} Step 
-\ref{step:non-v-res} takes $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
-$F$. Step \ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ applications of Algorithm 
-\ref{algorithm:root-F1z}. Therefore Algorithm \ref{algorithm:alpha-root} runs in 
-$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $F$. 
 
 
 
