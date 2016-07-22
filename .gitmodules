@@ -1,0 +1,3 @@
+[submodule "implementation/ellmul"]
+	path = implementation/ellmul
+	url = https://github.com/jpflori/ellmul.git

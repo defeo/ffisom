@@ -10,7 +10,7 @@ from sage.rings.finite_rings.finite_field_constructor import GF
 import sys
 from sage.misc.misc import cputime
 
-# p n o c rains ellrains pari javad
+# p n o c rains ellrains pari kummer
 def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
@@ -86,7 +86,7 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
                 if c > cmax:
                     break
                 t = cputime()
-                a, b = find_gens_javad(k_flint, k_flint)
+                a, b = find_gens_kummer(k_flint, k_flint)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -94,15 +94,15 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavad = tloops / (l+1)
+            tkummer = tloops / (l+1)
             if write:
-                f.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tjavad))
+                f.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tkummer))
             else:
-                sys.stdout.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tjavad))
+                sys.stdout.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tkummer))
     if write:
         f.close()
 
-def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -144,7 +144,7 @@ def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = 
             for l in xrange(loops):
                 t = cputime()
                 # MC, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 0, 0)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -152,12 +152,12 @@ def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = 
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadmcmp = tloops / (l+1)
+            tkummermcmp = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # MC, no MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 0, 1<<30)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 1<<30)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -165,12 +165,12 @@ def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = 
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadmc = tloops / (l+1)
+            tkummermc = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # LA, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 1<<30)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 1<<30)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -178,12 +178,12 @@ def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = 
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadlamp = tloops / (l+1)
+            tkummerlamp = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # LA, no MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 0)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 0)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -191,10 +191,10 @@ def benchmark_javad(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = 
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadla = tloops / (l+1)
+            tkummerla = tloops / (l+1)
             if write:
-                f.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tjavadmcmp, tjavadmc, tjavadlamp, tjavadla))
+                f.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tkummermcmp, tkummermc, tkummerlamp, tkummerla))
             else:
-                sys.stdout.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tjavadmcmp, tjavadmc, tjavadlamp, tjavadla))
+                sys.stdout.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tkummermcmp, tkummermc, tkummerlamp, tkummerla))
     if write:
         f.close()

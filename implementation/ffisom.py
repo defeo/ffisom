@@ -6,5 +6,5 @@
 from rains import find_gens as find_gens_cyclo
 from ellrains import find_gens as find_gens_ell
 from pari_ffisom import find_gens as find_gens_pari
-from javad_nmod import find_gens as find_gens_javad
+from kummer_nmod import find_gens as find_gens_kummer
 from finite_field_flint_fq_nmod import FiniteField_flint_fq_nmod as GF_flint

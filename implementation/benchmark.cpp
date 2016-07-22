@@ -1,6 +1,6 @@
 /*
  * Compile doing stg like:
- *   g++ -g -I"$(SAGE_LOCAL)/include" -L"$(SAGE_LOCAL)/lib" -L"." benchmark.cpp -lpari -ljavad_nmod -lflint -o benchmark
+ *   g++ -g -I"$(SAGE_LOCAL)/include" -L"$(SAGE_LOCAL)/lib" -L"." benchmark.cpp -lpari -lkummer_nmod -lflint -o benchmark
  * and run doing stg like:
  *   LD_LIBRARY_PATH="$(SAGE_LOCAL)/local/lib:." ./benchmark 
  */
@@ -11,7 +11,7 @@
 #include <pari/pari.h>
 
 #include <flint/nmod_poly.h>
-#include "javad/nmod_poly_isom/ff_embedding.h"
+#include "kummer_c++_flint/nmod_poly_isom/ff_embedding.h"
 
 int main (int argc, char **argv)
 {
