@@ -147,60 +147,7 @@ void FFIsomPrimePower::compute_semi_trace_small_ext(fq_nmod_poly_t theta, const 
                 nmod_mat_t cyclo_frob;
                 nmod_mat_init(cyclo_frob, rows, rows, ctx->modulus->mod.n);
                 nmod_poly_evaluate_mat(cyclo_frob, cyclo_mod, frob_auto);
-                /* Custom evaluation.
-                // Iterated Frobenius: x, x^p, x^p^2, ...
-                nmod_mat_t frob_pows[r+1];
-                for (slong i = 0; i <= r; i++)
-                         nmod_mat_init(frob_pows[i], rows, 1, ctx->modulus->mod.n);
-                nmod_mat_entry(frob_pows[0], 1, 0) = 1;
-                for (slong i = 0; i < rows; i++)
-                        nmod_mat_entry(frob_pows[1], i, 0) = nmod_mat_entry(frob_auto, i, 1);
-		for (slong i = 2; i <= r; i++)
-			nmod_mat_mul(frob_pows[i], frob_auto, frob_pows[i-1]);
 
-                // cyclo_mod(frobenius): cyclo_mod(1), cyclo_mod(x^p), cyclo_mod(x^2p), ...
-                nmod_poly_t temp2;
-                nmod_poly_init(temp2, ctx->modulus->mod.n);
-                nmod_mat_t cyclo_mod_col;
-                nmod_mat_init(cyclo_mod_col, r+1, 1, ctx->modulus->mod.n);
-                for (slong i = 0; i <= r; i++)
-                        nmod_mat_entry(cyclo_mod_col, i, 0) = nmod_poly_get_coeff_ui(cyclo_mod, i);
-                nmod_mat_t cyclo_frob_cols[rows];
-                for (slong i = 0; i < rows; i++)
-                        nmod_mat_init(cyclo_frob_cols[i], rows, 1, ctx->modulus->mod.n);
-                nmod_mat_t frob_pows_iter;
-                nmod_mat_init(frob_pows_iter, rows, r+1, ctx->modulus->mod.n);
-                for (slong i = 0; i <= r; i++)
-                        for (slong j = 0; j < rows; j++)
-                                nmod_mat_entry(frob_pows_iter, j, i) = nmod_mat_entry(frob_pows[i], j, 0);
-                nmod_mat_entry(cyclo_frob_cols[0], 0, 0) = nmod_poly_evaluate_nmod(cyclo_mod, 1);
-                nmod_mat_mul(cyclo_frob_cols[1], frob_pows_iter, cyclo_mod_col);
-                for (slong i = 2; i < rows; i++) {
-                        for (slong j = 0; j <= r; j++) {
-                                for (slong k = 0; k < rows; k++) {
-                                         nmod_poly_set_coeff_ui(temp, k, nmod_mat_entry(frob_pows_iter, k, j));
-                                         nmod_poly_set_coeff_ui(temp2, k, nmod_mat_entry(frob_pows[j], k, 0));
-                                }
-                                fq_nmod_mul(temp, temp, temp2, ctx);
-                                for (slong k = 0; k < rows; k++) {
-                                        nmod_mat_entry(frob_pows_iter, k, j) = nmod_poly_get_coeff_ui(temp, k);
-                                }
-                        }
-                        nmod_mat_mul(cyclo_frob_cols[i], frob_pows_iter, cyclo_mod_col);
-                }
-                for (slong i = 0; i < rows; i++)
-                       for (slong j = 0; j < rows; j++)
-                               nmod_mat_entry(cyclo_frob, j, i) = nmod_mat_entry(cyclo_frob_cols[i], j, 0);
-                nmod_poly_clear(temp2);
-                nmod_mat_clear(cyclo_mod_col);
-                for (slong i = 0; i <= r; i++) {
-                        nmod_mat_clear(frob_pows[i]);
-                }
-                nmod_mat_clear(frob_pows_iter);
-                for (slong i = 0; i < rows; i++) {
-                        nmod_mat_clear(cyclo_frob_cols[i]);
-                }
-                */
                 // Kernel
 		nmod_mat_nullspace(cyclo_frob, cyclo_frob);
                 nmod_mat_t a[r];
