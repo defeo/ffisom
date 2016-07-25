@@ -8,7 +8,7 @@ sage_local:
 
 libkummer_nmod.so: sage_local
 	$(MAKE) -C kummer_c++_flint
-	cp kummer_c++_flint/nmod_poly_isom/libkummer_nmod.so .
+	cp kummer_c++_flint/libkummer_nmod.so .
 
 libellmul.so: sage_local
 	cd ellmul && ./configure --with-gmp=$(SAGE_LOCAL) --with-mpfr=$(SAGE_LOCAL) --with-flint=$(SAGE_LOCAL)

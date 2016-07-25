@@ -1,15 +1,29 @@
-SUBDIRS=fmpz_mod_poly_isom nmod_poly_isom
-GCC = g++
-GCCFLAGS="-g -O3 -fPIC -I$(INC_DIR)/include"
-export
+BUILD_DIR = build
+SOURCES = $(wildcard *.cpp)
+OBJS = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
-all: libkummer_nmod.so libkummer_fmpz_mod.so
+CC=g++
+CCFLAGS=-Wall -g -O3 -fPIC
+LIBS = -lflint -lmpfr -lgmp
+LIBRARY=libkummer_nmod.so
 
-clean: 
-	$(foreach dir, $(SUBDIRS), $(MAKE) -C $(dir) clean;)
+.PHONY: clean
 
-libkummer_nmod.so:
-	$(MAKE) -C nmod_poly_isom GCCFLAGS=$(GCCFLAGS) LIBRARY=$@
+all: $(LIBRARY) $(OBJS)
 
-libkummer_fmpz_mod.so:
-	$(MAKE) -C fmpz_mod_poly_isom GCCFLAGS=$(GCCFLAGS) LIBRARY=$@
+$(LIBRARY): $(OBJS)
+	$(CC) -shared $(LDFLAGS) $(LIBS) $(OBJS) -o $@
+
+clean:
+	rm -f *.so
+	rm -f $(OBJS)
+	rm -r $(BUILD_DIR)
+
+$(BUILD_DIR)/%.o:	%.cpp
+	echo $(INC_DIR)
+	$(CC) -c $< -o $@ $(CCFLAGS)
+
+# make the build dir if not exist
+$(OBJS) : | $(BUILD_DIR)
+$(BUILD_DIR) :
+	mkdir $(BUILD_DIR)
