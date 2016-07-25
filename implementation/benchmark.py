@@ -198,7 +198,10 @@ def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax =
     if write:
         f.close()
 
-def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax = Infinity, check = 0):
+def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax = Infinity, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+    if write:
+        mode = 'w' if overwrite else 'a'
+        f = open(fname, mode, 0)
     pmin, pmax = pbound
     nmin, nmax = nbound
     for p in xrange(pmin, pmax):
@@ -214,7 +217,7 @@ def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax
             for l in xrange(loops):
                 t = cputime()
                 # MC, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 0, 0)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -222,12 +225,12 @@ def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadmcmp = tloops / (l+1)
+            tkummermcmp = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # LA, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 0)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 0)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -235,10 +238,15 @@ def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadla = tloops / (l+1)
-            sys.stdout.write("{} {}: {} {}\n".format(p, n, tjavadmcmp, tjavadla))
+            tkummerla = tloops / (l+1)
+            if write:
+                f.write("{} {}: {} {}\n".format(p, n, tkummermcmp, tkummerla))
+            else:
+                sys.stdout.write("{} {}: {} {}\n".format(p, n, tkummermcmp, tkummerla))
+    if write:
+        f.close()
 
-def benchmark_linalg(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_linalg_nontriv(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -280,7 +288,7 @@ def benchmark_linalg(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax =
             for l in xrange(loops):
                 t = cputime()
                 # MC, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 0, 0)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -288,12 +296,12 @@ def benchmark_linalg(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax =
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadmcmp = tloops / (l+1)
+            tkummermcmp = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # MC, no MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 0, 1<<30)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 1<<30)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -301,12 +309,12 @@ def benchmark_linalg(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax =
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadmc = tloops / (l+1)
+            tkummermc = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
                 # LA, MP
-                a, b = find_gens_javad(k_flint, k_flint, n, 1<<30, 1<<30)
+                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 1<<30)
                 tloops += cputime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
@@ -314,10 +322,10 @@ def benchmark_linalg(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax =
                     assert(g == b.minpoly())
                 if tloops > tmax:
                     break
-            tjavadla = tloops / (l+1)
+            tkummerla = tloops / (l+1)
             if write:
-                f.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tjavadmcmp, tjavadmc, tjavadla))
+                f.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tkummermcmp, tkummermc, tkummerla))
             else:
-                sys.stdout.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tjavadmcmp, tjavadmc, tjavadla))
+                sys.stdout.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tkummermcmp, tkummermc, tkummerla))
     if write:
         f.close()
