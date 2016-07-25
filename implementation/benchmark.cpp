@@ -11,7 +11,7 @@
 #include <pari/pari.h>
 
 #include <flint/nmod_poly.h>
-#include "kummer_c++_flint/nmod_poly_isom/ff_embedding.h"
+#include "kummer_c++_flint/ff_embedding.h"
 
 int main (int argc, char **argv)
 {

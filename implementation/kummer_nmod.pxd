@@ -4,7 +4,7 @@
 from sage.libs.flint.nmod_poly cimport nmod_poly_t
 from finite_field_flint_fq_nmod cimport FiniteField_flint_fq_nmod
 
-cdef extern from "kummer_c++_flint/nmod_poly_isom/ff_embedding.h":
+cdef extern from "kummer_c++_flint/ff_embedding.h":
     cdef cppclass FFEmbedding:
         FFEmbedding(nmod_poly_t, nmod_poly_t) except +
         void compute_generators(nmod_poly_t g1, nmod_poly_t g2, long lathr, long mpthr)
