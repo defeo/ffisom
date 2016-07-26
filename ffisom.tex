@@ -1181,10 +1181,10 @@ in the following lemma.
   $\F_q$, independent of the choice of $\zeta_\ell$.
 \end{lemma}
 \begin{proof}
-  See~\cite[Main Theorem]{feisel1999normal},
-  the main ideas of the proof are to show that cyclotomic units
-  are normal in characteristic zero and that integrality conditions
-  make the situation reduce to positive characteristic.
+  See~\cite[Main Theorem]{feisel1999normal}.
+  The main idea of the proof is to show that cyclotomic units are
+  normal in characteristic zero, then that integrality conditions
+  carry normality through reduction to positive characteristic.
 \end{proof}
 
 In what follows we are going to write $\eta(\zeta_\ell)$ when $q$ is
@@ -1259,8 +1259,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O(\MM(sr)(sr\log q + (\ell\log\ell)/r))$ operations in $\F_q$, or
-  $\tildO(s^2r^2\log q)$ assuming $\ell\in o(sr^2)$.
+  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1271,7 +1270,8 @@ the field $k$, the procedure for the field $K$ being identical.
   Using the techniques of Section~\ref{sec:introduction},
   multiplications in $k'$ cost $O(\MM(sr))$ operations in $\F_q$.
   Hence, the root of unity $\zeta$ is obtained after $O(1)$ tries on
-  average at a cost of $O(\MM(sr)sr\log q)$ operations each.
+  average. By Prop.~\ref{prop:large-power}, computing $\zeta$
+  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$.
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
@@ -1285,7 +1285,7 @@ the field $k$, the procedure for the field $K$ being identical.
 
 The attentive reader will have noticed the irreducible polynomial $h$
 of degree $s$ given as input to Rains' algorithm. Computing this
-polynomial may not be cheap. For a start, we may $s$ to be coprime
+polynomial may be expensive. For a start, we may ask $s$ to be coprime
 with $r$, so that $h$ can be taken with coefficients in $\F_q$. Then,
 for small values of $s$ and $q$, one may use a table of irreducible
 polynomials. For larger values, the
@@ -1297,9 +1297,9 @@ However negligible from an asymptotic point of view, the construction
 of the polynomial $h$ and of the field $k'$ take a serious toll on the
 practical performances of Rains' algorithm. Hence, we present now a
 variant of Rains' algorithm which avoids the construction of the field
-extension $k'$ by factoring the cyclotomic polynomial
-$\Phi_\ell$. Which of the two variants performs better depends on the
-relative values of $\ell$ and $s$.
+extension $k'$ by factoring the cyclotomic polynomial $\Phi_\ell$. In
+the algorithm below we denote by $[\bar{h}]_i$ the degree $i$ coefficient
+of the polynomial $\bar{h}$.
 
 \begin{algorithm}[Rains' cyclotomic algorithm variant]
   \label{algorithm:rains-cyclo-2}
@@ -1313,8 +1313,8 @@ relative values of $\ell$ and $s$.
     with a uniquely defined Galois orbit.
     
     \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
-    \STATE Compute $\bar{h} \leftarrow \rev{h'}/\rev{h} \bmod Z^\ell$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow -\sum_{\sigma\in S}[\bar{h}]_\sigma$.
+    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
+    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1326,14 +1326,30 @@ relative values of $\ell$ and $s$.
   \MM(\ell r)\log(q))$ operations in $\F_q$, or $\tildO(\ell r\log (q))$.
 \end{proposition}
 \begin{proof}
-  Factoring $\Phi_\ell$ costs $O(\ell r(\log(s)+\log(r))\log(\ell) +
-  \MM(\ell r)\log(\ell r) + \MM(\ell r)\log(q))$ according to
-  Proposition~\ref{prop:cyclo}.
+  Let $\zeta$ be the image of $h$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
+  an $\ell$-th root of unity. By Newton's identities, we have the
+  equality of power series
+  \begin{equation*}
+    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
+  \end{equation*}
+  Hence, summing the $\sigma$-th coefficients in the above series for
+  $\sigma\in S$ gives the sought period.
 
-  $\bar{h}$ is computed by a Euclidean division in $O(\MM(\ell r))$
-  operations. The final sum is computed in $O(\ell r)$ operations.
+  The complexity is dominated by the cost of factoring $\Phi_\ell$,
+  that is
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations according to
+  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
+  costs only $O(\MM(\ell r))$ operations, and the final sum
+  $O(\ell r)$ operations.
 \end{proof}
 
+By comparing the latter algorithm with Rains' original one, we see
+that our variant performs better when $s$ is larger than $r$. Although
+we are unable to prove that this cannot be the case, we shall argue in
+Section~\ref{sec:selection} that $s$ is typically in
+$O(\log(r))$. Thus this latter variant of Rains' algorithms seems to
+be of purely theoretical interest.
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
