@@ -302,6 +302,91 @@ by $\CC(s,m)$ the complexity of modular composition in $k[Z]$, and use
 $O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ as an upper bound.  We
 will use $\CC(s)$ as a shorthand notation for $\CC(s,1)$.
 
+\paragraph{Evaluating Frobenius and trace-like maps}
+
+We will make a heavy use of a technique originating
+in~\cite{von1992computing}. Let $\alpha\in k$, we are interested in
+computing the values $\alpha^{q^d}$ and $\sum_{i=0}^d \alpha^{q^i}$
+for some integer $d$. A simple binary powering approach would yield a
+complexity of $O(d\MM(m)\log(q))$ operations over $\F_q$; however,
+using fast modular composition, it is possible to obtain a better
+complexity bound in some cases.
+
+\begin{proposition}
+  \label{prop:trace-like}
+  Let $\F_q \subset k$ be a finite extension of degree $m$, and let
+  $\alpha\in k$. Let $c,d>0$, it is possible to compte the elements
+  $\alpha^{q^{dc}}$ and $\sum_{i=0}^{d-1}\alpha^{q^{ic}}$ using
+  $O(\CC(m)\log(cd)+\MM(m)\log(q))$ operations in $\F_q$.
+\end{proposition}
+\begin{proof}
+  A detailed proof is given in~\cite[Lemma~5.3]{von1992computing}, we
+  sketch the idea here. Let $k=\F_q[X]/f(X)$, and let $x$ be the image
+  of $X$ in $k$. Let $\xi_i = x^{q^{ic}}$, and let
+  $\tau_i = \alpha + \alpha^{q^c} + \cdots + \alpha^{q^{(i -
+      1)c}}$. Then
+  \[
+    \xi_i = 
+    \begin{cases}
+      \xi_{i / 2}^{q^{ic / 2}} & i \text{ even,} \\
+      \xi_{i - 1}^{q^c} & i \text{ odd,}
+    \end{cases} \quad
+    \tau_i = 
+    \begin{cases}
+      \tau_{i / 2} + \tau_{i / 2}^{q^{ic/2}} & i \text{ even,} \\
+      \alpha + \tau_{i - 1}^{q^c} & i \text{ odd.}
+    \end{cases}
+  \]
+
+  Raising an element $\beta \in k$ to the power $q^{ic}$ is the same
+  as computing the modular composition $\beta(\xi_i)$. Then the
+  algorithm proceeds in three steps: it computes $x^q$ through simple
+  binary powering, at a cost of $O(\MM(m)\log(q))$ operations; then it
+  computes $\xi_1$ using $O(\log(c))$ modular compositions; finally it
+  computes $\xi_d$, $\tau_d$ and $\alpha(\xi_d)$ using $O(\log(d))$
+  modular compositions.
+\end{proof}
+
+In the following sections, we will derive a few generalizations of the
+idea above in different settings. As a first application we now give a
+variant of~\cite[Lemma~14]{shoup94} that will be useful later.
+
+\begin{proposition}
+  \label{prop:large-power}
+  Let $\F_q \subset k$ be a finite extension of degree $m$, and let
+  $\alpha\in k$. Let $d>1$ and $1<t<q$ be integers, and suppose that
+  $t$ divides $q^d-1$. The power $\alpha^{(q^d-1)/t}$ can be computed
+  using $O(\MM(m)\log(t)\log(d) + \CC(m)\log(d) + \MM(m)\log(q))$
+  operations in $\F_q$.
+\end{proposition}
+\begin{proof}
+  For $u \ge 1$, define integers $A_u, B_u$ as follows
+  \begin{equation*}
+    q^u = A_ut + B_u, \quad 0\le B_u < t.
+  \end{equation*}
+  We have $(q^d-1)/t = \lfloor q^d / t \rfloor$, hence our goal is to
+  compute $\alpha^{A_d}$. We start by computing
+  $\alpha^{A_1} = \alpha^{\lfloor q / t\rfloor}$ by a simple binary
+  powering, at a cost of $O(\MM(m)\log(q)))$ operations.
+
+  Now, assuming that $\alpha^{A_u}, \alpha^{A_v}$ are known, direct
+  calculation shows that
+  \[ \alpha^{A_{u + v}} = 
+    \left(\alpha^{A_v}\right)^{q^u}\left(\alpha^{A_u}\right)^{B_v}\alpha^{\lfloor B_uB_v / t \rfloor}. 
+  \]
+  Hence we can compute $\alpha^{A_d}$ by a binary scheme using
+  $O(\log(d))$ such steps. %
+  At each step, the powers $B_v$ and $\lfloor B_uB_v / t \rfloor$ are
+  $<t$, and computing them naively costs $O(\MM(m)\log(t))$
+  operations. %
+  To compute $\left(\alpha^{A_v}\right)^{q^u}$ we apply
+  Prop.~\ref{prop:trace-like}, for a cost of
+  $O(\CC(m)\log(u) + \MM(m)\log(q))$ operations. %
+  Noticing that the values computed by Prop.~\ref{prop:trace-like} can
+  be shared among the various calls, we end up with the claimed
+  complexity.
+\end{proof}
+
 
 \paragraph{Computing subfields.}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
@@ -335,30 +420,9 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 \end{proposition}
 \begin{proof}
 	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
-	see \cite{shoup93}. It remains to compute the trace in Eq.~\eqref{equ:trace-simple}. This can be done 
-	recursively as follows. Let $x$ be the image of $X$ in $k$,
-        let $\xi_i = x^{q^{ir}}$, and let $T_i(\alpha) = \alpha + \alpha^{q^r} + \cdots + \alpha^{q^{(i - 1)r}}$. Then
-	\[
-	\xi_j = 
-	\begin{cases}
-	\xi_{j / 2}^{q^{j / 2}} & j \text{ even} \\
-	\xi_{j - 1}^q & j \text{ odd}
-	\end{cases}, \quad
-	T_j(\alpha) = 
-	\begin{cases}
-	T_{j / 2}(\alpha) + T_{j / 2}(\alpha)^{q^{jr/2}} & j \text{ even} \\
-	\alpha + T_{j - 1}(\alpha)^{q^r} & j \text{ odd}
-	\end{cases}
-	\]
-	Raising an element $\beta \in k$ to the power of $q^j$ is the same computing the composition 
-	$\beta(\xi_j)$. This means that each step of the above recursion is done using $O(1)$ modular 
-	compositions in $k$. The depth of the recursion is $\log(i)$. Therefore, given the initial value 
-	$\xi_1$, $T_i(a)$ is computed using $O(\CC(m)\log(i))$ operations in $\F_q$. To compute the 
-	initial value $\xi_1 = x^{q^r}$ we first compute $x^q$ using the usual binary-powering 
-	algorithm at a cost of $O(\MM(m)\log(q))$ operations in $\F_q$. Then the rest is done using the 
-	same recursive technique as above at the cost of $O(\CC(m)\log(r))$ operations in $\F_q$. 
-	Therefore, computing the trace $\trace_{k/L}(\alpha) = T_{m/r}(\alpha)$ takes $O(\CC(m)\log(m) + 
-	\MM(m)\log(q))$ operations in $\F_q$.
+	see~\cite{shoup93}. %
+        The trace in Eq.~\eqref{equ:trace-simple} is computed using Prop.~\ref{equ:trace-simple}
+        at a cost of $O(\CC(m)\log(m)+\MM(m)\log(q))$ operations in $\F_q$.
 
         Finally, given an element $\gamma\in L$, its image in $k$ is
         computed by evaluating $h(\gamma)$, where $h$ is the
@@ -546,12 +610,12 @@ following costs in $\F_q$:
 	reduce $c_\ell(Z^{q^j \bmod r})$ modulo $g(Z)$ for all $0 \le \ell < n$ at a total cost of 
 	$O(n\MM(r))$.
 	\item $O(n\MM(s))$ for evaluating $\beta_j$ at $x^{q^j}$ using Horner's method.
-	\item $O(\MM(rs))$ for reducing (\ref{equation:betaj}) modulo $f$.
+	\item $O(\MM(rs))$ for reducing Eq.~\eqref{equation:betaj} modulo $f$.
 \end{itemize}
 The depth of the recursion is $\log(s)$, hence $a_1$ can be computed in $O(\MM(s)\log(q) + 
 n\CC(s)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or
 $O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ otherwise. Finally, since 
-the depth of the recursion in Algorithm \ref{alg:ks} is $\log(r)$, and the coefficient $n$ is 
+the depth of the recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and the coefficient $n$ is 
 halved each time, we have the desired result.
 \end{proof}
 
