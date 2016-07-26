@@ -1080,7 +1080,8 @@ successive $v$-th roots using the algorithm sketched above.
 	\end{algorithmic}
 \end{algorithm}
 
-Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Prop.~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; using Shoup's variation~\cite[Lemma~15]{shoup94} on the proof of Prop.~\ref{prop:large-power}, we can do this using $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
+Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Prop.~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; by Prop.~\ref{prop:large-power},
+we can do this using $O(\CC(s)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
 $\F_q$. Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root 
 extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\log^2(r) + 
 \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
