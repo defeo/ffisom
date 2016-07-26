@@ -703,7 +703,7 @@ In~\cite{Allombert02}, Allombert gives a similar approach with more focus on pra
 In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
 polynomial time Las Vegas.
 Even though neither of the two algorithms is given a detailed complexity analyses, both rely
-on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
+on solving linear systems, thus a rough analysis yields a worst case estimate of $O(r^{\omega+1})$ operations
 in $\F_q$ in both cases.
 
 The idea of Lenstra's algorithm is as follows.
@@ -1002,11 +1002,9 @@ need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is 
 \subsection{Faster algorithm for large powers}
 \label{sec:fast-algor-large}
 
-\todo{Javad: can we get rid of $v\ne2$?}
-
 We end this section, with an algorithm that is particularly efficient when the extension 
 degree $r$ is a prime power. Allombert's algorithm works well in this case, however its
-complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for some prime $v\ne2,p$,
+complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for some prime $v\ne p$,
 it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ instead.
 The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
 extractions.
@@ -1016,26 +1014,27 @@ We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published 
 different generalization of Allombert's algorithm with a very similar complexity in $r$
 (his algorithm has much worse complexity in $q$, though).
 
-An overview of the construction is as follows. Let $r = v^d$ where $v \ne 2, p$ is a 
+An overview of the construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
 the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
-cyclotomic field extensions $\F_q(\zeta), k(\zeta)$ of degree $s$ over $\F_q, k$ respectively, by 
+cyclotomic field extensions $\F_q(\zeta), k(\zeta), K(\zeta)$ of degree $s$ over $\F_q, k, K$ respectively, by 
 obtaining an irreducible factor of the $v$th cyclotomic polynomial over $\F_q$. Then we obtain a  
-non-$v$-adic residue $\eta \in F(\zeta)$. 
+random non-$v$-adic residue $\eta \in \F_q(\zeta)$.
 
 We have $[k(\zeta): \F_q(\zeta)] = r$, so we can 
 compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$ using $d$ successive $v$-th 
 root extractions in $k(\zeta)$. Therefore, $\theta$ is a generator for the unique subgroup of 
 $k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of $\theta$ is such that $k = 
-F(\alpha)$. The main result of this section is given in Theorem~\ref{theorem:isom-root} below.
-By applying it to both $k$ and $K$, we immediately obtain an embedding description algorithm.
+\F_q(\alpha)$. %
+Doing the same in $K$ yields an element $\beta\in K$ such that
+$\alpha\mapsto\beta$ defines an isomorphism. %
+The main result of this section is given in Theorem~\ref{theorem:isom-root} below.
 
 \begin{theorem}
 	\label{theorem:isom-root}
-	Let $r = v^d$ where $v \ne 2, p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
-	order of $q$ in $\Z / v\Z$. Given an extension $k/\F_q$ of degree $r$, a generator 
-	$\alpha$ of $k$, such that its orbit under $\gal(k/\F_q)$ is uniquely defined,
-        can be constructed at the cost of 
+	Let $r = v^d$ where $v \ne p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
+	order of $q$ in $\Z / v\Z$. Given extensions $k/\F_q$, $K/\F_q$ of degree $r$, an
+        embedding $k\hookrightarrow K$ can be constructed at the cost of 
 	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
 \end{theorem}
 
@@ -1045,12 +1044,12 @@ We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} 
 roots in $k(\zeta)$. Note that an element $a \in k(\zeta)$ can be written as $a = a_0(x) + a_1(x)z 
 + \cdots + a_{s - 	1}(x)z^{s - 1}$, 
 where $x$ is the image of $X$ in $k=\F_q[X]/f(X)$.
-Raising $a$ to the power of $q^{is}$ gives
+By a slight variation on the proof of Prop.~\ref{prop:trace-like}, we compute the power
 \[a^{q^{is}} = \sum_{j = 0}^{s - 1} a_j(x^{q^{is}})z^j = \sum_{j = 0}^{s - 1} a_j(\xi_i)z^j = 
-a(\xi_i).\]
-This can be done in $O(s\CC(r))$ operations in $\F_q$. Also, to compute $x^{q^s}$ we first compute 
+a(\xi_i)\]
+using $O(s\CC(r))$ operations in $\F_q$. Also, to compute $x^{q^s}$ we first compute 
 $x^q$ using $O(\MM(r)\log(q))$ operations in $\F_q$, and then do $\log(s)$ modular compositions in 
-$k$. Then $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ operations in $\F_q$. Therefore, the 
+$k$. Then $\lambda^{q^s}$ \todo{Javad: what's $\lambda$?} can be computed using $O(s\CC(r))$ operations in $\F_q$. Therefore, the 
 complexity of~\cite[Algorithm~2]{doliskanischost2011} will be $O(s\CC(r)\log(i) + 
 \MM(r)\log(q))$ operations in $\F_q$.
 
@@ -1061,28 +1060,27 @@ of~\cite[Algorithm~3]{doliskanischost2011} will be $O(s\CC(r)\log(r) + \MM(rs)\l
 \MM(rs)\log(q))$ operations in $\F_q$.
 
 \begin{proof}[Proof of Theorem~\ref{theorem:isom-root}]
-Now, we can construct $\alpha$ in Theorem~\ref{theorem:isom-root} as follows. We first build the 
-extension $k(\zeta) / \F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in $\F_q(\zeta)$. 
-Then $\eta$ is an $r$-power in $k(\zeta)$. To obtain an $r$-th root $\theta$ of $\eta$ we take $d$ 
+Now, we can construct the embedding of Theorem~\ref{theorem:isom-root} as follows. We first build the 
+extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in $\F_q(\zeta)$. 
+Then $\eta$ is an $r$-power in $k(\zeta)$ and $K(\zeta)$. To obtain $r$-th roots $\theta_1\in k$, $\theta_2\in K$ of $\eta$ we take $d$ 
 successive $v$-th roots using the algorithm sketched above. 
 
 \begin{algorithm}
 	[Kummer-type algorithm for extension towers]
 	\label{algorithm:alpha-root}
 	\begin{algorithmic}[1]
-		\REQUIRE An extension $k / \F_q$ of degree prime-power $r = v^d$, with $v\ne2,p$.
-		\ENSURE An element $\alpha \in k$, with uniquely defined Galois orbit, such that $k = \F_q(\alpha)$.
+		\REQUIRE Extensions $k / \F_q$ $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
+		\ENSURE The description of a field embedding $k\hookrightarrow K$.
 		\STATE\label{step:factor-cyclo} Factor the $v$th cyclotomic polynomial $\F_q$ to 
-		build the extension $k(\zeta) / \F_q(\zeta)$;
-		\STATE\label{step:non-v-res} Find a non-$v$-adic residue $\eta \in \F_q(\zeta)$;
-		\STATE\label{step:rep-root1} Compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$;
-		\RETURN The constant term of $\theta$.
+		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
+		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
+		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
+		\STATE Let $\alpha, \beta$ be the constant terms of $\theta_1, \theta_2$ respectively;
+		\RETURN The field embedding defined by $\alpha\mapsto\beta$.
 	\end{algorithmic}
 \end{algorithm}
 
-Step \ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Proposition 
-\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $F$. By~\cite[Lemma 15]{shoup94} Step 
-\ref{step:non-v-res} takes $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
+Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Prop.~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; using Shoup's variation~\cite[Lemma~15]{shoup94} on the proof of Prop.~\ref{prop:large-power}, we can do this using $O(\MM(v)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
 $\F_q$. Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root 
 extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\log^2(r) + 
 \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
