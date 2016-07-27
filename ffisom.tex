@@ -766,7 +766,7 @@ to Hilbert's theorem 90.
 Whereas Allombert resorts to linear algebra, we rely instead on a classical
 formula, inspired by Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
 Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described 
-a variant which is similar to the present one, in the specific case 2 with $s=1$ 
+a variant which is similar to the present one, in the specific case 1 with $s=1$ 
 we describe below.
 
 Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
@@ -821,15 +821,9 @@ random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q^s$. Theref
 need $O(1)$ trials to find $\theta_1$.
 To compute $\theta_a$ efficiently, we take 
 different approaches based on the bound on $s$ in Proposition~\ref{prop:root-fpz}. We consider two 
-cases: case 1 is when $s \notin O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
+cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
 \paragraph{Case 1.}
-Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
-a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
-3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
-operations in $\F_q$.
-
-\paragraph{Case 2.} 
 Given $a \in k[\zeta]$ define 
 \[ \theta_{a, j} = a + \sigma(a)\zeta^{-1} + \cdots + \sigma^{j - 1}(a)\zeta^{-j + 1}, \quad \xi_j 
 = x^{q^j}. \]
@@ -889,6 +883,12 @@ $\theta_{a, i}$ using above relations.
 Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Therefore computing 
 $\theta_a = \theta_{a, r}$ using Algorithm~\ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
 \MM(r)\log(q))$ operations in $\F_q$.
+
+\paragraph{Case 2.} 
+Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
+3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
+operations in $\F_q$.
 
 Putting the above cases together we have
 \begin{proposition}
