@@ -5,7 +5,7 @@ OBJS = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 CC=g++
 CCFLAGS=-Wall -g -O3 -fPIC
 LIBS = -lflint -lmpfr -lgmp
-LIBRARY=libkummer_nmod.so
+LIBRARY=libkummer.so
 
 .PHONY: clean
 

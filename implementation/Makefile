@@ -1,19 +1,19 @@
 all: cythonized benchmark
 
-benchmark: sage_local libkummer_nmod.so
-	g++ -I$(SAGE_LOCAL)/include -L$(SAGE_LOCAL)/lib -L. benchmark.cpp -lpari -lkummer_nmod -lflint -o benchmark
+benchmark: sage_local libkummer.so
+	g++ -I$(SAGE_LOCAL)/include -L$(SAGE_LOCAL)/lib -L. benchmark.cpp -lpari -lkummer -lflint -o $@
 
 sage_local:
 	@if [ -z $(SAGE_LOCAL) ]; then echo "make should be run from within a Sage shell" >&2; exit 1; fi
 
-libkummer_nmod.so: sage_local
+libkummer.so: sage_local
 	$(MAKE) -C kummer_c++_flint
-	cp kummer_c++_flint/libkummer_nmod.so .
+	cp kummer_c++_flint/$@ .
 
 libellmul.so: sage_local
 	cd ellmul && ./configure --with-gmp=$(SAGE_LOCAL) --with-mpfr=$(SAGE_LOCAL) --with-flint=$(SAGE_LOCAL)
 	$(MAKE) -C ellmul
-	cp ellmul/libellmul.so .
+	cp ellmul/$@ .
 
 CYTHON_SOURCES = $(wildcard *.pyx) $(wildcard *.pxd)
 
