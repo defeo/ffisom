@@ -17,7 +17,7 @@ libellmul.so: sage_local
 
 CYTHON_SOURCES = $(wildcard *.pyx) $(wildcard *.pxd)
 
-cythonized: $(CYTHON_SOURCES) libkummer_nmod.so libellmul.so
+cythonized: $(CYTHON_SOURCES) libkummer.so libellmul.so
 	python setup.py build_ext
 	cp cythonized/lib.*/*.so ./
 
