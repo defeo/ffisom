@@ -432,7 +432,7 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 
 
 \paragraph{Polynomial factorization}
-Finally, given a field $k = \F_q[X]/f(X)$ of degree $m$ as above, we will need to
+Given a field $k = \F_q[X]/f(X)$ of degree $m$ as above, we will need to
 factor some special polynomials in $k[Z]$. More precisely, we are
 interested in finding one factor of a polynomial that splits into
 factors of the same, known, degree. This problem is known as
@@ -766,7 +766,7 @@ to Hilbert's theorem 90.
 Whereas Allombert resorts to linear algebra, we rely instead on a classical
 formula, inspired by Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
 Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described 
-a variant which is similar to the present one, in the specific case 2 with $s=1$ 
+a variant which is similar to the present one, in the specific case 1 with $s=1$ 
 we describe below.
 
 Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
@@ -821,15 +821,9 @@ random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q^s$. Theref
 need $O(1)$ trials to find $\theta_1$.
 To compute $\theta_a$ efficiently, we take 
 different approaches based on the bound on $s$ in Proposition~\ref{prop:root-fpz}. We consider two 
-cases: case 1 is when $s \notin O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
+cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
 \paragraph{Case 1.}
-Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
-a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
-3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
-operations in $\F_q$.
-
-\paragraph{Case 2.} 
 Given $a \in k[\zeta]$ define 
 \[ \theta_{a, j} = a + \sigma(a)\zeta^{-1} + \cdots + \sigma^{j - 1}(a)\zeta^{-j + 1}, \quad \xi_j 
 = x^{q^j}. \]
@@ -890,6 +884,12 @@ Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Ther
 $\theta_a = \theta_{a, r}$ using Algorithm~\ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
 \MM(r)\log(q))$ operations in $\F_q$.
 
+\paragraph{Case 2.} 
+Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
+a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
+3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
+operations in $\F_q$.
+
 Putting the above cases together we have
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
@@ -898,7 +898,7 @@ Putting the above cases together we have
 	+ \MM(r)\log(q))$ operations in $\F_q$ otherwise.
 \end{proposition}
 Combining this with Proposition~\ref{prop:cyclo} and with the cost of taking roots in $\F_q(\zeta)$ we get the following for the cost of 
-computing an embedding $k \hookrightarrow K$ using Allombert's algorithm.
+computing an embedding $k \hookrightarrow K$ using our fast variant of Allombert's algorithm.
 \begin{proposition}
 	\label{proposition:XiDelta-updated}
 	Computing an embedding $k \hookrightarrow K$ takes $O(s\CC(r)\log(r) + \MM(r)\log(q))$ 
@@ -1012,13 +1012,20 @@ We are not aware of this algorithm appearing anywhere in the literature, however
 do not claim it to be fully original.
 We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published a radically
 different generalization of Allombert's algorithm with a very similar complexity in $r$
-(his algorithm has much worse complexity in $q$, though).
+(his algorithm has much worse complexity in $q$, though):
+this generalization relies on the fact that Artin-Schreier and Kummer
+theories are special cases of a more general situation.
+As already emphasized by Couveignes and Lercier~\cite{CL08},
+whereas the former theory acts on the additive group of a finite field,
+and the latter on its multiplicative group,
+they can be extended to more general commutative algebraic groups,
+in particular to elliptic curves.
 
-An overview of the construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
+An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
 the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
 cyclotomic field extensions $\F_q(\zeta), k(\zeta), K(\zeta)$ of degree $s$ over $\F_q, k, K$ respectively, by 
-obtaining an irreducible factor of the $v$th cyclotomic polynomial over $\F_q$. Then we obtain a  
+obtaining an irreducible factor of the $v$-th cyclotomic polynomial over $\F_q$. Then we obtain a  
 random non-$v$-adic residue $\eta \in \F_q(\zeta)$.
 
 We have $[k(\zeta): \F_q(\zeta)] = r$, so we can 
@@ -1071,7 +1078,7 @@ successive $v$-th roots using the algorithm sketched above.
 	\begin{algorithmic}[1]
 		\REQUIRE Extensions $k / \F_q$ $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
 		\ENSURE The description of a field embedding $k\hookrightarrow K$.
-		\STATE\label{step:factor-cyclo} Factor the $v$th cyclotomic polynomial $\F_q$ to 
+		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial $\F_q$ to 
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
 		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
 		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
@@ -1093,7 +1100,7 @@ extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\l
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rains' algorithm}
 
-We now move on to a family of algorithms based on the theory of
+We now move on to a different family of algorithms based on the theory of
 algebraic groups. The simplest of these algorithms is Pinch's
 cyclotomic algorithm~\cite{Pinch}. The idea is very simple: given $r$,
 select an integer $\ell$ such that $[\F_q(\mu_\ell):\F_q]=r$, where
