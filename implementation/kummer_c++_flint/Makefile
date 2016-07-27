@@ -9,7 +9,7 @@ LIBRARY=libkummer.so
 
 .PHONY: clean
 
-all: $(LIBRARY) $(OBJS)
+all: $(LIBRARY)
 
 $(LIBRARY): $(OBJS)
 	$(CC) -shared $(LDFLAGS) $(LIBS) $(OBJS) -o $@
@@ -20,7 +20,6 @@ clean:
 	rm -r $(BUILD_DIR)
 
 $(BUILD_DIR)/%.o:	%.cpp
-	echo $(INC_DIR)
 	$(CC) -c $< -o $@ $(CCFLAGS)
 
 # make the build dir if not exist

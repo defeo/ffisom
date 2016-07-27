@@ -23,15 +23,18 @@ class FFIsomPrimePower {
     slong linear_alg_threshold;
     slong multi_point_threshold;
 
-    void compute_semi_trace_small_ext(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
-    void compute_semi_trace_trivial_ext(nmod_poly_t delta, nmod_poly_t xi, slong n, const nmod_poly_t modulus, const mp_limb_t z);
-    void compute_semi_trace_trivial_ext(nmod_poly_t theta, const nmod_poly_t a, const nmod_poly_t modulus, mp_limb_t z);
-    void compute_semi_trace_small_ext(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
-    void compute_semi_trace_large_ext(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
-    void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void compute_semi_trace_trivial_ext_linalg(nmod_poly_t theta, const nmod_poly_t a, const nmod_poly_t modulus, mp_limb_t z);
+    void compute_semi_trace_trivial_ext_modcomp(nmod_poly_t theta, const nmod_poly_t a, const nmod_poly_t modulus, mp_limb_t z);
+    void _compute_semi_trace_trivial_ext_modcomp(nmod_poly_t delta, nmod_poly_t xi, slong n, const nmod_poly_t modulus, const mp_limb_t z);
+    void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void _compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void compute_xi(fq_nmod_t xi, const fq_nmod_t old_xi, const fq_nmod_ctx_t ctx);
     void compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
+    void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void compute_semi_trace(nmod_poly_t theta, const nmod_poly_t modulus, const mp_limb_t z);
     void compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly_t f_image);
     void compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b, const fq_nmod_poly_t modulus,
             const fq_nmod_ctx_t cyclotomic_ctx);
@@ -39,7 +42,6 @@ class FFIsomPrimePower {
     void convert(fq_nmod_t result, const fq_nmod_poly_t value, const fq_nmod_ctx_t ctx);
     void convert(fq_nmod_poly_t result, const fq_nmod_t value, const fq_nmod_ctx_t ctx);
     mp_limb_t compute_cyclotomic_root(const slong r, const mp_limb_t p);
-    void compute_semi_trace(nmod_poly_t theta, const nmod_poly_t modulus, const mp_limb_t z);
     void compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image);
 
 public:
@@ -59,6 +61,8 @@ public:
      * @param g1
      * @param g2
      */
+    void compute_generators_trivial_ext(nmod_poly_t g1, nmod_poly_t g2);
+    void compute_generators_nontriv_ext(nmod_poly_t g1, nmod_poly_t g2);
     void compute_generators(nmod_poly_t g1, nmod_poly_t g2);
 
     ~FFIsomPrimePower();
