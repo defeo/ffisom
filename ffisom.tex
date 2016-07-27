@@ -1012,9 +1012,16 @@ We are not aware of this algorithm appearing anywhere in the literature, however
 do not claim it to be fully original.
 We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published a radically
 different generalization of Allombert's algorithm with a very similar complexity in $r$
-(his algorithm has much worse complexity in $q$, though).
+(his algorithm has much worse complexity in $q$, though):
+this generalization relies on the fact that Artin-Schreier and Kummer
+theories are special cases of a more general situation.
+As already emphasized by Couveignes and Lercier~\cite{CL08},
+whereas the former theory acts on the additive group of a finite field,
+and the latter on its multiplicative group,
+they can be extended to more general commutative algebraic groups,
+in particular to elliptic curves.
 
-An overview of the construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
+An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
 the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
 cyclotomic field extensions $\F_q(\zeta), k(\zeta), K(\zeta)$ of degree $s$ over $\F_q, k, K$ respectively, by 
