@@ -1025,7 +1025,7 @@ An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
 the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
 cyclotomic field extensions $\F_q(\zeta), k(\zeta), K(\zeta)$ of degree $s$ over $\F_q, k, K$ respectively, by 
-obtaining an irreducible factor of the $v$th cyclotomic polynomial over $\F_q$. Then we obtain a  
+obtaining an irreducible factor of the $v$-th cyclotomic polynomial over $\F_q$. Then we obtain a  
 random non-$v$-adic residue $\eta \in \F_q(\zeta)$.
 
 We have $[k(\zeta): \F_q(\zeta)] = r$, so we can 
@@ -1078,7 +1078,7 @@ successive $v$-th roots using the algorithm sketched above.
 	\begin{algorithmic}[1]
 		\REQUIRE Extensions $k / \F_q$ $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
 		\ENSURE The description of a field embedding $k\hookrightarrow K$.
-		\STATE\label{step:factor-cyclo} Factor the $v$th cyclotomic polynomial $\F_q$ to 
+		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial $\F_q$ to 
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
 		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
 		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
