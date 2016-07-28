@@ -742,12 +742,18 @@ this procedure.
 
 Allombert's algorithm differs from Lenstra's in two key steps, both
 resorting to polynomial factorization.  First, he computes an
-irreducible factor $h$ of the cyclotomic polynomial $\Phi_r$, so to
+irreducible factor $h$ of the cyclotomic polynomial $\Phi_r$
+of degree $s$, so to
 construct a field extension $\F_q(\zeta)$ as $\F_q[Z]/h(Z)$.  Then he
 defines $k[\zeta]=k[Z]/h(Z)$ and $K[\zeta]=K[Z]/h(Z)$ (note that these
 are not fields if $r$ is not prime), and constructs
 $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$ in a way equivalent
-to Lenstra's.  At this point, rather than computing a discrete
+to Lenstra's using linear algebra:
+the solution to Hilbert's theorem 90 is deduced
+from an element in the kernel of the $\F_q$-linear map $h(x^q)$,
+whose matrix is constructed using
+Horner's method at a cost of $O(s r^\omega)$.
+At this point, rather than computing a discrete
 logarithm, Allombert points out that there exists a $c\in\F_q(\zeta)$
 such that $\theta_1\mapsto c\theta_2$, and that such value can be
 computed as the $r$-th root of $\theta_1^r/\theta_2^r$.
