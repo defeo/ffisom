@@ -708,7 +708,7 @@ in $\F_q$ in both cases.
 
 The idea of Lenstra's algorithm is as follows.
 Assume that $r$ is prime, and
-let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$th 
+let $\F_q[\zeta]$ denote the ring extension $\F_q[X] / \Phi_r(X)$ where $\Phi_r$ is the $r$-th 
 cyclotomic polynomial. 
 Let $\tau$ be a non $r$-adic residue\footnote{In the paper's terminology, $\tau$ (denoted $c$ in the paper) is a generator of the Teichm\"uller subgroup of $\F_q[\zeta]$.} of $\F_q[\zeta]$,
 and let $\F_q[\zeta][\theta]$ denote the quotient $\F_q[\zeta][Y]/(Y^r - 
@@ -789,11 +789,11 @@ Let us restate the algorithm for clarity.
 	\begin{algorithmic}[1]
 		\REQUIRE Field extensions $k, K$ of $\F_q$ of degree $r$.
 		\ENSURE The description of a field embedding $k\to K$.
-		\STATE Factor the $r$th cyclotomic polynomial and make the extensions $\F_q(\zeta), 
+		\STATE Factor the $r$-th cyclotomic polynomial and make the extensions $\F_q(\zeta), 
 		k[\zeta], K[\zeta]$;
 		\STATE Find $\theta_1 \in k[\zeta]$ such that $\sigma(\theta_1) = \zeta\theta_1$;
 		\STATE Find $\theta_2 \in K[\zeta]$ such that $\sigma(\theta_2) = \zeta\theta_2$;
-		\STATE Compute an $r$th root $c$ of $\theta_1^r / \theta_2^r$ in $\F_q(\zeta)$;
+		\STATE Compute an $r$i-th root $c$ of $\theta_1^r / \theta_2^r$ in $\F_q(\zeta)$;
 		\STATE Let $\alpha, \beta$ be the constant terms of $\theta_1, c\theta_2$ respectively;
 		\RETURN The field embedding defined by $\alpha\mapsto\beta$.
 	\end{algorithmic}
