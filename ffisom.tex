@@ -804,7 +804,7 @@ The cyclotomic polynomial $\Phi_r$ is factored using Proposition~\ref{prop:cyclo
 taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
 Algorithm~\ref{alg:ks}.
 
-We are left with the problem of finding $\theta_1$, that is, an instance of Hilbert's theorem 90.
+We are left with the problem of finding $\theta_1$ (and $\theta_2$), that is, an instance of Hilbert's theorem 90.
 We now show how to do it. For $a \in k[\zeta]$ define
 \[ \theta_a = a + \sigma(a)\zeta^{-1} + \sigma^2(a)\zeta^{-2} + \cdots + \sigma^{r - 1}(a)\zeta^{-r 
 	+ 1}. \]
@@ -818,7 +818,7 @@ In practice, we take $a \in k[\zeta]$ at random until
 $\theta_a\ne0$. Since the map $a\mapsto\theta_a$ is
 $\F_q(\zeta)$-linear and non-zero, its kernel has codimension at most 1, thus for a
 random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q^s$. Therefore, we only 
-need $O(1)$ trials to find $\theta_1$.
+need $O(1)$ trials to find $\theta_1$ (and $\theta_2$).
 To compute $\theta_a$ efficiently, we take 
 different approaches based on the bound on $s$ in Proposition~\ref{prop:root-fpz}. We consider two 
 cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
