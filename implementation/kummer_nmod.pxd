@@ -1,4 +1,4 @@
-# distutils: libraries = kummer_nmod
+# distutils: libraries = kummer
 # distutils: library_dirs = .
 
 from sage.libs.flint.nmod_poly cimport nmod_poly_t
