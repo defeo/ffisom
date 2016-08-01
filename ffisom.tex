@@ -380,9 +380,9 @@ variant of~\cite[Lemma~14]{shoup94} that will be useful later.
   $<t$, and computing them naively costs $O(\MM(m)\log(t))$
   operations. %
   To compute $\left(\alpha^{A_v}\right)^{q^u}$ we apply
-  Prop.~\ref{prop:trace-like}, for a cost of
+  Proposition~\ref{prop:trace-like}, for a cost of
   $O(\CC(m)\log(u) + \MM(m)\log(q))$ operations. %
-  Noticing that the values computed by Prop.~\ref{prop:trace-like} can
+  Noticing that the values computed by Proposition~\ref{prop:trace-like} can
   be shared among the various calls, we end up with the claimed
   complexity.
 \end{proof}
@@ -421,7 +421,7 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
 \begin{proof}
 	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
 	see~\cite{shoup93}. %
-        The trace in Eq.~\eqref{equ:trace-simple} is computed using Prop.~\ref{equ:trace-simple}
+        The trace in Eq.~\eqref{equ:trace-simple} is computed using Proposition~\ref{equ:trace-simple}
         at a cost of $O(\CC(m)\log(m)+\MM(m)\log(q))$ operations in $\F_q$.
 
         Finally, given an element $\gamma\in L$, its image in $k$ is
@@ -703,7 +703,7 @@ In~\cite{Allombert02}, Allombert gives a similar approach with more focus on pra
 In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
 polynomial time Las Vegas.
 Even though neither of the two algorithms is given a detailed complexity analyses, both rely
-on solving linear systems, thus a rough analysis yields a worst case estimate of $O(r^{\omega+1})$ operations
+on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
 in $\F_q$ in both cases.
 
 The idea of Lenstra's algorithm is as follows.
@@ -768,8 +768,8 @@ In this section, we present a variant of Allombert's algorithm with the
 best known asymptotic complexity. The main difference with respect to the 
 version presented in~\cite{Allombert02} is in the way we find a solution
 to Hilbert's theorem 90.
-Whereas Allombert resorts to linear algebra, we rely instead on a classical
-formula, inspired by Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
+Whereas Allombert resorts to linear algebra, we rely instead on evaluation
+formulas that have a high probability of yielding a solution.
 Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described 
 a variant which is similar to the present one, in the specific case 1 with $s=1$ 
 we describe below.
@@ -777,9 +777,9 @@ we describe below.
 Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
 Let $h(Z)$ be an 
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
-$s$ is the order of $q$ in the multiplicative group $\Z/r\Z$. We form the field extension 
-$\F_q(\zeta) \cong \F_q[Z] / h$ and the ring extension $k[\zeta] \cong k[Z] / h \cong k \otimes 
-\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients. The action of the Galois group 
+$s$ is the order of $q$ in the multiplicative group $(\Z/r\Z)^\ast$. We form the field extension
+$\F_q(\zeta) \cong \F_q[Z] / h(Z)$ and the ring extension $k[\zeta] = k[Z] / h(Z) \cong k \otimes
+\F_q(\zeta)$ where $\zeta$ is the image of $Z$ in the quotients. The action of the Galois group
 $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 \[
 \begin{array}{llll}
@@ -787,7 +787,10 @@ $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 & x \otimes \zeta & \mapsto & x^q \otimes \zeta.
 \end{array}
 \]
-Then the fixed field of $\sigma$ is $\F_q(\zeta)$. The same can be done for the ring $K[\zeta]$. 
+Allombert shows (see~\cite[Prop.~3.2]{Allombert02}) that $\sigma$ is
+an automorphism of $\F_q(\zeta)$-algebras, and that its fixed set is
+isomorphic to $\F_q(\zeta)$.
+The same can be done for the ring $K[\zeta]$.
 Let us restate the algorithm for clarity.
 
 \begin{algorithm}[Allombert's algorithm]
@@ -802,115 +805,227 @@ Let us restate the algorithm for clarity.
 		\STATE Let $\alpha, \beta$ be the constant terms of $\theta_1, c\theta_2$ respectively;
 		\RETURN The field embedding defined by $\alpha\mapsto\beta$.
 	\end{algorithmic}
+        \label{alog:allombert}
 \end{algorithm}
 
-By symmetry, we only deal with the extension $k / \F_q$.
 The cyclotomic polynomial $\Phi_r$ is factored using Proposition~\ref{prop:cyclo}, while
 taking $r$-th roots in $\F_q(\zeta)$ can be efficiently done using 
-Algorithm~\ref{alg:ks}.
+Proposition~\ref{prop:root-fpz}
 
 We are left with the problem of finding $\theta_1$ (and $\theta_2$), that is, an instance of Hilbert's theorem 90.
-We now show how to do it. For $a \in k[\zeta]$ define
-\[ \theta_a = a + \sigma(a)\zeta^{-1} + \sigma^2(a)\zeta^{-2} + \cdots + \sigma^{r - 1}(a)\zeta^{-r 
-	+ 1}. \]
-We obviously have $\sigma(\theta_a) = \zeta\theta_a$, and this also shows that $\theta_a^r \in \F_q(\zeta)$.
-Therefore $\theta_a$ is a solution to the problem, as long it is non-zero. 
-Artin's theorem on character independence (see~\cite[Ch VI, Theorem 4.1]{lang})
-shows that the maps $\sigma^i$ are linearly 
-independent, therefore the map $a\mapsto\theta_a$ is not identically zero. 
+We now show how to do it.
+We focus on the extension $k[\zeta]/\F_q(\zeta)$, the case of
+$K[\zeta]$ being analogous.
 
-In practice, we take $a \in k[\zeta]$ at random until
-$\theta_a\ne0$. Since the map $a\mapsto\theta_a$ is
-$\F_q(\zeta)$-linear and non-zero, its kernel has codimension at most 1, thus for a
-random $a \in k[\zeta]$, $\theta_a$ is zero with probability $< 1 / q^s$. Therefore, we only 
+It is immediate to see that the minimal polynomial of $\sigma$ is
+$S^r-1$; by direct calculation, we verify that it factors as
+\begin{equation}
+  \label{eq:theta90}
+  S^r-1 = (S-\zeta)\cdot\Theta(S) =
+  (S-\zeta)\sum_{i=0}^{r-1} \zeta^{-i-1}S^i. 
+\end{equation}
+If $A$ is a polynomial with coefficients in $\F_q(\zeta)$, we will
+denote by $\hat{A}$ the morphism $A(\sigma)$ of the algebra
+$k[\zeta]$. %
+The usual property of \emph{$q$-polynomials} holds:
+$\widehat{AB} = \hat{A}\circ\hat{B}$.
+
+Let $\theta\in k[\zeta]$ be  non-zero and such that $\widehat{(S-\zeta)}(\theta)=0$,
+then $\theta$ is by definition a solution to Hilbert's
+theorem. %
+Hence, we shall set
+\begin{equation}
+  \theta_a = \hat\Theta(a)
+  =  a\otimes\zeta^{-1} + \sigma(a)\otimes\zeta^{-2} + \cdots + \sigma^{r-1}(a)\otimes\zeta^{-r}
+\end{equation}
+for some $a\in k$. %
+Because of Eq.~\eqref{eq:theta90}, $\theta_a$ is a solution as long as
+it is non-zero. %
+This is reminiscent of Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
+
+To ensure the existence of $a$ such that $\theta_a\ne0$, we only need
+to prove that $k$ is not entirely contained in $\hat\Theta$. %
+But the maps $\sigma^i$ restricted to $k$ are all distinct, thus
+Artin's theorem on character independence (see~\cite[Ch~VI, Theorem~4.1]{lang})
+shows that they are linearly 
+independent, and therefore $\hat\Theta$ is not identically zero on $k$.
+In practice, we take $a \in k$ at random until
+$\theta_a\ne0$. Since the map $\hat\Theta$ is
+$\F_q$-linear and non-zero, it has rank at least 1, thus a
+random $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only 
 need $O(1)$ trials to find $\theta_1$ (and $\theta_2$).
-To compute $\theta_a$ efficiently, we take 
-different approaches based on the bound on $s$ in Proposition~\ref{prop:root-fpz}. We consider two 
-cases: case 1 is when $s \in O(r^{(3 - \omega) / 2})$, and case 2 is otherwise. 
 
-\paragraph{Case 1.}
-Given $a \in k[\zeta]$ define 
-\[ \theta_{a, j} = a + \sigma(a)\zeta^{-1} + \cdots + \sigma^{j - 1}(a)\zeta^{-j + 1}, \quad \xi_j 
-= x^{q^j}. \]
-We have the following recursive relations
-\[
+We now give three different algorithms to compute $\theta_a$ efficiently.
+Which algorithm has the best asymptotic complexity depends on the
+value of $s$ with respect to $r$; we arrange them by increasing $s$.
+
+\paragraph{Case 1: $s\in O(\todo{})$.}
+We use a recursive algorithm similar to Propostion~\ref{prop:trace-like}.
+Let $\xi_1=x^q$ and $\theta_{a,1}=a\zeta^{-1}$,
+we set the following recursive relations:
+\begin{equation}
+\label{eq:theta-recursive}
 \xi_j = 
 \begin{cases}
-\xi_{j / 2}^{q^{j / 2}} & j \text{ even} \\
-\xi_{j - 1}^q & j \text{ odd}
-\end{cases}, \quad
+\sigma^{j/2}(\xi_{j / 2}) & j \text{ even,} \\
+\sigma(\xi_{j - 1}) & j \text{ odd,}
+\end{cases} \quad
 \theta_{a, j} = 
 \begin{cases}
-\theta_{a, j / 2} + \zeta^{-j / 2}\sigma^{j / 2}(\theta_{a, j / 2})& j \text{ even} \\
-a + \zeta^{-1}\sigma(\theta_{a, j - 1}) & j \text{ odd}
+\theta_{a, j / 2} + \zeta^{-j / 2}\sigma^{j / 2}(\theta_{a, j / 2})& j \text{ even,} \\
+(a + \sigma(\theta_{a, j - 1}))\zeta^{-1} & j \text{ odd.}
 \end{cases}
-\]
-Applying $\sigma^j$ to an element $b \in k[\zeta]$ is the same as composing the polynomial $b(x, 
-z)$ with the polynomial $\xi_j(x)$ in the first argument. Algorithm~\ref{alg:hilbert-pst} computes 
-$\theta_{a, i}$ using above relations.
-
-\begin{algorithm}
-	[Hilbert pseudo-trace (Hpt)]
-	\label{alg:hilbert-pst}
-	\begin{algorithmic}[1]
-		\REQUIRE $a \in k[\zeta]$, a positive integer $i$, $\xi_1=x^q$.
-		\ENSURE $\xi_i$, $\theta_{a, i}$.
-		\IF {$i=1$}
-		\RETURN $\xi_1$, $a$;
-		\ENDIF
-		\STATE $j \leftarrow \lfloor i / 2 \rfloor$;
-		\STATE $\xi_{j},\theta_{a, j} \leftarrow {\rm Hpt}(a, j, \xi_1)$;
-		\STATE\label{step:xij} $\xi_{2j} \leftarrow \xi_j(\xi_j)$;
-		\STATE\label{step:thetaj} $\theta_{a, 2j} \leftarrow \theta_{a, j} + \zeta^{-j}\theta_{a, 
-			j}(\xi_j)$;
-		\IF {$i$ is even}
-		\RETURN $\xi_{2j}$, $\zeta_{2j}$, $\delta_{2j}$;
-		\ENDIF
-		\STATE $\xi_i \leftarrow \xi_{2j}(\xi_1)$;
-		\STATE $\theta_{a, i} \leftarrow a + \zeta^{-1}\theta_{a, 2j}(\xi_1)$;
-		\RETURN $\xi_i$, $\theta_{a, i}$.
-	\end{algorithmic}
-\end{algorithm}
+\end{equation}
+Then $\theta_a=\theta_{a,r}$.
 
 \begin{proposition}
-	\label{prop:xitheta}
-	Algorithm~\ref{alg:hilbert-pst} works, and given $a, \xi_1$ computes $\xi_i, \theta_{a, i}$ in  
-	$O(s\CC(r)\log(i))$ operations in $\F_q$.
+  \label{prop:xitheta}
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  be computed using $O(s\CC(r)\log(r)+\MM(r)\log(q))$ operations in
+  $\F_q$.
 \end{proposition}
 \begin{proof}
-	The dominant steps of the algorithm are~\ref{step:xij},~\ref{step:thetaj}. Step~\ref{step:xij} 
-	takes one modular composition at the cost of $\CC(r)$ operations in $\F_q$. Using the 
-	representation $a = \sum_{i = 0}^{s - 1}a_i(x)\zeta^i$ for an element $a \in k[\zeta]$, Step~\ref{step:thetaj} 
-	takes $O(s)$ modular compositions over $\F_q$ at the total cost of 
-	$O(s\CC(r))$ operations in $\F_q$. The depth of the recursion is $\log(i)$, hence the desired 
-	result.
+  The value $\xi_1$ is computed by binary powering using
+  $O(\MM(r)\log(q))$ operations, while the value $\theta_{a,1}$ is
+  deduced from the polynomial $h$ using $O(rs)$ operations.
+  
+  To compute the recursive formulas in Eq.\eqref{eq:theta-recursive}
+  we use the same technique as in Proposition~\ref{prop:trace-like}:
+  given $b \in k[\zeta]$, the value $\sigma^j(b)$ is computed as the
+  modular composition of the polynomial $b(x,z)$ with the polynomial
+  $\xi_j(x)$ in the first argument. %
+  Each modular composition in $k[\zeta]$ is done using $s$ independent
+  modular compositions in $k$, at a cost of $O(s\CC(r))$ operations. %
+  Multiplications by $\zeta^{-j}$ are done by seeing the elements of
+  $k[\zeta]$ as polynomials in $x$ over $\F_q(\zeta)$, thus performing
+  $r$ multiplications modulo $h$, at a cost of $O(r\MM(s))$
+  operations. %
+  Given the the total depth of the recursion is $O(\log(r))$, we
+  obtain the stated bound.
 \end{proof}
-Computing $\xi_1 = x^q$ is done using $\MM(r)\log(q)$ operations in $\F_q$. Therefore computing 
-$\theta_a = \theta_{a, r}$ using Algorithm~\ref{alg:hilbert-pst} takes $O(s\CC(r)\log(r) + 
-\MM(r)\log(q))$ operations in $\F_q$.
 
-\paragraph{Case 2.} 
-Given $x^q$, the sequence $a(x), a(x)^q, \dots, 
-a(x)^{q^{(r - 1)}}$ in $k$ can be computed using the Iterated Frobenius technique, see Algorithm 
-3.1 in~\cite{von1992computing} or~\cite[Ch.~14.7]{vzGG}, at the cost of $O(\MM(r^2)\log(r))$ 
-operations in $\F_q$.
+\paragraph{Case 2: $s\in O(\todo{})$.}
+Following Allombert's revision of his own
+algorithm~\cite{Allombert02-rev}, we observe that
+Eq.~\eqref{eq:theta90} can be refined as follows: let
+$g(S)=(S^r-1)/h(S)$, then
+\begin{equation}
+  S^r-1 = h(S)\cdot g(S) = (S-\zeta)\cdot \frac{h(S)}{(S-\zeta)} \cdot g(S).
+\end{equation}
+Set $h'=h/(S-\zeta)$, then the morphism $\hat\Theta$ can be evaluated
+as $\hat{h'}\circ\hat{g}$, the advantage being that $g$ has
+coefficients in $\F_q$, rather than in $\F_q(\zeta)$. %
+Furthermore, if we set $h(S)=\zeta^s+\sum_{i=0}^{s-1}h_iS^i$, we can
+explicitly write $h'$ as
+\begin{equation}
+  \label{eq:hprime}
+  h'(S)=\sum_{i=0}^{s-1}h_i(S)'\zeta^i,\quad
+  \text{where}\quad
+  \left\{\begin{aligned}
+    h_{s-1}' &= 1,\\
+    h_{i-1}' &= h_i'S + h_i.
+  \end{aligned}\right.
+\end{equation}
+Indeed, Horner's rule shows that $h_{-1}'=h$, and by direct
+calculation we find that $(S-\zeta)\cdot h' = h'_{-1}$.
 
-Putting the above cases together we have
 \begin{proposition}
-	\label{proposition:XiDelta-updated}
-	Finding a nonzero $\theta_a$ for random $a \in k[\zeta]$ takes $O(s\CC(r)\log(r) + 
-	\MM(r)\log(q))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log(r) 
-	+ \MM(r)\log(q))$ operations in $\F_q$ otherwise.
+  \label{prop:ks-theta}
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  be computed using
+  $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q))$
+  operations in $\F_q$ for any $0\le\beta\le1$.
 \end{proposition}
-Combining this with Proposition~\ref{prop:cyclo} and with the cost of taking roots in $\F_q(\zeta)$ we get the following for the cost of 
-computing an embedding $k \hookrightarrow K$ using our fast variant of Allombert's algorithm.
-\begin{proposition}
-	\label{proposition:XiDelta-updated}
-	Computing an embedding $k \hookrightarrow K$ takes $O(s\CC(r)\log(r) + \MM(r)\log(q))$ 
-	operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or $O(\MM(r^2)\log^2(r) + 
-	\MM(r)\log(r)\log(q))$ operations in $\F_q$ otherwise.
-\end{proposition}
+\begin{proof}
+  We proceed in two steps. We first compute $\hat{g}(a)$ using the
+  \emph{automorphism evaluation} algorithm of Kaltofen and
+  Shoup~\cite[Algorithm~AE]{kaltofen+shoup98}, at a cost of
+  $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+r^\beta\MM(r)\log(q))$.
+  \todo{verify and clean this}
+  
+  We now use Eq.~\eqref{eq:hprime} to compute
+  $\theta_a=\sum_{i=0}^{s-1}a_i\otimes\zeta^i$, where
+  $a_{s-1}=\hat{g}(a)$, and $a_{i-1}=\sigma(a_i)+h_i\hat{g}(a)$. %
+  The cost of this computation is dominated by the evaluations
+  $\sigma$, which take $O(\MM(r)\log(q))$ operations each, thus
+  contributing $O(s\MM(r)\log(q))$ total operations.
+\end{proof}
 
+
+\paragraph{Case 3: $s\in O(r)$.}
+Finally, we can compute all the values
+$\sigma(a),\dots,\sigma^{r-1}(a)$ directly, write $\theta_a$ as a
+polynomial in $x$ and $\zeta$ of degree $r-1$ in both variables, and
+reduce modulo $h$ for each power $x^i$.
+
+\begin{proposition}
+  \label{prop:iter-frob-theta}
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  be computed using $O(\MM(r^2)\log(r) + \MM(r)\log(q))$ operations in
+  $\F_q$.
+\end{proposition}
+\begin{proof}
+  The values $\sigma(a),\dots,\sigma^{r-1}(a)$ can be computed by
+  binary powering using $O(r\MM(r)\log(q))$. %
+  We can do slightly better using the iterated Frobenius technique of
+  von~zur~Gathen and Shoup~\cite[Algorithm~3.1]{von1992computing} (see
+  also~\cite[Ch.~14.7]{vzGG}), which costs of
+  $O(\MM(r^2)\log(r) + \MM(r)\log(q))$ operations. %
+  The final reduction modulo $h$ costs $O(r\MM(r)\log(r))$ operations,
+  which is negligible in front of the previous step.
+\end{proof}
+
+We can now combine all the previous complexities, to analyze the
+overall cost of Allombert's algorithm.
+
+\begin{proposition}
+  \label{proposition:XiDelta-updated}
+  Algorithm~\ref{alog:allombert} is correct. Given $k,K$ of degree $r$
+  over $\F_q$, assuming that $s$ is the order of $q$ in
+  $(\Z/r\Z)^\ast$, it computes its output using
+  \begin{itemize}
+  \item $O(s\CC(r)\log(r)+\M(r)\log(q)+\MM(sr)\log(s)\log(r))$
+    operations in $\F_q$ if $s \in O(??)$, or
+  \item
+    $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q)+r\CC(s)\log(s)+\MM(rs)\log(s)\log(r))$
+    operations in $\F_q$ if $s \in O(??)$, or
+  \item $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q))$ operations in
+    $\F_q$ otherwise.
+  \end{itemize}
+\end{proposition}
+\begin{proof}
+  The cost of factoring the $r$-th cyclotomic polynomial is given in
+  Proposition~\ref{prop:cyclo}, and is negligible compared with other
+  steps. %
+  The solutions $\theta_1,\theta_2$ to Hilbert's theorem 90 are
+  computed as described above, according to the size of $s$. %
+  The powers $\theta_1^r,\theta_2^r$ are computed using Kronecker
+  substitution in $O(\MM(sr)\log(r))$ operations, which is also
+  negligible. %
+  Finally, the cost of computing an $r$-th root in $\F_q(\zeta)$ is
+  given in Proposition~\ref{prop:root-fpz}. %
+
+  Combining the costs coming from the solution of Hilbert's theorem
+  and the $r$-th root extraction, we obtain the following complexities
+  according to $s$.
+  \begin{itemize}
+  \item If $s\in O(\todo{})$, we use the algorithm described in
+    Case~1. Combining Proposition~\ref{prop:xitheta} with the first
+    case of Proposition~\ref{prop:root-fpz}, we obtain an estimate of
+    $O(s\CC(r)\log(r)+\MM(r)\log(q)+\MM(sr)\log(s)\log(r))$
+    operations.
+  \item If $s\in O(\todo{})$, we use the algorithm described in
+    Case~2. Combining Proposition~\ref{prop:ks-theta} with the first
+    case of Proposition~\ref{prop:root-fpz}, we obtain an estimate of
+    $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q)+r\CC(s)\log(s)+\MM(rs)\log(s)\log(r))$
+    operations.
+  \item Otherwise, we use the algorithm described in Case~2. Combining
+    Proposition~\ref{prop:iter-frob-theta} with the second case of
+    Proposition~\ref{prop:root-fpz}, and replacing $s$ with $r$
+    everywhere, we obtain an estimate of
+    $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q)) $ operations.
+  \end{itemize}
+\end{proof}
 
 
 \subsection{Fast Artin-Schreier-type for $r=p^d$}
@@ -1056,7 +1171,7 @@ We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} 
 roots in $k(\zeta)$. Note that an element $a \in k(\zeta)$ can be written as $a = a_0(x) + a_1(x)z 
 + \cdots + a_{s - 	1}(x)z^{s - 1}$, 
 where $x$ is the image of $X$ in $k=\F_q[X]/f(X)$.
-By a slight variation on the proof of Prop.~\ref{prop:trace-like}, we compute the power
+By a slight variation on the proof of Propostion~\ref{prop:trace-like}, we compute the power
 \[a^{q^{is}} = \sum_{j = 0}^{s - 1} a_j(x^{q^{is}})z^j = \sum_{j = 0}^{s - 1} a_j(\xi_i)z^j = 
 a(\xi_i)\]
 using $O(s\CC(r))$ operations in $\F_q$. Also, to compute $x^{q^s}$ we first compute 
@@ -1092,7 +1207,7 @@ successive $v$-th roots using the algorithm sketched above.
 	\end{algorithmic}
 \end{algorithm}
 
-Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Prop.~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; by Prop.~\ref{prop:large-power},
+Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Proposition~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; by Proposition~\ref{prop:large-power},
 we can do this using $O(\CC(s)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
 $\F_q$. Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root 
 extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\log^2(r) + 
