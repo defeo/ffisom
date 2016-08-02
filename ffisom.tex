@@ -912,22 +912,22 @@ $g(S)=(S^r-1)/h(S)$, then
 \begin{equation}
   S^r-1 = h(S)\cdot g(S) = (S-\zeta)\cdot \frac{h(S)}{(S-\zeta)} \cdot g(S).
 \end{equation}
-Set $h'=h/(S-\zeta)$, then the morphism $\hat\Theta$ can be evaluated
+Set $h'(S)=h(S)/(S-\zeta)$, then the morphism $\hat\Theta$ can be evaluated
 as $\hat{h'}\circ\hat{g}$, the advantage being that $g$ has
 coefficients in $\F_q$, rather than in $\F_q(\zeta)$. %
-Furthermore, if we set $h(S)=\zeta^s+\sum_{i=0}^{s-1}h_iS^i$, we can
+Furthermore, if we set $h(S)=S^s+\sum_{i=0}^{s-1}h_iS^i$, we can
 explicitly write $h'$ as
 \begin{equation}
   \label{eq:hprime}
-  h'(S)=\sum_{i=0}^{s-1}h_i(S)'\zeta^i,\quad
+  h'(S)=\sum_{i=0}^{s-1}h_i'(S)\zeta^i,\quad
   \text{where}\quad
   \left\{\begin{aligned}
-    h_{s-1}' &= 1,\\
-    h_{i-1}' &= h_i'S + h_i.
+    h_{s-1}'(S) &= 1,\\
+    h_{i-1}'(S) &= h_i'(S) S + h_i.
   \end{aligned}\right.
 \end{equation}
-Indeed, Horner's rule shows that $h_{-1}'=h$, and by direct
-calculation we find that $(S-\zeta)\cdot h' = h'_{-1}$.
+Indeed, Horner's rule shows that $h_{-1}'(S)=h(S)$, and by direct
+calculation we find that $(S-\zeta)\cdot h'(S) = h'_{-1}(S)$.
 
 \begin{proposition}
   \label{prop:ks-theta}
