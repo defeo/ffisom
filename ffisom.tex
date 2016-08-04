@@ -1323,7 +1323,7 @@ clear from the context.
   $(\Z/7\Z)^\ast=\langle 2\rangle\times\langle-1\rangle$, and the
   cyclotomic polynomial factors as
   \begin{equation}
-    \Phi_7(x) = (x^3 + x + 1) (x^3 + x^2 + 1).
+    \Phi_7(X) = (X^3 + X + 1) (X^3 + X^2 + 1).
   \end{equation}
   For any root $\zeta_7$, we define the period
   \begin{equation}
@@ -1379,7 +1379,7 @@ the field $k$, the procedure for the field $K$ being identical.
     \STATE Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
     \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
     \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}\zeta^\sigma$;
-    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha_r \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
+    \RETURN\label{algorithm:rains-cyclo:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1391,18 +1391,18 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
   Lemma~\ref{th:gaussian} $\eta(\zeta)$ is a normal generator of $k'$,
-  and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha_r$ is a
+  and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a
   normal generator of $k$. This proves correctness.
 
   Using the techniques of Section~\ref{sec:introduction},
   multiplications in $k'$ cost $O(\MM(sr))$ operations in $\F_q$.
   Hence, the root of unity $\zeta$ is obtained after $O(1)$ tries on
-  average. By Prop.~\ref{prop:large-power}, computing $\zeta$
+  average. By Proposition~\ref{prop:large-power}, computing $\zeta$
   costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$.
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
-  \[\alpha_r = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
+  \[\alpha = \sum_{i=0}^{s-1}\eta(\zeta^{q^{ri}})= \sum_{i=0}^{s-1}\sum_{\sigma\in S}\zeta^{q^{ri}\sigma}.\]
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of
@@ -1441,7 +1441,7 @@ of the polynomial $\bar{h}$.
     
     \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
     \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\eta \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+    \RETURN\label{algorithm:rains-cyclo:period} $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1515,8 +1515,7 @@ as no theoretical gain was to be expected.
 However, the situation in practice is quite different.
 In particular, the need for auxiliary extensions in the cyclotomic method
 is very costly, whereas the elliptic variant has naturally more chances
-to work in the input fields (there is only one multiplicative group,
-but several elliptic curves!), and to be therefore very competitive.
+to work in the base fields, and to be therefore very competitive.
 
 In the next sections, we first introduce \emph{elliptic periods}, a
 straightforward generalization of Gaussian periods for torsion points
@@ -1606,6 +1605,7 @@ periods.
 \end{definition}
 
 \begin{lemma}
+  \label{lemma:ellperiods-order}
   With the same notation as in Definition~\ref{definition:ellperiod},
   let
   \begin{equation*}
@@ -1643,41 +1643,65 @@ $1728$, it may systematically be the case that
 $\eta_{\lambda,S}(P)=0$.
 To handle these corner cases, we give more general definitions of elliptic
 periods in Appendix~\ref{app:elliptic-curves}.
-In the rest of this section, we focus on studying the question of
-when the elliptic period $\eta_{\lambda,S}(P)$ generates the same field
-as $x(P)$.
 
-First, note that there is no hope to prove a complete counterpart to
-Lemma~\ref{th:gaussian}, that is that elliptic periods are normal generators
-of $\F_q(x(P))$.
-It is indeed easy to find examples where elliptic periods are not normal.
-For example, for $p = 7$:
-\begin{itemize}
-\item $\ell = 31$ is an Elkies prime for $E: y^2 = x^3 + 5 x + 4$;
-\item the eigenvalues of the Frobenius modulo $\ell$ are $\lambda = 25$ of
-multiplicative order $3$ and $\mu = 4$ of multiplicative order $5$;
-\item $P = (5 a^2+2 a, 4)$ is a point of order $31$ over $\F_7[x]/(x^3 + 6 x^2 + 4)$;
-\item $\eta_{\lambda,S}(P) = 5 a^2 + 5 a + 4$ is not a normal element:
-$\eta_{\lambda,S}(P) + 4 \eta_{\lambda,S}(P)^7 + 2 \eta_{\lambda,S}(P)^{49} = 0$.
-\end{itemize}
-Nonetheless, it might still be the case that the elliptic period
-$\eta_{\lambda,S}(P)$ generates $\F_q(x(P))$ (as a field),
-and the discussion and experimental evidence
-presented in Appendix~\ref{app:ellprdsdata}
-suggest that it might always be the case.
-The following weak counterpart to Lemma~\ref{th:gaussian} would then
-be true.
+At this point, one would like to have an equivalent of
+Lemma~\ref{th:gaussian} for elliptic periods, i.e.\ that the elliptic
+period $\eta_{\lambda,S}(P)$ is a normal generator of $\F_q(x(P))$.
+However, it is easy to find non-normal elliptic periods, as the
+following example shows.
+
+\begin{example}
+\label{ex:non-normal}
+  Let $E/\F_7$ be defined by $y^2 = x^3 + 5 x + 4$, and consider the
+  degree $3$ extension of $\F_7$ defined by
+  $k=\F_7[X]/(X^3 + 6 X^2 + 4)$. Then
+  \begin{itemize}
+  \item $\ell = 31$ is an Elkies prime for $E$;
+  \item the eigenvalues of the Frobenius modulo $\ell$ are
+    $\lambda = 25$ of multiplicative order $3$ and $\mu = 4$ of
+    multiplicative order $5$;
+  \item $P = (5 a^2+2 a, 4)$ is a point of order $31$ of $E/k$;
+  \item $\eta=\eta_{\lambda,S}(P) = 5 a^2 + 5 a + 4$ is not a normal
+    element, indeed
+    $\eta + 4 \eta^7 + 2 \eta^{49} = 0$.
+  \end{itemize}
+\end{example}
+
+All well known proofs of Lemma~\ref{th:gaussian} rely on the fact that
+the $\ell$-th cyclotomic polynomial is irreducible over $\Q$, and its
+roots form a normal basis of $\Q(\zeta_\ell)$. %
+This fails in the elliptic case: there is indeed no guarantee that the
+eigenspace of $\lambda$ can be lifted to a normal basis over some
+number field.
+
+Note, however that, even if the elliptic period is not normal, it is
+enough for our purpose that it generates $\F_q(x(P))$ as a field, like
+in the example above.  In Appendix~\ref{app:ellprdsdata} we gather
+some experimental evidence suggesting that this might always be the
+case. Thus, we state this as a conjecture.
+
 \begin{conjecture}
 \label{conj:ellperiods}
 With the above notation, the elliptic period $\eta_{\lambda,S}(P)$
 generates $\F_q(x(P))$ over $\F_q$.
-(Furthermore, the Galois orbit of $\eta_{\lambda,S}(P)$ is
-independent of the choice of $P$.)
 \end{conjecture}
-%Unfortunately the fact that elliptic periods are not normal leaves
-%little hope to transpose the proof of Lemma~\ref{th:gaussian}.
-%Possible approaches to prove Conjecture~\ref{conj:ellperiods} are discussed
-%in Appendix~\ref{app:ellprdsdata}.
+
+If the conjecture is false, the only arguments we can give are of a
+heuristic nature. First and most simply, we can assume that the
+elliptic period behaves like a random element of $\F_q(x(P))$. In this
+case the chance of it not being a generator is approximately
+$1/q^r$. %
+Secondly, in Appendix~\ref{app:ellprdsdata} we give a sufficient
+condition for the period to be a normal generator of
+$\F_q(x(P))$. This is a weak counterpart to Lemma~\ref{th:gaussian},
+based on the polynomially cyclic algebras setting
+of~\cite{Mihailescu2010825}. Heuristically, it suggests that the
+chance of the period being normal is approximately $1-1/q$. %
+We are now ready to present the generalization of Rains' algorithm,
+with the warning that the algorithm may fail, with low probability, if
+Conjecture~\label{conj:ellperiods} is false.
+
+
 
 \subsection{Elliptic variant of Rains' algorithm}
 
@@ -1698,8 +1722,8 @@ for $r$ odd. Given $k$, $K$ and $r$,
   $\order_\ell(\lambda)=r$;
 \item take random points $P\in E(k)[\ell]$ and $P'\in E(K)[\ell]$ in
   the eigenspace of $\lambda$;
-\item return the elliptic periods $\alpha_r := \eta_{\lambda,S}(P)$ and
-  $\beta_r:= \eta_{\lambda,S}(P')$.
+\item return the elliptic periods $\alpha := \eta_{\lambda,S}(P)$ and
+  $\beta:= \eta_{\lambda,S}(P')$.
 \end{enumerate}
 
 Here we are faced with a difficulty: given $E$ and $\lambda$ it is
@@ -1714,7 +1738,7 @@ We defer the discussion on the search for the elliptic curve $E$ to
 Section~\ref{sec:selection}. Here we suppose we are already given
 suitable parameters $\ell$, $E$ and $\lambda$, and analyze the last
 two steps of the algorithm, summarized below.  We only give the
-procedure for the smaller $k$, the procedure for the field $K$ being
+procedure for $k$, the procedure for the field $K$ being
 identical.
 
 \begin{algorithm}[Elliptic Rain's algorithm]
@@ -1728,27 +1752,28 @@ identical.
     \item $\order_\ell(\lambda)=r$, $\order_\ell(q/\lambda)\nmid r$,
     \item $(\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S$ for some $S$.
     \end{itemize}
-    \ENSURE A generator of $k$ over $\F_q$, with a uniquely defined Galois orbit.
+    \ENSURE A generator of $k$ over $\F_q$, with a uniquely defined Galois orbit, or FAIL.
     \REPEAT
     \STATE Compute $P\leftarrow[\# E(k)/\ell]Q$ for a random $Q\in E(k)$;
     \UNTIL{$P\neq\mathcal{O}$;}
-    \RETURN $\alpha_r\leftarrow\eta_{\lambda,S}(P)$.
+    \STATE Compute $\alpha\leftarrow\eta_{\lambda,S}(P)$;
+    \RETURN $\alpha$ if $k=\F_q(\alpha)$, FAIL otherwise.
   \end{algorithmic}
 \end{algorithm}
 
 \begin{proposition}
-  Provided Conjecture~\ref{conj:ellperiods} is true,
-  Algorithm~\ref{algorithm:compell} is correct. On input
+  Algorithm~\ref{algorithm:compell} is correct. Assuming the
+  heuristics developed in Appendix~\ref{app:ellprdsdata}, it fails
+  with probability $\le 1/q^r$.  On input
   $r,q,E,t,\ell,\lambda$ it computes its output using
   $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$, or
   $\tildO(r^2\log q)$ assuming $\ell\in o(r^2)$.
 \end{proposition}
 \begin{proof}
-  By construction the point $P$ has $r$ distinct conjugates in
-  $k$, and, since $r$ is odd, all have distinct abscissas,
-  hence $x(P)$ generates $k$.  The correctness of the algorithm
-  then follows immediately from Conjecture~\ref{conj:ellperiods} and
-  the discussion above.
+  Correctness follows immediately from
+  Lemma~\ref{lemma:ellperiods-order}. Success probability comes from
+  the assumption that $\eta_{\lambda,S}(P)$ behaves like a random element of
+  $\F_q(x(P))$, as discussed in Appendix~\ref{app:ellprdsdata}.
 
   From the knowledge of the trace $t$, we immediately determine the
   zeta function of $E$, and hence the cardinality $\# E(k)$, at
@@ -1763,25 +1788,15 @@ identical.
   $O(r\MM(r)\log q)$ operations. A valid point is obtained after
   $O(1)$ tries on average.
 
-  The elliptic period in the final step requires $O(\ell/r)$ scalar
+  The computation of the elliptic period $\alpha$ requires $O(\ell/r)$ scalar
   multiplications by an integer less than $\ell$, for a total cost of
   $O((\MM(r)\ell\log\ell)/r)$.
+
+  Finally, testing that $\alpha$ generates $k$ is done by computing
+  its minimal polynomial, at a cost of $O(\CC(r))$ operations in
+  $\F_q$ using~\cite{shoup93}.
 \end{proof}
-\begin{remark}
-  In case Conjecture~\ref{conj:ellperiods} is false,
-  Algorithm~\ref{algorithm:compell} might return a non-generating
-  element of $k/\F_q$.
-  To ensure that it generates $k/\F_q$ and not a strict subextension of $k$,
-  one should compute the minimal polynomial of the returned elliptic period
-  at a cost of  $O(\CC(r))$ operations in $\F_q$~\cite{shoup93}.
-  According to the experimental data and heuristics presented in
-  Appendix~\ref{app:ellprdsdata},
-  $O(1)$ tries should be
-  sufficient to get an elliptic period generating $k/\F_q$.
-  Therefore, making sure that Algorithm~\ref{algorithm:compell}
-  returns a generating element of $k/\F_q$
-  does not change the global complexity of the algorithm.
-\end{remark}
+
 
 \section{Algorithm selection}
 \label{sec:selection}
