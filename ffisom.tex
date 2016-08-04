@@ -2553,84 +2553,90 @@ of the validity of Conjecture~\ref{conj:ellperiods}.
 
 \subsection{Heuristic arguments}
 
-As far as cyclotomic periods are concerned,
-the only proof of the fact that they generate the desired extension
-we are aware of proceeds as follows.
-For a squarefree $\ell$ and $q = p$ prime:
-\begin{enumerate}
-\item the $\ell$-th cyclotomic polynomial is irreducible over $\Q$ and
-a primitive $\ell$-root of unity $\zeta_\ell$ yield a normal basis
-of $\Q(\zeta_\ell)$;
-\item Gaussian periods seen as field traces of roots of unity
-then yield normal bases of subextensions;
-\item integrality properties of these bases for $p \neq \ell$
-and picking up a subextension where $p$ is inert show that
-the situation transposes to characteristic $p$ by reduction.
-\end{enumerate}
-The second step of the proof crucially relies on the normality
-as no such result is true for plain field generators.
-Therefore, there is little hope to transpose this
-proof to elliptic periods.
-If a proof exists for elliptic periods,
-it seems plausible it does not involve
-lifting to characteristic zero and takes place in positive characteristic
-only.
-Using the polynomially cyclic algebras setting of \cite{Mihailescu2010825},
-which we now describe in our specific setting,
-looks like a reasonable approach.
+\begin{definition}
+  \label{def:poly-cyclic}
+  Let $E/\F_q$ be an elliptic curve. Let $\ell>3$ be an Elkies prime
+  for $E$, let $\lambda$ be an eigenvalue of $\pi$, and let
+  $\langle P\rangle$ be the corresponding eigenspace.
 
-Let $f_\lambda$ be the kernel polynomial of the isogeny corresponding
-to the eigenspace of $\lambda$ and $A$ be the (polynomially cyclic)
-algebra
-\[
-A = \F_q[x]/(f_\lambda(x)) \; .
-\]
+  We define the \emph{kernel polynomial} of $\lambda$ as
+  \begin{equation*}
+    f_\lambda(X) = \prod_{i\in (\Z/\ell\Z)^\ast/\{\pm 1\}}(X-x([i]P)),
+  \end{equation*}
+  and the \emph{algebra associated to $\lambda$} as
+  $A_\lambda = \F_q[X]/f_\lambda(X)$.
+\end{definition}
 
-By hypothesis $\lambda$ is of order $r$ modulo $q$ so that
-the kernel polynomial $f_\lambda$ splits as
+\begin{proposition}
+  The algebra $A_\lambda$ is \emph{polynomially cyclic} in the sense
+  of~\cite{Mihailescu2010825}: the automorphism group of $A_\lambda$
+  over $\F_q$ is cyclic; if $\nu$ is a generator of the automorphism
+  group, there exists a polynomial $C\in\F_q[X]$ such that for any
+  $a(X)\in A_\lambda$
+  \begin{equation*}
+    \nu(a) = a(C(X)) \mod f_\lambda(X).
+  \end{equation*}
+\end{proposition}
+\begin{proof}
+  Let $c$ be a generator of $(\Z/\ell\Z)^{\ast}/\{\pm 1\}$.  The
+  multiplication-by-$c$ map on $E$ cyclically permutes the generators
+  of $\langle P\rangle/\{\pm 1\}$, thus it induces a cyclic
+  automorphism $\nu$ of $A_\lambda$. %
+  Multiplication by $c$ is defined by rational fractions, hence its
+  action on $\langle P\rangle/\{\pm 1\}$ is given by a polynomial $C$
+  modulo $f_\lambda$. This proves the statement.
+\end{proof}
+
+We are now ready to state our lemma on elliptic periods.
+
+\begin{lemma}
+\label{prop:xnormal}
+Let $E$, $\ell$, $\lambda$, $f_\lambda$ and $A_\lambda$ be as in
+Definition~\ref{def:poly-cyclic}, and let $\nu$ be a generator of the
+automorphism group of $A_\lambda$.
+We say that an element $a\in A_\lambda$ is \emph{normal} if the
+$\nu^i(a)$ for $0\le i<(\ell-1)/2$ are linearly independent.
+We say that $f_\lambda$ is normal if the image of
+$X$ in $A_\lambda$ is normal.
+
+Suppose that $(\Z/\ell\Z)^\ast=\langle\lambda\rangle\times S$. %
+If $f_\lambda$ is normal, then the elliptic period
+$\eta_{\lambda,S}(P)$ is a normal element of $\F_q(x(P))$, for any
+point $P$ in the eigenspace of $\lambda$.
+\end{lemma}
+\begin{proof}
+If $\lambda$ is of order $r$ modulo $q$, then $f_\lambda$ splits as
 \[
 f_\lambda = h_1 \cdots h_d
 \]
-where the $h_i$ are pairwise coprime irreducible polynomial of degree $r$
-(and $d r = (l-1)/2$).
-Therefore the algebra $A$ splits as
+where the $h_i$ are pairwise coprime irreducible polynomials of degree $r$,
+and $d r = (\ell-1)/2$.
+Therefore the algebra $A_\lambda$ splits as
 \[
-A \simeq \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_d(x)) \; .
+A_\lambda \simeq \F_q[X]/h_1(X) \times \cdots \times \F_q[X]/h_d(X) \; .
 \]
-The $h_i$ correspond to the different Galois orbits of the abscissae
-of the eigenpoints of $\lambda$.
-
-Let $c$ be a generator of $(\Z/\ell\Z)^{\ast}/\{\pm 1\}$.
-The multiplication-by-$c$ map on $E$ cyclicly permutes the
-abscissae of the eigenpoints of $\lambda$ and
-induces a cyclic automorphism $\nu$ of the algebra $A$.
+The $h_i$ correspond to the different Galois orbits of $G/\{\pm 1\}$.
 Up to permutation of indices, we can suppose that $\nu$
 sends roots of $h_i$ onto roots of $h_{i+1}$.
-Let $C$ be the sole polynomial of degree less than $(l-1)/2$
-describing $\nu$ on $A$ (that is the one obtained by taking the
-rational fraction expressing multiplication-by-$c$ and inverting
-its denominator modulo $f_\lambda$).
-Given a polynomial $g$ representing an element of $A$, note that
-$\nu$ acts by composing $g$ with $C$: $\nu(g) = g(C)$.
 
-Recall that
-$(\Z/\ell\Z)^{\ast}/\{\pm 1\} = \langle{\lambda}\rangle \times S$
-and let $s = c^r$ be a generator of $S$.
-We denote by $\sigma$ the automorphism of algebra $\nu^{(r)}$
+Suppose that
+$(\Z/\ell\Z)^{\ast} = \langle{\lambda}\rangle \times S$.
+%and let $s = c^r$ be a generator of $S/\{\pm 1\}$.
+We denote by $\sigma$ the automorphism of algebras $\nu^{r}$
 and by $S$ the corresponding polynomial
 (there should be no confusion with the subgroup $S$).
-Note that $\nu^d$ is the Frobenius automorphism of $A$.
+Note that $\nu^d$ is the Frobenius automorphism of $A_\lambda$.
 
 Gathering the above remarks we obtain the following diagram:
 \begin{center}
 \begin{tikzpicture}
-\node (A) {$A=\F_q[x]/(f_\lambda(x))$};
+\node (A) {$A_\lambda=\F_q[X]/(f_\lambda(X))$};
 \node[below=.3em of A] (Ax) {$x$};
-\node[right=8em of A] (CRT) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_2(x)) \times \cdots \times \F_q[x]/(h_d(x))$};
+\node[right=8em of A] (CRT) {$\F_q[X]/(h_1(X)) \times \F_q[X]/(h_2(X)) \times \cdots \times \F_q[X]/(h_d(X))$};
 \node[below=.3em of CRT] (CRTx) {$(x, x, \ldots, x)$};
-\node[below=6em of A] (T) {$A^S \simeq \F_{q^r}$};
+\node[below=6em of A] (T) {$A_\lambda^S \simeq \F_{q^r}$};
 \node[below=.3em of T] (Tx) {$\mathrm{Tr}(x) = \sum_{i = 0}^{d-1} S^{(i)}(x)$};
-\node[below=6em of CRT] (C) {$\F_q[x]/(h_1(x)) \times \F_q[x]/(h_1(x)) \times \cdots \times \F_q[x]/(h_1(x))$};
+\node[below=6em of CRT] (C) {$\F_q[X]/(h_1(X)) \times \F_q[X]/(h_1(X)) \times \cdots \times \F_q[X]/(h_1(X))$};
 \node[below=.3em of C] (Cx) {$(x, S(x), \ldots, S^{(d-1)}(x))$};
 \draw[->, shorten >= .5em, shorten <= .5em] (A) -- (CRT);
 \draw[->, shorten >= .5em, shorten <= .5em] (Ax) -- (T);
@@ -2638,16 +2644,9 @@ Gathering the above remarks we obtain the following diagram:
 \end{tikzpicture}
 \end{center}
 
-\begin{proposition}
-\label{prop:xnormal}
-If $x \in A$ is a normal element,
-then $\eta_{\lambda,S}(P)$ is a normal element in $\F_{q^r}$
-for any eigenpoint $P$ of $\lambda$.
-\end{proposition}
-
-\begin{proof}
-Suppose that $x$ is normal in $A$, then so is its trace in $A^S$.
-But taking the trace of $x$ in $A$ and going through the two isomorphisms
+Let $x$ be the image of $X$ in $A_\lambda$.
+Suppose that $x$ is normal in $A_\lambda$, then so is its trace in $A_\lambda^S$.
+But taking the trace of $x$ in $A_\lambda$ and going through the two isomorphisms
 of the diagram is the same thing as computing the period in the
 $d$ different representations of $\F_{q^r}$:
 \[
@@ -2658,49 +2657,47 @@ x \mapsto \sum_{i=0}^{d-1} S^{(i)}(x) \mapsto
 If a linear relation existed between $\eta_{\lambda,S}(P) \in \F_q(x(P))$
 and its Galois conjugates for any eigenpoint $P$ of $\lambda$,
 it would be verified in the $d$ different representations of $\F_{q^r}$
-and lift up to $A$ implying the same linear relation for
+and lift up to $A_\lambda$ implying the same linear relation for
 $\mathrm{Tr}(x)$ and its Galois conjugates.
-Therefore, if $x$ is normal in $A$,
+Therefore, if $x$ is normal in $A_\lambda$,
 then $\eta_{\lambda,S}(P)$ is normal in $\F_q(x(P))$.
 \end{proof}
 
-The converse is easily shown not to be true by experimentation.
-There is also no relation between the normality of $x \in A$
-and $x(P) \in \F_q(x(P))$ for any eigenpoint $P$ of $\lambda$,
+We note that the converse is easily shown not to be true by experimentation.
+There is also no relationship between the normality of $f_\lambda$
+and that of $x(P)$ as an element of $\F_{q^r}$,
 or between the normality of $x(P)$ and that of $\eta_{\lambda,S}(P)$.
 
-Nonetheless, Proposition~\ref{prop:xnormal} shows that heuristically
-$\eta_{\lambda,S}(P)$ has a high probability to be normal and therefore
-to generate $\F_q(x(P))$.
-Indeed, supposing that $x \in A$ behaves as a random element
-as far as normality is concerned, it has a rather high probability
-of begin normal as the following lemma shows.
+Nonetheless, the lemma shows that heuristically
+$\eta_{\lambda,S}(P)$ has a high probability of being normal and therefore
+of generating $\F_q(x(P))$.
+We can even quantify this probability using the following lemma.
 \begin{lemma}
 \label{lemma:euleralgebra}
-Let $A$ be a polynomially cyclic algebra of degree $dr$
+Let $A_\lambda$ be a polynomially cyclic algebra of degree $dr$
 over the finite field $\F_q$.
-The number of normal elements in $A$ is the same as the
-number of normal elements in $\F_{q^{dr}}$:
+The number of normal elements in $A_\lambda$ is the same as the
+number of normal elements in $\F_{q^{dr}}$, i.e.\
 $\Phi_q(x^{dr}-1)$ where $\Phi_q$ is the Euler function
 for polynomials.
 \end{lemma}
 \begin{proof}
-There is at least one normal element in $A$~\cite[Theorem 4]{Mihailescu2010825}
+There is at least one normal element in $A_\lambda$~\cite[Theorem 4]{Mihailescu2010825}
 (and it can be constructed from one in $\F_q$).
 One such element $\alpha$ can be used to count the number of normal elements
 as in the finite field case:
 \begin{enumerate}
 \item every element $a$ can be written using the normal basis
 associated to $\alpha$: $a = \sum_{i=0}^{dr-1} a_i \nu^{(i)}(\alpha)$;
-\item as the Galois group of $A$ is cyclic, the decomposition
+\item as the Galois group of $A_\lambda$ is cyclic, the decomposition
 of the Galois conjugates of $a$ is obtained by shifting the coefficients $a_i$;
 \item the circulant matrix $M_a$ associated to the $a_i$'s is invertible
 if and only if $a$ is a normal element;
-\item the polynomial $\sum_{i=0}^{dr-1} a_i x^i$ in $\F_q[x] / (x^{dr}-1)$
+\item the polynomial $\sum_{i=0}^{dr-1} a_i X^i$ in $\F_q[X] / (X^{dr}-1)$
 is invertible if and only if $M_a$ is.
 \end{enumerate}
 Therefore normal elements in $A$ are in one-to-one correspondence
-with units of $\F_q[x] / (x^{dr}-1)$.
+with units of $\F_q[X] / (X^{dr}-1)$.
 \end{proof}
 
 Another heuristic argument supporting the fact that
@@ -2713,20 +2710,15 @@ generate $\F_{q^r}$, or equivalently that it lies in
 the only strict subfield of $\F_{q^r}$ which is $\F_q$,
 is $q^{1-r}$.
 Therefore, counterexamples should be seeked for small values
-of $q$ and $r$, but as stated in Appendix~\ref{app:ellprdsdata}
+of $q$ and $r$, but as stated in the next subsection
 we found none so far.
 
 To conclude this theoretical discussion, note that one might be tempted to
 replace the trace above by any symmetric function of the
-Galois conjugates of $x \in A$ such as the norm.
-In the case of cyclotomic Gaussian periods,
-replacing the trace by the norm either gives another root of unity
-when the computation is trivial, or $1$ when it is not,
-so such an operation has no sense.
-But in the case of elliptic periods, there is no reason to expect such a
-phenomenon.
+Galois conjugates of $X \in A_\lambda$ such as the
+norm\footnote{Note that this fails trivially for cyclotomic Gaussian periods}.
 However for most elementary symmetric functions, except for the trace,
-couterexamples were found by small scale experiments.
+examples where this definition yields a non-generating element.
 
 \subsection{Searching for counterexamples}
 
