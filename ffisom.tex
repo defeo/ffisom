@@ -1416,7 +1416,7 @@ polynomial may be expensive. For a start, we may ask $s$ to be coprime
 with $r$, so that $h$ can be taken with coefficients in $\F_q$. Then,
 for small values of $s$ and $q$, one may use a table of irreducible
 polynomials. For larger values, the
-constructions~\cite{couveignes+lercier11,DeDoSc13,DeFeo:2014:FAA:2608628.2608672}
+constructions~\cite{couveignes+lercier11,DeDoSc13,DeDoSc2014}
 are reasonably efficient, and yield an irreducible polynomial in time
 less than quadratic in $s$.
 
@@ -1441,7 +1441,7 @@ of the polynomial $\bar{h}$.
     
     \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
     \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
-    \RETURN\label{algorithm:rains-cyclo:period} $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
   \end{algorithmic}
 \end{algorithm}
 
@@ -1699,7 +1699,7 @@ of~\cite{Mihailescu2010825}. Heuristically, it suggests that the
 chance of the period being normal is approximately $1-1/q$. %
 We are now ready to present the generalization of Rains' algorithm,
 with the warning that the algorithm may fail, with low probability, if
-Conjecture~\label{conj:ellperiods} is false.
+Conjecture~\ref{conj:ellperiods} is false.
 
 
 
@@ -1923,7 +1923,7 @@ within those bounds.
   $\ell-1$. Both operations can be performed in
   $\tildO(\sqrt{r\bar{u}})$ operations using naive algorithms.
 
-  In Step~\label{alg:selectell:ellcount} we need to count the number
+  In Step~\ref{alg:selectell:ellcount} we need to count the number
   of points of an elliptic curve over $\F_q$. This can be done in
   $O\left(\log^6(q)\right)$ binary operations using the
   Schoof-Elkies-Atkin algorithm with naive integer
@@ -2060,7 +2060,7 @@ configuring the system.
   when $\order_\ell(q) = rs$ and $\order_{\ell'}(q) = r's$, so that
   the degree of the auxiliary extension is unchanged.
 
-  In general, given the output of Algorithm~\ref{alg:selectell} for
+  In general, given the output of Algorithm~\ref{algorithm:selectell} for
   many prime powers, combining the results to obtain the best
   ``gluing'' requires solving an integer linear program (ILP). Given
   the availability of very fast ILP solvers, the practical speed-up
