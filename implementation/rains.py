@@ -102,6 +102,7 @@ def find_gen_with_data(k, r, o, G, verbose = False):
     o = ro // ro.gcd(n)
 
     if o > 1:
+#    if o > 2:
         if verbose:
             print "Using auxiliary extension of degree {}".format(o)
         P = GF(p**o, 'z').polynomial()
@@ -114,6 +115,8 @@ def find_gen_with_data(k, r, o, G, verbose = False):
     # k, if needed.
     if o == 1:
         u = find_unique_orbit(k, G)
+#    elif o == 2:
+#        u = find_unique_orbit_lucas(k, G)
     else:
         u = find_unique_orbit(kext, G)
         R = k.polynomial_ring()
@@ -595,3 +598,44 @@ def find_unique_orbit(k, G):
     # ... lovely combinatorial iterators!
     return sum(zeta**prod(g**e for (g, _), e in zip(G, exps)).lift()
                for exps in CProd(map(lambda (_,x): range(x), G)))
+
+
+def find_unique_orbit_lucas(k, G):
+    '''
+    Lucas functions (Pell's conic) variant of Rains' algorithm.
+    Only works with k = F_{p^n}, p ≠ 2, and G ⊂ ℤ/m*, where
+
+    1. <p> ⊂ ℤ/m* is of order r⋅2,
+    2. gcd(n, 2) = 1,
+    3. ℤ/m* = <p^2> × G.
+
+    Return a Gaussian period of m-th roots of unity of k.
+    '''
+    m = G[0][0].parent().order()
+    cofactor = (k.cardinality() + 1) // m
+    sqtest =  (k.cardinality() - 1) // 2
+    fact = m.factor()
+
+    # find an m-th root of unity
+    zeta = 2
+    while any(lucas_pow(zeta, m // f[0]) == 2 for f in fact):
+        a = k.random_element()
+        if (a**2 - 4)**sqtest == 1:
+            continue
+        zeta = lucas_pow(a, cofactor)
+        
+    # return the Gaussian period
+    # ... lovely combinatorial iterators!
+    return sum(lucas_pow(zeta, prod(g**e for (g, _), e in zip(G, exps)).lift())
+               for exps in CProd(map(lambda (_,x): range(x), G)))/2
+
+def lucas_pow(a, n):
+    ''' Lucas functions on Pell's conic '''
+    A, B = 2, a
+    for b in reversed(ZZ(n).bits()):
+        if b == 0:
+            A, B = A**2 - 2, A*B - a
+        else:
+            A, B = A*B - a, B**2 - 2
+    return A
+
