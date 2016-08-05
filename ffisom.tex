@@ -2678,22 +2678,23 @@ Nonetheless, Proposition~\ref{prop:xnormal} shows that heuristically
 $\eta_{\lambda,S}(P)$ has a high probability to be normal and therefore
 to generate $\F_q(x(P))$.
 Indeed, supposing that $x \in A$ behaves as a random element
-as far as normality is concerned, it has a rather high probability
-of begin normal as the following lemma shows.
+as far as normality is concerned, it has a high probability
+of begin normal, just as random elements in finite fields,
+as the following lemma shows.
 \begin{lemma}
 \label{lemma:euleralgebra}
 Let $A$ be a polynomially cyclic algebra of degree $dr$
 over the finite field $\F_q$.
 The number of normal elements in $A$ is the same as the
 number of normal elements in $\F_{q^{dr}}$:
-$\Phi_q(x^{dr}-1)$ where $\Phi_q$ is the Euler function
-for polynomials.
+$\Phi_q(x^{dr}-1) = O(q^{dr})$ where $\Phi_q$ is the Euler function
+for polynomials~\cite[Lemma~3.69]{lidl+niederreiter:2}.
 \end{lemma}
 \begin{proof}
 There is at least one normal element in $A$~\cite[Theorem 4]{Mihailescu2010825}
 (and it can be constructed from one in $\F_q$).
 One such element $\alpha$ can be used to count the number of normal elements
-as in the finite field case:
+as in the finite field case~\cite[Theorem~3.73]{lidl+niederreiter:2}:
 \begin{enumerate}
 \item every element $a$ can be written using the normal basis
 associated to $\alpha$: $a = \sum_{i=0}^{dr-1} a_i \nu^{(i)}(\alpha)$;
