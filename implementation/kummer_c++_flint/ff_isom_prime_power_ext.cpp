@@ -18,6 +18,8 @@ using namespace std;
 
 /**
  * Solve HT90 using linear algebra over F_p.
+ *
+ * This is not restricted to prime power degree extension.
  */
 void FFIsomPrimePower::compute_semi_trace_trivial_linalg(fq_nmod_t theta, const fq_nmod_ctx_t ctx, mp_limb_t z) {
         slong r = fq_nmod_ctx_degree(ctx);
@@ -28,6 +30,10 @@ void FFIsomPrimePower::compute_semi_trace_trivial_linalg(fq_nmod_t theta, const 
         fq_nmod_init(temp, ctx);
         fq_nmod_set(temp, xi_init, ctx);
 
+        /*
+ 	 * Frobenius automorphism matrix.
+ 	 * Compute iteratively 1, x^q, x^(2q), ...
+	 */
         nmod_mat_entry(frob_auto, 0, 0) = 1;
         for (slong i = 1; i < r; i++) {
                 for (slong j = 0; j < r; j++) {
@@ -37,11 +43,20 @@ void FFIsomPrimePower::compute_semi_trace_trivial_linalg(fq_nmod_t theta, const 
                 fq_nmod_mul(temp, temp, xi_init, ctx);
         }
 
+	/*
+         * Frob - z Id.
+         */
         for (slong i = 0; i < r; i++)
                 nmod_mat_entry(frob_auto, i, i) = nmod_sub(nmod_mat_entry(frob_auto, i, i), z, ctx->modulus->mod);
 
+        /*
+         * Kernel.
+         */  
         nmod_mat_nullspace(frob_auto, frob_auto);
 
+        /*
+         * Extract theta.
+         */
         for (slong i = 0; i < r; i++)
                 nmod_poly_set_coeff_ui(theta, i, nmod_mat_entry(frob_auto, i, 0));
 
@@ -55,6 +70,8 @@ void FFIsomPrimePower::compute_semi_trace_trivial_linalg(fq_nmod_t theta, const 
  * Computes the value $\delta_r = a + z^{r - 1}\sigma(a) + z^{r - 2}\sigma^2(a) + \cdots + 
  * z^{1}\sigma^{r - 1}(a)$ where $a \in \mathbb{F}_p[x][z]$, and $r$ is the degree of
  * the extension {@code ctx}.
+ *
+ * This is done recursively using modular composition.
  */
 void FFIsomPrimePower::compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z) {
 	fq_nmod_t xi;
@@ -117,6 +134,8 @@ void FFIsomPrimePower::_compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_n
 
 /**
  * Solve HT90 using linear algebra over F_q.
+ *
+ * This is not restricted to prime power degree extension.
  */
 void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx) {
         slong r = fq_nmod_ctx_degree(ctx);
@@ -130,6 +149,10 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
 	fq_nmod_t cyclo_temp;
 	fq_nmod_init(cyclo_temp, cyclo_ctx);
 
+        /*
+ 	 * (Frob - z Id) matrix.
+ 	 * Compute iteratively 1, x^q, x^(2q), ...
+	 */
 	nmod_poly_set_coeff_ui(cyclo_temp, 0, 1);
         fq_nmod_mat_entry_set(frob_auto, 0, 0, cyclo_temp, cyclo_ctx);
         for (slong i = 1; i < r; i++) {
@@ -143,8 +166,14 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
                 fq_nmod_mul(temp, temp, xi_init, ctx);
         }
 
+        /*
+         * Kernel.
+         */
         fq_nmod_mat_nullspace(frob_auto, frob_auto, cyclo_ctx);
 
+        /*
+         * Extract theta.
+         */
         fq_nmod_poly_zero(theta, ctx);
         for (slong i = 0; i < fq_nmod_ctx_degree(cyclo_ctx); i++) {
 		for (slong j = 0; j < r; j++)
@@ -159,7 +188,11 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
         return;
 }
 
-// Lifting with modexp
+/*
+ * Lift solution from F_q to F_q[z]
+ *
+ * Uses modular exponentiation to compute frobenii.
+ */
 void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx) {
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
 
@@ -170,6 +203,7 @@ void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0
 	// a_0
 	fq_nmod_poly_set_coeff(theta, 0, a0, ctx);
 
+        // Suboptimal, use Luca's formula.
         // a_{s-1} = -1/b_0 frob(a_0)
         mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_ctx->modulus, 0), ctx->modulus->mod), ctx->modulus->mod);
 	fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
@@ -200,7 +234,11 @@ void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0
 	fq_nmod_clear(add, ctx);
 }
 
-// Lifting with linalg
+/*
+ * Lift solution from F_q to F_q[z]
+ *
+ * Uses linear algebra to compute frobenii.
+ */
 void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx) {
 	slong r = fq_nmod_ctx_degree(ctx);
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
@@ -213,6 +251,7 @@ void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0
 	for (slong i = 0; i < r; i++)
 		nmod_mat_entry(a[0], i, 0) = nmod_poly_get_coeff_ui(a0, i);
 
+        // Suboptimal, use Luca's formula.
         // a_{s-1}
         mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_ctx->modulus, 0), ctx->modulus->mod), ctx->modulus->mod);
         nmod_mat_mul(a[s-1], frob_auto, a[0]);
@@ -240,7 +279,7 @@ void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0
 }
 
 /**
- * Solve HT90 using linear algebra over F_p.
+ * Solve HT90 using linear algebra over F_p and lifting from F_q to F_q[z].
  */
 void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx) {
 
@@ -325,6 +364,8 @@ void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const n
  * Computes the value $\delta_r = a + z^{r - 1}\sigma(a) + z^{r - 2}\sigma^2(a) + \cdots + 
  * z^{1}\sigma^{r - 1}(a)$ where $a \in \mathbb{F}_p[x][z]$, and $r$ is the degree of
  * the extension {@code ctx}.
+ *
+ * This is done recursively using modular composition.
  */
 void FFIsomPrimePower::compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t cyclo_mod_lift) {
@@ -432,6 +473,8 @@ void FFIsomPrimePower::compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, s
  * Computes the value $\theta = \alpha + z^{r - 1}\alpha^{p} + z^{r - 2}\alpha^{p^2} + \cdots + 
  * z\alpha^{p^{(r - 1)}$ where $\alpha \in \mathbb{F}_p[x]$, and $r$ is the degree of
  * the extension {@code ctx}.
+ *
+ * This is done using multi point evaluation/iterated frobenius.
  */
 void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t cyclo_mod_lift) {
