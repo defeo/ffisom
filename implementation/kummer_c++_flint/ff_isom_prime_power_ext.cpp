@@ -323,8 +323,10 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 	return;
 }
 
-// Horner's method
-// h supposed to be monic
+/*
+ * Evaluate the polynomial h(frobenius) at a using Horner's method.
+ * h is supposed to be monic.
+ */
 void FFIsomPrimePower::eval_nmod_poly_fq_nmod_horner(fq_nmod_t res, const nmod_poly_t h, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
 	fq_nmod_set(res, a, ctx);
 	for (slong i = nmod_poly_degree(h) - 1; i >= 0; i--) {
@@ -481,7 +483,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
 
 	slong degree = fq_nmod_ctx_degree(ctx);
 
-	fq_nmod_t *frobenius = new fq_nmod_t[degree];
+	fq_nmod_t frobenius[degree];
 	for (slong i = 0; i < degree; i++)
 		fq_nmod_init(frobenius[i], ctx);
 
@@ -493,11 +495,11 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
 		fq_nmod_poly_set_coeff(theta, i, frobenius[degree - i], ctx);
 	}
 
+        // Surely suboptimal. cyclo_mod_lift has coeffs in Fp (and is fixed).
 	fq_nmod_poly_rem(theta, theta, cyclo_mod_lift, ctx);
 
 	for (slong i = 0; i < degree; i++)
 		fq_nmod_clear(frobenius[i], ctx);
-	delete[] frobenius;
 }
 
 /**
