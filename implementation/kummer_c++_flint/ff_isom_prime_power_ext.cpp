@@ -5,6 +5,7 @@
  *      Author: javad
  */
 
+#include "nmod_poly_compose_mod.h"
 #include "ff_isom_prime_power_ext.h"
 #include "fq_nmod_poly_eval.h"
 #include "cyclotomic_ext_rth_root.h"
@@ -381,6 +382,47 @@ void FFIsomPrimePower::compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq
 	fq_nmod_clear(xi, ctx);
 }
 
+
+// compute z^{z_degree}delta
+// TODO: 
+//   - can't we create an attribute nmod_poly_t cyclo_mod?
+//   - put this in FFIsomPrimePower? 
+void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_poly_t cyclo_mod_lift, const fq_nmod_ctx_t ctx) {
+  nmod_poly_t cyclo_mod, z, z_pow;
+  nmod_poly_init(cyclo_mod, ctx->mod.n);
+  nmod_poly_init(z, ctx->mod.n);
+  nmod_poly_init(z_pow, ctx->mod.n);
+
+  long r = nmod_poly_degree(ctx->modulus);
+  long s = fq_nmod_poly_degree(cyclo_mod_lift, ctx);
+
+  for (long i = 0; i <= s; i++)
+    nmod_poly_set_coeff_ui(cyclo_mod, i, nmod_poly_get_coeff_ui(cyclo_mod_lift->coeffs +i , 0));
+
+  nmod_poly_set_coeff_ui(z, 1, 1);
+  nmod_poly_powmod_ui_binexp(z_pow, z, z_degree, cyclo_mod);
+  
+  nmod_poly_t coeff;
+  nmod_poly_init2(coeff, ctx->mod.n, s);
+  for (long j = 0; j < r; j++){
+    for (long i = 0; i < s; i++)
+      coeff->coeffs[i] = nmod_poly_get_coeff_ui(delta->coeffs +i , j);
+    coeff->length = s;
+    _nmod_poly_normalise(coeff);
+    nmod_poly_mulmod(coeff, coeff, z_pow, cyclo_mod);
+    for (long i = 0; i < s; i++)
+      nmod_poly_set_coeff_ui(delta->coeffs +i , j, coeff->coeffs[i]);
+  }
+  nmod_poly_clear(coeff);
+
+  nmod_poly_clear(z);
+  nmod_poly_clear(z_pow);
+  nmod_poly_clear(cyclo_mod);
+
+  // fq_nmod_poly_shift_left(delta, delta, z_degree, ctx);
+  // fq_nmod_poly_rem(delta, delta, cyclo_mod_lift, ctx);
+}
+
 /**
  * Computes the value $\delta_n = a + z^{r - 1}\sigma(a) + z^{r - 2}\sigma^2(a) + \cdots + 
  * z^{r - n + 1}\sigma^{n - 1}(a)$ where $a \in \mathbb{F}_p[x][z]$ is such that $\delta_init = a$.
@@ -404,30 +446,96 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	fq_nmod_poly_init(temp_delta, ctx);
 	fq_nmod_init(temp_xi, ctx);
 
+
 	if (n % 2 == 0) {
 
-		_compute_semi_trace_modcomp(delta, xi, n / 2, ctx, cyclo_mod_lift);
-		fq_nmod_poly_set(temp_delta, delta, ctx);
-		fq_nmod_set(temp_xi, xi, ctx);
-		z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
+	  _compute_semi_trace_modcomp(delta, xi, n / 2, ctx, cyclo_mod_lift);
+	  fq_nmod_poly_set(temp_delta, delta, ctx);
+	  fq_nmod_set(temp_xi, xi, ctx);
+	  z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
 
+	  if (true){
+	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	  } // we probably won't need this anymore
+	  else {
+	    compute_delta(delta, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	    compute_xi(xi, temp_xi, ctx);
+	  }
+		
 	} else {
+	  
+	  _compute_semi_trace_modcomp(delta, xi, n - 1, ctx, cyclo_mod_lift);
+	  fq_nmod_poly_set(temp_delta, delta_init, ctx);
+	  fq_nmod_set(temp_xi, xi_init, ctx);
+	  z_degree = fq_nmod_ctx_degree(ctx) - 1;
 
-		_compute_semi_trace_modcomp(delta, xi, n - 1, ctx, cyclo_mod_lift);
-		fq_nmod_poly_set(temp_delta, delta_init, ctx);
-		fq_nmod_set(temp_xi, xi_init, ctx);
-		z_degree = fq_nmod_ctx_degree(ctx) - 1;
+	  // an attempt to replace the modcomp's by a q-power. 
+	  // not so clear if it's useful at all.
+	  //
+	  // if we do modcomp's instead, the baby steps and giant steps for xi_init should be stored and reused
+	  nmod_poly_t tmp;
+	  nmod_poly_init(tmp, ctx->mod.n);
+	  slong deg_delta = fq_nmod_poly_degree(delta, ctx);
 
+	  for (long i = 0; i <= deg_delta; i++){
+	    fq_nmod_poly_get_coeff(tmp, delta, i, ctx);
+	    nmod_poly_powmod_ui_binexp_preinv(tmp, tmp, ctx->mod.n, ctx->modulus, ctx->inv);
+	    fq_nmod_poly_set_coeff(delta, i, tmp, ctx);
+	  }
+	  nmod_poly_powmod_ui_binexp_preinv(xi, xi, ctx->mod.n, ctx->modulus, ctx->inv);
+	  nmod_poly_clear(tmp);
+
+	  shift_delta(delta, z_degree, cyclo_mod_lift, ctx);
 	}
 
-	compute_delta(delta, temp_xi, z_degree, ctx, cyclo_mod_lift);
 	fq_nmod_poly_add(delta, delta, temp_delta, ctx);
-
-	compute_xi(xi, temp_xi, ctx);
-
 	fq_nmod_poly_clear(temp_delta, ctx);
 	fq_nmod_clear(temp_xi, ctx);
 }
+
+
+/**
+ * Given $\delta = \sum_i c_i(x)z^i$, this method computes 
+ * $z^{z_degree}\delta(\xi) = z^{z_degree}\sum_i c_i(\xi)z^i$. 
+ * and {@code xi} = {@code xi}({@code old_xi}).
+ */
+void FFIsomPrimePower::compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_xi, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
+
+	slong delta_degree = fq_nmod_poly_degree(delta, ctx);
+	slong nn = ctx->mod.n;
+
+	// inputs to multi-modcomp
+	nmod_poly_struct* input = (nmod_poly_struct *) flint_malloc((delta_degree+3)*sizeof(nmod_poly_struct));
+	for (long i = 0; i <= delta_degree; i++){
+	  nmod_poly_init(input + i, nn);
+	  fq_nmod_poly_get_coeff(input + i, delta, i, ctx);
+	}
+	nmod_poly_init(input + (delta_degree + 1), nn);
+	nmod_poly_set(input + (delta_degree + 1), new_xi);
+	nmod_poly_init(input + (delta_degree + 2), nn);
+	nmod_poly_set(input + (delta_degree + 2), xi);
+
+	// outputs of multi-modcomp
+	nmod_poly_struct* output = (nmod_poly_struct *) flint_malloc((delta_degree+2)*sizeof(nmod_poly_struct));
+	Nmod_poly_compose_mod compose;
+
+	compose.nmod_poly_compose_mod_brent_kung_vec_preinv_precomp(output, input, delta_degree+3, delta_degree+2, ctx->modulus, ctx->inv);
+
+	for (long i = 0; i <= delta_degree; i++){
+	  fq_nmod_poly_set_coeff(delta, i, output + i, ctx);
+	  nmod_poly_clear(output + i);
+	}
+	fq_nmod_set(new_xi, output + delta_degree + 1, ctx);
+	nmod_poly_clear(output + delta_degree + 1);
+	flint_free(output);
+
+	for (long i = 0; i <= delta_degree+2; i++)
+	  nmod_poly_clear(input + i);
+	flint_free(input);
+
+	shift_delta(delta, z_degree, cyclo_mod_lift, ctx);
+}
+
 
 /**
  * Computes {@code xi} = {@code xi}({@code old_xi}).
@@ -600,7 +708,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
                 compute_semi_trace_linalg(theta, ctx, cyclo_ctx);
 	        fq_nmod_clear(alpha, ctx);
                 return;
-        }
+	}
 
 	flint_rand_t state;
 	flint_randinit(state);
@@ -757,8 +865,12 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 	fq_nmod_poly_init(cyclo_mod_lift, ctx_1);
 	build_cyclotomic_extension(cyclo_mod_lift, cyclo_ctx);
 
+	// timeit_t time;
+	// timeit_start(time);
 	compute_semi_trace(f, ctx_1, cyclo_ctx, cyclo_mod_lift);
 	compute_semi_trace(f_image, ctx_2, cyclo_ctx, cyclo_mod_lift);
+	// timeit_stop(time);
+	// cout << "trace time: " << (double) time->wall / 1000.0 << "\n";
 
 	fq_nmod_t c;
 	fq_nmod_poly_t c_temp;
@@ -841,6 +953,7 @@ void FFIsomPrimePower::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 	// check for the trivial cyclotomic extension case
 	Util util;
 	slong degree = util.compute_multiplicative_order(g1->mod.n, fq_nmod_ctx_degree(ctx_1));
+
 	if (degree == 1)
                 compute_generators_trivial(g1, g2);
         else
