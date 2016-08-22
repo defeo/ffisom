@@ -471,23 +471,26 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 
 	  // an attempt to replace the modcomp's by a q-power. 
 	  // not so clear if it's useful at all.
-	  //
-	  // if we do modcomp's instead, the baby steps and giant steps for xi_init should be stored and reused
-	  nmod_poly_t tmp;
-	  nmod_poly_init(tmp, ctx->mod.n);
-	  slong deg_delta = fq_nmod_poly_degree(delta, ctx);
+	  // we do modcomp's instead, but the baby steps and giant steps for xi_init should be stored and reused
+	  if (false){
+	    nmod_poly_t tmp;
+	    nmod_poly_init(tmp, ctx->mod.n);
+	    slong deg_delta = fq_nmod_poly_degree(delta, ctx);
+	    
+	    for (long i = 0; i <= deg_delta; i++){
+	      fq_nmod_poly_get_coeff(tmp, delta, i, ctx);
+	      nmod_poly_powmod_ui_binexp_preinv(tmp, tmp, ctx->mod.n, ctx->modulus, ctx->inv);
+	      fq_nmod_poly_set_coeff(delta, i, tmp, ctx);
+	    }
+	    nmod_poly_powmod_ui_binexp_preinv(xi, xi, ctx->mod.n, ctx->modulus, ctx->inv);
+	    nmod_poly_clear(tmp);
 
-	  for (long i = 0; i <= deg_delta; i++){
-	    fq_nmod_poly_get_coeff(tmp, delta, i, ctx);
-	    nmod_poly_powmod_ui_binexp_preinv(tmp, tmp, ctx->mod.n, ctx->modulus, ctx->inv);
-	    fq_nmod_poly_set_coeff(delta, i, tmp, ctx);
+	    shift_delta(delta, z_degree, cyclo_mod_lift, ctx);
 	  }
-	  nmod_poly_powmod_ui_binexp_preinv(xi, xi, ctx->mod.n, ctx->modulus, ctx->inv);
-	  nmod_poly_clear(tmp);
-
-	  shift_delta(delta, z_degree, cyclo_mod_lift, ctx);
+	  else{
+	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	  }
 	}
-
 	fq_nmod_poly_add(delta, delta, temp_delta, ctx);
 	fq_nmod_poly_clear(temp_delta, ctx);
 	fq_nmod_clear(temp_xi, ctx);
