@@ -60,11 +60,13 @@ void test_automorphism_evaluate(slong degree) {
   timeit_t time;
 
   timeit_start(time);
+  // Algorithm AE
   eval.compose(res1, A, g, f, finv);
   timeit_stop(time);
   cout << (double) time->wall / 1000.0 << " ";
 
   timeit_start(time);
+  // a naive algo
   eval.compose_naive(res2, A, g, f, finv);
   timeit_stop(time);
   cout << (double) time->wall / 1000.0;
