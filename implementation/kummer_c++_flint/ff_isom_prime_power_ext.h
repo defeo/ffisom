@@ -32,11 +32,15 @@ class FFIsomPrimePower {
     void eval_nmod_poly_fq_nmod_horner(fq_nmod_t res, const nmod_poly_t h, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx);
     void compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
-    void _compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
+    void _compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, 
+				     const Nmod_poly_compose_mod & compose_xi_init, 
+				     const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
     void compute_xi(fq_nmod_t xi, const fq_nmod_t old_xi, const fq_nmod_ctx_t ctx);
     void compute_delta(fq_nmod_poly_t delta, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
 
-    void compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_xi, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
+    void compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_xi, const fq_nmod_t xi, slong z_degree, 
+			      const Nmod_poly_compose_mod & compose_xi_init, 
+			      const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
 
 
     void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
