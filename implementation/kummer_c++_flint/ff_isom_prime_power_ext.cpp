@@ -377,7 +377,13 @@ void FFIsomPrimePower::compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq
 	fq_nmod_init(xi, ctx);
 
 	fq_nmod_poly_set(delta_init, a, ctx);
-	_compute_semi_trace_modcomp(theta, xi, fq_nmod_ctx_degree(ctx), ctx, cyclo_mod_lift);
+
+	long delta_degree = fq_nmod_poly_degree(delta_init, ctx);
+	Nmod_poly_compose_mod compose_xi_init;
+	compose_xi_init.nmod_poly_compose_mod_brent_kung_vec_preinv_prepare(xi_init, ctx->modulus, ctx->inv,  
+									    n_sqrt( nmod_poly_degree(ctx->modulus) * (delta_degree+2)) + 1);
+
+	_compute_semi_trace_modcomp(theta, xi, fq_nmod_ctx_degree(ctx), compose_xi_init, ctx, cyclo_mod_lift);
 
 	fq_nmod_clear(xi, ctx);
 }
@@ -418,9 +424,6 @@ void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_poly_t cycl
   nmod_poly_clear(z);
   nmod_poly_clear(z_pow);
   nmod_poly_clear(cyclo_mod);
-
-  // fq_nmod_poly_shift_left(delta, delta, z_degree, ctx);
-  // fq_nmod_poly_rem(delta, delta, cyclo_mod_lift, ctx);
 }
 
 /**
@@ -429,13 +432,14 @@ void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_poly_t cycl
  * After recursion level i, $\delta_n = a + z^{r - 1}\sigma(a) + z^{r - 2}\sigma^2(a) + \cdots + 
  * z^{r - i + 1}\sigma^{i - 1}(a)$ and $\xi_i = x^{p^i}$.
  */
-void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx,
-		const fq_nmod_poly_t cyclo_mod_lift) {
+void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, 
+						   const Nmod_poly_compose_mod & compose_xi_init, 
+						   const fq_nmod_ctx_t ctx,
+						   const fq_nmod_poly_t cyclo_mod_lift) {
 
 	if (n == 1) {
 		fq_nmod_poly_set(delta, delta_init, ctx);
 		fq_nmod_set(xi, xi_init, ctx);
-
 		return;
 	}
 
@@ -449,13 +453,17 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 
 	if (n % 2 == 0) {
 
-	  _compute_semi_trace_modcomp(delta, xi, n / 2, ctx, cyclo_mod_lift);
+	  _compute_semi_trace_modcomp(delta, xi, n / 2, compose_xi_init, ctx, cyclo_mod_lift);
 	  fq_nmod_poly_set(temp_delta, delta, ctx);
 	  fq_nmod_set(temp_xi, xi, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
 
 	  if (true){
-	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	    long delta_degree = fq_nmod_poly_degree(delta, ctx);
+	    Nmod_poly_compose_mod compose;
+	    compose.nmod_poly_compose_mod_brent_kung_vec_preinv_prepare(xi, ctx->modulus, ctx->inv,  
+									n_sqrt( nmod_poly_degree(ctx->modulus) * (delta_degree+2)) + 1);
+	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, compose, ctx, cyclo_mod_lift);
 	  } // we probably won't need this anymore
 	  else {
 	    compute_delta(delta, temp_xi, z_degree, ctx, cyclo_mod_lift);
@@ -464,14 +472,13 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 		
 	} else {
 	  
-	  _compute_semi_trace_modcomp(delta, xi, n - 1, ctx, cyclo_mod_lift);
+	  _compute_semi_trace_modcomp(delta, xi, n - 1, compose_xi_init, ctx, cyclo_mod_lift);
 	  fq_nmod_poly_set(temp_delta, delta_init, ctx);
 	  fq_nmod_set(temp_xi, xi_init, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - 1;
 
 	  // an attempt to replace the modcomp's by a q-power. 
-	  // not so clear if it's useful at all.
-	  // we do modcomp's instead, but the baby steps and giant steps for xi_init should be stored and reused
+	  // not so clear if it's useful at all, so I'll leave it out for the moment
 	  if (false){
 	    nmod_poly_t tmp;
 	    nmod_poly_init(tmp, ctx->mod.n);
@@ -488,7 +495,7 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	    shift_delta(delta, z_degree, cyclo_mod_lift, ctx);
 	  }
 	  else{
-	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, compose_xi_init, ctx, cyclo_mod_lift);
 	  }
 	}
 	fq_nmod_poly_add(delta, delta, temp_delta, ctx);
@@ -497,32 +504,30 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 }
 
 
-/**
+ /**
  * Given $\delta = \sum_i c_i(x)z^i$, this method computes 
  * $z^{z_degree}\delta(\xi) = z^{z_degree}\sum_i c_i(\xi)z^i$. 
  * and {@code xi} = {@code xi}({@code old_xi}).
  */
-void FFIsomPrimePower::compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_xi, const fq_nmod_t xi, slong z_degree, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
+void FFIsomPrimePower::compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_xi, const fq_nmod_t xi, slong z_degree, 
+					    const Nmod_poly_compose_mod & compose, 
+					    const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
 
 	slong delta_degree = fq_nmod_poly_degree(delta, ctx);
 	slong nn = ctx->mod.n;
 
 	// inputs to multi-modcomp
-	nmod_poly_struct* input = (nmod_poly_struct *) flint_malloc((delta_degree+3)*sizeof(nmod_poly_struct));
+	nmod_poly_struct* input = (nmod_poly_struct *) flint_malloc((delta_degree+2)*sizeof(nmod_poly_struct));
 	for (long i = 0; i <= delta_degree; i++){
 	  nmod_poly_init(input + i, nn);
 	  fq_nmod_poly_get_coeff(input + i, delta, i, ctx);
 	}
 	nmod_poly_init(input + (delta_degree + 1), nn);
 	nmod_poly_set(input + (delta_degree + 1), new_xi);
-	nmod_poly_init(input + (delta_degree + 2), nn);
-	nmod_poly_set(input + (delta_degree + 2), xi);
 
 	// outputs of multi-modcomp
 	nmod_poly_struct* output = (nmod_poly_struct *) flint_malloc((delta_degree+2)*sizeof(nmod_poly_struct));
-	Nmod_poly_compose_mod compose;
-
-	compose.nmod_poly_compose_mod_brent_kung_vec_preinv_precomp(output, input, delta_degree+3, delta_degree+2, ctx->modulus, ctx->inv);
+	compose.nmod_poly_compose_mod_brent_kung_vec_preinv_precomp(output, input, delta_degree+2);
 
 	for (long i = 0; i <= delta_degree; i++){
 	  fq_nmod_poly_set_coeff(delta, i, output + i, ctx);
@@ -532,7 +537,7 @@ void FFIsomPrimePower::compute_delta_and_xi(fq_nmod_poly_t delta, fq_nmod_t new_
 	nmod_poly_clear(output + delta_degree + 1);
 	flint_free(output);
 
-	for (long i = 0; i <= delta_degree+2; i++)
+	for (long i = 0; i < delta_degree+2; i++)
 	  nmod_poly_clear(input + i);
 	flint_free(input);
 
@@ -720,10 +725,16 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
                 fq_nmod_poly_t alpha;
                 fq_nmod_poly_init(alpha, ctx);
                 fq_nmod_poly_zero(theta, ctx);
+
+		timeit_t time;
+		timeit_start(time);
 		while (fq_nmod_poly_is_zero(theta, ctx)) {
 			fq_nmod_poly_randtest_not_zero(alpha, state, s, ctx);
 			compute_semi_trace_modcomp(theta, alpha, ctx, cyclo_mod_lift);
 		}
+		timeit_stop(time);
+		cout << "semi_trace: " << (double) time->wall / 1000.0 << "\n";
+
                 fq_nmod_poly_clear(alpha, ctx);
 	} else {
 	        // try alpha = x first
