@@ -12,8 +12,15 @@
 #include <flint/fq_nmod_poly.h>
 
 class FFIsomPrimePower {
+    slong ext_deg;
+    mp_limb_t ext_char;
     fq_nmod_ctx_t ctx_1;
     fq_nmod_ctx_t ctx_2;
+
+    slong cyclo_deg;
+    nmod_poly_t cyclo_mod;
+    fq_nmod_ctx_t cyclo_ctx;
+    mp_limb_t cyclo_root;
 
     fq_nmod_poly_t delta_init;
     fq_nmod_t delta_init_trivial;
@@ -25,12 +32,12 @@ class FFIsomPrimePower {
     void compute_semi_trace_trivial_linalg(fq_nmod_t theta, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void _compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const mp_limb_t z);
-    void compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx);
-    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx);
-    void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx);
-     void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_mod);
-    void eval_nmod_poly_fq_nmod_horner(fq_nmod_t res, const nmod_poly_t h, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
-    void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx);
+    void compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
+    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx);
+    void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
+     void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
+    void eval_nmod_qpoly_fq_nmod_horner_modexp(fq_nmod_t res, const nmod_poly_t h, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
     void _compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, 
 				     const Nmod_poly_compose_mod & compose_xi_init, 
@@ -42,19 +49,18 @@ class FFIsomPrimePower {
 			      const Nmod_poly_compose_mod & compose_xi_init, 
 			      const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
 
-
+    void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
     void compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t ctx, const mp_limb_t z);
-    void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_ctx_t cyclo_ctx, const fq_nmod_poly_t cyclo_mod_lift);
+    void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
     void compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly_t f_image);
-    void compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b, const fq_nmod_poly_t modulus,
-            const fq_nmod_ctx_t cyclotomic_ctx);
-    void build_cyclotomic_extension(fq_nmod_poly_t modulus, fq_nmod_ctx_t cyclotomic_ctx);
+    void compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b, const fq_nmod_poly_t modulus);
     void convert(fq_nmod_t result, const fq_nmod_poly_t value, const fq_nmod_ctx_t ctx);
     void convert(fq_nmod_poly_t result, const fq_nmod_t value, const fq_nmod_ctx_t ctx);
-    mp_limb_t compute_cyclotomic_root(const slong r, const mp_limb_t p);
     void compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image);
+    void compute_cyclotomic_extension();
+    void compute_cyclotomic_root();
 
 public:
 
