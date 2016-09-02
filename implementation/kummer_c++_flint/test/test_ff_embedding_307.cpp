@@ -47,10 +47,10 @@ void test_build_embedding() {
 	f2->length = m+1;
 	_nmod_poly_normalise(f2);
 
-	cout << nmod_poly_degree(f1) << endl;
-	cout << nmod_poly_degree(f2) << endl;
-	cout << nmod_poly_is_irreducible(f1) << endl;
-	cout << nmod_poly_is_irreducible(f2) << endl;
+	// cout << nmod_poly_degree(f1) << endl;
+	// cout << nmod_poly_degree(f2) << endl;
+	// cout << nmod_poly_is_irreducible(f1) << endl;
+	// cout << nmod_poly_is_irreducible(f2) << endl;
 
 	cout << "building an embedding...\n";
 	timeit_t time;
