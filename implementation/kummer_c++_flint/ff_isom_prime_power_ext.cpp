@@ -704,6 +704,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t c
 void FFIsomPrimePower::compute_semi_trace_all(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
 
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
+	cout << "s=" << s << endl;
 	flint_rand_t state;
 	fq_nmod_t alpha;
 	timeit_t time;
