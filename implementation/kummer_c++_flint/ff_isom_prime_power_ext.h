@@ -11,6 +11,8 @@
 #include <flint/fq_nmod.h>
 #include <flint/fq_nmod_poly.h>
 
+#include "nmod_poly_compose_mod.h"
+
 class FFIsomPrimePower {
     slong ext_deg;
     mp_limb_t ext_char;
@@ -53,7 +55,10 @@ class FFIsomPrimePower {
     void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
     void compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t ctx, const mp_limb_t z);
+
     void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
+    void compute_semi_trace_all(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
+
     void compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_poly_t f_image);
     void compute_middle_isomorphism(fq_nmod_t c, const fq_nmod_poly_t theta_a, const fq_nmod_poly_t theta_b, const fq_nmod_poly_t modulus);
     void convert(fq_nmod_t result, const fq_nmod_poly_t value, const fq_nmod_ctx_t ctx);
@@ -69,7 +74,7 @@ public:
      * @param f2 Defining modulus of the second extension
      */
     FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, 
-	    slong linear_alg_threshold, slong multi_point_threshold);
+		     slong linear_alg_threshold, slong multi_point_threshold);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that

@@ -6,6 +6,7 @@
  */
 
 #include "nmod_poly_compose_mod.h"
+#include "nmod_poly_automorphism_evaluation.h"
 #include "ff_isom_prime_power_ext.h"
 #include "fq_nmod_poly_eval.h"
 #include "cyclotomic_ext_rth_root.h"
@@ -349,11 +350,13 @@ void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const n
 	fq_nmod_init(a, ctx);
 	fq_nmod_t a0;
 	fq_nmod_init(a0, ctx);
-
 	fq_nmod_zero(a0, ctx);
+
+	Nmod_poly_automorphism_evaluation eval = Nmod_poly_automorphism_evaluation();
+
 	while (fq_nmod_is_zero(a0, ctx)) {
 		fq_nmod_randtest(a, state, ctx);
-		eval_nmod_qpoly_fq_nmod_horner_modexp(a0, cofactor, a, ctx);
+		eval.compose(a0, cofactor, a, ctx->modulus, ctx->inv);
 	}
 
 	lift_ht90_modexp(theta, a0, ctx);
@@ -696,6 +699,76 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t c
 	flint_randclear(state);
 }
 
+
+// runs all algorithms
+void FFIsomPrimePower::compute_semi_trace_all(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
+
+	slong s = fq_nmod_ctx_degree(cyclo_ctx);
+	flint_rand_t state;
+	fq_nmod_t alpha;
+	timeit_t time;
+
+	// computing xi_init = x^p
+	timeit_start(time);
+	fq_nmod_init(alpha, ctx);
+	nmod_poly_set_coeff_ui(alpha, 1, 1);
+	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
+	fq_nmod_clear(alpha, ctx);
+	timeit_stop(time);
+	cout << "x^p: " << (double) time->wall / 1000.0 << "\n";
+
+	// linalg
+	timeit_start(time);
+	compute_semi_trace_linalg(theta, ctx);
+	timeit_stop(time);
+	cout << "linear algebra: " << (double) time->wall / 1000.0 << "\n";
+
+	// mod comp (case 1)
+	fq_nmod_poly_t alpha_poly;
+	fq_nmod_poly_init(alpha_poly, ctx);
+	fq_nmod_poly_zero(theta, ctx);
+	timeit_start(time);
+	flint_randinit(state);
+	while (fq_nmod_poly_is_zero(theta, ctx)) {
+	  fq_nmod_poly_randtest_not_zero(alpha_poly, state, s, ctx);
+	  compute_semi_trace_modcomp(theta, alpha_poly, ctx, cyclo_mod_lift);
+	}
+	flint_randclear(state);
+	timeit_stop(time);
+	cout << "modcomp (case 1): " << (double) time->wall / 1000.0 << "\n";
+	fq_nmod_poly_clear(alpha_poly, ctx);
+
+	// automorphism evaluation (case 2)
+	timeit_start(time);
+	nmod_poly_t cofactor;
+	nmod_poly_init(cofactor, ctx->modulus->mod.n);
+	nmod_poly_zero(cofactor);
+	nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
+	nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
+	nmod_poly_div(cofactor, cofactor, cyclo_mod);
+	compute_semi_trace_cofactor(theta, cofactor, ctx);
+	nmod_poly_clear(cofactor);
+	timeit_stop(time);
+	cout << "automorphism evaluation (case 2): " << (double) time->wall / 1000.0 << "\n";
+
+	// iterated frobenius (case 3)
+	// try alpha = x first
+	timeit_start(time);
+	fq_nmod_init(alpha, ctx);
+	nmod_poly_set_coeff_ui(alpha, 1, 1);
+	compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
+	flint_randinit(state);
+	// if the semi trace of x is zero then we try random cases
+	while (fq_nmod_poly_is_zero(theta, ctx)) {
+	  fq_nmod_randtest_not_zero(alpha, state, ctx);
+	  compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
+	}
+	flint_randclear(state);
+	timeit_stop(time);
+	cout << "iterfrob (case 3): " << (double) time->wall / 1000.0 << "\n";
+
+}
+
 void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
 
 	slong degree = fq_nmod_ctx_degree(ctx);
@@ -841,8 +914,15 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 
 	// timeit_t time;
 	// timeit_start(time);
-	compute_semi_trace(f, ctx_1, cyclo_mod_lift);
-	compute_semi_trace(f_image, ctx_2, cyclo_mod_lift);
+	
+	if (true){
+	  compute_semi_trace_all(f, ctx_1, cyclo_mod_lift);
+	  compute_semi_trace_all(f_image, ctx_2, cyclo_mod_lift);
+	}
+	else{
+	  compute_semi_trace(f, ctx_1, cyclo_mod_lift);
+	  compute_semi_trace(f_image, ctx_2, cyclo_mod_lift);
+	}
 	// timeit_stop(time);
 	// cout << "trace time: " << (double) time->wall / 1000.0 << "\n";
 
@@ -945,8 +1025,7 @@ void FFIsomPrimePower::compute_cyclotomic_root() {
 }
 
 FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, 
-		const nmod_poly_t modulus2, slong linear_alg_threshold, 
-		slong multi_point_threshold) {
+				   const nmod_poly_t modulus2, slong linear_alg_threshold, slong multi_point_threshold) {
 	Util util;
 
 	this->linear_alg_threshold = linear_alg_threshold;
@@ -973,14 +1052,16 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 
 }
 
+
+// uncommenting this gives me a segfault
 FFIsomPrimePower::~FFIsomPrimePower() {
-	fq_nmod_poly_clear(delta_init, ctx_1);
-	fq_nmod_clear(xi_init, ctx_1);
-	fq_nmod_clear(delta_init_trivial, ctx_1);
-	fq_nmod_ctx_clear(ctx_1);
-	fq_nmod_ctx_clear(ctx_2);
-	if (cyclo_deg > 1) {
-		fq_nmod_ctx_clear(cyclo_ctx);
-	        nmod_poly_clear(cyclo_mod);
-	}
+	// fq_nmod_poly_clear(delta_init, ctx_1);
+	// fq_nmod_clear(xi_init, ctx_1);
+	// fq_nmod_clear(delta_init_trivial, ctx_1);
+	// fq_nmod_ctx_clear(ctx_1);
+	// fq_nmod_ctx_clear(ctx_2);
+	// if (cyclo_deg > 1) {
+	//   fq_nmod_ctx_clear(cyclo_ctx);
+	//         nmod_poly_clear(cyclo_mod);
+	// }
 }
