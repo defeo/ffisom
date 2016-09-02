@@ -154,20 +154,26 @@ void Nmod_poly_automorphism_evaluation::compose(nmod_poly_t res,
 void Nmod_poly_automorphism_evaluation::compose_naive(nmod_poly_t res,
 						      const nmod_poly_t A, const nmod_poly_t g, const nmod_poly_t f, const nmod_poly_t f_inv){
 
-  nmod_poly_zero(res);
-
   nmod_poly_t g_loc, tmp;
   nmod_poly_init(g_loc, f->mod.n);
   nmod_poly_set(g_loc, g);
   nmod_poly_init(tmp, f->mod.n);
 
-  for (long i = 0; i <= nmod_poly_degree(A); i++){
+  {
+    nmod_poly_scalar_mul_nmod(tmp, g_loc, nmod_poly_get_coeff_ui(A, nmod_poly_degree(A)));
+    nmod_poly_set(res, tmp);
+  }
+
+  for (slong i = 1; i < nmod_poly_degree(A); i++) {
     nmod_poly_scalar_mul_nmod(tmp, g_loc, nmod_poly_get_coeff_ui(A, i));
     nmod_poly_add(res, res, tmp);
     nmod_poly_powmod_ui_binexp_preinv(g_loc, g_loc, f->mod.n, f, f_inv);
+  }
+  if (nmod_poly_degree(A) > 0) {
+    nmod_poly_scalar_mul_nmod(tmp, g_loc, nmod_poly_get_coeff_ui(A, nmod_poly_degree(A)));
+    nmod_poly_add(res, res, tmp);
   }
 
   nmod_poly_clear(tmp);
   nmod_poly_clear(g_loc);
 }
-

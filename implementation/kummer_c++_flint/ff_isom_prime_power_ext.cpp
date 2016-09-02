@@ -325,23 +325,6 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 	return;
 }
 
-/*
- * Evaluate the polynomial h(frobenius) at a using Horner's method
- * and modexp for Frobenii.
- * h is supposed to be monic.
- */
-void FFIsomPrimePower::eval_nmod_qpoly_fq_nmod_horner_modexp(fq_nmod_t res, const nmod_poly_t h, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
-	fq_nmod_set(res, a, ctx);
-        fq_nmod_pow_ui(res, res, ctx->modulus->mod.n, ctx);
-	for (slong i = nmod_poly_degree(h) - 1; i >= 0; i--) {
-		nmod_poly_set_coeff_ui(res, 0, nmod_add(nmod_poly_get_coeff_ui(res, 0), nmod_poly_get_coeff_ui(h, i), ctx->modulus->mod));
-		fq_nmod_mul(res, res, a, ctx);
-                fq_nmod_pow_ui(res, res, ctx->modulus->mod.n, ctx);
-	}
-
-	return;
-}
-
 void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
 	flint_rand_t state;
 	flint_randinit(state);
