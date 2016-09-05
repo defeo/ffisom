@@ -1027,25 +1027,24 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 
 	// check for the trivial cyclotomic extension case
 	cyclo_deg = util.compute_multiplicative_order(ext_char, ext_deg);
+	nmod_poly_init(cyclo_mod, ext_char);
         if (cyclo_deg == 1) {
 		compute_cyclotomic_root();
 	} else {
-	        nmod_poly_init(cyclo_mod, ext_char);
 		compute_cyclotomic_extension();
 	}
 
 }
 
 
-// uncommenting this gives me a segfault
 FFIsomPrimePower::~FFIsomPrimePower() {
-	// fq_nmod_poly_clear(delta_init, ctx_1);
-	// fq_nmod_clear(xi_init, ctx_1);
-	// fq_nmod_clear(delta_init_trivial, ctx_1);
-	// fq_nmod_ctx_clear(ctx_1);
-	// fq_nmod_ctx_clear(ctx_2);
-	// if (cyclo_deg > 1) {
-	//   fq_nmod_ctx_clear(cyclo_ctx);
-	//         nmod_poly_clear(cyclo_mod);
-	// }
+	fq_nmod_poly_clear(delta_init, ctx_1);
+	fq_nmod_clear(xi_init, ctx_1);
+	fq_nmod_clear(delta_init_trivial, ctx_1);
+	fq_nmod_ctx_clear(ctx_1);
+	fq_nmod_ctx_clear(ctx_2);
+	nmod_poly_clear(cyclo_mod);
+	if (cyclo_deg > 1) {
+	  fq_nmod_ctx_clear(cyclo_ctx);
+	}
 }
