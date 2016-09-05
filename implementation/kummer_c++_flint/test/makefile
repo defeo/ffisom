@@ -6,8 +6,8 @@ TESTS = $(patsubst %.cpp, u%, $(SOURCES))
 EXEC = $(patsubst %.cpp, %, $(SOURCES))
 
 GCC = g++
-GCCFLAGS = -Wall -O0 -g -march=native -I$(INC_DIR)
-LIBS = -lflint -lgmp -lmpfr
+GCCFLAGS = -Wall -O3 -g -I$(INC_DIR)
+LIBS = -lflint -lmpfr -lgmp 
 
 .PHONY: clean
 
