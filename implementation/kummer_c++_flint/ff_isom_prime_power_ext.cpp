@@ -923,7 +923,6 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 	fq_nmod_poly_clear(cyclo_mod_lift, ctx_1);
 	fq_nmod_poly_clear(c_temp, ctx_2);
 	fq_nmod_clear(c, cyclo_ctx);
-	fq_nmod_ctx_clear(cyclo_ctx);
 }
 
 void FFIsomPrimePower::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image) {
