@@ -92,6 +92,7 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, co
  * @param result	the minimal polynomial of degree <= degree
  * @param sequence	a sequence of length >= {@code 2 * degree}
  */
+/*
 void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequence, slong degree) {
 	nmod_poly_t **R = bin_mat_init(result->mod.n);
 	nmod_poly_t a;
@@ -116,7 +117,42 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequen
 	nmod_poly_clear(a);
 	nmod_poly_clear(b);
 }
+*/
+void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequence, slong degree) {
+	slong length = 2 * degree;
 
+	mp_limb_t *xpow;
+	xpow = (mp_limb_t *) malloc((length+1)*sizeof(mp_limb_t));
+	for (slong i = 0; i < length; i++)
+		xpow[i] = 0;
+	xpow[length] = 1;
+
+	mp_limb_t *A;
+	A = (mp_limb_t *) malloc((length+1)*sizeof(mp_limb_t));
+	slong lenA;
+	mp_limb_t *B;
+	B = (mp_limb_t *) malloc(length*sizeof(mp_limb_t));
+	slong lenB;
+
+	mp_limb_t *Minv[4];
+	for (slong i = 0; i < 4; i++)
+		Minv[i] = (mp_limb_t *) malloc((length+1)*sizeof(mp_limb_t));
+	slong lenMinv[4];
+
+	slong sigma = _nmod_poly_hgcd(Minv, lenMinv, A, &lenA, B, &lenB, xpow, length+1, sequence, length, result->mod);
+
+	for (slong i = 0; i < lenMinv[0]; i++)
+		nmod_poly_set_coeff_ui(result, lenMinv[0]-1-i, Minv[0][i]);
+	if (sigma == 1)
+		nmod_poly_neg(result, result);
+	nmod_poly_make_monic(result, result);
+
+	free(xpow);
+	free(A);
+	free(B);
+	for (slong i = 0; i < 4; i++)
+		free(Minv[i]);
+}
 /**
  * Computes the half gcd $R$ of $r_0, r_1$ where $r_0, r_1$. It is assumed that
  * $\deg(r_0) \ge \deg(r_1)$, and $0 \le k \le \deg(r_0)$.
