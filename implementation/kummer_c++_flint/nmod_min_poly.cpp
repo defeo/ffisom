@@ -113,12 +113,10 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequen
 		Minv[i] = (mp_limb_t *) malloc((length+1)*sizeof(mp_limb_t));
 	slong lenMinv[4];
 
-	slong sigma = _nmod_poly_hgcd(Minv, lenMinv, A, &lenA, B, &lenB, xpow, length+1, sequence, length, result->mod);
+	_nmod_poly_hgcd(Minv, lenMinv, A, &lenA, B, &lenB, xpow, length+1, sequence, length, result->mod);
 
 	for (slong i = 0; i < lenMinv[0]; i++)
 		nmod_poly_set_coeff_ui(result, lenMinv[0]-1-i, Minv[0][i]);
-	if (sigma == 1)
-		nmod_poly_neg(result, result);
 	nmod_poly_make_monic(result, result);
 
 	free(xpow);
