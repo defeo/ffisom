@@ -32,7 +32,7 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, co
 	nmod_poly_clear(alpha);
 }
 
-void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const fq_nmod_t ctx) {
+void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const fq_nmod_ctx_t ctx) {
 
 	minimal_polynomial(result, f, ctx->modulus, ctx->inv);
 }

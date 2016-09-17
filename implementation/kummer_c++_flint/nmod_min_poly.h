@@ -10,6 +10,7 @@
 
 #include <flint/nmod_vec.h>
 #include <flint/nmod_poly.h>
+#include <flint/fq_nmod_poly.h>
 
 class NmodMinPoly {
 public:
@@ -30,7 +31,7 @@ public:
     void minimal_polynomial(nmod_poly_t result, const mp_limb_t *sequence, slong length);
     void project_powers(mp_limb_t *result, const mp_limb_t *a, slong l, const nmod_poly_t h,
             const nmod_poly_t modulus, const nmod_poly_t modulus_inv_rev);
-    void minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const fq_nmod_t ctx);
+    void minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const fq_nmod_ctx_t ctx); 
     void minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const nmod_poly_t modulus);
     void minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, const nmod_poly_t modulus,
             const nmod_poly_t modulus_inv_rev);
