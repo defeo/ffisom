@@ -120,6 +120,8 @@ void cyclotomic_ext_min_poly_special(nmod_poly_t F, slong r, fq_nmod_t a, fq_nmo
   nmod_mat_clear(C);
   //  timeit_stop(time);
   //  cout << "matmul: " << (double) time->wall / 1000.0 << "\n";
+  //  timeit_stop(time);
+  //  cout << "power projection: " << (double) time->wall / 1000.0 << "\n";
 
   
   // minimal polynomial of the sequence, and done.
