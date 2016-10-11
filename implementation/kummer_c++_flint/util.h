@@ -11,7 +11,7 @@
 #include <flint/ulong_extras.h>
 
 class Util {
-    static const double EXT_COMP_EXPONENT = 0.2;
+    static constexpr double EXT_COMP_EXPONENT = 0.2;
 
 public:
 
