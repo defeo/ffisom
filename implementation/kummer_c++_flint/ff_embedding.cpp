@@ -140,7 +140,9 @@ void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedd
 
 
 void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
-		slong linear_alg_threshold, slong multi_point_threshold) {
+		slong linear_alg_threshold,
+		slong cofactor_threshold,
+		slong multi_point_threshold) {
 	nmod_poly_t subfield_modulus1;
 	nmod_poly_t subfield_modulus2;
 	nmod_poly_t subfield_embd_img1;
@@ -170,7 +172,7 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
 
 	} else {
 
-		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, linear_alg_threshold, multi_point_threshold);
+		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, linear_alg_threshold, cofactor_threshold, multi_point_threshold);
 		ffIsomPrimePower.compute_generators(subfield_gen1, subfield_gen2);
 	}
 
@@ -188,7 +190,9 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
 
 
 void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, 
-		slong linear_alg_threshold, slong multi_point_threshold) {
+		slong linear_alg_threshold,
+		slong cofactor_threshold,
+		slong multi_point_threshold) {
 	slong m = nmod_poly_degree(modulus1);
 
 	n_factor_t factors;
@@ -206,7 +210,9 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2,
 	for (slong i = 0; i < factors.num; i++) {
 		slong r = n_pow(factors.p[i], factors.exp[i]);
 		compute_generators(subfield_gen1, subfield_gen2, r, 
-				linear_alg_threshold, multi_point_threshold);
+				linear_alg_threshold,
+				cofactor_threshold,
+				multi_point_threshold);
 		nmod_poly_add(g1, g1, subfield_gen1);
 		nmod_poly_add(g2, g2, subfield_gen2);
 	}

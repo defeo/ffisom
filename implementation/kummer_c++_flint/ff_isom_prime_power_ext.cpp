@@ -774,7 +774,8 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 	flint_rand_t state;
 	flint_randinit(state);
 
-        if (s < multi_point_threshold) {
+	// then use modular composition
+        if (s < cofactor_threshold) {
                 fq_nmod_poly_t alpha;
                 fq_nmod_poly_init(alpha, ctx);
                 fq_nmod_poly_zero(theta, ctx);
@@ -790,6 +791,16 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 
                 fq_nmod_poly_clear(alpha, ctx);
 	} else {
+	if (s < multi_point_threshold) {
+		nmod_poly_t cofactor;
+		nmod_poly_init(cofactor, ctx->modulus->mod.n);
+		nmod_poly_zero(cofactor);
+		nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
+		nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
+		nmod_poly_div(cofactor, cofactor, cyclo_mod);
+		compute_semi_trace_cofactor(theta, cofactor, ctx);
+		nmod_poly_clear(cofactor);
+	} else {
 	        // try alpha = x first
 		compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
 	        // if the semi trace of x is zero then we try random cases
@@ -798,6 +809,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 			compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
 		}
         }
+	}
 
 	fq_nmod_clear(alpha, ctx);
 	flint_randclear(state);
@@ -899,14 +911,8 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 	// timeit_t time;
 	// timeit_start(time);
 	
-	if (true){
-	  compute_semi_trace_all(f, ctx_1, cyclo_mod_lift);
-	  compute_semi_trace_all(f_image, ctx_2, cyclo_mod_lift);
-	}
-	else{
-	  compute_semi_trace(f, ctx_1, cyclo_mod_lift);
-	  compute_semi_trace(f_image, ctx_2, cyclo_mod_lift);
-	}
+	compute_semi_trace(f, ctx_1, cyclo_mod_lift);
+	compute_semi_trace(f_image, ctx_2, cyclo_mod_lift);
 	// timeit_stop(time);
 	// cout << "trace time: " << (double) time->wall / 1000.0 << "\n";
 
@@ -1008,10 +1014,14 @@ void FFIsomPrimePower::compute_cyclotomic_root() {
 }
 
 FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, 
-				   const nmod_poly_t modulus2, slong linear_alg_threshold, slong multi_point_threshold) {
+				   const nmod_poly_t modulus2,
+				slong linear_alg_threshold,
+				slong cofactor_threshold,
+				slong multi_point_threshold) {
 	Util util;
 
 	this->linear_alg_threshold = linear_alg_threshold;
+	this->cofactor_threshold = cofactor_threshold;
 	this->multi_point_threshold = multi_point_threshold;
 
 	ext_char = modulus1->mod.n;

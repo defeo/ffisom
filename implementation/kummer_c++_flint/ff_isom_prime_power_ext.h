@@ -29,6 +29,7 @@ class FFIsomPrimePower {
     fq_nmod_t xi_init;
 
     slong linear_alg_threshold;
+    slong cofactor_threshold;
     slong multi_point_threshold;
 
     void compute_semi_trace_trivial_linalg(fq_nmod_t theta, const fq_nmod_ctx_t ctx, mp_limb_t z);
@@ -73,7 +74,9 @@ public:
      * @param f2 Defining modulus of the second extension
      */
     FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, 
-		     slong linear_alg_threshold, slong multi_point_threshold);
+		     slong linear_alg_threshold,
+		     slong cofactor_threshold,
+		     slong multi_point_threshold);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that
