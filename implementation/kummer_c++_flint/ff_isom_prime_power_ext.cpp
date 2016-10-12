@@ -780,14 +780,10 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
                 fq_nmod_poly_init(alpha, ctx);
                 fq_nmod_poly_zero(theta, ctx);
 
-		timeit_t time;
-		timeit_start(time);
 		while (fq_nmod_poly_is_zero(theta, ctx)) {
 			fq_nmod_poly_randtest_not_zero(alpha, state, s, ctx);
 			compute_semi_trace_modcomp(theta, alpha, ctx, cyclo_mod_lift);
 		}
-		timeit_stop(time);
-		cout << "semi_trace: " << (double) time->wall / 1000.0 << "\n";
 
                 fq_nmod_poly_clear(alpha, ctx);
 	} else {
