@@ -139,10 +139,7 @@ void FFEmbedding::find_subfield(nmod_poly_t subfield_modulus, nmod_poly_t embedd
 }
 
 
-void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
-		slong linear_alg_threshold,
-		slong cofactor_threshold,
-		slong multi_point_threshold) {
+void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r) {
 	nmod_poly_t subfield_modulus1;
 	nmod_poly_t subfield_modulus2;
 	nmod_poly_t subfield_embd_img1;
@@ -172,7 +169,7 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
 
 	} else {
 
-		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, linear_alg_threshold, cofactor_threshold, multi_point_threshold);
+		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, this->force_algo);
 		ffIsomPrimePower.compute_generators(subfield_gen1, subfield_gen2);
 	}
 
@@ -189,10 +186,7 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r,
 }
 
 
-void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, 
-		slong linear_alg_threshold,
-		slong cofactor_threshold,
-		slong multi_point_threshold) {
+void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2) {
 	slong m = nmod_poly_degree(modulus1);
 
 	n_factor_t factors;
@@ -209,10 +203,7 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2,
 
 	for (slong i = 0; i < factors.num; i++) {
 		slong r = n_pow(factors.p[i], factors.exp[i]);
-		compute_generators(subfield_gen1, subfield_gen2, r, 
-				linear_alg_threshold,
-				cofactor_threshold,
-				multi_point_threshold);
+		compute_generators(subfield_gen1, subfield_gen2, r);
 		nmod_poly_add(g1, g1, subfield_gen1);
 		nmod_poly_add(g2, g2, subfield_gen2);
 	}
@@ -242,12 +233,13 @@ void FFEmbedding::compute_image(nmod_poly_t image, const nmod_poly_t f) {
 	nmod_poly_compose_mod(image, f, x_image, modulus2);
 }
 
-FFEmbedding::FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2) {
+FFEmbedding::FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo) {
 	nmod_poly_init(modulus1, f1->mod.n);
 	nmod_poly_init(modulus2, f2->mod.n);
 	nmod_poly_set(modulus1, f1);
 	nmod_poly_set(modulus2, f2);
 	nmod_poly_init(x_image, modulus2->mod.n);
+	this->force_algo = force_algo;
 }
 
 FFEmbedding::~FFEmbedding() {

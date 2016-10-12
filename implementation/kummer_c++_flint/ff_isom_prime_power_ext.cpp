@@ -1015,14 +1015,36 @@ void FFIsomPrimePower::compute_cyclotomic_root() {
 
 FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, 
 				   const nmod_poly_t modulus2,
-				slong linear_alg_threshold,
-				slong cofactor_threshold,
-				slong multi_point_threshold) {
+				slong force_algo) {
 	Util util;
 
-	this->linear_alg_threshold = linear_alg_threshold;
-	this->cofactor_threshold = cofactor_threshold;
-	this->multi_point_threshold = multi_point_threshold;
+	switch (force_algo) {
+		case FORCE_LINALG:
+		this->linear_alg_threshold = WORD_MAX;
+		this->cofactor_threshold = WORD_MAX;
+		this->multi_point_threshold = WORD_MAX;
+		break;
+		case FORCE_MODCOMP:
+		this->linear_alg_threshold = 0;
+		this->cofactor_threshold = WORD_MAX;
+		this->multi_point_threshold = WORD_MAX;
+		break;
+		case FORCE_COFACTOR:
+		this->linear_alg_threshold = 0;
+		this->cofactor_threshold = 0;
+		this->multi_point_threshold = WORD_MAX;
+		break;
+		case FORCE_MPE:
+		this->linear_alg_threshold = 0;
+		this->cofactor_threshold = 0;
+		this->multi_point_threshold = 0;
+		break;
+		case FORCE_NONE:
+		default:
+		this->linear_alg_threshold = 1000;
+		this->cofactor_threshold = 10000;
+		this->multi_point_threshold = 100000;
+	}
 
 	ext_char = modulus1->mod.n;
         ext_deg = nmod_poly_degree(modulus1);
@@ -1044,7 +1066,6 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 	}
 
 }
-
 
 FFIsomPrimePower::~FFIsomPrimePower() {
 	fq_nmod_poly_clear(delta_init, ctx_1);

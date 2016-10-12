@@ -13,6 +13,8 @@
 
 #include "nmod_poly_compose_mod.h"
 
+enum {FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_MPE, FORCE_NONE};
+
 class FFIsomPrimePower {
     slong ext_deg;
     mp_limb_t ext_char;
@@ -73,10 +75,7 @@ public:
      * @param f1 Defining modulus of the first extension
      * @param f2 Defining modulus of the second extension
      */
-    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, 
-		     slong linear_alg_threshold,
-		     slong cofactor_threshold,
-		     slong multi_point_threshold);
+    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that

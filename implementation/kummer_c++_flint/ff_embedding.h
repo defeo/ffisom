@@ -9,11 +9,14 @@
 #define FF_EMBEDDING_H
 
 #include <flint/nmod_poly.h>
+#include "ff_isom_prime_power_ext.h"
 
 class FFEmbedding {
     nmod_poly_t modulus1;
     nmod_poly_t modulus2;
     nmod_poly_t x_image;
+
+    slong force_algo;
 
     void compute_trace(nmod_poly_t alpha, nmod_poly_t xi, const nmod_poly_t alpha_init,
 	    const nmod_poly_t xi_init, const nmod_poly_t modulus, slong i);
@@ -27,7 +30,7 @@ public:
      * @param f1 Defining modulus for the first extension k
      * @param f2 Defining modulus for the second extension K
      */
-    FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2);
+    FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE);
     ~FFEmbedding();
 
     /**
@@ -38,10 +41,7 @@ public:
      * @param g1
      * @param g2
      */
-    void compute_generators(nmod_poly_t g1, nmod_poly_t g2,
-	slong linear_alg_threshold,
-	slong cofactor_threshold,
-	slong multi_point_threshold);
+    void compute_generators(nmod_poly_t g1, nmod_poly_t g2);
 
     /**
      * Let r be a prime-power, and let k1, K1 be subfields of k, K of degree r 
@@ -55,10 +55,7 @@ public:
      * @param g1
      * @param g2
      */
-    void compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r, 
-	    slong linear_alg_threshold,
-	    slong cofactor_threshold,
-	    slong multi_point_threshold);
+    void compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r);
 
     /**
      * Given elements g1, g2 k, K respectively such that
