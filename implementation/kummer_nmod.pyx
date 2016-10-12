@@ -7,18 +7,14 @@ from element_flint_fq_nmod cimport FiniteFieldElement_flint_fq_nmod
 from sage.libs.flint.nmod_poly cimport *
 from sage.libs.flint.fq_nmod cimport *
 
-# Thresholds for linalg and multipoint eval
-LATHR = 0
-MPTHR = 1<<20
-
 cdef class FFEmbWrapper:
-    def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2):
-        self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus)
+    def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo):
+        self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus, force_algo)
         nmod_poly_init(self.g1, k1._ctx.modulus.mod.n)
         nmod_poly_init(self.g2, k2._ctx.modulus.mod.n)
         nmod_poly_init(self.xim, k2._ctx.modulus.mod.n)
 
-    def __init__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2):
+    def __init__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo):
         self.domain = k1
         self.codomain = k2
         self.initialized = 0
@@ -29,15 +25,15 @@ cdef class FFEmbWrapper:
         nmod_poly_clear(self.g2)
         nmod_poly_clear(self.xim)
 
-    def compute_gens(self, lathr = LATHR, mpthr = MPTHR):
-        self.wrp.compute_generators(self.g1, self.g2, lathr, mpthr)
+    def compute_gens(self):
+        self.wrp.compute_generators(self.g1, self.g2)
         self.initialized = 1
 
-    def get_gens(self, lathr = LATHR, mpthr = MPTHR):
+    def get_gens(self):
         cdef FiniteFieldElement_flint_fq_nmod g1, g2
 
         if self.initialized < 1:
-            self.compute_gens(lathr, mpthr)
+            self.compute_gens()
 
         g1 = self.domain(0)
         g1.set_from_fq_nmod(<fq_nmod_t>(self.g1))
@@ -68,8 +64,8 @@ cdef class FFEmbWrapper:
 def find_gen(k1, r = 0):
     raise NotImplementedError
 
-def find_gens(k1, k2, int r = 0, lathr = LATHR, mpthr = MPTHR):
-    return FFEmbWrapper(k1, k2).get_gens(lathr, mpthr)
+def find_gens(k1, k2, int r = 0, force_algo = FORCE_NONE):
+    return FFEmbWrapper(k1, k2, force_algo).get_gens()
 
 def find_emb(k1, k2):
     return FFEmbWrapper(k1, k2).get_emb()
