@@ -17,7 +17,7 @@ int main (int argc, char **argv)
 {
  clock_t t;
  unsigned long l;
- long n, v;
+ long n, v, algo;
  GEN p, f, g, S1, S2;
 
  nmod_poly_t g_flint, gen1, gen2;
@@ -30,12 +30,17 @@ int main (int argc, char **argv)
  v = 0L;
 
  //l = unextprime(1UL<<20);
- l = 2053UL;
- n = 79L;
- if (argc == 3)
+ l = 5L;
+ n = 13L;
+ algo = 9999;
+ if (argc >= 3)
  {
   l = atoi(argv[1]);
   n = atoi(argv[2]);
+ }
+ if (argc >= 4)
+ {
+  algo = atoi(argv[3]);
  }
  p = stoi(l);
  pari_printf("%lu %ld %Ps\n", l, n, p);
@@ -50,8 +55,6 @@ int main (int argc, char **argv)
  pari_printf("%lf\n", (double) t/CLOCKS_PER_SEC);
  pari_printf("%Ps\n", S1);
 
- lathr = 0;
- mpthr = 1<<20;
  nmod_poly_init(g_flint, l);
  nmod_poly_init(gen1, l);
  nmod_poly_init(gen2, l);
@@ -59,13 +62,14 @@ int main (int argc, char **argv)
   nmod_poly_set_coeff_ui(g_flint, i, ((long*)g)[i+2]);
  nmod_poly_print_pretty(g_flint, "x");
  printf("\n");
- ffemb = new FFEmbedding(g_flint, g_flint);
+ ffemb = new FFEmbedding(g_flint, g_flint, algo);
  t = clock();
  ffemb->compute_generators(gen1, gen2);
  t = clock()-t;
  printf("%lf\n", (double) t/CLOCKS_PER_SEC);
  nmod_poly_print_pretty(gen1, "x");
  printf("\n");
+
  pari_close();
 
  return 0;
