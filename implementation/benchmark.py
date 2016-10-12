@@ -11,12 +11,13 @@ import sys
 from sage.misc.misc import cputime
 
 # p n o c rains ellrains pari kummer
-def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_all(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
     pmin, pmax = pbound
     nmin, nmax = nbound
+    cmin, cmax = cbound
     for p in xrange(pmin, pmax):
         p = ZZ(p)
         if not p.is_prime():
@@ -34,7 +35,7 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
             o, _ = find_root_order(p, [n, n], n, verbose=False)
             c = Mod(p,n).multiplicative_order()
             if verbose:
-                print p, n, o, c
+                print("p = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
             tloops = 0
             for l in xrange(loops):
                 if (o > omax) or (o == p):
@@ -69,7 +70,7 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
             tell = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
-                if c > cmax:
+                if c < cmin or c > cmax:
                     break
                 t = cputime()
                 a, b = find_gens_pari(k, k)
@@ -83,7 +84,7 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
             tpari = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
-                if c > cmax:
+                if c < cmin or c > cmax:
                     break
                 t = cputime()
                 a, b = find_gens_kummer(k_flint, k_flint)
@@ -102,12 +103,13 @@ def benchmark(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infini
     if write:
         f.close()
 
-def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax = Infinity, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
     pmin, pmax = pbound
     nmin, nmax = nbound
+    cmin, cmax = cbound
     for p in xrange(pmin, pmax):
         p = ZZ(p)
         if not p.is_prime():
@@ -122,11 +124,12 @@ def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax =
                 continue
             k = GF(p**n, name='z')
             k_flint = GF_flint(p, k.modulus(), name='z')
+            o, _ = find_root_order(p, [n, n], n, verbose=False)
             c = Mod(p,n).multiplicative_order()
-            if c > cmax:
+            if c < cmin or c > cmax:
                 continue
             if verbose:
-                print p, n, c
+                print("p = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
@@ -139,193 +142,24 @@ def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, omax =
                 if tloops > tmax:
                     break
             tpari = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # MC, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummermcmp = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # MC, no MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 1<<30)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummermc = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # LA, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 0)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummerlamp = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # LA, no MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 1<<30)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummerla = tloops / (l+1)
+            from kummer_nmod import algolist
+            tkummer = []
+            for algo in algolist:
+                tloops = 0
+                for l in xrange(loops):
+                    t = cputime()
+                    a, b = find_gens_kummer(k_flint, k_flint, n, algo)
+                    tloops += cputime() - t
+                    if check and (l == 0 or check > 1):
+                        g = a.minpoly()
+                        assert(g.degree() == n)
+                        assert(g == b.minpoly())
+                    if tloops > tmax:
+                        break
+                tkummer.append(tloops / (l+1))
             if write:
-                f.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tkummermcmp, tkummermc, tkummerlamp, tkummerla))
+                f.write(("{} {} ({}, {}) {}"+ " {}"*len(algolist) + "\n").format(p, n, o, c, tpari, *tkummer))
             else:
-                sys.stdout.write("{} {} ({}, {}) {} {} {} {} {}\n".format(p, n, o, c, tpari, tkummermcmp, tkummermc, tkummerlamp, tkummerla))
-    if write:
-        f.close()
-
-def benchmark_trivial(pbound = [5, 2**10], nbound = [5, 2**10], loops = 10, tmax = Infinity, check = 0, fname = None, write = False, overwrite = False, verbose = True):
-    if write:
-        mode = 'w' if overwrite else 'a'
-        f = open(fname, mode, 0)
-    pmin, pmax = pbound
-    nmin, nmax = nbound
-    for p in xrange(pmin, pmax):
-        p = ZZ(p)
-        if not p.is_prime():
-            continue
-        for n in ZZ(p-1).prime_divisors():
-            if n < nmin or n > nmax:
-                continue
-            k = GF(p**n, name='z')
-            k_flint = GF_flint(p, k.modulus(), name='z')
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # MC, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummermcmp = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # LA, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 0)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummerla = tloops / (l+1)
-            if write:
-                f.write("{} {}: {} {}\n".format(p, n, tkummermcmp, tkummerla))
-            else:
-                sys.stdout.write("{} {}: {} {}\n".format(p, n, tkummermcmp, tkummerla))
-    if write:
-        f.close()
-
-def benchmark_linalg_nontriv(pbound = [5, 2**10], nbound = [5, 2**8], loops = 10, cmax = Infinity, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
-    if write:
-        mode = 'w' if overwrite else 'a'
-        f = open(fname, mode, 0)
-    pmin, pmax = pbound
-    nmin, nmax = nbound
-    for p in xrange(pmin, pmax):
-        p = ZZ(p)
-        if not p.is_prime():
-            continue
-        for n in xrange(nmin, nmax):
-            n = ZZ(n)
-            if prime and not is_prime(n):
-                continue
-            if n % p == 0:
-                continue
-            if (not even) and (n % 2 == 0):
-                continue
-            k = GF(p**n, name='z')
-            k_flint = GF_flint(p, k.modulus(), name='z')
-            c = Mod(p,n).multiplicative_order()
-            if c == 1 or c > cmax:
-                continue
-            if verbose:
-                print p, n, c
-                sys.stdout.flush()
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                a, b = find_gens_pari(k, k)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tpari = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # MC, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 0)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummermcmp = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # MC, no MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 0, 1<<30)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummermc = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
-                t = cputime()
-                # LA, MP
-                a, b = find_gens_kummer(k_flint, k_flint, n, 1<<30, 1<<30)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummerla = tloops / (l+1)
-            if write:
-                f.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tkummermcmp, tkummermc, tkummerla))
-            else:
-                sys.stdout.write("{} {} ({}) {} {} {} {}\n".format(p, n, c, tpari, tkummermcmp, tkummermc, tkummerla))
+                sys.stdout.write(("{} {} ({}, {}) {}"+ " {}"*len(algolist) + "\n").format(p, n, o, c, tpari, *tkummer))
     if write:
         f.close()

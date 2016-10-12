@@ -7,6 +7,9 @@ from element_flint_fq_nmod cimport FiniteFieldElement_flint_fq_nmod
 from sage.libs.flint.nmod_poly cimport *
 from sage.libs.flint.fq_nmod cimport *
 
+
+algolist = [FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_MPE, FORCE_NONE]
+
 cdef class FFEmbWrapper:
     def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo):
         self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus, force_algo)
