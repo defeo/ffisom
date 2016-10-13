@@ -397,6 +397,7 @@ void CyclotomicExtRthRoot::compute_rth_root(fq_nmod_t root, const fq_nmod_poly_t
 	fq_nmod_poly_t trace;
 	fq_nmod_poly_t f_temp;
 	fmpz_t power;
+	fmpz_init(power);
 
 	fq_nmod_poly_init(alpha, ctx);
 	fq_nmod_poly_init(trace, ctx);
