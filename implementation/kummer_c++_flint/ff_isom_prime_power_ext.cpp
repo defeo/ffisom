@@ -549,18 +549,20 @@ void FFIsomPrimePower::shift_delta(fq_nmod_poly_t delta, slong z_degree, const f
   long r = nmod_poly_degree(ctx->modulus);
   long s = nmod_poly_degree(cyclo_mod);
 
+  // make sure all coeffs are allocated
+  fq_nmod_poly_fit_length(delta, s, ctx);
+
   nmod_poly_set_coeff_ui(z, 1, 1);
   nmod_poly_powmod_ui_binexp_preinv(z_pow, z, z_degree, cyclo_mod, cyclo_ctx->inv);
   
   nmod_poly_t coeff;
-  nmod_poly_init2(coeff, ctx->mod.n, s);
+  nmod_poly_init(coeff, ctx->mod.n);
   for (long j = 0; j < r; j++){
-    for (long i = 0; i < s; i++)
-      coeff->coeffs[i] = nmod_poly_get_coeff_ui(delta->coeffs +i , j);
-    coeff->length = s;
-    _nmod_poly_normalise(coeff);
+    for (long i = 0; i <= fq_nmod_poly_degree(delta, ctx); i++)
+      nmod_poly_set_coeff_ui(coeff, i, nmod_poly_get_coeff_ui(delta->coeffs +i , j));
+    // the following aliasing changes the storage used for coeff
     nmod_poly_mulmod(coeff, coeff, z_pow, cyclo_mod);
-    for (long i = 0; i < s; i++)
+    for (long i = 0; i <= nmod_poly_degree(coeff); i++)
       nmod_poly_set_coeff_ui(delta->coeffs +i , j, coeff->coeffs[i]);
   }
   nmod_poly_clear(coeff);
