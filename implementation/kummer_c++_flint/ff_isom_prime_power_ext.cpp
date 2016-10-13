@@ -108,10 +108,10 @@ void FFIsomPrimePower::_compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_n
 
 	if (n % 2 == 0) {
 
-		_compute_semi_trace_trivial_modcomp(delta, xi, n / 1, ctx, z);
+		_compute_semi_trace_trivial_modcomp(delta, xi, n / 2, ctx, z);
 		fq_nmod_set(temp_delta, delta, ctx);
 		fq_nmod_set(temp_xi, xi, ctx);
-		z_degree = fq_nmod_ctx_degree(ctx) - n / 1;
+		z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
 
 	} else {
 
