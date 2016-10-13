@@ -325,6 +325,40 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 	return;
 }
 
+void FFIsomPrimePower::compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
+	flint_rand_t state;
+	flint_randinit(state);
+
+	fq_nmod_t a;
+	fq_nmod_init(a, ctx);
+	fq_nmod_t b;
+	fq_nmod_init(b, ctx);
+	fq_nmod_t a0;
+	fq_nmod_init(a0, ctx);
+	fq_nmod_zero(a0, ctx);
+
+	while (fq_nmod_is_zero(a0, ctx)) {
+		fq_nmod_randtest(a, state, ctx);
+		for (slong i = 0; i < nmod_poly_degree(cofactor); i++) {
+			nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, i));
+			nmod_poly_add(a0, a0, b);
+			fq_nmod_pow_ui(a, a, ctx->mod.n, ctx);
+		}
+		nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, nmod_poly_degree(cofactor)));
+		nmod_poly_add(a0, a0, b);
+	}
+
+	lift_ht90_modexp(theta, a0, ctx);
+
+	fq_nmod_clear(a, ctx);
+	fq_nmod_clear(b, ctx);
+	fq_nmod_clear(a0, ctx);
+
+	flint_randclear(state);
+
+	return;
+}
+
 void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
 	flint_rand_t state;
 	flint_randinit(state);
@@ -410,7 +444,7 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	  fq_nmod_set(temp_xi, xi, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
 
-	  if (true){
+	  if (false){
 	    long delta_degree = fq_nmod_poly_degree(delta, ctx);
 	    Nmod_poly_compose_mod compose;
 	    compose.nmod_poly_compose_mod_brent_kung_vec_preinv_prepare(xi, ctx->modulus, ctx->inv,  
@@ -429,9 +463,17 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	  fq_nmod_set(temp_xi, xi_init, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - 1;
 
+	  if (false) {
+	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, compose_xi_init, ctx, cyclo_mod_lift);
+	  }
+	  else {
+	    compute_delta(delta, temp_xi, z_degree, ctx, cyclo_mod_lift);
+	    compute_xi(xi, temp_xi, ctx);
+	  }
+
 	  // an attempt to replace the modcomp's by a q-power. 
 	  // not so clear if it's useful at all, so I'll leave it out for the moment
-	  if (false){
+	  if (false) {
 	    nmod_poly_t tmp;
 	    nmod_poly_init(tmp, ctx->mod.n);
 	    slong deg_delta = fq_nmod_poly_degree(delta, ctx);
@@ -441,13 +483,11 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	      nmod_poly_powmod_ui_binexp_preinv(tmp, tmp, ctx->mod.n, ctx->modulus, ctx->inv);
 	      fq_nmod_poly_set_coeff(delta, i, tmp, ctx);
 	    }
+
 	    nmod_poly_powmod_ui_binexp_preinv(xi, xi, ctx->mod.n, ctx->modulus, ctx->inv);
 	    nmod_poly_clear(tmp);
 
 	    shift_delta(delta, z_degree, ctx);
-	  }
-	  else{
-	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, compose_xi_init, ctx, cyclo_mod_lift);
 	  }
 	}
 	fq_nmod_poly_add(delta, delta, temp_delta, ctx);
@@ -796,7 +836,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 		nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
 		nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
 		nmod_poly_div(cofactor, cofactor, cyclo_mod);
-		compute_semi_trace_cofactor(theta, cofactor, ctx);
+		compute_semi_trace_cofactor_naive(theta, cofactor, ctx);
 		nmod_poly_clear(cofactor);
 	} else {
 	        // try alpha = x first
