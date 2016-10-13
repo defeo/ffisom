@@ -108,7 +108,7 @@ void NmodMinPoly::minimal_polynomial(nmod_poly_t result, const nmod_poly_t f, co
 	nmod_poly_one(tau);
 
 	slong degree = nmod_poly_degree(modulus);
-	mp_limb_t *sequence = new mp_limb_t[2 * degree];
+	mp_limb_t *sequence = _nmod_vec_init(2 * degree);
 
 	flint_rand_t state;
 	flint_randinit(state);
@@ -158,7 +158,7 @@ void NmodMinPoly::project_powers(mp_limb_t *result, const mp_limb_t *a, slong l,
 	slong degree = nmod_poly_degree(modulus);
 
 	// a temp for a to do computations without changing a
-	mp_limb_t *temp_a = new mp_limb_t[degree];
+	mp_limb_t *temp_a = _nmod_vec_init(degree);
 	for (slong i = 0; i < degree; i++)
 		temp_a[i] = a[i];
 
