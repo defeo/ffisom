@@ -254,12 +254,12 @@ void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0
 		nmod_mat_entry(a[0], i, 0) = nmod_poly_get_coeff_ui(a0, i);
 
         // Suboptimal, use Luca's formula.
-        // a_{s-1}
+        // a_{s-1} = -1/b_0 frob(a_0)
         mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
         nmod_mat_mul(a[s-1], frob_auto, a[0]);
         nmod_mat_scalar_mul(a[s-1], a[s-1], inv_b0);
 
-	// a_i
+	// a_i = frob(a_{i+1}) + b_i a_{s-1}
         for (slong i = s-2; i > 0; i--) {
                 nmod_mat_mul(a[i], frob_auto, a[i+1]);
                 nmod_mat_scalar_mul_add(a[i], a[i], nmod_poly_get_coeff_ui(cyclo_mod, i+1), a[s-1]);
