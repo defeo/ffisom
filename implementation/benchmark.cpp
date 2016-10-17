@@ -12,6 +12,7 @@
 
 #include <flint/nmod_poly.h>
 #include "kummer_c++_flint/ff_embedding.h"
+#include "kummer_c++_flint/nmod_min_poly.h"
 
 int main (int argc, char **argv)
 {
@@ -42,6 +43,8 @@ int main (int argc, char **argv)
  {
   algo = atoi(argv[3]);
  }
+
+ printf("PARI:\n");
  p = stoi(l);
  pari_printf("%lu %ld %Ps\n", l, n, p);
 
@@ -54,7 +57,9 @@ int main (int argc, char **argv)
  t = clock()-t;
  pari_printf("%lf\n", (double) t/CLOCKS_PER_SEC);
  pari_printf("%Ps\n", S1);
+ pari_printf("%Ps\n", S2);
 
+ printf("\nFLINT:\n");
  nmod_poly_init(g_flint, l);
  nmod_poly_init(gen1, l);
  nmod_poly_init(gen2, l);
@@ -69,7 +74,20 @@ int main (int argc, char **argv)
  printf("%lf\n", (double) t/CLOCKS_PER_SEC);
  nmod_poly_print_pretty(gen1, "x");
  printf("\n");
+ nmod_poly_print_pretty(gen2, "x");
+ printf("\n");
 
+ nmod_poly_t min1, min2;
+ nmod_poly_init(min1, l);
+ nmod_poly_init(min2, l);
+ NmodMinPoly nmodMinPoly;
+ nmodMinPoly.minimal_polynomial(min1, gen1, g_flint);
+ nmodMinPoly.minimal_polynomial(min2, gen2, g_flint);
+
+ nmod_poly_print_pretty(min1, "x");
+ printf("\n");
+ nmod_poly_print_pretty(min2, "x");
+ printf("\n");
  pari_close();
 
  return 0;
