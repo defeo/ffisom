@@ -195,6 +195,31 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
  *
  * Uses modular exponentiation to compute frobenii.
  */
+void FFIsomPrimePower::lift_ht90_modexp_luca(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
+	slong s = fq_nmod_ctx_degree(cyclo_ctx);
+
+	fq_nmod_t temp;
+	fq_nmod_init(temp, ctx);
+	fq_nmod_set(temp, a, ctx);
+	fq_nmod_t add;
+	fq_nmod_init(add, ctx);
+
+	// a_{s-1}
+	fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
+
+        // Luca's formula.
+	// a_i = frob(a_{i+1}) + b_{i+1}
+        for (slong i = s-2; i >= 0; i--) {
+		fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
+		fq_nmod_mul_ui(add, a, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
+		fq_nmod_add(temp, temp, add, ctx);
+		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
+        }
+
+	fq_nmod_clear(temp, ctx);
+	fq_nmod_clear(add, ctx);
+}
+
 void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx) {
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
 
@@ -316,7 +341,7 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 		nmod_poly_set_coeff_ui(temp, i, nmod_mat_entry(cyclo_frob, i, 0));
 
 	// Lift a_0 to F_q
-	lift_ht90_modexp(theta, temp, ctx);
+	lift_ht90_modexp_luca(theta, temp, ctx);
 
         fq_nmod_clear(temp, ctx);
 	nmod_mat_clear(frob_auto);
