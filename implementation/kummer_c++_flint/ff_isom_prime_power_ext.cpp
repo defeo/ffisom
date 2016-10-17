@@ -373,7 +373,7 @@ void FFIsomPrimePower::compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, c
 		nmod_poly_add(a0, a0, b);
 	}
 
-	lift_ht90_modexp(theta, a0, ctx);
+	lift_ht90_modexp_luca(theta, a0, ctx);
 
 	fq_nmod_clear(a, ctx);
 	fq_nmod_clear(b, ctx);
@@ -401,7 +401,7 @@ void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const n
 		eval.compose(a0, cofactor, a, ctx->modulus, ctx->inv);
 	}
 
-	lift_ht90_modexp(theta, a0, ctx);
+	lift_ht90_modexp_luca(theta, a0, ctx);
 
 	fq_nmod_clear(a, ctx);
 	fq_nmod_clear(a0, ctx);
@@ -868,7 +868,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 		nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
 		nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
 		nmod_poly_div(cofactor, cofactor, cyclo_mod);
-		compute_semi_trace_cofactor_naive(theta, cofactor, ctx);
+		compute_semi_trace_cofactor(theta, cofactor, ctx);
 		nmod_poly_clear(cofactor);
 	} else {
 	        // try alpha = x first

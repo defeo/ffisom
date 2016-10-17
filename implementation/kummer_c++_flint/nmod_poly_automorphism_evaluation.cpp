@@ -48,37 +48,35 @@ void Nmod_poly_automorphism_evaluation::_automorphism_evaluation_compose(mp_ptr 
     nmod_mat_mul(C, B, A);
 
     // get x^{p^m} mod f
-    flint_mpn_zero(h, n);
-    h[1] = 1;
-    for (i = 0; i < m; i++){
+    _nmod_poly_powmod_x_ui_preinv(h, mod.n, f, len_f, f_inv, len_f_inv, mod);
+    for (i = 1; i < m; i++){
       _nmod_poly_powmod_ui_binexp_preinv (t, h, mod.n, f, len_f, f_inv, len_f_inv, mod);
       _nmod_vec_set(h, t, n);
     }
-
 
     /* Evaluate block composition using the Horner scheme */
     
     Nmod_poly_compose_mod compose;
     compose.nmod_poly_compose_mod_brent_kung_vec_preinv_prepare(h, n, f, len_f, f_inv, len_f_inv, mod, 2*n_sqrt(n)+1);
 
-    nmod_poly_struct* input = (nmod_poly_struct *) flint_malloc(1 * sizeof(nmod_poly_struct));
-    nmod_poly_init2(input, mod.n, n);
+    nmod_poly_t input;
+    nmod_poly_init2_preinv(input, mod.n, mod.ninv, n);
+    nmod_poly_t output;
     _nmod_vec_set(input->coeffs, C->rows[k - 1], n);
+    nmod_poly_init2_preinv(output, mod.n, mod.ninv, n);
     input->length = n;
     _nmod_poly_normalise(input);
     
     for (i = k- 2; i >= 0; i--){
-      nmod_poly_struct* output = (nmod_poly_struct *) flint_malloc(1 * sizeof(nmod_poly_struct));
       compose.nmod_poly_compose_mod_brent_kung_vec_preinv_precomp(output, input, 1);
       _nmod_poly_add(input->coeffs, output->coeffs, n, C->rows[i], n, mod);
-      nmod_poly_clear(output);
-      flint_free(output);
-      
+      input->length = n;
+      _nmod_poly_normalise(input);
     }
 
     _nmod_vec_set(res, input->coeffs, n);
+    nmod_poly_clear(output);
     nmod_poly_clear(input);
-    flint_free(input);
 
     // _nmod_vec_set(res, C->rows[k - 1], n);
     // for (i = k- 2; i >= 0; i--){
@@ -138,7 +136,7 @@ void Nmod_poly_automorphism_evaluation::compose(nmod_poly_t res,
     nmod_poly_fit_length(res, len);
     _automorphism_evaluation_compose(res->coeffs,
 				     A->coeffs, len_A, 
-				     g->coeffs, 
+				     ptr2, 
 				     f->coeffs, len_f,
 				     f_inv->coeffs, f_inv->length, res->mod);
     res->length = len;

@@ -33,24 +33,32 @@ void nmod_poly_rand_dense_monic(nmod_poly_t poly, flint_rand_t state, long len){
 /*------------------------------------------------------------------------*/
 /* checks automorphism evaluation                                         */
 /*------------------------------------------------------------------------*/
-void test_automorphism_evaluate(slong degree) {
-  cout << degree << " ";
-  mp_limb_t p = 9001;
+void test_automorphism_evaluate(mp_limb_t p, slong aut_degree, slong ext_degree) {
+  cout << "p: " << p << "\n";
   
   flint_rand_t state;
   flint_randinit(state);
 
   nmod_poly_t A, f, finv, g;
   nmod_poly_init(A, p);
-  nmod_poly_rand_dense(A, state, degree);
+  nmod_poly_rand_dense_monic(A, state, aut_degree);
   nmod_poly_init(f, p);
-  nmod_poly_rand_dense_monic(f, state, degree);
+  nmod_poly_rand_dense_monic(f, state, ext_degree);
   nmod_poly_init(finv, p);
   nmod_poly_reverse(finv, f, f->length);
   nmod_poly_inv_series(finv, finv, f->length);
   nmod_poly_init(g, p);
-  nmod_poly_rand_dense(g, state, degree);
+  nmod_poly_rand_dense(g, state, ext_degree);
 
+  printf("aut:\n");
+  nmod_poly_print_pretty(A, "x");
+  printf("\n");
+  printf("mod:\n");
+  nmod_poly_print_pretty(f, "x");
+  printf("\n");
+  printf("g:\n");
+  nmod_poly_print_pretty(g, "x");
+  printf("\n");
 
   Nmod_poly_automorphism_evaluation eval;
   nmod_poly_t res1, res2;
@@ -89,8 +97,12 @@ void test_automorphism_evaluate(slong degree) {
 
 
 int main() {
-  for (slong i = 307; i < 307+1; i++) {
-    test_automorphism_evaluate(i);
+  for (ulong p = n_nextprime(6, 0); p < 1000; p = n_nextprime(p+5, 0)) {
+    for (slong aut_degree = 1; aut_degree < 60; aut_degree++) {
+      for (slong ext_degree = 2; ext_degree < 10; ext_degree++) {
+        test_automorphism_evaluate(p, aut_degree, ext_degree);
+      }
+    }
   }
   
   return 0;
