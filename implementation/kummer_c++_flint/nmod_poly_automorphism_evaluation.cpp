@@ -121,12 +121,8 @@ void Nmod_poly_automorphism_evaluation::compose(nmod_poly_t res,
     }
 
     if (res == A || res == g || res == f || res == f_inv){
-        nmod_poly_t tmp;
-        nmod_poly_init_preinv(tmp, res->mod.n, res->mod.ninv);
-        nmod_poly_compose_mod_brent_kung_preinv(tmp, A, g, f, f_inv);
-        nmod_poly_swap(tmp, res);
-        nmod_poly_clear(tmp);
-        return;
+        flint_printf("Exception (Nmod_poly_automorphism_evaluation::compose). Aliasing not supported.\n");
+        abort();
     }
 
     ptr2 = _nmod_vec_init(len);
