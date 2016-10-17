@@ -469,7 +469,7 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	  fq_nmod_set(temp_xi, xi, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - n / 2;
 
-	  if (false){
+	  if (true){
 	    long delta_degree = fq_nmod_poly_degree(delta, ctx);
 	    Nmod_poly_compose_mod compose;
 	    compose.nmod_poly_compose_mod_brent_kung_vec_preinv_prepare(xi, ctx->modulus, ctx->inv,  
@@ -488,7 +488,7 @@ void FFIsomPrimePower::_compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod
 	  fq_nmod_set(temp_xi, xi_init, ctx);
 	  z_degree = fq_nmod_ctx_degree(ctx) - 1;
 
-	  if (false) {
+	  if (true) {
 	    compute_delta_and_xi(delta, xi, temp_xi, z_degree, compose_xi_init, ctx, cyclo_mod_lift);
 	  }
 	  else {
@@ -623,12 +623,12 @@ void FFIsomPrimePower::shift_delta(fq_nmod_poly_t delta, slong z_degree, const f
   nmod_poly_t coeff;
   nmod_poly_init(coeff, ctx->mod.n);
   for (long j = 0; j < r; j++){
-    for (long i = 0; i <= fq_nmod_poly_degree(delta, ctx); i++)
+    for (long i = 0; i < s; i++)
       nmod_poly_set_coeff_ui(coeff, i, nmod_poly_get_coeff_ui(delta->coeffs +i , j));
     // the following aliasing changes the storage used for coeff
     nmod_poly_mulmod(coeff, coeff, z_pow, cyclo_mod);
-    for (long i = 0; i <= nmod_poly_degree(coeff); i++)
-      nmod_poly_set_coeff_ui(delta->coeffs +i , j, coeff->coeffs[i]);
+    for (long i = 0; i < s; i++)
+      nmod_poly_set_coeff_ui(delta->coeffs +i , j, nmod_poly_get_coeff_ui(coeff, i));
   }
   nmod_poly_clear(coeff);
 
