@@ -101,8 +101,7 @@ def find_gen_with_data(k, r, o, G, use_lucas = True, verbose = False):
     ro = r*o
     o = ro // ro.gcd(n)
 
-    if o > 1:
-#    if o > 2:
+    if (use_lucas and o > 2) or (o > 1):
         if verbose:
             print "Using auxiliary extension of degree {}".format(o)
         P = GF(p**o, 'z').polynomial()
