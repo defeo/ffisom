@@ -31,7 +31,7 @@ from sage.rings.infinity import Infinity
 class FalseConjecture(Exception):
     pass
 
-def test_gens(p, n):
+def test_gens(p, n, use_lucas = True, verbose = False):
     '''
     Test routine for `find_gens`. Constructs two random
     extensions of F_p of degree n, then calls find_gens and
@@ -44,7 +44,7 @@ def test_gens(p, n):
     print "Field creation: CPU %s, Wall %s" % (cputime(c), walltime(w))
 
     c, w = cputime(), walltime()
-    a, b = find_gens(k1, k2)
+    a, b = find_gens(k1, k2, use_lucas=use_lucas, verbose=verbose)
     print "Rains' algorithm: CPU %s, Wall %s" % (cputime(c), walltime(w))
 
     P = a.minpoly()
@@ -87,13 +87,13 @@ def find_gens_list(klist, r = 0, omax = Infinity, use_lucas = True, verbose = Fa
     #
     # Note: `find_unique_orbit` is horribly slow if k is not a
     # field. Some composita tricks would be welcome.
-    return tuple(find_gen_with_data(k, r, o, G, verbose=verbose) for k in klist)
+    return tuple(find_gen_with_data(k, r, o, G, use_lucas=use_lucas, verbose=verbose) for k in klist)
 
-def find_gen(k, r = 0, use_lucas = True):
-    return find_gens_list([k], r)[0]
+def find_gen(k, r = 0, use_lucas = True, verbose = False):
+    return find_gens_list([k], r, use_lucas=use_lucas, verbose=verbose)[0]
 
 def find_gens(k1, k2, r = 0, omax = Infinity, use_lucas = True, verbose = False):
-    return find_gens_list([k1, k2], r, omax = omax, verbose = verbose)
+    return find_gens_list([k1, k2], r, omax = omax, use_lucas = use_lucas, verbose = verbose)
 
 def find_gen_with_data(k, r, o, G, use_lucas = True, verbose = False):
     p = k.characteristic()
