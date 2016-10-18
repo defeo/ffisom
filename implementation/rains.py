@@ -52,7 +52,7 @@ def test_gens(p, n):
     assert(P(b) == 0)
 
 
-def find_gens_list(klist, r = 0, verbose = False, omax = Infinity):
+def find_gens_list(klist, r = 0, omax = Infinity, use_lucas = True, verbose = False):
     '''
     Use Rain's method to find a generator of a subfield of degree r
     within the ambient fields in klist.
@@ -89,13 +89,13 @@ def find_gens_list(klist, r = 0, verbose = False, omax = Infinity):
     # field. Some composita tricks would be welcome.
     return tuple(find_gen_with_data(k, r, o, G, verbose=verbose) for k in klist)
 
-def find_gen(k, r = 0):
+def find_gen(k, r = 0, use_lucas = True):
     return find_gens_list([k], r)[0]
 
-def find_gens(k1, k2, r = 0, omax = Infinity, verbose = False):
+def find_gens(k1, k2, r = 0, omax = Infinity, use_lucas = True, verbose = False):
     return find_gens_list([k1, k2], r, omax = omax, verbose = verbose)
 
-def find_gen_with_data(k, r, o, G, verbose = False):
+def find_gen_with_data(k, r, o, G, use_lucas = True, verbose = False):
     p = k.characteristic()
     n = k.degree()
     ro = r*o
@@ -115,8 +115,8 @@ def find_gen_with_data(k, r, o, G, verbose = False):
     # k, if needed.
     if o == 1:
         u = find_unique_orbit(k, G)
-#    elif o == 2:
-#        u = find_unique_orbit_lucas(k, G)
+    elif o == 2 and use_lucas:
+        u = find_unique_orbit_lucas(k, G)
     else:
         u = find_unique_orbit(kext, G)
         R = k.polynomial_ring()

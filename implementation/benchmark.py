@@ -10,8 +10,10 @@ from sage.rings.finite_rings.finite_field_constructor import GF
 import sys
 from sage.misc.misc import cputime
 
+from kummer_nmod import algolist
+
 # p n o c rains ellrains pari kummer
-def benchmark_all(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -42,7 +44,7 @@ def benchmark_all(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity
                     break
                 t = cputime()
                 try:
-                    a, b = find_gens_cyclo(k_flint, k_flint)
+                    a, b = find_gens_rains(k_flint, k_flint, use_lucas = False)
                     tloops += cputime() - t
                 except RuntimeError:
                     pass
@@ -55,9 +57,26 @@ def benchmark_all(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity
             tcyclo = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
+                if (o != 2) or (o == p):
+                    break
                 t = cputime()
                 try:
-                    a, b = find_gens_ell(k_flint, k_flint)
+                    a, b = find_gens_rains(k_flint, k_flint, use_lucas = True)
+                    tloops += cputime() - t
+                except RuntimeError:
+                    pass
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    assert(g.degree() == n)
+                    assert(g == b.minpoly())
+                if tloops > tmax:
+                    break
+            tconic = tloops / (l+1)
+            tloops = 0
+            for l in xrange(loops):
+                t = cputime()
+                try:
+                    a, b = find_gens_ellrains(k_flint, k_flint)
                     tloops += cputime() - t
                 except RuntimeError:
                     break
@@ -82,28 +101,30 @@ def benchmark_all(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity
                 if tloops > tmax:
                     break
             tpari = tloops / (l+1)
-            tloops = 0
-            for l in xrange(loops):
+            tkummer = []
+            for algo in algolist:
                 if c < cmin or c > cmax:
                     break
-                t = cputime()
-                a, b = find_gens_kummer(k_flint, k_flint)
-                tloops += cputime() - t
-                if check and (l == 0 or check > 1):
-                    g = a.minpoly()
-                    assert(g.degree() == n)
-                    assert(g == b.minpoly())
-                if tloops > tmax:
-                    break
-            tkummer = tloops / (l+1)
+                tloops = 0
+                for l in xrange(loops):
+                    t = cputime()
+                    a, b = find_gens_kummer(k_flint, k_flint, n, algo)
+                    tloops += cputime() - t
+                    if check and (l == 0 or check > 1):
+                        g = a.minpoly()
+                        assert(g.degree() == n)
+                        assert(g == b.minpoly())
+                    if tloops > tmax:
+                        break
+                tkummer.append(tloops / (l+1))
             if write:
-                f.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tkummer))
+                f.write(("{} {} ({}, {}) {} {} {} {}"+" {}"*len(tkummer)+"\n").format(p, n, o, c, tcyclo, tconic, tell, tpari, *tkummer))
             else:
-                sys.stdout.write("{} {} ({}, {}) {} {} {} {}\n".format(p, n, o, c, tcyclo, tell, tpari, tkummer))
+                sys.stdout.write(("{} {} ({}, {}) {} {} {} {}"+" {}"*len(tkummer)+"\n").format(p, n, o, c, tcyclo, tconic, tell, tpari, *tkummer))
     if write:
         f.close()
 
-def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -142,7 +163,6 @@ def benchmark_kummer(pbound = [5, 2**10], nbound = [5, 2**8], cbound = [1, Infin
                 if tloops > tmax:
                     break
             tpari = tloops / (l+1)
-            from kummer_nmod import algolist
             tkummer = []
             for algo in algolist:
                 tloops = 0
