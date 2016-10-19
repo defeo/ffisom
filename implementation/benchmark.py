@@ -102,7 +102,8 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
                     break
             tpari = tloops / (l+1)
             tkummer = []
-            for algo in algolist[:-1]:
+            # only linalg and modcomp implemented for c==1
+            for algo in algolist[:-2*(c==1)-1]:
                 if c < cmin or c > cmax:
                     break
                 tloops = 0
@@ -117,6 +118,8 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
                     if tloops > tmax:
                         break
                 tkummer.append(tloops / (l+1))
+            if c == 1:
+                tkummer.extend([0,0])
             if write:
                 f.write(("{} {} ({}, {}) {} {} {} {}"+" {}"*len(tkummer)+"\n").format(p, n, o, c, tcyclo, tconic, tell, tpari, *tkummer))
             else:
