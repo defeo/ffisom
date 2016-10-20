@@ -2,7 +2,7 @@ BUILD_DIR = build
 SOURCES = $(wildcard *.cpp)
 OBJS = $(patsubst %.cpp, $(BUILD_DIR)/%.o, $(SOURCES))
 
-CC=g++
+CC=g++ -std=c++11
 CCFLAGS=-Wall -g -O3 -fPIC
 LIBS = -lflint -lmpfr -lgmp
 LIBRARY=libkummer.so
