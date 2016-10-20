@@ -2,7 +2,7 @@ from ffisom import *
 from rains import find_root_order
 
 from sage.rings.infinity import Infinity
-from sage.arith.all import is_prime
+from sage.arith.all import is_prime, is_prime_power
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod import Mod
 from sage.rings.finite_rings.finite_field_constructor import GF
@@ -26,7 +26,7 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             continue
         for n in xrange(nmin, nmax):
             n = ZZ(n)
-            if prime and not is_prime(n):
+            if (prime == 1 and not is_prime(n)) or (prime == 2 and not is_prime_power(n)):
                 continue
             if n % p == 0:
                 continue
