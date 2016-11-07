@@ -6,8 +6,7 @@ from sage.libs.gmp.mpz cimport mpz_fits_ulong_p, mpz_get_ui
 from sage.rings.integer_ring import ZZ
 from sage.rings.integer cimport Integer
 
-import sage.libs.pari.pari_instance
-from sage.libs.pari.pari_instance cimport PariInstance
+from sage.libs.pari.stack cimport clear_stack
 from sage.libs.pari.types cimport GEN, t_VECSMALL, evalvarn, lg
 from sage.libs.pari.paridecl cimport avma, cgetg, gel, Flx_ffisom, Flx_ffintersect, ZX_to_Flx, Flx_factorff_irred
 
@@ -27,7 +26,6 @@ def find_gen(domain, r = 0):
     raise NotImplementedError
 
 def find_gens(domain, codomain, int r = 0):
-    cdef PariInstance PI = sage.libs.pari.pari_instance.pari
     cdef int i
     #cdef Integer p
     cdef unsigned long l
@@ -52,12 +50,11 @@ def find_gens(domain, codomain, int r = 0):
     Flx_ffintersect(P, Q, r, l, &SP, &SQ, NULL, NULL)
     a = [(<unsigned long *> SP)[i] for i in xrange(2, lg(SP))]
     b = [(<unsigned long *> SQ)[i] for i in xrange(2, lg(SQ))]
-    PI.clear_stack()
+    clear_stack()
 
     return domain(a), codomain(b)
 
 def find_emb(domain, codomain):
-    cdef PariInstance PI = sage.libs.pari.pari_instance.pari
     cdef int i
     #cdef Integer p
     cdef unsigned long l
@@ -76,12 +73,11 @@ def find_emb(domain, codomain):
     Q = intlist_to_Flx(codomain.modulus().change_ring(ZZ).list())
     xim = Flx_ffisom(P, Q, l)
     a = [(<unsigned long *> xim)[i] for i in xrange(2, lg(xim))]
-    PI.clear_stack()
+    clear_stack()
 
     return codomain(a)
 
 def find_root(poly, domain):
-    cdef PariInstance PI = sage.libs.pari.pari_instance.pari
     cdef int i
     #cdef Integer p
     cdef unsigned long l
@@ -101,6 +97,6 @@ def find_root(poly, domain):
     factors = Flx_factorff_irred(P, Q, l)
     root = <GEN> (<GEN> factors[2])[2]
     a = [l-(<unsigned long *> root)[i] for i in xrange(2, lg(root))]
-    PI.clear_stack()
+    clear_stack()
 
     return domain(a)

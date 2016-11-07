@@ -36,6 +36,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.element_pari_ffelt cimport FiniteFieldElement_pari_ffelt
 from sage.libs.pari.pari_instance cimport PariInstance
 cdef PariInstance pari = sage.libs.pari.pari_instance.pari
+from sage.libs.pari.stack cimport new_gen
 from sage.libs.pari.gen cimport gen as pari_gen
 from sage.interfaces.gap import is_GapElement
 from sage.modules.free_module_element import FreeModuleElement
@@ -197,15 +198,15 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                 modulus = self._parent.modulus().change_ring(ZZ)
                 if t == t_FFELT:
                     # The following calls pari_catch_sig_off()
-                    x = (<PariInstance>pari).new_gen(FF_p(x_GEN))
+                    x = new_gen(FF_p(x_GEN))
                     sig_on()
                     y = FF_f(x_GEN)
                     R = modulus.parent()
                     sig_on()
-                    z = R((<PariInstance>pari).new_gen(FF_mod(x_GEN)))
+                    z = R(new_gen(FF_mod(x_GEN)))
                     if x == p and y == f and z == modulus:
                         # The following calls pari_catch_sig_off()
-                        x = (<PariInstance>pari).new_gen(FF_to_FpXQ(x_GEN))
+                        x = new_gen(FF_to_FpXQ(x_GEN))
                         self.construct_from(R(x))
                         return
                 elif t == t_INT:
@@ -214,13 +215,13 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                     return
                 elif t == t_INTMOD:
                     # The following calls pari_catch_sig_off()
-                    x = (<PariInstance>pari).new_gen(gel(x_GEN, 1))
+                    x = new_gen(gel(x_GEN, 1))
                     if x % p == 0:
                         self.construct_from(Integer(x))
                         return
                 elif t == t_FRAC:
                     # The following calls pari_catch_sig_off()
-                    x = (<PariInstance>pari).new_gen(gel(x_GEN, 2))
+                    x = new_gen(gel(x_GEN, 2))
                     if x % p != 0:
                         self.construct_from(Rational(x))
                         return
