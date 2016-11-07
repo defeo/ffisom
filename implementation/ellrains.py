@@ -55,7 +55,7 @@ def find_gens_list(klist, r = 0, bound = None, verbose = True):
     if E is None:
         raise RuntimeError, "no suitable elliptic curve found"
 
-    return tuple(find_unique_orbit(E.change_ring(k), lT[0], r) for k in klist)
+    return tuple(find_unique_orbit(E.change_ring(k), E.cardinality(extension_degree=k.degree()), lT[0], r) for k in klist)
 
 def find_gen(k, r = 0, bound = None):
     return find_gens_list([k], r, bound)
@@ -64,12 +64,15 @@ def find_gens(k1, k2, r = 0, bound = None):
     return find_gens_list([k1, k2], r, bound)
 
 
-def find_unique_orbit(E, l, r):
+def find_unique_orbit(E, card, l, r):
     '''
-    Compute an element uniquely definied by E and l (up to Galois action).
+    Compute an element uniquely defined by E and l (up to Galois action).
+
     INPUT:
     
     - ``E`` -- an elliptic curve with a unique l-torsion subgroup.
+
+    - ``card`` -- the cardinality of E.
 
     - ``l`` -- a prime number.
 
@@ -108,7 +111,7 @@ def find_unique_orbit(E, l, r):
     # Primitive root of unity of order (l-1)/r
     zeta = GF(l).multiplicative_generator()**r
     # Torsion point of order l
-    P = find_torsion_point(E, mul_ltr, l)
+    P = find_torsion_point(E, mul_ltr, card//l)
 
     period = sum(xaff(mul_ltr(P, (zeta**i).lift(), E.a4(), E.a6())) for i in 
                xrange(ZZ((l-1)/(2*r))))
@@ -251,9 +254,8 @@ def find_l(k, r, bound = None):
 
 
 # Assume l is prime
-def find_torsion_point(E, mul_ltr, l):
+def find_torsion_point(E, mul_ltr, cofactor):
     K = E.base_ring()
-    cofactor = E.cardinality()//l
 
     while True:
         x = K.random_element()
