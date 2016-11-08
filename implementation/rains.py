@@ -98,8 +98,11 @@ def find_gens(k1, k2, r = 0, omax = Infinity, use_lucas = True, verbose = False)
 def find_gen_with_data(k, r, o, G, use_lucas = True, verbose = False):
     p = k.characteristic()
     n = k.degree()
+    q = k.order()
     ro = r*o
     o = ro // ro.gcd(n)
+    m = G[0][0].parent().order()
+    use_lucas = use_lucas and ((q+1) % m == 0)
 
     if (use_lucas and o > 2) or (o > 1):
         if verbose:
@@ -114,7 +117,7 @@ def find_gen_with_data(k, r, o, G, use_lucas = True, verbose = False):
     # k, if needed.
     if o == 1:
         u = find_unique_orbit(k, G)
-    elif o == 2 and use_lucas:
+    elif use_lucas and o == 2:
         u = find_unique_orbit_lucas(k, G)
     else:
         u = find_unique_orbit(kext, G)
@@ -611,8 +614,10 @@ def find_unique_orbit_lucas(k, G):
     Return a Gaussian period of m-th roots of unity of k.
     '''
     m = G[0][0].parent().order()
-    cofactor = (k.cardinality() + 1) // m
-    sqtest =  (k.cardinality() - 1) // 2
+    q = k.cardinality()
+    assert((q+1) % m == 0)
+    cofactor = (q + 1) // m
+    sqtest =  (q - 1) // 2
     fact = m.factor()
 
     # find an m-th root of unity

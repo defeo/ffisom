@@ -32,9 +32,11 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
                 continue
             if (not even) and (n % 2 == 0):
                 continue
-            k = GF(p**n, name='z')
+            q = p**n
+            k = GF(q, name='z')
             k_flint = GF_flint(p, k.modulus(), name='z')
-            o, _ = find_root_order(p, [n, n], n, verbose=False)
+            o, G = find_root_order(p, [n, n], n, verbose=False)
+            m = G[0][0].parent().order()
             c = Mod(p,n).multiplicative_order()
             if verbose:
                 print("p = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
@@ -57,7 +59,7 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             tcyclo = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
-                if (o != 2) or (o == p):
+                if (o != 2) or (o == p) or ((q+1) % m != 0):
                     break
                 t = cputime()
                 try:
@@ -68,7 +70,11 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     assert(g.degree() == n)
-                    assert(g == b.minpoly())
+                    #assert(g == b.minpoly())
+                    if g != b.minpoly():
+                        print g
+                        print b.minpoly()
+                        raise
                 if tloops > tmax:
                     break
             tconic = tloops / (l+1)
