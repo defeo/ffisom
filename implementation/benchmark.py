@@ -13,12 +13,13 @@ from sage.misc.misc import cputime
 from kummer_nmod import algolist
 
 # p n o c rains ellrains pari kummer
-def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], obound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
     pmin, pmax = pbound
     nmin, nmax = nbound
+    omin, omax = obound
     cmin, cmax = cbound
     for p in xrange(pmin, pmax):
         p = ZZ(p)
@@ -133,7 +134,7 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
     if write:
         f.close()
 
-def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], omax = Infinity, loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -154,12 +155,11 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infin
                 continue
             k = GF(p**n, name='z')
             k_flint = GF_flint(p, k.modulus(), name='z')
-            o, _ = find_root_order(p, [n, n], n, verbose=False)
             c = Mod(p,n).multiplicative_order()
             if c < cmin or c > cmax:
                 continue
             if verbose:
-                print("p = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
+                print("p = {}, n = {}, (c = {})".format(p, n, c))
             tloops = 0
             for l in xrange(loops):
                 t = cputime()
@@ -187,8 +187,8 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infin
                         break
                 tkummer.append(tloops / (l+1))
             if write:
-                f.write(("{} {} ({}, {}) {}"+ " {}"*len(algolist) + "\n").format(p, n, o, c, tpari, *tkummer))
+                f.write(("{} {} ({}) {}"+ " {}"*len(algolist) + "\n").format(p, n, c, tpari, *tkummer))
             else:
-                sys.stdout.write(("{} {} ({}, {}) {}"+ " {}"*len(algolist) + "\n").format(p, n, o, c, tpari, *tkummer))
+                sys.stdout.write(("{} {} ({}) {}"+ " {}"*len(algolist) + "\n").format(p, n, c, tpari, *tkummer))
     if write:
         f.close()
