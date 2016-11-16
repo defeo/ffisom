@@ -1,7 +1,7 @@
-model name	: Intel(R) Xeon(R) CPU E5-2620 v2 @ 2.10GHz
-SageMath version 7.4, Release Date: 2016-10-18
-8afd80bc6921e4223fb761fec93f3f7e4d61f8a6
-import os; sys.path.append(os.getcwd()); from benchmark import *; benchmark_all(pbound=[4,2**10], nbound=[2**8,2**9], prime=2, loops=3, tmax=600, verbose=True, write=True, fname=os.getcwd()+'/02.dat')
+# model name	: Intel(R) Xeon(R) CPU E5-2620 v2 @ 2.10GHz
+# SageMath version 7.4, Release Date: 2016-10-18
+# 8afd80bc6921e4223fb761fec93f3f7e4d61f8a6
+# import os; sys.path.append(os.getcwd()); from benchmark import *; benchmark_all(pbound=[4,2**10], nbound=[2**8,2**9], prime=2, loops=3, tmax=600, verbose=True, write=True, fname=os.getcwd()+'/02.dat')
 5 257 (6, 256) 3.90133333333 0 2.032 15.1346666667 1.984 1.80533333333 1.18266666667 2.66133333333
 5 263 (3, 262) 1.03866666667 0 4.17066666667 17.2973333333 2.31466666667 2.29733333333 1.42133333333 3.01333333333
 5 269 (8, 67) 7.98 0 3.64666666667 4.48133333333 0.690666666667 0.588 0.424 2.19333333333
