@@ -777,30 +777,30 @@ void FFIsomPrimePower::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alp
  * @param theta		the resulting semi-trace
  */
 void FFIsomPrimePower::compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t ctx, const mp_limb_t z) {
-	fq_nmod_t alpha;
-	fq_nmod_init(alpha, ctx);
-	nmod_poly_set_coeff_ui(alpha, 1, 1);
-	// set xi_init to x^p
-	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
+    fq_nmod_t alpha;
+    fq_nmod_init(alpha, ctx);
+    nmod_poly_set_coeff_ui(alpha, 1, 1);
+    // set xi_init to x^p
+    fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
 
-	// use naive linear algebra for low-degree module
-	if (fq_nmod_ctx_degree(ctx) < linalg_threshold) {
-                 compute_semi_trace_trivial_linalg(theta, ctx, z);
-	         fq_nmod_clear(alpha, ctx);
-                 return;
-        }
+    // use naive linear algebra for low-degree module
+    if (fq_nmod_ctx_degree(ctx) < linalg_threshold) {
+        compute_semi_trace_trivial_linalg(theta, ctx, z);
+        fq_nmod_clear(alpha, ctx);
+        return;
+    }
 
-	flint_rand_t state;
-	flint_randinit(state);
+    flint_rand_t state;
+    flint_randinit(state);
 
-        fq_nmod_zero(theta, ctx);
-	while (fq_nmod_is_zero(theta, ctx)) {
-		fq_nmod_randtest(alpha, state, ctx);
-		compute_semi_trace_trivial_modcomp(theta, alpha, ctx, z);
-	}
+    fq_nmod_zero(theta, ctx);
+    while (fq_nmod_is_zero(theta, ctx)) {
+        fq_nmod_randtest(alpha, state, ctx);
+        compute_semi_trace_trivial_modcomp(theta, alpha, ctx, z);
+    }
 
-	fq_nmod_clear(alpha, ctx);
-	flint_randclear(state);
+    fq_nmod_clear(alpha, ctx);
+    flint_randclear(state);
 }
 
 void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift) {
