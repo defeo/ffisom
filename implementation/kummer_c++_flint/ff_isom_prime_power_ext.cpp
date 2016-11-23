@@ -815,30 +815,37 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 	nmod_poly_set_coeff_ui(alpha, 1, 1);
 	// computing xi_init = x^p
 	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
+    fq_nmod_clear(alpha, ctx);
 
 	// use naive linear algebra for low-degree moduli
 	if (degree*s < linalg_threshold) {
-                compute_semi_trace_linalg(theta, ctx);
-	        fq_nmod_clear(alpha, ctx);
-                return;
+        compute_semi_trace_linalg(theta, ctx);
+        return;
 	}
-
-	flint_rand_t state;
-	flint_randinit(state);
-
 	// then use modular composition
-        if (s < cofactor_threshold) {
-                fq_nmod_poly_t alpha;
-                fq_nmod_poly_init(alpha, ctx);
-                fq_nmod_poly_zero(theta, ctx);
+    if (s < cofactor_threshold) {
+        flint_rand_t state;
+        flint_randinit(state);
+        // try alpha = x first
+	    fq_nmod_t alpha;
+    	fq_nmod_init(alpha, ctx);
+	    nmod_poly_set_coeff_ui(alpha, 1, 1);
+        fq_nmod_poly_t alphapol;
+        fq_nmod_poly_init(alphapol, ctx);
+        fq_nmod_poly_set_coeff(alphapol, 0, alpha, ctx);
 
-		while (fq_nmod_poly_is_zero(theta, ctx)) {
-			fq_nmod_poly_randtest_not_zero(alpha, state, s, ctx);
-			compute_semi_trace_modcomp(theta, alpha, ctx, cyclo_mod_lift);
-		}
+        compute_semi_trace_modcomp(theta, alphapol, ctx, cyclo_mod_lift);
+        // if the semi trace of x is zero then we try random cases
+        while (fq_nmod_poly_is_zero(theta, ctx)) {
+			fq_nmod_poly_randtest_not_zero(alphapol, state, s, ctx);
+			compute_semi_trace_modcomp(theta, alphapol, ctx, cyclo_mod_lift);
+        }
 
-                fq_nmod_poly_clear(alpha, ctx);
-	} else {
+        fq_nmod_poly_clear(alphapol, ctx);
+        fq_nmod_clear(alpha, ctx);
+	    flint_randclear(state);
+        return;
+	}
 	if (s < iterfrob_threshold) {
 		nmod_poly_t cofactor;
 		nmod_poly_init(cofactor, ctx->modulus->mod.n);
@@ -848,30 +855,45 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 		nmod_poly_div(cofactor, cofactor, cyclo_mod);
 		compute_semi_trace_cofactor(theta, cofactor, ctx);
 		nmod_poly_clear(cofactor);
-	} else {
+        return;
+	}
     if (s < mpe_threshold) {
-	        // try alpha = x first
-		compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
-	        // if the semi trace of x is zero then we try random cases
-		while (fq_nmod_poly_is_zero(theta, ctx)) {
-			fq_nmod_randtest_not_zero(alpha, state, ctx);
-			compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
-		}
-        }
-    else {
-	        // try alpha = x first
-		compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
-	        // if the semi trace of x is zero then we try random cases
-		while (fq_nmod_poly_is_zero(theta, ctx)) {
-			fq_nmod_randtest_not_zero(alpha, state, ctx);
-			compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
-		}
-	    }
-    }
-    }
+        flint_rand_t state;
+        flint_randinit(state);
+        // try alpha = x first
+	    fq_nmod_t alpha;
+    	fq_nmod_init(alpha, ctx);
+	    nmod_poly_set_coeff_ui(alpha, 1, 1);
 
-	fq_nmod_clear(alpha, ctx);
-	flint_randclear(state);
+        compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+        // if the semi trace of x is zero then we try random cases
+        while (fq_nmod_poly_is_zero(theta, ctx)) {
+            fq_nmod_randtest_not_zero(alpha, state, ctx);
+            compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+        }
+
+        fq_nmod_clear(alpha, ctx);
+	    flint_randclear(state);
+        return;
+	}
+    {
+        flint_rand_t state;
+        flint_randinit(state);
+        // try alpha = x first
+	    fq_nmod_t alpha;
+    	fq_nmod_init(alpha, ctx);
+
+        compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
+        // if the semi trace of x is zero then we try random cases
+        while (fq_nmod_poly_is_zero(theta, ctx)) {
+            fq_nmod_randtest_not_zero(alpha, state, ctx);
+            compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
+        } 
+
+        fq_nmod_clear(alpha, ctx);
+	    flint_randclear(state);
+        return;
+    }
 }
 
 
