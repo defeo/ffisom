@@ -175,7 +175,7 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
                     break
             tpari = tloops / (l+1)
             tkummer = []
-            for algo in algolist:
+            for algo in algolist[:-2*(c==1)-1]:
                 tloops = 0
                 for l in xrange(loops):
                     t = cputime()
@@ -189,8 +189,8 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
                         break
                 tkummer.append(tloops / (l+1))
             if write:
-                f.write(("{} {} ({}) {}"+ " {}"*len(algolist) + "\n").format(p, n, c, tpari, *tkummer))
+                f.write(("{} {} ({}) {}"+ " {}"*len(tkummer) + "\n").format(p, n, c, tpari, *tkummer))
             else:
-                sys.stdout.write(("{} {} ({}) {}"+ " {}"*len(algolist) + "\n").format(p, n, c, tpari, *tkummer))
+                sys.stdout.write(("{} {} ({}) {}"+ " {}"*len(tkummer) + "\n").format(p, n, c, tpari, *tkummer))
     if write:
         f.close()

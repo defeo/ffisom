@@ -45,8 +45,8 @@ class FFIsomPrimePower {
     void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx);
     void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
      void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
-    void compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
-    void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_modcomp(fq_nmod_poly_t theta, const fq_nmod_poly_t a, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
     void _compute_semi_trace_modcomp(fq_nmod_poly_t delta, fq_nmod_t xi, slong n, 
 				     const Nmod_poly_compose_mod & compose_xi_init, 

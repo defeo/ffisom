@@ -350,65 +350,48 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 	return;
 }
 
-void FFIsomPrimePower::compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
-	flint_rand_t state;
-	flint_randinit(state);
+void FFIsomPrimePower::compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
+    fq_nmod_t b;
+    fq_nmod_init(b, ctx);
+    fq_nmod_t a0;
+    fq_nmod_init(a0, ctx);
+    fq_nmod_t a;
+    fq_nmod_init(a, ctx);
+    fq_nmod_set(a, alpha, ctx);
 
-	fq_nmod_t a;
-	fq_nmod_init(a, ctx);
-	fq_nmod_t b;
-	fq_nmod_init(b, ctx);
-	fq_nmod_t a0;
-	fq_nmod_init(a0, ctx);
-	fq_nmod_zero(a0, ctx);
+    for (slong i = 0; i < nmod_poly_degree(cofactor); i++) {
+        nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, i));
+        nmod_poly_add(a0, a0, b);
+        fq_nmod_pow_ui(a, a, ctx->mod.n, ctx);
+    }
+    nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, nmod_poly_degree(cofactor)));
+    nmod_poly_add(a0, a0, b);
 
-	while (fq_nmod_is_zero(a0, ctx)) {
-		fq_nmod_randtest(a, state, ctx);
-		for (slong i = 0; i < nmod_poly_degree(cofactor); i++) {
-			nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, i));
-			nmod_poly_add(a0, a0, b);
-			fq_nmod_pow_ui(a, a, ctx->mod.n, ctx);
-		}
-		nmod_poly_scalar_mul_nmod(b, a, nmod_poly_get_coeff_ui(cofactor, nmod_poly_degree(cofactor)));
-		nmod_poly_add(a0, a0, b);
-	}
+    if (fq_nmod_is_zero(a0, ctx))
+        fq_nmod_poly_zero(theta, ctx);
+    else
+        lift_ht90_modexp_luca(theta, a0, ctx);
 
-	lift_ht90_modexp_luca(theta, a0, ctx);
-
-	fq_nmod_clear(a, ctx);
-	fq_nmod_clear(b, ctx);
-	fq_nmod_clear(a0, ctx);
-
-	flint_randclear(state);
-
-	return;
+    fq_nmod_clear(b, ctx);
+    fq_nmod_clear(a0, ctx);
+    fq_nmod_clear(a, ctx);
+    return;
 }
 
-void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
-	flint_rand_t state;
-	flint_randinit(state);
+void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx) {
+    fq_nmod_t a0;
+    fq_nmod_init(a0, ctx);
 
-	fq_nmod_t a;
-	fq_nmod_init(a, ctx);
-	fq_nmod_t a0;
-	fq_nmod_init(a0, ctx);
-	fq_nmod_zero(a0, ctx);
+    Nmod_poly_automorphism_evaluation eval = Nmod_poly_automorphism_evaluation();
+    eval.compose(a0, cofactor, alpha, ctx->modulus, ctx->inv);
 
-	Nmod_poly_automorphism_evaluation eval = Nmod_poly_automorphism_evaluation();
+    if (fq_nmod_is_zero(a0, ctx))
+        fq_nmod_poly_zero(theta, ctx);
+    else
+        lift_ht90_modexp_luca(theta, a0, ctx);
 
-	while (fq_nmod_is_zero(a0, ctx)) {
-		fq_nmod_randtest(a, state, ctx);
-		eval.compose(a0, cofactor, a, ctx->modulus, ctx->inv);
-	}
-
-	lift_ht90_modexp_luca(theta, a0, ctx);
-
-	fq_nmod_clear(a, ctx);
-	fq_nmod_clear(a0, ctx);
-
-	flint_randclear(state);
-
-	return;
+    fq_nmod_clear(a0, ctx);
+    return;
 }
 
 /**
@@ -659,6 +642,16 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
 	fq_nmod_init(frobenius, ctx);
     fq_nmod_set(frobenius, alpha, ctx);
 
+    fq_nmod_poly_zero(theta, ctx);
+    fq_nmod_poly_set_coeff(theta, 0, alpha, ctx);
+    for (slong j = 1; j < degree; j++) {
+        fq_nmod_pow_ui(frobenius, frobenius, ctx->mod.n, ctx);
+        fq_nmod_poly_set_coeff(theta, degree-j, frobenius, ctx);
+    }
+
+	fq_nmod_poly_rem(theta, theta, cyclo_mod_lift, ctx);
+
+    if (false) {
     nmod_poly_t xicoeffs[degree];
     for (slong i = 0; i < degree; i++)
         fq_nmod_init(xicoeffs[i], cyclo_ctx);
@@ -685,6 +678,9 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
 
     for (slong i = 0; i < degree; i++)
         nmod_poly_clear(xicoeffs[i]);
+
+    }
+
     fq_nmod_clear(frobenius, ctx);
 }
 
@@ -706,7 +702,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
 	for (slong i = 0; i < degree; i++)
 		fq_nmod_init(frobenius[i], ctx);
 
-	iterated_frobenius(frobenius, alpha, ctx, fq_nmod_poly_degree(cyclo_mod_lift, ctx));
+	iterated_frobenius(frobenius, alpha, ctx, cyclo_deg);
 
 	fq_nmod_poly_zero(theta, ctx);
 	fq_nmod_poly_set_coeff(theta, 0, frobenius[0], ctx);
@@ -825,8 +821,8 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
         flint_rand_t state;
         flint_randinit(state);
         // try alpha = x first
-	    fq_nmod_t alpha;
-    	fq_nmod_init(alpha, ctx);
+        fq_nmod_t alpha;
+        fq_nmod_init(alpha, ctx);
 	    nmod_poly_set_coeff_ui(alpha, 1, 1);
         fq_nmod_poly_t alphapol;
         fq_nmod_poly_init(alphapol, ctx);
@@ -845,14 +841,30 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
         return;
 	}
 	if (s < iterfrob_threshold) {
-		nmod_poly_t cofactor;
-		nmod_poly_init(cofactor, ctx->modulus->mod.n);
-		nmod_poly_zero(cofactor);
-		nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
-		nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
-		nmod_poly_div(cofactor, cofactor, cyclo_mod);
-		compute_semi_trace_cofactor(theta, cofactor, ctx);
-		nmod_poly_clear(cofactor);
+        flint_rand_t state;
+        flint_randinit(state);
+        // try alpha = x first
+        fq_nmod_t alpha;
+        fq_nmod_init(alpha, ctx);
+
+        nmod_poly_set_coeff_ui(alpha, 1, 1);
+        nmod_poly_t cofactor;
+        nmod_poly_init(cofactor, ctx->modulus->mod.n);
+        nmod_poly_zero(cofactor);
+        nmod_poly_set_coeff_ui(cofactor, ext_deg, 1);
+        nmod_poly_set_coeff_ui(cofactor, 0, nmod_neg(1, ctx->modulus->mod));
+        nmod_poly_div(cofactor, cofactor, cyclo_mod);
+
+        compute_semi_trace_cofactor(theta, alpha, cofactor, ctx);
+        // if the semi trace of x is zero then we try random cases
+        while (!derand && fq_nmod_poly_is_zero(theta, ctx)) {
+            fq_nmod_randtest_not_zero(alpha, state, ctx);
+            compute_semi_trace_cofactor(theta, alpha, cofactor, ctx);
+        }
+
+        nmod_poly_clear(cofactor);
+        fq_nmod_clear(alpha, ctx);
+        flint_randclear(state);
         return;
 	}
     if (s < mpe_threshold) {
@@ -860,8 +872,8 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
         flint_randinit(state);
         // try alpha = x first
 	    fq_nmod_t alpha;
-    	fq_nmod_init(alpha, ctx);
-	    nmod_poly_set_coeff_ui(alpha, 1, 1);
+        fq_nmod_init(alpha, ctx);
+        nmod_poly_set_coeff_ui(alpha, 1, 1);
 
         compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
         // if the semi trace of x is zero then we try random cases
@@ -871,15 +883,16 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
         }
 
         fq_nmod_clear(alpha, ctx);
-	    flint_randclear(state);
+        flint_randclear(state);
         return;
-	}
+    }
     {
         flint_rand_t state;
         flint_randinit(state);
         // try alpha = x first
-	    fq_nmod_t alpha;
-    	fq_nmod_init(alpha, ctx);
+        fq_nmod_t alpha;
+        fq_nmod_init(alpha, ctx);
+        nmod_poly_set_coeff_ui(alpha, 1, 1);
 
         compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
         // if the semi trace of x is zero then we try random cases
@@ -889,7 +902,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
         } 
 
         fq_nmod_clear(alpha, ctx);
-	    flint_randclear(state);
+        flint_randclear(state);
         return;
     }
 }
