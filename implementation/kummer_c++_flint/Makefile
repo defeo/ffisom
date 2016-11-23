@@ -17,7 +17,7 @@ $(LIBRARY): $(OBJS)
 clean:
 	rm -f *.so
 	rm -f $(OBJS)
-	rm -r $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 
 $(BUILD_DIR)/%.o:	%.cpp
 	$(CC) -c $< -o $@ $(CCFLAGS)

@@ -27,6 +27,6 @@ clean:
 	rm -rf cythonized
 	rm -rf *.so
 	rm -rf *.pyc
-	rm benchmark
+	rm -f benchmark
 
 .PHONY: clean sage_local 
