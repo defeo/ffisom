@@ -648,7 +648,56 @@ void FFIsomPrimePower::shift_delta(fq_nmod_poly_t delta, slong z_degree, const f
  * z\alpha^{p^{(r - 1)}$ where $\alpha \in \mathbb{F}_p[x]$, and $r$ is the degree of
  * the extension {@code ctx}.
  *
- * This is done using multi point evaluation/iterated frobenius.
+ * This is done using iterated frobenius computed naively.
+ */
+void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
+		const fq_nmod_poly_t cyclo_mod_lift) {
+
+	slong degree = fq_nmod_ctx_degree(ctx);
+
+	fq_nmod_t frobenius;
+	fq_nmod_init(frobenius, ctx);
+    fq_nmod_set(frobenius, xi_init, ctx);
+
+    nmod_poly_t xicoeffs[degree];
+    for (slong i = 0; i < degree; i++)
+        fq_nmod_init(xicoeffs[i], cyclo_ctx);
+
+    // Compute Frobenii
+    for (slong i = 0; i < degree; i++)
+        nmod_poly_set_coeff_ui(xicoeffs[i], 0, nmod_poly_get_coeff_ui(alpha, i));
+    for (slong i = 0; i < degree; i++)
+        nmod_poly_set_coeff_ui(xicoeffs[i], degree-1, nmod_poly_get_coeff_ui(xi_init, i));   
+    for (slong j = 2; j < degree; j++) {
+        fq_nmod_pow_ui(frobenius, frobenius, ctx->mod.n, ctx);
+        for (slong i = 0; i < degree; i++)
+            nmod_poly_set_coeff_ui(xicoeffs[i], degree-j, nmod_poly_get_coeff_ui(frobenius, i));
+    }
+
+    // Reduce modulo cyclo_mod
+    for (slong i = 0; i < degree; i++)
+        nmod_poly_rem(xicoeffs[i], xicoeffs[i], cyclo_ctx->modulus);
+
+    fq_nmod_poly_zero(theta, ctx);
+    for (slong j = 0; j < cyclo_deg; j++) {
+        for (slong i = 0;  i < degree; i++)
+            nmod_poly_set_coeff_ui(frobenius, i, nmod_poly_get_coeff_ui(xicoeffs[i], j));
+        fq_nmod_poly_set_coeff(theta, j, frobenius, ctx);
+    }
+
+    for (slong i = 0; i < degree; i++)
+        nmod_poly_clear(xicoeffs[i]);
+    fq_nmod_clear(frobenius, ctx);
+}
+
+/**
+ * Computes the value $\theta = \alpha + z^{r - 1}\alpha^{p} + z^{r - 2}\alpha^{p^2} + \cdots + 
+ * z\alpha^{p^{(r - 1)}$ where $\alpha \in \mathbb{F}_p[x]$, and $r$ is the degree of
+ * the extension {@code ctx}.
+ *
+ * This is done using iterated frobenius through multi point evaluation.
+ * Unfortunately fq_nmod_poly_t needed by MPE is slow in FLINT as it does
+ * not implement double KS.
  */
 void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t cyclo_mod_lift) {
@@ -667,7 +716,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
 		fq_nmod_poly_set_coeff(theta, i, frobenius[degree - i], ctx);
 	}
 
-        // Surely suboptimal. cyclo_mod_lift has coeffs in Fp (and is fixed).
+    // Surely suboptimal. cyclo_mod_lift has coeffs in Fp (and is fixed).
 	fq_nmod_poly_rem(theta, theta, cyclo_mod_lift, ctx);
 
 	for (slong i = 0; i < degree; i++)
@@ -737,7 +786,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t c
 	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
 
 	// use naive linear algebra for low-degree module
-	if (fq_nmod_ctx_degree(ctx) < linear_alg_threshold) {
+	if (fq_nmod_ctx_degree(ctx) < linalg_threshold) {
                  compute_semi_trace_trivial_linalg(theta, ctx, z);
 	         fq_nmod_clear(alpha, ctx);
                  return;
@@ -809,7 +858,23 @@ void FFIsomPrimePower::compute_semi_trace_all(fq_nmod_poly_t theta, const fq_nmo
 	timeit_stop(time);
 	cout << "automorphism evaluation (case 2): " << (double) time->wall / 1000.0 << "\n";
 
-	// iterated frobenius (case 3)
+	// iterated frobenius (case 3a)
+	// try alpha = x first
+	timeit_start(time);
+	fq_nmod_init(alpha, ctx);
+	nmod_poly_set_coeff_ui(alpha, 1, 1);
+	compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+	flint_randinit(state);
+	// if the semi trace of x is zero then we try random cases
+	while (fq_nmod_poly_is_zero(theta, ctx)) {
+	  fq_nmod_randtest_not_zero(alpha, state, ctx);
+	  compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+	}
+	flint_randclear(state);
+	timeit_stop(time);
+	cout << "iterfrob (case 3a): " << (double) time->wall / 1000.0 << "\n";
+
+	// iterated frobenius (case 3b)
 	// try alpha = x first
 	timeit_start(time);
 	fq_nmod_init(alpha, ctx);
@@ -823,7 +888,7 @@ void FFIsomPrimePower::compute_semi_trace_all(fq_nmod_poly_t theta, const fq_nmo
 	}
 	flint_randclear(state);
 	timeit_stop(time);
-	cout << "iterfrob (case 3): " << (double) time->wall / 1000.0 << "\n";
+	cout << "iterfrob (case 3b): " << (double) time->wall / 1000.0 << "\n";
 
 }
 
@@ -839,7 +904,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 	fq_nmod_pow_ui(xi_init, alpha, ctx->modulus->mod.n, ctx);
 
 	// use naive linear algebra for low-degree moduli
-	if (degree*s < linear_alg_threshold) {
+	if (degree*s < linalg_threshold) {
                 compute_semi_trace_linalg(theta, ctx);
 	        fq_nmod_clear(alpha, ctx);
                 return;
@@ -861,7 +926,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 
                 fq_nmod_poly_clear(alpha, ctx);
 	} else {
-	if (s < multi_point_threshold) {
+	if (s < iterfrob_threshold) {
 		nmod_poly_t cofactor;
 		nmod_poly_init(cofactor, ctx->modulus->mod.n);
 		nmod_poly_zero(cofactor);
@@ -871,6 +936,16 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 		compute_semi_trace_cofactor(theta, cofactor, ctx);
 		nmod_poly_clear(cofactor);
 	} else {
+    if (s < mpe_threshold) {
+	        // try alpha = x first
+		compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+	        // if the semi trace of x is zero then we try random cases
+		while (fq_nmod_poly_is_zero(theta, ctx)) {
+			fq_nmod_randtest_not_zero(alpha, state, ctx);
+			compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
+		}
+        }
+    else {
 	        // try alpha = x first
 		compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
 	        // if the semi trace of x is zero then we try random cases
@@ -878,8 +953,9 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 			fq_nmod_randtest_not_zero(alpha, state, ctx);
 			compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
 		}
-        }
-	}
+	    }
+    }
+    }
 
 	fq_nmod_clear(alpha, ctx);
 	flint_randclear(state);
@@ -1090,30 +1166,41 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 
 	switch (force_algo) {
 		case FORCE_LINALG:
-		this->linear_alg_threshold = WORD_MAX;
+		this->linalg_threshold = WORD_MAX;
 		this->cofactor_threshold = WORD_MAX;
-		this->multi_point_threshold = WORD_MAX;
+		this->iterfrob_threshold = WORD_MAX;
+		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_MODCOMP:
-		this->linear_alg_threshold = 0;
+		this->linalg_threshold = 0;
 		this->cofactor_threshold = WORD_MAX;
-		this->multi_point_threshold = WORD_MAX;
+		this->iterfrob_threshold = WORD_MAX;
+		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_COFACTOR:
-		this->linear_alg_threshold = 0;
+		this->linalg_threshold = 0;
 		this->cofactor_threshold = 0;
-		this->multi_point_threshold = WORD_MAX;
+		this->iterfrob_threshold = WORD_MAX;
+		this->mpe_threshold = WORD_MAX;
+		break;
+		case FORCE_ITERFROB:
+		this->linalg_threshold = 0;
+		this->cofactor_threshold = 0;
+		this->iterfrob_threshold = 0;
+		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_MPE:
-		this->linear_alg_threshold = 0;
+		this->linalg_threshold = 0;
 		this->cofactor_threshold = 0;
-		this->multi_point_threshold = 0;
+		this->iterfrob_threshold = 0;
+		this->mpe_threshold = 0;
 		break;
 		case FORCE_NONE:
 		default:
-		this->linear_alg_threshold = 1000;
+		this->linalg_threshold = 1000;
 		this->cofactor_threshold = 10000;
-		this->multi_point_threshold = 100000;
+		this->iterfrob_threshold = 100000;
+		this->mpe_threshold = WORD_MAX;
 	}
 
 	ext_char = modulus1->mod.n;

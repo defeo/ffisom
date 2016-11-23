@@ -13,7 +13,7 @@
 
 #include "nmod_poly_compose_mod.h"
 
-enum {FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_MPE, FORCE_NONE};
+enum {FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_ITERFROB, FORCE_MPE, FORCE_NONE};
 
 class FFIsomPrimePower {
     slong ext_deg;
@@ -30,9 +30,10 @@ class FFIsomPrimePower {
     fq_nmod_t delta_init_trivial;
     fq_nmod_t xi_init;
 
-    slong linear_alg_threshold;
+    slong linalg_threshold;
     slong cofactor_threshold;
-    slong multi_point_threshold;
+    slong iterfrob_threshold;
+    slong mpe_threshold;
 
     void compute_semi_trace_trivial_linalg(fq_nmod_t theta, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z);
@@ -56,6 +57,7 @@ class FFIsomPrimePower {
 			      const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
 
     void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
     void compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t ctx, const mp_limb_t z);
