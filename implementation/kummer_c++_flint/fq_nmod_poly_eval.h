@@ -16,8 +16,8 @@
 class fq_nmodPolyEval {
     const fq_nmod_ctx_struct *ctx;
 
-    void build_subproduct_tree(fq_nmod_poly_t **tree, const fq_nmod_t *points, slong num_points);
-    void go_down_subproduct_tree(fq_nmod_t *results, const fq_nmod_poly_t f, fq_nmod_poly_t **tree, slong num_points);
+    void build_subproduct_tree(fq_nmod_poly_t **tree, const fq_nmod_struct *points, slong num_points);
+    void go_down_subproduct_tree(fq_nmod_struct *results, const fq_nmod_poly_t f, fq_nmod_poly_t **tree, slong num_points);
     fq_nmod_poly_t ** init_subproduct_tree(slong num_points);
     void clear_subproduct_tree(fq_nmod_poly_t **tree, slong num_points);
 
@@ -34,7 +34,7 @@ public:
      * @param points	the given elements of the field {@code ctx}
      * @param ctx		the given field
      */
-    void multipoint_eval(fq_nmod_t *results, const fq_nmod_poly_t f, const fq_nmod_t *points, slong num_points, const fq_nmod_ctx_t ctx);
+    void multipoint_eval(fq_nmod_struct *results, const fq_nmod_poly_t f, const fq_nmod_struct *points, slong num_points, const fq_nmod_ctx_t ctx);
 
 };
 

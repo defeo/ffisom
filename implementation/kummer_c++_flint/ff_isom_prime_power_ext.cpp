@@ -699,23 +699,23 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
 
 	slong degree = fq_nmod_ctx_degree(ctx);
 
-	fq_nmod_t frobenius[degree];
+	fq_nmod_struct frobenius[degree];
 	for (slong i = 0; i < degree; i++)
-		fq_nmod_init(frobenius[i], ctx);
+		fq_nmod_init(frobenius + i, ctx);
 
 	iterated_frobenius(frobenius, alpha, ctx, cyclo_deg);
 
 	fq_nmod_poly_zero(theta, ctx);
-	fq_nmod_poly_set_coeff(theta, 0, frobenius[0], ctx);
+	fq_nmod_poly_set_coeff(theta, 0, frobenius + 0, ctx);
 	for (slong i = 1; i < degree; i++) {
-		fq_nmod_poly_set_coeff(theta, i, frobenius[degree - i], ctx);
+		fq_nmod_poly_set_coeff(theta, i, frobenius + degree - i, ctx);
 	}
 
     // Surely suboptimal. cyclo_mod_lift has coeffs in Fp (and is fixed).
 	fq_nmod_poly_rem(theta, theta, cyclo_mod_lift, ctx);
 
 	for (slong i = 0; i < degree; i++)
-		fq_nmod_clear(frobenius[i], ctx);
+		fq_nmod_clear(frobenius + i, ctx);
 }
 
 /**
@@ -724,16 +724,17 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const f
  * form Von Zur Gathen and Shoup, 1992. More precisely, this method implements the
  * case {q = p, R = ctx, t = p, m = r - 1} of the algorithm in the paper.
  */
-void FFIsomPrimePower::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s) {
+void FFIsomPrimePower::iterated_frobenius(fq_nmod_struct *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s) {
 	fq_nmodPolyEval fq_nmodPolyEval;
 
 	fq_nmod_poly_t temp;
 	fq_nmod_poly_init(temp, ctx);
 
-	fq_nmod_zero(result[0], ctx);
 	// set result[0] to x
-	nmod_poly_set_coeff_ui(result[0], 1, 1);
-	fq_nmod_set(result[1], xi_init, ctx);
+	fq_nmod_zero(result + 0, ctx);
+	nmod_poly_set_coeff_ui(result + 0, 1, 1);
+	// set result[1] to x^p
+	fq_nmod_set(result + 1, xi_init, ctx);
 
 	slong l = n_clog(fq_nmod_ctx_degree(ctx) - 1, 2);
 	slong base = 0;
@@ -744,7 +745,7 @@ void FFIsomPrimePower::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alp
 		base = 1 << (i - 1);
 
 		// build the polynomial for multipoint evaluation
-		convert(temp, result[base], ctx);
+		convert(temp, result + base, ctx);
 
 		// make sure we stay in the bound
 		if (2 * base < fq_nmod_ctx_degree(ctx))
@@ -752,16 +753,24 @@ void FFIsomPrimePower::iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alp
 		else
 			length = fq_nmod_ctx_degree(ctx) - base - 1;
 
-		fq_nmodPolyEval.multipoint_eval(result + base + 1, temp, result + 1, length, ctx);
+        if (true) {
+            fq_nmod_poly_evaluate_fq_nmod_vec(result + base + 1, temp, result + 1, length, ctx);
+        } else {
+            fq_nmodPolyEval.multipoint_eval(result + base + 1, temp, result + 1, length, ctx);
+        }
 	}
 
 	// check the trivial case of alpha = x
-	if (!fq_nmod_equal(result[0], alpha, ctx)) {
+	if (!fq_nmod_equal(result + 0, alpha, ctx)) {
 
 		// build the polynomial for multipoint evaluation of alpha
 		convert(temp, alpha, ctx);
 
-		fq_nmodPolyEval.multipoint_eval(result, temp, result, fq_nmod_ctx_degree(ctx), ctx);
+        if (true) {
+            fq_nmod_poly_evaluate_fq_nmod_vec(result, temp, result, fq_nmod_ctx_degree(ctx), ctx);
+        } else {
+            fq_nmodPolyEval.multipoint_eval(result, temp, result, fq_nmod_ctx_degree(ctx), ctx);
+        }
 	}
 
 	fq_nmod_poly_clear(temp, ctx);

@@ -61,7 +61,7 @@ class FFIsomPrimePower {
     void shift_delta(fq_nmod_poly_t delta, slong z_degree, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
     void compute_semi_trace_iterfrob(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t modulus);
-    void iterated_frobenius(fq_nmod_t *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
+    void iterated_frobenius(fq_nmod_struct *result, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx, slong s);
     void compute_semi_trace(fq_nmod_t theta, const fq_nmod_ctx_t ctx, const mp_limb_t z);
 
     void compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx, const fq_nmod_poly_t cyclo_mod_lift);
