@@ -6,9 +6,9 @@ from sage.libs.gmp.mpz cimport mpz_fits_ulong_p, mpz_get_ui
 from sage.rings.integer_ring import ZZ
 from sage.rings.integer cimport Integer
 
-from sage.libs.pari.stack cimport clear_stack
-from sage.libs.pari.types cimport GEN, t_VECSMALL, evalvarn, lg
-from sage.libs.pari.paridecl cimport avma, cgetg, gel, Flx_ffisom, Flx_ffintersect, ZX_to_Flx, Flx_factorff_irred
+from sage.libs.cypari2.stack cimport clear_stack
+from sage.libs.cypari2.types cimport GEN, t_VECSMALL, evalvarn, lg
+from sage.libs.cypari2.paridecl cimport avma, cgetg, gel, Flx_ffisom, Flx_ffintersect, ZX_to_Flx, Flx_factorff_irred
 
 # Dirty stack
 cdef GEN intlist_to_Flx(list L):

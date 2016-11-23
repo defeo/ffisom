@@ -134,7 +134,7 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
     if write:
         f.close()
 
-def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)

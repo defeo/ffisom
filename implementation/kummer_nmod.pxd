@@ -18,6 +18,7 @@ cdef extern from "kummer_c++_flint/ff_isom_prime_power_ext.h":
         FORCE_LINALG
         FORCE_MODCOMP
         FORCE_COFACTOR
+        FORCE_ITERFROB
         FORCE_MPE
         FORCE_NONE
 

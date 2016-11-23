@@ -22,7 +22,7 @@ cythonized: $(CYTHON_SOURCES) libkummer.so libellmul.so
 	cp cythonized/lib.*/*.so ./
 
 clean:
-	$(MAKE) -C kummer_c++_flint clean || true
+	$(MAKE) -C kummer_c++_flint clean
 	$(MAKE) -C ellmul clean
 	rm -rf cythonized
 	rm -rf *.so

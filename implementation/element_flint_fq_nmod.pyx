@@ -19,7 +19,7 @@ AUTHORS:
 include "sage/ext/stdsage.pxi"
 include "cysignals/signals.pxi"
 
-from sage.libs.pari.paridecl cimport *
+from sage.libs.cypari2.paridecl cimport *
 
 from sage.libs.gmp.all cimport *
 from sage.libs.flint.types cimport *
@@ -34,10 +34,10 @@ import sage.rings.integer
 from sage.rings.integer cimport Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.element_pari_ffelt cimport FiniteFieldElement_pari_ffelt
-from sage.libs.pari.pari_instance cimport PariInstance
-cdef PariInstance pari = sage.libs.pari.pari_instance.pari
-from sage.libs.pari.stack cimport new_gen
-from sage.libs.pari.gen cimport gen as pari_gen
+from sage.libs.cypari2.pari_instance cimport PariInstance
+cdef PariInstance pari = sage.libs.cypari2.pari_instance.pari
+from sage.libs.cypari2.stack cimport new_gen
+from sage.libs.cypari2.gen cimport gen as pari_gen
 from sage.interfaces.gap import is_GapElement
 from sage.modules.free_module_element import FreeModuleElement
 from sage.rings.polynomial.polynomial_element import Polynomial
