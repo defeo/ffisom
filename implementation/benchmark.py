@@ -134,7 +134,7 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
     if write:
         f.close()
 
-def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True):
+def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = 0, fname = None, write = False, overwrite = False, verbose = True, skip_pari = False, derand = False):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -162,6 +162,8 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
                 print("p = {}, n = {}, (c = {})".format(p, n, c))
             tloops = 0
             for l in xrange(loops):
+                if skip_pari:
+                    break
                 t = cputime()
                 a, b = find_gens_pari(k, k)
                 tloops += cputime() - t
@@ -177,7 +179,7 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
                 tloops = 0
                 for l in xrange(loops):
                     t = cputime()
-                    a, b = find_gens_kummer(k_flint, k_flint, n, algo)
+                    a, b = find_gens_kummer(k_flint, k_flint, n, algo, derand)
                     tloops += cputime() - t
                     if check and (l == 0 or check > 1):
                         g = a.minpoly()

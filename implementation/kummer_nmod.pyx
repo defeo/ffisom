@@ -11,13 +11,13 @@ from sage.libs.flint.fq_nmod cimport *
 algolist = [FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_ITERFROB, FORCE_MPE, FORCE_NONE]
 
 cdef class FFEmbWrapper:
-    def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo):
-        self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus, force_algo)
+    def __cinit__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo, long derand):
+        self.wrp = new FFEmbedding(k1._ctx.modulus, k2._ctx.modulus, force_algo, derand)
         nmod_poly_init(self.g1, k1._ctx.modulus.mod.n)
         nmod_poly_init(self.g2, k2._ctx.modulus.mod.n)
         nmod_poly_init(self.xim, k2._ctx.modulus.mod.n)
 
-    def __init__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo):
+    def __init__(self, FiniteField_flint_fq_nmod k1, FiniteField_flint_fq_nmod k2, long force_algo = FORCE_NONE, long derand = 0):
         self.domain = k1
         self.codomain = k2
         self.initialized = 0
@@ -67,8 +67,8 @@ cdef class FFEmbWrapper:
 def find_gen(k1, r = 0):
     raise NotImplementedError
 
-def find_gens(k1, k2, int r = 0, force_algo = FORCE_NONE):
-    return FFEmbWrapper(k1, k2, force_algo).get_gens()
+def find_gens(k1, k2, int r = 0, force_algo = FORCE_NONE, derand = 0):
+    return FFEmbWrapper(k1, k2, force_algo, derand).get_gens()
 
 def find_emb(k1, k2):
     return FFEmbWrapper(k1, k2).get_emb()

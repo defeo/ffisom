@@ -657,7 +657,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
 
 	fq_nmod_t frobenius;
 	fq_nmod_init(frobenius, ctx);
-    fq_nmod_set(frobenius, xi_init, ctx);
+    fq_nmod_set(frobenius, alpha, ctx);
 
     nmod_poly_t xicoeffs[degree];
     for (slong i = 0; i < degree; i++)
@@ -666,9 +666,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
     // Compute Frobenii
     for (slong i = 0; i < degree; i++)
         nmod_poly_set_coeff_ui(xicoeffs[i], 0, nmod_poly_get_coeff_ui(alpha, i));
-    for (slong i = 0; i < degree; i++)
-        nmod_poly_set_coeff_ui(xicoeffs[i], degree-1, nmod_poly_get_coeff_ui(xi_init, i));   
-    for (slong j = 2; j < degree; j++) {
+    for (slong j = 1; j < degree; j++) {
         fq_nmod_pow_ui(frobenius, frobenius, ctx->mod.n, ctx);
         for (slong i = 0; i < degree; i++)
             nmod_poly_set_coeff_ui(xicoeffs[i], degree-j, nmod_poly_get_coeff_ui(frobenius, i));
@@ -997,6 +995,7 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 	// timeit_stop(time);
 	// cout << "trace time: " << (double) time->wall / 1000.0 << "\n";
 
+    if (!derand) {
 	fq_nmod_t c;
 	fq_nmod_poly_t c_temp;
 	fq_nmod_init(c, cyclo_ctx);
@@ -1010,6 +1009,7 @@ void FFIsomPrimePower::compute_extension_isomorphism(fq_nmod_poly_t f, fq_nmod_p
 	fq_nmod_poly_clear(cyclo_mod_lift, ctx_1);
 	fq_nmod_poly_clear(c_temp, ctx_2);
 	fq_nmod_clear(c, cyclo_ctx);
+    }
 }
 
 void FFIsomPrimePower::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t f_image) {
@@ -1019,6 +1019,7 @@ void FFIsomPrimePower::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t 
 	compute_semi_trace(f, ctx_1, cyclo_root);
 	compute_semi_trace(f_image, ctx_2, cyclo_root);
 
+    if (!derand) {
 	// compute the middle isomorphism
 	nmod_poly_powmod_ui_binexp(temp, f, ext_deg, ctx_1->modulus);
 	mp_limb_t eta1 = nmod_poly_get_coeff_ui(temp, 0);
@@ -1032,6 +1033,7 @@ void FFIsomPrimePower::compute_extension_isomorphism(nmod_poly_t f, nmod_poly_t 
 	nmod_poly_scalar_mul_nmod(f_image, f_image, root);
 
 	nmod_poly_clear(temp);
+    }
 }
 
 void FFIsomPrimePower::compute_generators_trivial(nmod_poly_t g1, nmod_poly_t g2) {
