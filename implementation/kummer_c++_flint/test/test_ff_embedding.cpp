@@ -34,7 +34,7 @@ void test_build_embedding(slong m, slong n, slong characteristic) {
 	timeit_t time;
 	timeit_start(time);
 	FFEmbedding ffEmbedding(f1, f2);
-	ffEmbedding.compute_generators(g1, g2, linear_alg_threshold, multi_point_threshold);
+	ffEmbedding.compute_generators(g1, g2);
 	ffEmbedding.build_embedding(g1, g2);
 	timeit_stop(time);
 	cout << "time: " << (double) time->wall / 1000.0 << "\n";
