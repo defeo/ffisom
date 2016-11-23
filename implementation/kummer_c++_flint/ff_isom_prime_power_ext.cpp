@@ -753,7 +753,7 @@ void FFIsomPrimePower::iterated_frobenius(fq_nmod_struct *result, const fq_nmod_
 		else
 			length = fq_nmod_ctx_degree(ctx) - base - 1;
 
-        if (true) {
+        if (false) {
             fq_nmod_poly_evaluate_fq_nmod_vec(result + base + 1, temp, result + 1, length, ctx);
         } else {
             fq_nmodPolyEval.multipoint_eval(result + base + 1, temp, result + 1, length, ctx);
@@ -766,7 +766,7 @@ void FFIsomPrimePower::iterated_frobenius(fq_nmod_struct *result, const fq_nmod_
 		// build the polynomial for multipoint evaluation of alpha
 		convert(temp, alpha, ctx);
 
-        if (true) {
+        if (false) {
             fq_nmod_poly_evaluate_fq_nmod_vec(result, temp, result, fq_nmod_ctx_degree(ctx), ctx);
         } else {
             fq_nmodPolyEval.multipoint_eval(result, temp, result, fq_nmod_ctx_degree(ctx), ctx);
