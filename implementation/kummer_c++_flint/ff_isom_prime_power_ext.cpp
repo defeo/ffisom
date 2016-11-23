@@ -632,6 +632,7 @@ void FFIsomPrimePower::shift_delta(fq_nmod_poly_t delta, slong z_degree, const f
  * the extension {@code ctx}.
  *
  * This is done using iterated frobenius computed naively.
+ * But does not use fq_nmod_poly_t arithmetic.
  */
 void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const fq_nmod_ctx_t ctx,
 		const fq_nmod_poly_t cyclo_mod_lift) {
@@ -642,6 +643,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
 	fq_nmod_init(frobenius, ctx);
     fq_nmod_set(frobenius, alpha, ctx);
 
+    if (false) {
     fq_nmod_poly_zero(theta, ctx);
     fq_nmod_poly_set_coeff(theta, 0, alpha, ctx);
     for (slong j = 1; j < degree; j++) {
@@ -650,8 +652,7 @@ void FFIsomPrimePower::compute_semi_trace_iterfrob_naive(fq_nmod_poly_t theta, c
     }
 
 	fq_nmod_poly_rem(theta, theta, cyclo_mod_lift, ctx);
-
-    if (false) {
+    } else {
     nmod_poly_t xicoeffs[degree];
     for (slong i = 0; i < degree; i++)
         fq_nmod_init(xicoeffs[i], cyclo_ctx);
