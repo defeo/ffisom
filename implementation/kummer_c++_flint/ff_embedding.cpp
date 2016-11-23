@@ -169,7 +169,7 @@ void FFEmbedding::compute_generators(nmod_poly_t g1, nmod_poly_t g2, slong r) {
 
 	} else {
 
-		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, this->force_algo);
+		FFIsomPrimePower ffIsomPrimePower(subfield_modulus1, subfield_modulus2, this->force_algo, this->derand);
 		ffIsomPrimePower.compute_generators(subfield_gen1, subfield_gen2);
 	}
 
@@ -233,13 +233,14 @@ void FFEmbedding::compute_image(nmod_poly_t image, const nmod_poly_t f) {
 	nmod_poly_compose_mod(image, f, x_image, modulus2);
 }
 
-FFEmbedding::FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo) {
+FFEmbedding::FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo, slong derand) {
 	nmod_poly_init(modulus1, f1->mod.n);
 	nmod_poly_init(modulus2, f2->mod.n);
 	nmod_poly_set(modulus1, f1);
 	nmod_poly_set(modulus2, f2);
 	nmod_poly_init(x_image, modulus2->mod.n);
 	this->force_algo = force_algo;
+    this->derand = derand;
 }
 
 FFEmbedding::~FFEmbedding() {

@@ -17,6 +17,7 @@ class FFEmbedding {
     nmod_poly_t x_image;
 
     slong force_algo;
+    slong derand;
 
     void compute_trace(nmod_poly_t alpha, nmod_poly_t xi, const nmod_poly_t alpha_init,
 	    const nmod_poly_t xi_init, const nmod_poly_t modulus, slong i);
@@ -30,7 +31,7 @@ public:
      * @param f1 Defining modulus for the first extension k
      * @param f2 Defining modulus for the second extension K
      */
-    FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE);
+    FFEmbedding(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE, slong derand = 0);
     ~FFEmbedding();
 
     /**

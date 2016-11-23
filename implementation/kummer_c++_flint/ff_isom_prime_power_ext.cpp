@@ -836,7 +836,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 
         compute_semi_trace_modcomp(theta, alphapol, ctx, cyclo_mod_lift);
         // if the semi trace of x is zero then we try random cases
-        while (fq_nmod_poly_is_zero(theta, ctx)) {
+        while (!derand && fq_nmod_poly_is_zero(theta, ctx)) {
 			fq_nmod_poly_randtest_not_zero(alphapol, state, s, ctx);
 			compute_semi_trace_modcomp(theta, alphapol, ctx, cyclo_mod_lift);
         }
@@ -867,7 +867,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 
         compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
         // if the semi trace of x is zero then we try random cases
-        while (fq_nmod_poly_is_zero(theta, ctx)) {
+        while (!derand && fq_nmod_poly_is_zero(theta, ctx)) {
             fq_nmod_randtest_not_zero(alpha, state, ctx);
             compute_semi_trace_iterfrob_naive(theta, alpha, ctx, cyclo_mod_lift);
         }
@@ -885,7 +885,7 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
 
         compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
         // if the semi trace of x is zero then we try random cases
-        while (fq_nmod_poly_is_zero(theta, ctx)) {
+        while (!derand && fq_nmod_poly_is_zero(theta, ctx)) {
             fq_nmod_randtest_not_zero(alpha, state, ctx);
             compute_semi_trace_iterfrob(theta, alpha, ctx, cyclo_mod_lift);
         } 
@@ -1096,7 +1096,7 @@ void FFIsomPrimePower::compute_cyclotomic_root() {
 
 FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1, 
 				   const nmod_poly_t modulus2,
-				slong force_algo) {
+				slong force_algo, slong derand) {
 	Util util;
 
 	switch (force_algo) {
@@ -1137,6 +1137,8 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 		this->iterfrob_threshold = 100000;
 		this->mpe_threshold = WORD_MAX;
 	}
+
+    this->derand = derand;
 
 	ext_char = modulus1->mod.n;
         ext_deg = nmod_poly_degree(modulus1);

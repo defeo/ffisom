@@ -35,6 +35,8 @@ class FFIsomPrimePower {
     slong iterfrob_threshold;
     slong mpe_threshold;
 
+    slong derand;
+
     void compute_semi_trace_trivial_linalg(fq_nmod_t theta, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void _compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const mp_limb_t z);
@@ -79,7 +81,7 @@ public:
      * @param f1 Defining modulus of the first extension
      * @param f2 Defining modulus of the second extension
      */
-    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE);
+    FFIsomPrimePower(const nmod_poly_t f1, const nmod_poly_t f2, slong force_algo = FORCE_NONE, slong derand = 0);
 
     /**
      * Computes generators g1 of ctx_1, and g2 of ctx_2 such that
