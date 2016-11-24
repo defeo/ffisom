@@ -140,54 +140,54 @@ void FFIsomPrimePower::_compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_n
  * This is not restricted to prime power degree extension.
  */
 void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx) {
-        slong r = fq_nmod_ctx_degree(ctx);
-        fq_nmod_mat_t frob_auto;
-        fq_nmod_mat_init(frob_auto, r, r, cyclo_ctx);
+    slong r = fq_nmod_ctx_degree(ctx);
+    fq_nmod_mat_t frob_auto;
+    fq_nmod_mat_init(frob_auto, r, r, cyclo_ctx);
 
-	fq_nmod_t temp;
-        fq_nmod_init(temp, ctx);
-        fq_nmod_set(temp, xi_init, ctx);
+    fq_nmod_t temp;
+    fq_nmod_init(temp, ctx);
+    fq_nmod_set(temp, xi_init, ctx);
 
-	fq_nmod_t cyclo_temp;
-	fq_nmod_init(cyclo_temp, cyclo_ctx);
+    fq_nmod_t cyclo_temp;
+    fq_nmod_init(cyclo_temp, cyclo_ctx);
 
-        /*
- 	 * (Frob - z Id) matrix.
- 	 * Compute iteratively 1, x^q, x^(2q), ...
-	 */
-	nmod_poly_set_coeff_ui(cyclo_temp, 0, 1);
-        fq_nmod_mat_entry_set(frob_auto, 0, 0, cyclo_temp, cyclo_ctx);
-        for (slong i = 1; i < r; i++) {
-                for (slong j = 0; j < r; j++) {
-			nmod_poly_set_coeff_ui(cyclo_temp, 0, nmod_poly_get_coeff_ui(temp, j));
-			if (j == i)
-				nmod_poly_set_coeff_ui(cyclo_temp, 1, nmod_neg(-1, cyclo_ctx->mod));
-                        fq_nmod_mat_entry_set(frob_auto, j, i, cyclo_temp, cyclo_ctx);
-                }
+    /*
+     * (Frob - z Id) matrix.
+     * Compute iteratively 1, x^q, x^(2q), ...
+     */
+    nmod_poly_set_coeff_ui(cyclo_temp, 0, 1);
+    fq_nmod_mat_entry_set(frob_auto, 0, 0, cyclo_temp, cyclo_ctx);
+    for (slong i = 1; i < r; i++) {
+        for (slong j = 0; j < r; j++) {
+            nmod_poly_set_coeff_ui(cyclo_temp, 0, nmod_poly_get_coeff_ui(temp, j));
+            if (j == i)
+                nmod_poly_set_coeff_ui(cyclo_temp, 1, nmod_neg(-1, cyclo_ctx->mod));
+            fq_nmod_mat_entry_set(frob_auto, j, i, cyclo_temp, cyclo_ctx);
+         }
 
-                fq_nmod_mul(temp, temp, xi_init, ctx);
-        }
+        fq_nmod_mul(temp, temp, xi_init, ctx);
+    }
 
-        /*
-         * Kernel.
-         */
-        fq_nmod_mat_nullspace(frob_auto, frob_auto, cyclo_ctx);
+    /*
+     * Kernel.
+     */
+    fq_nmod_mat_nullspace(frob_auto, frob_auto, cyclo_ctx);
 
-        /*
-         * Extract theta.
-         */
-        fq_nmod_poly_zero(theta, ctx);
-        for (slong i = 0; i < fq_nmod_ctx_degree(cyclo_ctx); i++) {
-		for (slong j = 0; j < r; j++)
-			nmod_poly_set_coeff_ui(temp, j, nmod_poly_get_coeff_ui(fq_nmod_mat_entry(frob_auto, j, 0), i));
-		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-	}
+    /*
+     * Extract theta.
+     */
+    fq_nmod_poly_zero(theta, ctx);
+    for (slong i = 0; i < fq_nmod_ctx_degree(cyclo_ctx); i++) {
+        for (slong j = 0; j < r; j++)
+            nmod_poly_set_coeff_ui(temp, j, nmod_poly_get_coeff_ui(fq_nmod_mat_entry(frob_auto, j, 0), i));
+        fq_nmod_poly_set_coeff(theta, i, temp, ctx);
+    }
 
-        fq_nmod_mat_clear(frob_auto, cyclo_ctx);
-        fq_nmod_clear(temp, ctx);
-	fq_nmod_clear(cyclo_temp, cyclo_ctx);
+    fq_nmod_mat_clear(frob_auto, cyclo_ctx);
+    fq_nmod_clear(temp, ctx);
+    fq_nmod_clear(cyclo_temp, cyclo_ctx);
 
-        return;
+    return;
 }
 
 /*
