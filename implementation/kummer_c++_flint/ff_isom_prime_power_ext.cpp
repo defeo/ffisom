@@ -330,6 +330,7 @@ void FFIsomPrimePower::compute_frob_auto(nmod_mat_t frob_auto, const fq_nmod_ctx
 }
 
 void FFIsomPrimePower::evaluate_poly_mat(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+    // Uses Horner or Paterson/Stockmeyer
     nmod_poly_evaluate_mat(cyclo_frob, cyclo_mod, frob_auto);
 }
 
