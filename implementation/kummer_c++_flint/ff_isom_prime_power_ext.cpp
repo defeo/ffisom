@@ -196,66 +196,53 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
  * Uses modular exponentiation to compute frobenii.
  */
 void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
-	slong s = fq_nmod_ctx_degree(cyclo_ctx);
-	fq_nmod_t temp;
-	fq_nmod_init(temp, ctx);
-	fq_nmod_set(temp, a, ctx);
+    slong s = fq_nmod_ctx_degree(cyclo_ctx);
+
+    fq_nmod_t temp;
+    fq_nmod_init(temp, ctx);
+
+    fq_nmod_t add;
+    fq_nmod_init(add, ctx);
+
+    fq_nmod_t last;
+    fq_nmod_init(last, ctx);
 
     if (true) {
     // Luca's formula.
     // a_{s-1} = a
-	// a_i = frob(a_{i+1}) + b_{i+1}
-	fq_nmod_t add;
-	fq_nmod_init(add, ctx);
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
 
-	// a_{s-1}
-	fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
-
-	// a_i = frob(a_{i+1}) + b_{i+1}
-        for (slong i = s-2; i >= 0; i--) {
-		fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
-		fq_nmod_mul_ui(add, a, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
-		fq_nmod_add(temp, temp, add, ctx);
-		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-        }
-
-	fq_nmod_clear(add, ctx);
+    // a_{s-1}
+    fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
+    fq_nmod_set(temp, a, ctx);
+    fq_nmod_set(last, a, ctx);
     } else {
     // PARI/GP's suboptimal formula
     // a_0 = a
-	// a_i = frob(a_{i+1}) + b_i a_{s-1}
     // a_{s-1} = -1/b_0 frob(a_0)
+    // a_i = frob(a_{i+1}) + b_i a_{s-1}
     
-	// a_0
-	fq_nmod_poly_set_coeff(theta, 0, a, ctx);
+    // a_0
+    fq_nmod_poly_set_coeff(theta, 0, a, ctx);
 
-    // Suboptimal, use Luca's formula.
     // a_{s-1} = -1/b_0 frob(a_0)
     mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
-	fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
-	fq_nmod_mul_ui(temp, temp, inv_b0, ctx);
-	fq_nmod_poly_set_coeff(theta, s-1, temp, ctx);
-
-	if (s > 2) {
-    	// s > 2
-	    fq_nmod_t last;
-    	fq_nmod_init(last, ctx);
-	    fq_nmod_set(last, temp, ctx);
-    	fq_nmod_t add;
-	    fq_nmod_init(add, ctx);
-    	// a_i = frob(a_{i+1}) + b_i a_{s-1}
-            for (slong i = s-2; i > 0; i--) {
-	        	fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
-        		fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
-        		fq_nmod_add(temp, temp, add, ctx);
-        		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-            }
-
-	    fq_nmod_clear(last, ctx);
-	    fq_nmod_clear(add, ctx);
+    fq_nmod_pow_ui(temp, a, ctx->modulus->mod.n, ctx);
+    fq_nmod_mul_ui(temp, temp, inv_b0, ctx);
+    fq_nmod_poly_set_coeff(theta, s-1, temp, ctx);
     }
+
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
+    for (slong i = s-2; i >= (true?0:1); i--) {
+        fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
+        fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
+        fq_nmod_add(temp, temp, add, ctx);
+        fq_nmod_poly_set_coeff(theta, i, temp, ctx);
     }
-	fq_nmod_clear(temp, ctx);
+
+    fq_nmod_clear(last, ctx);
+    fq_nmod_clear(add, ctx);
+    fq_nmod_clear(temp, ctx);
 }
 
 /*
@@ -263,43 +250,58 @@ void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a,
  *
  * Uses linear algebra to compute frobenii.
  */
-void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
 	slong r = fq_nmod_ctx_degree(ctx);
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
 
-        nmod_mat_t a[s];
-        for (slong i = 0; i < s; i++)
-            nmod_mat_init(a[i], r, 1, ctx->modulus->mod.n);
+    nmod_mat_t amat[s];
+    for (slong i = 0; i < s; i++)
+        nmod_mat_init(amat[i], r, 1, ctx->modulus->mod.n);
 
-        // a_0
-	for (slong i = 0; i < r; i++)
-		nmod_mat_entry(a[0], i, 0) = nmod_poly_get_coeff_ui(a0, i);
+    if (true) {
+    // Luca's formula.
+    // a_{s-1} = a
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
 
-        // Suboptimal, use Luca's formula.
-        // a_{s-1} = -1/b_0 frob(a_0)
-        mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
-        nmod_mat_mul(a[s-1], frob_auto, a[0]);
-        nmod_mat_scalar_mul(a[s-1], a[s-1], inv_b0);
+    // a_{s-1} = a
+    for (slong i = 0; i < r; i++)
+        nmod_mat_entry(amat[s-1], i, 0) = nmod_poly_get_coeff_ui(a, i);
+    } else {
+    // PARI/GP's suboptimal formula
+    // a_0 = a
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
+    // a_{s-1} = -1/b_0 frob(a_0)
 
-	// a_i = frob(a_{i+1}) + b_i a_{s-1}
-        for (slong i = s-2; i > 0; i--) {
-                nmod_mat_mul(a[i], frob_auto, a[i+1]);
-                nmod_mat_scalar_mul_add(a[i], a[i], nmod_poly_get_coeff_ui(cyclo_mod, i+1), a[s-1]);
-        }
+    // a_0 = a
+    for (slong i = 0; i < r; i++)
+        nmod_mat_entry(amat[0], i, 0) = nmod_poly_get_coeff_ui(a, i);
 
-	fq_nmod_t temp;
-	fq_nmod_init(temp, ctx);
-	for (slong i = 0; i < s; i++) {
-                for (slong j = 0; j < r; j++)
-                        nmod_poly_set_coeff_ui(temp, j, nmod_mat_entry(a[i], j, 0));
-		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-        }
-	fq_nmod_clear(temp, ctx);
+    // a_{s-1} = -1/b_0 frob(a_0)
+    mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
+    nmod_mat_mul(amat[s-1], frob_auto, amat[0]);
+    nmod_mat_scalar_mul(amat[s-1], amat[s-1], inv_b0);
+    }
 
-        for (slong i = 0; i < s; i++)
-                nmod_mat_clear(a[i]);
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
+    for (slong i = s-2; i >= (true?0:1); i--) {
+       nmod_mat_mul(amat[i], frob_auto, amat[i+1]);
+       nmod_mat_scalar_mul_add(amat[i], amat[i], nmod_poly_get_coeff_ui(cyclo_mod, i+1), amat[s-1]);
+    }
 
-	return;
+    // construct theta from vectors
+    fq_nmod_t temp;
+    fq_nmod_init(temp, ctx);
+    for (slong i = 0; i < s; i++) {
+        for (slong j = 0; j < r; j++)
+            nmod_poly_set_coeff_ui(temp, j, nmod_mat_entry(amat[i], j, 0));
+        fq_nmod_poly_set_coeff(theta, i, temp, ctx);
+    }
+    fq_nmod_clear(temp, ctx);
+
+    for (slong i = 0; i < s; i++)
+        nmod_mat_clear(amat[i]);
+
+    return;
 }
 
 /**
