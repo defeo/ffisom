@@ -41,9 +41,8 @@ class FFIsomPrimePower {
     void compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void _compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const mp_limb_t z);
     void compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
-    void lift_ht90_modexp_luca(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
-    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx);
-    void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a0, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
+    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
+    void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
      void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_cofactor(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);

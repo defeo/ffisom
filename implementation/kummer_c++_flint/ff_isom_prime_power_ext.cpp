@@ -195,19 +195,22 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
  *
  * Uses modular exponentiation to compute frobenii.
  */
-void FFIsomPrimePower::lift_ht90_modexp_luca(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
 	slong s = fq_nmod_ctx_degree(cyclo_ctx);
-
 	fq_nmod_t temp;
 	fq_nmod_init(temp, ctx);
 	fq_nmod_set(temp, a, ctx);
+
+    if (true) {
+    // Luca's formula.
+    // a_{s-1} = a
+	// a_i = frob(a_{i+1}) + b_{i+1}
 	fq_nmod_t add;
 	fq_nmod_init(add, ctx);
 
 	// a_{s-1}
 	fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
 
-        // Luca's formula.
 	// a_i = frob(a_{i+1}) + b_{i+1}
         for (slong i = s-2; i >= 0; i--) {
 		fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
@@ -216,49 +219,43 @@ void FFIsomPrimePower::lift_ht90_modexp_luca(fq_nmod_poly_t theta, const fq_nmod
 		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
         }
 
-	fq_nmod_clear(temp, ctx);
 	fq_nmod_clear(add, ctx);
-}
-
-void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a0, const fq_nmod_ctx_t ctx) {
-	slong s = fq_nmod_ctx_degree(cyclo_ctx);
-
-	fq_nmod_t temp;
-	fq_nmod_init(temp, ctx);
-	fq_nmod_set(temp, a0, ctx);
-
+    } else {
+    // PARI/GP's suboptimal formula
+    // a_0 = a
+	// a_i = frob(a_{i+1}) + b_i a_{s-1}
+    // a_{s-1} = -1/b_0 frob(a_0)
+    
 	// a_0
-	fq_nmod_poly_set_coeff(theta, 0, a0, ctx);
+	fq_nmod_poly_set_coeff(theta, 0, a, ctx);
 
-        // Suboptimal, use Luca's formula.
-        // a_{s-1} = -1/b_0 frob(a_0)
-        mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
+    // Suboptimal, use Luca's formula.
+    // a_{s-1} = -1/b_0 frob(a_0)
+    mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
 	fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
 	fq_nmod_mul_ui(temp, temp, inv_b0, ctx);
 	fq_nmod_poly_set_coeff(theta, s-1, temp, ctx);
 
-	if (s == 2) {
-		fq_nmod_clear(temp, ctx);
-		return;
-	}
+	if (s > 2) {
+    	// s > 2
+	    fq_nmod_t last;
+    	fq_nmod_init(last, ctx);
+	    fq_nmod_set(last, temp, ctx);
+    	fq_nmod_t add;
+	    fq_nmod_init(add, ctx);
+    	// a_i = frob(a_{i+1}) + b_i a_{s-1}
+            for (slong i = s-2; i > 0; i--) {
+	        	fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
+        		fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
+        		fq_nmod_add(temp, temp, add, ctx);
+        		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
+            }
 
-	// s > 2
-	fq_nmod_t last;
-	fq_nmod_init(last, ctx);
-	fq_nmod_set(last, temp, ctx);
-	fq_nmod_t add;
-	fq_nmod_init(add, ctx);
-	// a_i = frob(a_{i+1}) + b_i a_{s-1}
-        for (slong i = s-2; i > 0; i--) {
-		fq_nmod_pow_ui(temp, temp, ctx->modulus->mod.n, ctx);
-		fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
-		fq_nmod_add(temp, temp, add, ctx);
-		fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-        }
-
+	    fq_nmod_clear(last, ctx);
+	    fq_nmod_clear(add, ctx);
+    }
+    }
 	fq_nmod_clear(temp, ctx);
-	fq_nmod_clear(last, ctx);
-	fq_nmod_clear(add, ctx);
 }
 
 /*
@@ -341,7 +338,7 @@ void FFIsomPrimePower::compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_
 		nmod_poly_set_coeff_ui(temp, i, nmod_mat_entry(cyclo_frob, i, 0));
 
 	// Lift a_0 to F_q
-	lift_ht90_modexp_luca(theta, temp, ctx);
+	lift_ht90_modexp(theta, temp, ctx);
 
         fq_nmod_clear(temp, ctx);
 	nmod_mat_clear(frob_auto);
@@ -370,7 +367,7 @@ void FFIsomPrimePower::compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, c
     if (fq_nmod_is_zero(a0, ctx))
         fq_nmod_poly_zero(theta, ctx);
     else
-        lift_ht90_modexp_luca(theta, a0, ctx);
+        lift_ht90_modexp(theta, a0, ctx);
 
     fq_nmod_clear(b, ctx);
     fq_nmod_clear(a0, ctx);
@@ -388,7 +385,7 @@ void FFIsomPrimePower::compute_semi_trace_cofactor(fq_nmod_poly_t theta, const f
     if (fq_nmod_is_zero(a0, ctx))
         fq_nmod_poly_zero(theta, ctx);
     else
-        lift_ht90_modexp_luca(theta, a0, ctx);
+        lift_ht90_modexp(theta, a0, ctx);
 
     fq_nmod_clear(a0, ctx);
     return;
