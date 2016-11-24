@@ -8,7 +8,7 @@ from sage.rings.finite_rings.integer_mod import Mod
 from sage.rings.finite_rings.finite_field_constructor import GF
 
 import sys
-from sage.misc.misc import cputime
+from sage.misc.misc import walltime
 
 from kummer_nmod import algolist
 
@@ -45,10 +45,10 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             for l in xrange(loops):
                 if (o > omax) or (o == p):
                     break
-                t = cputime()
+                t = walltime()
                 try:
                     a, b = find_gens_rains(k_flint, k_flint, use_lucas = False)
-                    tloops += cputime() - t
+                    tloops += walltime() - t
                 except RuntimeError:
                     pass
                 if check and (l == 0 or check > 1):
@@ -62,10 +62,10 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             for l in xrange(loops):
                 if (o != 2) or (o == p) or ((q+1) % m != 0):
                     break
-                t = cputime()
+                t = walltime()
                 try:
                     a, b = find_gens_rains(k_flint, k_flint, use_lucas = True)
-                    tloops += cputime() - t
+                    tloops += walltime() - t
                 except RuntimeError:
                     pass
                 if check and (l == 0 or check > 1):
@@ -81,10 +81,10 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             tconic = tloops / (l+1)
             tloops = 0
             for l in xrange(loops):
-                t = cputime()
+                t = walltime()
                 try:
                     a, b = find_gens_ellrains(k_flint, k_flint)
-                    tloops += cputime() - t
+                    tloops += walltime() - t
                 except RuntimeError:
                     break
                 if check and (l == 0 or check > 1):
@@ -98,9 +98,9 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
             for l in xrange(loops):
                 if c < cmin or c > cmax:
                     break
-                t = cputime()
+                t = walltime()
                 a, b = find_gens_pari(k, k)
-                tloops += cputime() - t
+                tloops += walltime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     assert(g.degree() == n)
@@ -115,9 +115,9 @@ def benchmark_all(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity
                     break
                 tloops = 0
                 for l in xrange(loops):
-                    t = cputime()
+                    t = walltime()
                     a, b = find_gens_kummer(k_flint, k_flint, n, algo)
-                    tloops += cputime() - t
+                    tloops += walltime() - t
                     if check and (l == 0 or check > 1):
                         g = a.minpoly()
                         assert(g.degree() == n)
@@ -164,9 +164,9 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
             for l in xrange(loops):
                 if skip_pari:
                     break
-                t = cputime()
+                t = walltime()
                 a, b = find_gens_pari(k, k)
-                tloops += cputime() - t
+                tloops += walltime() - t
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     assert(g.degree() == n)
@@ -178,9 +178,9 @@ def benchmark_kummer(pbound = [3, 2**10], nbound = [3, 2**8], obound = None, cbo
             for algo in algolist[:-2*(c==1)-1]:
                 tloops = 0
                 for l in xrange(loops):
-                    t = cputime()
+                    t = walltime()
                     a, b = find_gens_kummer(k_flint, k_flint, n, algo, derand)
-                    tloops += cputime() - t
+                    tloops += walltime() - t
                     if check and (l == 0 or check > 1):
                         g = a.minpoly()
                         assert(g.degree() == n)
