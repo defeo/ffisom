@@ -48,7 +48,7 @@ class FFIsomPrimePower {
     void compute_frob_powers(fq_nmod_t *frob_powers, slong s, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
     void update_frob_powers(fq_nmod_t *frob_powers, slong s, const fq_nmod_t *frob_powers_init, const fq_nmod_ctx_t ctx);
     void evaluate_poly_frob(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
-    void compute_semi_trace_linalg_pari(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_linalg_only(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
     void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
     void evaluate_poly_mat(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);

@@ -363,7 +363,7 @@ void FFIsomPrimePower::evaluate_poly_frob(nmod_mat_t cyclo_frob, const nmod_poly
 /**
  * Solve HT90 using linear algebra over F_p and lifting from F_q to F_q[z].
  */
-void FFIsomPrimePower::compute_semi_trace_linalg_pari(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::compute_semi_trace_linalg_only(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx) {
 
     slong r = fq_nmod_ctx_degree(ctx);
 
