@@ -13,7 +13,7 @@
 
 #include "nmod_poly_compose_mod.h"
 
-enum {FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_ITERFROB, FORCE_MPE, FORCE_NONE};
+enum {FORCE_LINALG_CYCLO, FORCE_LINALG_ONLY, FORCE_LINALG, FORCE_MODCOMP, FORCE_COFACTOR, FORCE_ITERFROB, FORCE_MPE, FORCE_NONE};
 
 class FFIsomPrimePower {
     slong ext_deg;
@@ -30,6 +30,8 @@ class FFIsomPrimePower {
     fq_nmod_t delta_init_trivial;
     fq_nmod_t xi_init;
 
+    slong linalg_cyclo_threshold;
+    slong linalg_only_threshold;
     slong linalg_threshold;
     slong cofactor_threshold;
     slong iterfrob_threshold;

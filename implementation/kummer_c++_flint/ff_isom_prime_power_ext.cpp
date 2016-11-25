@@ -974,7 +974,15 @@ void FFIsomPrimePower::compute_semi_trace(fq_nmod_poly_t theta, const fq_nmod_ct
     fq_nmod_clear(alpha, ctx);
 
 	// use naive linear algebra for low-degree moduli
-	if (degree*s < linalg_threshold) {
+	if (degree*s < linalg_cyclo_threshold) {
+        compute_semi_trace_linalg_cyclo(theta, ctx);
+        return;
+	}	// use naive linear algebra for low-degree moduli
+	if (degree*s < linalg_only_threshold) {
+        compute_semi_trace_linalg(theta, ctx);
+        return;
+	}	// use naive linear algebra for low-degree moduli
+	if (degree*s < linalg_only_threshold) {
         compute_semi_trace_linalg(theta, ctx);
         return;
 	}
@@ -1277,31 +1285,57 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 	Util util;
 
 	switch (force_algo) {
+		case FORCE_LINALG_CYCLO:
+		this->linalg_cyclo_threshold = WORD_MAX;
+		this->linalg_only_threshold = WORD_MAX;
+		this->linalg_threshold = WORD_MAX;
+		this->cofactor_threshold = WORD_MAX;
+		this->iterfrob_threshold = WORD_MAX;
+		this->mpe_threshold = WORD_MAX;
+		break;
+		case FORCE_LINALG_ONLY:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = WORD_MAX;
+		this->linalg_threshold = WORD_MAX;
+		this->cofactor_threshold = WORD_MAX;
+		this->iterfrob_threshold = WORD_MAX;
+		this->mpe_threshold = WORD_MAX;
+		break;
 		case FORCE_LINALG:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = 0;
 		this->linalg_threshold = WORD_MAX;
 		this->cofactor_threshold = WORD_MAX;
 		this->iterfrob_threshold = WORD_MAX;
 		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_MODCOMP:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = 0;
 		this->linalg_threshold = 0;
 		this->cofactor_threshold = WORD_MAX;
 		this->iterfrob_threshold = WORD_MAX;
 		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_COFACTOR:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = 0;
 		this->linalg_threshold = 0;
 		this->cofactor_threshold = 0;
 		this->iterfrob_threshold = WORD_MAX;
 		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_ITERFROB:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = 0;
 		this->linalg_threshold = 0;
 		this->cofactor_threshold = 0;
 		this->iterfrob_threshold = 0;
 		this->mpe_threshold = WORD_MAX;
 		break;
 		case FORCE_MPE:
+		this->linalg_cyclo_threshold = 0;
+		this->linalg_only_threshold = 0;
 		this->linalg_threshold = 0;
 		this->cofactor_threshold = 0;
 		this->iterfrob_threshold = 0;
@@ -1309,6 +1343,8 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 		break;
 		case FORCE_NONE:
 		default:
+		this->linalg_cyclo_threshold = 10;
+		this->linalg_only_threshold = 100;
 		this->linalg_threshold = 1000;
 		this->cofactor_threshold = 10000;
 		this->iterfrob_threshold = 100000;
@@ -1317,8 +1353,8 @@ FFIsomPrimePower::FFIsomPrimePower(const nmod_poly_t modulus1,
 
     this->derand = derand;
 
-	ext_char = modulus1->mod.n;
-        ext_deg = nmod_poly_degree(modulus1);
+    ext_char = modulus1->mod.n;
+    ext_deg = nmod_poly_degree(modulus1);
 
 	fq_nmod_ctx_init_modulus(ctx_1, modulus1, "x");
 	fq_nmod_ctx_init_modulus(ctx_2, modulus2, "x");
