@@ -41,9 +41,13 @@ class FFIsomPrimePower {
     void compute_semi_trace_trivial_modcomp(fq_nmod_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx, mp_limb_t z);
     void _compute_semi_trace_trivial_modcomp(fq_nmod_t delta, fq_nmod_t xi, slong n, const fq_nmod_ctx_t ctx, const mp_limb_t z);
     void compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
-    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
     void lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
     void compute_frob_auto(nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
+    void compute_frob_powers(fq_nmod_t *frob_powers, slong s, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
+    void update_frob_powers(fq_nmod_t *frob_powers, slong s, const fq_nmod_t *frob_powers_init, const fq_nmod_ctx_t ctx);
+    void evaluate_poly_frob(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
+    void compute_semi_trace_linalg_pari(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
+    void lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx);
     void evaluate_poly_mat(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_linalg(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx);
     void compute_semi_trace_cofactor_naive(fq_nmod_poly_t theta, const fq_nmod_t alpha, const nmod_poly_t cofactor, const fq_nmod_ctx_t ctx);

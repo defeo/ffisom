@@ -190,60 +190,31 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
     return;
 }
 
-/*
- * Lift solution from F_q to F_q[z]
- *
- * Uses modular exponentiation to compute frobenii.
- */
-void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
-    slong s = fq_nmod_ctx_degree(cyclo_ctx);
+void FFIsomPrimePower::compute_frob_auto(nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+    slong r = fq_nmod_ctx_degree(ctx);
 
     fq_nmod_t temp;
     fq_nmod_init(temp, ctx);
+    fq_nmod_set(temp, xi_init, ctx);
 
-    fq_nmod_t add;
-    fq_nmod_init(add, ctx);
-
-    fq_nmod_t last;
-    fq_nmod_init(last, ctx);
-
-    if (true) {
-    // Luca's formula.
-    // a_{s-1} = a
-    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
-
-    // a_{s-1}
-    fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
-    fq_nmod_set(temp, a, ctx);
-    fq_nmod_set(last, a, ctx);
-    } else {
-    // PARI/GP's suboptimal formula
-    // a_0 = a
-    // a_{s-1} = -1/b_0 frob(a_0)
-    // a_i = frob(a_{i+1}) + b_i a_{s-1}
-    
-    // a_0
-    fq_nmod_poly_set_coeff(theta, 0, a, ctx);
-
-    // a_{s-1} = -1/b_0 frob(a_0)
-    mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
-    fq_nmod_pow_ui(temp, a, ctx->modulus->mod.n, ctx);
-    fq_nmod_mul_ui(temp, temp, inv_b0, ctx);
-    fq_nmod_poly_set_coeff(theta, s-1, temp, ctx);
+    {
+        nmod_mat_entry(frob_auto, 0, 0) = 1;
+    }
+    for (slong i = 1; i < r - 1; i++) {
+        for (slong j = 0; j < r; j++) {
+            nmod_mat_entry(frob_auto, j, i) = nmod_poly_get_coeff_ui(temp, j);
+        }
+        fq_nmod_mul(temp, temp, xi_init, ctx);
+    }
+    {
+        for (slong j = 0; j < r; j++) {
+            nmod_mat_entry(frob_auto, j, r-1) = nmod_poly_get_coeff_ui(temp, j);
+        }
     }
 
-    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
-    for (slong i = s-2; i >= (true?0:1); i--) {
-        fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
-        fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
-        fq_nmod_add(temp, temp, add, ctx);
-        fq_nmod_poly_set_coeff(theta, i, temp, ctx);
-    }
-
-    fq_nmod_clear(last, ctx);
-    fq_nmod_clear(add, ctx);
-    fq_nmod_clear(temp, ctx);
+    return;
 }
+
 
 /*
  * Lift solution from F_q to F_q[z]
@@ -304,29 +275,185 @@ void FFIsomPrimePower::lift_ht90_linalg(fq_nmod_poly_t theta, const fq_nmod_t a,
     return;
 }
 
-void FFIsomPrimePower::compute_frob_auto(nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+void FFIsomPrimePower::compute_frob_powers(fq_nmod_t *frob_powers, slong s, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+    slong r = fq_nmod_ctx_degree(ctx);
+
+    nmod_mat_t frob_power;
+    nmod_mat_init(frob_power, r, 1, ctx->modulus->mod.n);
+    for (slong j = 0; j < r; j++)
+        nmod_mat_entry(frob_power, j, 0) = nmod_poly_get_coeff_ui(xi_init, j);
+
+    // x^(p^i) for i from 0 to s
+    // s r²
+    nmod_poly_set_coeff_ui(frob_powers[0], 1, 1);
+    fq_nmod_set(frob_powers[1], xi_init, ctx);
+    for (slong i = 2; i <= s; i++) {
+        nmod_mat_mul(frob_power, frob_auto, frob_power);
+        for (slong j = 0; j < r; j++)
+            nmod_poly_set_coeff_ui(frob_powers[i], j, nmod_mat_entry(frob_power, j, 0));
+    }
+
+    nmod_mat_clear(frob_power);
+}
+
+void FFIsomPrimePower::update_frob_powers(fq_nmod_t *frob_powers, slong s, const fq_nmod_t *frob_powers_init, const fq_nmod_ctx_t ctx) {
+    // s M(r)
+    for (slong j = 0; j <= s; j++)
+        fq_nmod_mul(frob_powers[j], frob_powers[j], frob_powers_init[j], ctx);
+}
+
+void FFIsomPrimePower::evaluate_poly_frob(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
+    slong r = fq_nmod_ctx_degree(ctx);
+    slong s = nmod_poly_degree(cyclo_mod);
+
+    // x^(p^i) for i from 0 to s
+    // s r²
+    fq_nmod_t frob_powers[s+1];
+    for (slong i = 0; i <= s; i++)
+        fq_nmod_init(frob_powers[i], ctx);
+    compute_frob_powers(frob_powers, s, frob_auto, ctx);
+
+    // backup copy for updating
+    fq_nmod_t frob_powers_init[s+1];
+    for (slong i = 0; i <= s; i++) {
+        fq_nmod_init(frob_powers_init[i], ctx);
+        fq_nmod_set(frob_powers_init[i], frob_powers[i], ctx);
+    }
+
+    // evaluate poly column by column
+    // r s (r + M(r))
+    fq_nmod_t add, sum;
+    fq_nmod_init(add, ctx);
+    fq_nmod_init(sum, ctx);
+    // first column
+    {
+        mp_limb_t sum = 0;
+        for (slong j = 0; j <= s; j++)
+            sum = nmod_add(sum, nmod_poly_get_coeff_ui(cyclo_mod, j), cyclo_mod->mod);
+        nmod_mat_entry(cyclo_frob, 0, 0) = sum;
+    }
+    for (slong i = 1; i < r - 1; i++) {
+        // could use nmod_vec_dot or _nmod_vec_scalar_addmul_mod
+        for (slong j = 0; j <= s; j++) {
+            nmod_poly_scalar_mul_nmod(add, frob_powers[j], nmod_poly_get_coeff_ui(cyclo_mod, j));
+            fq_nmod_add(sum, sum, add, ctx);
+        }
+        for (slong j = 0; j < r; j++)
+            nmod_mat_entry(cyclo_frob, j, i) = nmod_poly_get_coeff_ui(sum, j);
+        update_frob_powers(frob_powers, s, frob_powers_init, ctx);
+    }
+    // last column
+    {
+        for (slong j = 0; j <= s; j++) {
+            nmod_poly_scalar_mul_nmod(add, frob_powers[j], nmod_poly_get_coeff_ui(cyclo_mod, j));
+            fq_nmod_add(sum, sum, add, ctx);
+        }
+        for (slong j = 0; j < r; j++)
+            nmod_mat_entry(cyclo_frob, j, r-1) = nmod_poly_get_coeff_ui(sum, j);
+    }
+    fq_nmod_clear(add, ctx);
+    fq_nmod_clear(sum, ctx);
+
+    for (slong i = 0; i <= s; i++)
+        fq_nmod_clear(frob_powers_init[i], ctx);
+    for (slong i = 0; i <= s; i++)
+        fq_nmod_clear(frob_powers[i], ctx);
+}
+
+/**
+ * Solve HT90 using linear algebra over F_p and lifting from F_q to F_q[z].
+ */
+void FFIsomPrimePower::compute_semi_trace_linalg_pari(fq_nmod_poly_t theta, const fq_nmod_ctx_t ctx) {
+
     slong r = fq_nmod_ctx_degree(ctx);
 
     fq_nmod_t temp;
     fq_nmod_init(temp, ctx);
-    fq_nmod_set(temp, xi_init, ctx);
 
-    {
-        nmod_mat_entry(frob_auto, 0, 0) = 1;
-    }
-    for (slong i = 1; i < r - 1; i++) {
-        for (slong j = 0; j < r; j++) {
-            nmod_mat_entry(frob_auto, j, i) = nmod_poly_get_coeff_ui(temp, j);
-        }
-        fq_nmod_mul(temp, temp, xi_init, ctx);
-    }
-    {
-        for (slong j = 0; j < r; j++) {
-            nmod_mat_entry(frob_auto, j, r-1) = nmod_poly_get_coeff_ui(temp, j);
-        }
-    }
+    // Frobenius matrix: 1, x^p, x^2p, ..., x^(r-1)p
+    // M(r) log(p) + (r-1) M(r)
+    nmod_mat_t frob_auto;
+    nmod_mat_init(frob_auto, r, r, ctx->modulus->mod.n);
+    compute_frob_auto(frob_auto, ctx);
+
+    // Evaluate cyclotomic poly on the frobenius matrix
+    // s r ( 2 r + M(r))
+    nmod_mat_t cyclo_frob;
+    nmod_mat_init(cyclo_frob, r, r, ctx->modulus->mod.n);
+    evaluate_poly_frob(cyclo_frob, cyclo_mod, frob_auto, ctx);
+
+    // Kernel
+    // r^w
+    nmod_mat_nullspace(cyclo_frob, cyclo_frob);
+
+    // a_0
+    for (slong i = 0; i < r; i++)
+	    nmod_poly_set_coeff_ui(temp, i, nmod_mat_entry(cyclo_frob, i, 0));
+
+    // Lift a_0 to F_q
+    // (s-1) r²
+    lift_ht90_linalg(theta, temp, frob_auto, ctx);
+
+    fq_nmod_clear(temp, ctx);
+    nmod_mat_clear(frob_auto);
+    nmod_mat_clear(cyclo_frob);
 
     return;
+}
+
+/*
+ * Lift solution from F_q to F_q[z]
+ *
+ * Uses modular exponentiation to compute frobenii.
+ */
+void FFIsomPrimePower::lift_ht90_modexp(fq_nmod_poly_t theta, const fq_nmod_t a, const fq_nmod_ctx_t ctx) {
+    slong s = fq_nmod_ctx_degree(cyclo_ctx);
+
+    fq_nmod_t temp;
+    fq_nmod_init(temp, ctx);
+
+    fq_nmod_t add;
+    fq_nmod_init(add, ctx);
+
+    fq_nmod_t last;
+    fq_nmod_init(last, ctx);
+
+    if (true) {
+    // Luca's formula.
+    // a_{s-1} = a
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
+
+    // a_{s-1}
+    fq_nmod_poly_set_coeff(theta, s-1, a, ctx);
+    fq_nmod_set(temp, a, ctx);
+    fq_nmod_set(last, a, ctx);
+    } else {
+    // PARI/GP's suboptimal formula
+    // a_0 = a
+    // a_{s-1} = -1/b_0 frob(a_0)
+    // a_i = frob(a_{i+1}) + b_i a_{s-1}
+    
+    // a_0
+    fq_nmod_poly_set_coeff(theta, 0, a, ctx);
+
+    // a_{s-1} = -1/b_0 frob(a_0)
+    mp_limb_t inv_b0 = nmod_neg(nmod_inv(nmod_poly_get_coeff_ui(cyclo_mod, 0), ctx->modulus->mod), ctx->modulus->mod);
+    fq_nmod_pow_ui(temp, a, ctx->modulus->mod.n, ctx);
+    fq_nmod_mul_ui(temp, temp, inv_b0, ctx);
+    fq_nmod_poly_set_coeff(theta, s-1, temp, ctx);
+    }
+
+    // a_i = frob(a_{i+1}) + b_{i+1} a_{s-1}
+    for (slong i = s-2; i >= (true?0:1); i--) {
+        fq_nmod_pow_ui(temp, temp, ctx->mod.n, ctx);
+        fq_nmod_mul_ui(add, last, nmod_poly_get_coeff_ui(cyclo_mod, i+1), ctx);
+        fq_nmod_add(temp, temp, add, ctx);
+        fq_nmod_poly_set_coeff(theta, i, temp, ctx);
+    }
+
+    fq_nmod_clear(last, ctx);
+    fq_nmod_clear(add, ctx);
+    fq_nmod_clear(temp, ctx);
 }
 
 void FFIsomPrimePower::evaluate_poly_mat(nmod_mat_t cyclo_frob, const nmod_poly_t cyclo_mod, const nmod_mat_t frob_auto, const fq_nmod_ctx_t ctx) {
