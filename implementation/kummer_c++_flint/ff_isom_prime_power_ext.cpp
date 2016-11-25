@@ -155,13 +155,17 @@ void FFIsomPrimePower::compute_semi_trace_linalg_cyclo(fq_nmod_poly_t theta, con
      * (Frob - z Id) matrix.
      * Compute iteratively 1, x^q, x^(2q), ...
      */
+    mp_limb_t mone = nmod_neg(1, cyclo_ctx->mod);
     nmod_poly_set_coeff_ui(cyclo_temp, 0, 1);
+    nmod_poly_set_coeff_ui(cyclo_temp, 1, mone);
     fq_nmod_mat_entry_set(frob_auto, 0, 0, cyclo_temp, cyclo_ctx);
     for (slong i = 1; i < r; i++) {
         for (slong j = 0; j < r; j++) {
             nmod_poly_set_coeff_ui(cyclo_temp, 0, nmod_poly_get_coeff_ui(temp, j));
             if (j == i)
-                nmod_poly_set_coeff_ui(cyclo_temp, 1, nmod_neg(-1, cyclo_ctx->mod));
+                nmod_poly_set_coeff_ui(cyclo_temp, 1, mone);
+            else
+                nmod_poly_set_coeff_ui(cyclo_temp, 1, 0);
             fq_nmod_mat_entry_set(frob_auto, j, i, cyclo_temp, cyclo_ctx);
          }
 

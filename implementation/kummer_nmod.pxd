@@ -15,6 +15,8 @@ cdef extern from "kummer_c++_flint/ff_embedding.h":
 
 cdef extern from "kummer_c++_flint/ff_isom_prime_power_ext.h":
     cdef enum:
+        FORCE_LINALG_CYCLO
+        FORCE_LINALG_ONLY
         FORCE_LINALG
         FORCE_MODCOMP
         FORCE_COFACTOR
