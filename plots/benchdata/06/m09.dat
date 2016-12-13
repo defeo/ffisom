@@ -1,0 +1,17 @@
+# ./benchmagma.sh m09 5 2**8 2**8 2**10 2 3
+# model name	: Intel(R) Xeon(R) CPU E5-2620 v2 @ 2.10GHz
+# SageMath version 7.5.beta5, Release Date: 2016-12-01
+# ffisom revision 02167f074dc8f8f84f0bf71565f7be5363db18cc
+# command="import os; sys.path.append(os.getcwd()); from benchmark import *; benchmark_magma(pbound=[5,2**8], nbound=[2**8,2**10], prime=2, loops=3, tmax=600, verbose=True, write=True, overwrite=False, fname=os.getcwd()+'/m09.dat')"
+5 257 (6, 256) 6.60821596781
+5 263 (3, 262) 1.39513969421
+5 269 (8, 67) 18.0148533185
+5 271 (2, 27) 0.592350721359
+5 277 (2, 276) 0.605042775472
+5 281 (2, 140) 0.605512301127
+5 283 (1, 282) 0.162265062332
+5 289 (6, 272) 8.71697791417
+5 293 (2, 292) 0.672561327616
+5 307 (2, 306) 0.776149670283
+5 311 (2, 155) 0.795066038767
+5 313 (3, 8) 2.00879589717
