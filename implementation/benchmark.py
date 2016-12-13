@@ -68,28 +68,67 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
             tmagma = tloops / (l+1)
             # Rains algorithms
             trains = []
-            for find_gens_rains in rains_functions:
-                tloops = 0
-                for l in xrange(loops):
-                    if skip_rains:
-                        break
-                    if (o > omax) or (o == p):
-                        break
-                    try:
-                        t = walltime()
-                        a, b = find_gens_rains(k_flint, k_flint)
-                        tloops += walltime(t)
-                    except RuntimeError:
-                        pass
-                    if check and (l == 0 or check > 1):
-                        g = a.minpoly()
-                        if g.degree() != n:
-                            raise RuntimeError("wrong degree")
-                        if g != b.minpoly():
-                            raise RuntimeError("different minpolys")
-                    if tloops > tmax:
-                        break
-                trains.append(tloops / (l+1))
+            tloops = 0
+            for l in xrange(loops):
+                if skip_rains:
+                    break
+                if (o > omax) or (o == p):
+                    break
+                try:
+                    t = walltime()
+                    a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = False)
+                    tloops += walltime(t)
+                except RuntimeError:
+                    pass
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    if g.degree() != n:
+                        raise RuntimeError("wrong degree")
+                    if g != b.minpoly():
+                        raise RuntimeError("different minpolys")
+                if tloops > tmax:
+                    break
+            trains.append(tloops / (l+1))
+            tloops = 0
+            for l in xrange(loops):
+                if skip_rains:
+                    break
+                if (o != 2) or (o > omax) or (o == p):
+                    break
+                try:
+                    t = walltime()
+                    a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = True)
+                    tloops += walltime(t)
+                except RuntimeError:
+                    pass
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    if g.degree() != n:
+                        raise RuntimeError("wrong degree")
+                    if g != b.minpoly():
+                        raise RuntimeError("different minpolys")
+                if tloops > tmax:
+                    break
+            trains.append(tloops / (l+1))
+            tloops = 0
+            for l in xrange(loops):
+                if skip_rains:
+                    break
+                try:
+                    t = walltime()
+                    a, b = find_gens_ellrains(k_flint, k_flint)
+                    tloops += walltime(t)
+                except RuntimeError:
+                    pass
+                if check and (l == 0 or check > 1):
+                    g = a.minpoly()
+                    if g.degree() != n:
+                        raise RuntimeError("wrong degree")
+                    if g != b.minpoly():
+                        raise RuntimeError("different minpolys")
+                if tloops > tmax:
+                    break
+            trains.append(tloops / (l+1))
             # PARI/GP
             tloops = 0
             for l in xrange(loops):
