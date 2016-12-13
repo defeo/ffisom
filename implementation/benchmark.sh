@@ -1,13 +1,5 @@
 #! /bin/bash
-if [ -z $SAGE ]; then
-    echo >&2 "SAGE is not set."
-    exit 1
-fi
-magma_version_cmd="try:
-    print(magma.version()[1])
-except RuntimeError:
-    print('unavailable')
-"
+SAGE=${SAGE:-sage}
 fname=$1.dat
 echo -ne "\033]0;$0 $*\007"
 echo "# $0 $*" >> $fname
