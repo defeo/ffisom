@@ -8,7 +8,7 @@ import os
 import sys
 # cputime might get screwed up by openblas
 from sage.misc.misc import walltime, cputime
-mytime = walltime
+mytime = cputime
 from cysignals.alarm import alarm, AlarmInterrupt, cancel_alarm
 
 from ffisom import *
