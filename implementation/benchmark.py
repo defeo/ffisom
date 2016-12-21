@@ -8,13 +8,14 @@ import os
 import sys
 # cputime might get screwed up by openblas
 from sage.misc.misc import walltime, cputime
-mytime = cputime
+mytime = walltime
+from cysignals.alarm import alarm, AlarmInterrupt, cancel_alarm
 
 from ffisom import *
 from sage.interfaces.magma import Magma
 
 # p n (o, c) magma rains conic elliptic pari kummer
-def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], obound = [1, Infinity], loops = 10, tmax = Infinity, prime = False, even = False, check = False, fname = None, write = False, overwrite = False, verbose = True, skip_pari = False, skip_magma = False, skip_rains = False, skip_kummer = False):
+def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], obound = [1, Infinity], loops = 10, tloop = Infinity, tmax = Infinity, prime = False, even = False, check = False, fname = None, write = False, overwrite = False, verbose = True, skip_pari = False, skip_magma = False, skip_rains = False, skip_kummer = False):
     if write:
         mode = 'w' if overwrite else 'a'
         f = open(fname, mode, 0)
@@ -68,22 +69,29 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 try:
                     k_magma = M(k)
                     k_rand_magma = M(k_rand)
+                    if tloop is not Infinity:
+                        alarm(tloop)
                     t = mytime()
                     k_magma.Embed(k_rand_magma, nvals=0)
                     tloops += mytime(t)
                 except TypeError:
                     # sage/magma interface sometimes gets confused
                     pass
+                except AlarmInterrupt:
+                    tloops = 0
+                    break
                 finally:
+                    if tloop is not Infinity:
+                        cancel_alarm()
                     M.quit()
-                # sage pexpect interface leaves zombies around
-                try:
-                    while os.waitpid(-1, os.WNOHANG)[0]:
+                    # sage pexpect interface leaves zombies around
+                    try:
+                        while os.waitpid(-1, os.WNOHANG)[0]:
+                            pass
+                    # but sometimes every one is already dead
+                    # and we get an ECHILD error...
+                    except OSError:
                         pass
-                # but sometimes every one is already dead
-                # and we get an ECHILD error...
-                except OSError:
-                    pass
                 if tloops > tmax:
                     break
             tmagma = tloops / (l+1)
@@ -96,11 +104,17 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if (o > omax) or (o == p):
                     break
                 try:
+                    if tloop is not Infinity:
+                        alarm(tloop)
                     t = mytime()
                     a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = False)
                     tloops += mytime(t)
-                except RuntimeError:
-                    pass
+                except AlarmInterrupt:
+                    tloops = 0
+                    break
+                finally:
+                    if tloop is not Infinity:
+                        cancel_alarm()
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     if g.degree() != n:
@@ -117,11 +131,17 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if (o != 2) or (o > omax) or (o == p):
                     break
                 try:
+                    if tloop is not Infinity:
+                        alarm(tloop)
                     t = mytime()
                     a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = True)
                     tloops += mytime(t)
-                except RuntimeError:
-                    pass
+                except AlarmInterrupt:
+                    tloops = 0
+                    break
+                finally:
+                    if tloop is not Infinity:
+                        cancel_alarm()
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     if g.degree() != n:
@@ -136,11 +156,20 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if skip_rains:
                     break
                 try:
+                    if tloop is not Infinity:
+                        alarm(tloop)
                     t = mytime()
                     a, b = find_gens_ellrains(k_flint, k_flint)
                     tloops += mytime(t)
                 except RuntimeError:
+                    # sometimes no suitable elliptic curve exists
                     pass
+                except AlarmInterrupt:
+                    tloops = 0
+                    break
+                finally:
+                    if tloop is not Infinity:
+                        cancel_alarm()
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     if g.degree() != n:
@@ -157,9 +186,18 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     break
                 if c < cmin or c > cmax:
                     break
-                t = mytime()
-                a, b = find_gens_pari(k, k)
-                tloops += mytime(t)
+                try:
+                    if tloop is not Infinity:
+                        alarm(tloop)
+                    t = mytime()
+                    a, b = find_gens_pari(k, k)
+                    tloops += mytime(t)
+                except AlarmInterrupt:
+                    tloops = 0
+                    break
+                finally:
+                    if tloop is not Infinity:
+                        cancel_alarm()
                 if check and (l == 0 or check > 1):
                     g = a.minpoly()
                     if g.degree() != n:
@@ -179,9 +217,18 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                         break
                     if c < cmin or c > cmax:
                         break
-                    t = mytime()
-                    a, b = find_gens_kummer(k_flint, k_flint, n, algo)
-                    tloops += mytime(t)
+                    try:
+                        if tloop is not Infinity:
+                            alarm(tloop)
+                        t = mytime()
+                        a, b = find_gens_kummer(k_flint, k_flint, n, algo)
+                        tloops += mytime(t)
+                    except AlarmInterrupt:
+                        tloops = 0
+                        break
+                    finally:
+                        if tloop is not Infinity:
+                            cancel_alarm()
                     if check and (l == 0 or check > 1):
                         g = a.minpoly()
                         if g.degree() != n:

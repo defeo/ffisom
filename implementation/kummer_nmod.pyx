@@ -29,7 +29,9 @@ cdef class FFEmbWrapper:
         nmod_poly_clear(self.xim)
 
     def compute_gens(self):
+        sig_on()
         self.wrp.compute_generators(self.g1, self.g2)
+        sig_off()
         self.initialized = 1
 
     def get_gens(self):
