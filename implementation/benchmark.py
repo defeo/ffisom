@@ -7,8 +7,9 @@ from sage.rings.finite_rings.finite_field_constructor import GF
 import os
 import sys
 # cputime might get screwed up by openblas
+# and does not include subprocesses by default
 from sage.misc.misc import walltime, cputime
-mytime = cputime
+mytime = walltime
 from cysignals.alarm import alarm, AlarmInterrupt, cancel_alarm
 
 from ffisom import *
