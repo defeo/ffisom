@@ -2105,45 +2105,45 @@ code and the full datasets can be downloaded at
   \centering
 
   \begin{subfigure}{.48\textwidth}
-    \includegraphics[width=\mywidth]{plots/bench-allombert}
-    \caption{Pari/GP and our own variants of Allombert's algorithm.
-      Auxiliary extension degrees $s$ range between $1$ and $6$.}
-    \label{fig:bench:allombert}
+    \includegraphics[width=\mywidth]{plots/bench-allombert-lowaux}
+    \caption{Comparison of various implementations of Allombert's
+      algorithm, in the case where the auxiliary degree
+      $s=\order_q(r)\le 10$.  Dots represent individual runs, lines
+      represent degree 2 linear regressions.}
+    \label{fig:bench:allombert-lowaux}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
+    \includegraphics[width=\mywidth]{plots/bench-allombert-anyaux}
+    \caption{Comparison of various implementations of Allombert's
+      algorithm, as a function of the auxiliary degree
+      $s=\order_q(r)$.  Individual running times are scaled by down by
+      $r^2$.  Dots represent individual runs, lines represent degree 2
+      linear regressions.}
+    \label{fig:bench:allombert-anyaux}
+  \end{subfigure}
+
+  \begin{subfigure}{.48\textwidth}
+    \noindent
     \includegraphics[width=\mywidth]{plots/bench-rains}
-    \caption{Cyclotomic and elliptic variants of Rains' algorithm.
-      Auxiliary extension degrees $s$ for cyclotomic Rains' range
-      between $1$ and $8$.}
+    \caption{Cyclotomic, conic and elliptic variants of Rains'
+      algorithm.  Auxiliary extension degrees $s$ for cyclotomic
+      Rains' range between $1$ and $9$.}
     \label{fig:bench:rains}
   \end{subfigure}
-  
+  \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
     \includegraphics[width=\mywidth]{plots/bench-all}
     \caption{Comparison of Allombert's and Rains' algorithms at some
-      fixed, small, auxiliary extension degrees $s$.}
+      fixed auxiliary extension degrees $s$.}
     \label{fig:bench:all}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}{.48\textwidth}
-    \noindent
-    \includegraphics[width=\mywidth]{plots/bench-allombert-vs-ell}
-    \caption{Ratio between running time of Allombert's algorithm and
-      average running time of elliptic Rains' algorithm at same degree
-      $r$.}
-    \label{fig:bench:allombert-vs-ell}
   \end{subfigure}
 
   \caption{Benchmarks for Rains' and Allombert's algorithms. $q$ is a
-    prime between $2^{10}$ and $2^{13}$, $r$ is an odd prime power varying
-    between $5$ and $509$.  Lines represent a batch of runs with
-    constant auxiliary degree $s$ ($s$ is $\order_r(q)$ for
-    Allombert's algorithm, $\order_\ell(q)/r$ for Rains' algorithm),
-    averaged over the abscissa. Dots represent individual runs.
-    Plots~\subref{fig:bench:allombert},~\subref{fig:bench:rains}
+    prime between $2^{7}$ and $2^{13}$, $r$ is an odd prime power
+    varying between $3$ and $509$.  Plots~\subref{fig:bench:rains}
     and~\subref{fig:bench:all} are in doubly logarithmic scale. Full
     dataset available at \url{https://github.com/defeo/ffisom}.}
   \label{fig:bench}
