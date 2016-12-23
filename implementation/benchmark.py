@@ -4,10 +4,8 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod import Mod
 from sage.rings.finite_rings.finite_field_constructor import GF
 
-import os
-import sys
+import os, sys, time
 # cputime might get screwed up by openblas
-# and does not include subprocesses by default
 from sage.misc.misc import walltime, cputime
 mytime = walltime
 from cysignals.alarm import alarm, AlarmInterrupt, cancel_alarm
@@ -41,16 +39,28 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 continue
             if (not even) and (n % 2 == 0):
                 continue
-            q = p**n
-            k = GF(q, name='z')
-            k_rand = GF(q, modulus='random', name='z')
-            k_flint = GF_flint(p, k.modulus(), name='z')
             o, G = find_root_order(p, [n, n], n, verbose=False)
             m = G[0][0].parent().order()
             c = Mod(p,n).multiplicative_order()
             if verbose:
-                print("p = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
+                sys.stdout.write("\r"+" "*79)
+                print("\rp = {}, n = {}, (o = {}, c = {})".format(p, n, o, c))
+            if verbose:
+                t = mytime()
+                sys.stdout.write("Constructing fields ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
+            q = p**n
+            k = GF(q, name='z')
+            k_rand = GF(q, modulus='random', name='z')
+            k_flint = GF_flint(p, k.modulus(), name='z')
+            if verbose > 1:
+                sys.stdout.write("\ntotal: {}s\n".format(mytime(t)))
+                sys.stdout.flush()
             # Magma
+            if verbose:
+                sys.stdout.write("\r"+" "*79)
+                sys.stdout.write("\rMagma ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
             tloops = 0
             for l in xrange(loops):
                 if skip_magma:
@@ -74,11 +84,14 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                         alarm(tloop)
                     t = mytime()
                     k_magma.Embed(k_rand_magma, nvals=0)
+                    #M._eval_line("Embed(k_magma, k_rand_magma);", wait_for_prompt=False)
                     tloops += mytime(t)
                 except TypeError:
                     # sage/magma interface sometimes gets confused
                     pass
-                except AlarmInterrupt:
+                except (KeyboardInterrupt, AlarmInterrupt):
+                    # sage interface eats KeyboardInterrupt
+                    # and AlarmInterrupt derives from it
                     tloops = 0
                     break
                 finally:
@@ -89,14 +102,21 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     try:
                         while os.waitpid(-1, os.WNOHANG)[0]:
                             pass
-                    # but sometimes every one is already dead
+                    # but sometimes every child is already buried
                     # and we get an ECHILD error...
                     except OSError:
                         pass
                 if tloops > tmax:
                     break
             tmagma = tloops / (l+1)
+            if verbose > 1:
+                sys.stdout.write("\ntotal: {}s, per loop: {}s\n".format(tloops, tloops/(l+1)))
+                sys.stdout.flush()
             # Rains algorithms
+            if verbose:
+                sys.stdout.write("\r"+" "*79)
+                sys.stdout.write("\rCyclotomic Rains ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
             trains = []
             tloops = 0
             for l in xrange(loops):
@@ -125,6 +145,14 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if tloops > tmax:
                     break
             trains.append(tloops / (l+1))
+            if verbose > 1:
+                sys.stdout.write("\ntotal: {}s, per loop: {}s\n".format(tloops, tloops/(l+1)))
+                sys.stdout.flush()
+            # Conic Rains
+            if verbose:
+                sys.stdout.write("\r"+" "*79)
+                sys.stdout.write("\rConic Rains ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
             tloops = 0
             for l in xrange(loops):
                 if skip_rains:
@@ -152,6 +180,14 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if tloops > tmax:
                     break
             trains.append(tloops / (l+1))
+            if verbose > 1:
+                sys.stdout.write("\ntotal: {}s, per loop: {}s\n".format(tloops, tloops/(l+1)))
+                sys.stdout.flush()
+            # Elliptic Rains
+            if verbose:
+                sys.stdout.write("\r"+" "*79)
+                sys.stdout.write("\rElliptic Rains ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
             tloops = 0
             for l in xrange(loops):
                 if skip_rains:
@@ -180,7 +216,14 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 if tloops > tmax:
                     break
             trains.append(tloops / (l+1))
+            if verbose > 1:
+                sys.stdout.write("\ntotal: {}s, per loop: {}s\n".format(tloops, tloops/(l+1)))
+                sys.stdout.flush()
             # PARI/GP
+            if verbose:
+                sys.stdout.write("\r"+" "*79)
+                sys.stdout.write("\rPARI/GP ({})".format(time.strftime("%c")))
+                sys.stdout.flush()
             tloops = 0
             for l in xrange(loops):
                 if skip_pari:
@@ -211,7 +254,11 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
             # Kummer algorithms
             tkummer = []
             # only linalg and modcomp implemented for c==1
-            for algo in kummer_algolist[2*(c==1):-2*(c==1)-1]:
+            for i, algo in enumerate(kummer_algolist[2*(c==1):-2*(c==1)-1]):
+                if verbose:
+                    sys.stdout.write("\r"+" "*79)
+                    sys.stdout.write("\rKummer {} ({})".format(kummer_namelist[2*(c==1)+i], time.strftime("%c")))
+                    sys.stdout.flush()
                 tloops = 0
                 for l in xrange(loops):
                     if skip_kummer:
@@ -239,7 +286,13 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     if tloops > tmax:
                         break
                 tkummer.append(tloops / (l+1))
+                if verbose > 1:
+                    sys.stdout.write("\ntotal: {}s, per loop: {}s\n".format(tloops, tloops/(l+1)))
+                    sys.stdout.flush()
             tkummer = 2*(c == 1)*[0] + tkummer + 2*(c == 1)*[0]
+            if verbose:
+                sys.stdout.write("\r")
+                sys.stdout.flush()
             f.write(("{} {} ({}, {})" + " {}" + " {}"*len(trains) + " {}" + " {}"*len(tkummer)+"\n").format(p, n, o, c, *([tmagma] + trains + [tpari] + tkummer)))
     if write:
         f.close()

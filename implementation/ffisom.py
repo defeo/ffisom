@@ -13,4 +13,5 @@ rains_functions = [lambda k, l: find_gens_cyclorains(k, l, use_lucas=False), lam
 from pari_ffisom import find_gens as find_gens_pari
 
 from kummer_nmod import algolist as kummer_algolist
+from kummer_nmod import namelist as kummer_namelist
 from kummer_nmod import find_gens as find_gens_kummer
