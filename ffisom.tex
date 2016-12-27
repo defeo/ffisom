@@ -685,7 +685,7 @@ defined.
 
 In this section we review what we call \emph{Kummer-type} approaches to the embedding problem. 
 We briefly review the works of Lenstra~\cite{LenstraJr91}, and Allombert~\cite{Allombert02}, then 
-we give a variant of these algorithms with a significantly lower running time complexity.
+we give a variant of these algorithms with a significantly lower complexity.
 As stated above, we let $k,K$ be degree $r$ extensions of $\F_q$, and we let $p$ be their
 characteristic.
 We give our fast versions of the algorithms for two separate cases: the case $p \nmid r$
@@ -702,7 +702,7 @@ factorization.
 In~\cite{Allombert02}, Allombert gives a similar approach with more focus on practical efficiency.
 In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
 polynomial time Las Vegas.
-Even though neither of the two algorithms is given a detailed complexity analyses, both rely
+Even though neither of the two algorithms is given a detailed complexity analysis, both rely
 on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
 in $\F_q$ in both cases.
 
@@ -838,13 +838,13 @@ Hence, we shall set
   \theta_a = \hat\Theta(a)
   =  a\otimes\zeta^{-1} + \sigma(a)\otimes\zeta^{-2} + \cdots + \sigma^{r-1}(a)\otimes\zeta^{-r}
 \end{equation}
-for some $a\in k$. %
+for some $a\in k$ chosen at random. %
 Because of Eq.~\eqref{eq:theta90}, $\theta_a$ is a solution as long as
 it is non-zero. %
 This is reminiscent of Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
 
 To ensure the existence of $a$ such that $\theta_a\ne0$, we only need
-to prove that $k$ is not entirely contained in $\hat\Theta$. %
+to prove that $k$ is not entirely contained in $\ker\hat\Theta$. %
 But the maps $\sigma^i$ restricted to $k$ are all distinct, thus
 Artin's theorem on character independence (see~\cite[Ch~VI, Theorem~4.1]{lang})
 shows that they are linearly 
@@ -1129,17 +1129,18 @@ it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ 
 The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
 extractions.
 We are not aware of this algorithm appearing anywhere in the literature, however we
-do not claim it to be fully original.
-We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published a radically
-different generalization of Allombert's algorithm with a very similar complexity in $r$
-(his algorithm has much worse complexity in $q$, though):
-this generalization relies on the fact that Artin-Schreier and Kummer
-theories are special cases of a more general situation.
-As already emphasized by Couveignes and Lercier~\cite{CL08},
-whereas the former theory acts on the additive group of a finite field,
-and the latter on its multiplicative group,
-they can be extended to more general commutative algebraic groups,
-in particular to elliptic curves.
+do not claim it to be fully original. %
+We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently
+published a radically different generalization\footnote{Narayanan's
+  generalization relies on the fact that Artin-Schreier and Kummer
+  theories are special cases of a more general situation. %
+  As already emphasized by Couveignes and Lercier~\cite{CL08}, whereas
+  the former theory acts on the additive group of a finite field, and
+  the latter on its multiplicative group, they can be extended to more
+  general commutative algebraic groups, in particular to elliptic
+  curves.} %
+of Allombert's algorithm with a very similar complexity in $r$ (his
+algorithm has much worse complexity in $q$, though).
 
 An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
@@ -1376,7 +1377,7 @@ the field $k$, the procedure for the field $K$ being identical.
     
     \STATE Construct the field extension $k'=k[Z]/h(Z)$;
     \REPEAT
-    \STATE Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
+    \STATE\label{algorithm:rains-cyclo:power} Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
     \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
     \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}\zeta^\sigma$;
     \RETURN\label{algorithm:rains-cyclo:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
@@ -1386,7 +1387,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$.
+  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1394,11 +1395,10 @@ the field $k$, the procedure for the field $K$ being identical.
   and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a
   normal generator of $k$. This proves correctness.
 
-  Using the techniques of Section~\ref{sec:introduction},
-  multiplications in $k'$ cost $O(\MM(sr))$ operations in $\F_q$.
-  Hence, the root of unity $\zeta$ is obtained after $O(1)$ tries on
-  average. By Proposition~\ref{prop:large-power}, computing $\zeta$
-  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$.
+  By Proposition~\ref{prop:large-power}, computing $\zeta$
+  in Step~\ref{algorithm:rains-cyclo:power}
+  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$,
+  and the loop is executed $O(1)$ times on average. 
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
@@ -1406,8 +1406,9 @@ the field $k$, the procedure for the field $K$ being identical.
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of
-  $O((\MM(sr)\ell\log\ell)/r)$. The final result is obtained as an
-  element of $k$.
+  $O((\MM(sr)\ell\log\ell)/r)$,
+  using the techniques of Section~\ref{sec:introduction}.
+  The final result is obtained as an element of $k$.
 \end{proof}
 
 The attentive reader will have noticed the irreducible polynomial $h$
@@ -1447,13 +1448,13 @@ of the polynomial $\bar{h}$.
 
 
 \begin{proposition}
-  Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
+  Algorithm~\ref{algorithm:rains-cyclo-2} is correct. On input
   $q,r,\ell,s$ it computes its output using
   $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
   \MM(\ell r)\log(q))$ operations in $\F_q$, or $\tildO(\ell r\log (q))$.
 \end{proposition}
 \begin{proof}
-  Let $\zeta$ be the image of $h$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
+  Let $\zeta$ be the image of $Z$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
   an $\ell$-th root of unity. By Newton's identities, we have the
   equality of power series
   \begin{equation*}
@@ -1675,7 +1676,7 @@ This fails in the elliptic case: there is indeed no guarantee that the
 eigenspace of $\lambda$ can be lifted to a normal basis over some
 number field.
 
-Note, however that, even if the elliptic period is not normal, it is
+Note however that, even if the elliptic period is not normal, it is
 enough for our purpose that it generates $\F_q(x(P))$ as a field, like
 in the example above.  In Appendix~\ref{app:ellprdsdata} we gather
 some experimental evidence suggesting that this might always be the
@@ -1767,7 +1768,7 @@ identical.
   heuristics developed in Appendix~\ref{app:ellprdsdata}, it fails
   with probability $\le 1/q^r$.  On input
   $r,q,E,t,\ell,\lambda$ it computes its output using
-  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$, or
+  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$ on average, or
   $\tildO(r^2\log q)$ assuming $\ell\in o(r^2)$.
 \end{proposition}
 \begin{proof}
@@ -2315,7 +2316,7 @@ c_{n-1}\in\F_q$ such that :
 \gamma=c_0\eta+\dots+c_{n-1}\eta^{q^{n-1}}.
 \end{equation}
 Let $u$ be a projection map from $\F_{q^n}$ to $\F_q$. To solve this problem, 
-We apply $n-1$ times the $q$-th power to (\ref{eq:eqnorm}), and apply $u$ to 
+We apply $n-1$ times the $q$-th power to Eq.~\eqref{eq:eqnorm}, and apply $u$ to 
 to each equations to obtain the following system in $\F_q$
 \begin{equation}
 \label{eq:systemnormal}
@@ -2325,7 +2326,7 @@ We introduce the $n\times n$ matrix $Q$ used in the Berlekamp algorithm, its
 $q_{i,j}$'s are the coefficients of
 $X^{iq}=q_{i,n-1}X^{n-1}+q_{i,n-2}X^{n-1}+\dots+q_{i,0}\bmod f(X)$. It 
 is the representation of the $q$-th power map on $\F_q[X]/f(X)$.
-We can then rewrite (\ref{eq:systemnormal}) as
+We can then rewrite Eq.~\eqref{eq:systemnormal} as
 \begin{equation}
 \label{eq:linalgnormal}
 \vec{u}^\top Q^j\vec{\gamma}= \vec{c}\,(\vec{u}^\top Q^{i+j}\vec{\eta})_{i,j}
@@ -2814,4 +2815,5 @@ j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 
 % End:
 
 %  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
-%  LocalWords:  endomorphism eigenspace Allombert's
+%  LocalWords:  endomorphism eigenspace Allombert's polynomially
+%  LocalWords:  automorphism morphism
