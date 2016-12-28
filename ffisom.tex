@@ -1423,62 +1423,8 @@ less than quadratic in $s$.
 
 However negligible from an asymptotic point of view, the construction
 of the polynomial $h$ and of the field $k'$ take a serious toll on the
-practical performances of Rains' algorithm. Hence, we present now a
-variant of Rains' algorithm which avoids the construction of the field
-extension $k'$ by factoring the cyclotomic polynomial $\Phi_\ell$. In
-the algorithm below we denote by $[\bar{h}]_i$ the degree $i$ coefficient
-of the polynomial $\bar{h}$.
+practical performances of Rains' algorithm. Hence, 
 
-\begin{algorithm}[Rains' cyclotomic algorithm variant]
-  \label{algorithm:rains-cyclo-2}
-  \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
-    \begin{itemize}
-    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
-    \item $\#\langle q\rangle = rs$ for some integer $s$.
-    \end{itemize}
-    \ENSURE A normal generator of $k$ over $\F_q$,
-    with a uniquely defined Galois orbit.
-    
-    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
-    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
-    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
-  \end{algorithmic}
-\end{algorithm}
-
-
-\begin{proposition}
-  Algorithm~\ref{algorithm:rains-cyclo-2} is correct. On input
-  $q,r,\ell,s$ it computes its output using
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations in $\F_q$, or $\tildO(\ell r\log (q))$.
-\end{proposition}
-\begin{proof}
-  Let $\zeta$ be the image of $Z$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
-  an $\ell$-th root of unity. By Newton's identities, we have the
-  equality of power series
-  \begin{equation*}
-    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
-  \end{equation*}
-  Hence, summing the $\sigma$-th coefficients in the above series for
-  $\sigma\in S$ gives the sought period.
-
-  The complexity is dominated by the cost of factoring $\Phi_\ell$,
-  that is
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations according to
-  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
-  costs only $O(\MM(\ell r))$ operations, and the final sum
-  $O(\ell r)$ operations.
-\end{proof}
-
-By comparing the latter algorithm with Rains' original one, we see
-that our variant performs better when $s$ is larger than $r$. Although
-we are unable to prove that this cannot be the case, we shall argue in
-Section~\ref{sec:selection} that $s$ is typically in
-$O(\log(r))$. Furthermore, the algorithms of Section~\ref{sec:kummer}
-always have better complexity than this one. Thus this latter variant
-of Rains' algorithms seems to be of purely theoretical interest.
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
@@ -2078,6 +2024,7 @@ configuring the system.
 
 
 \section{Experimental Results}
+\label{sec:experimental-results}
 
 To validate our results, we implemented the algorithms described in
 the previous sections, and compared them to the implementation of
@@ -2387,6 +2334,196 @@ See~\cite[Theorem 6]{}
 \appendix
 \part*{Appendices}
 \addcontentsline{toc}{part}{Appendices}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{More of Rains' algorithm}
+\label{app:rains-vars}
+
+We have seen that Rains' cyclotomic algorithm suffers in practice from
+the need to build a field extension $k'$ of $k$. %
+In this section we present two variants of Rains' algorithm that help
+reduce the cost associated to the field extension. %
+None of the two variants has an impact on the overall complexity of
+Rains' algorithm.
+
+\paragraph{Rains' conic algorithm}
+The first variant reduces the degree of the field extension from
+$s=[k':k]$ to $s/2$ whenever $s$ is even. %
+This is especially useful when $s=2$, as highlighted in
+Section~\ref{sec:experimental-results}. %
+The algorithm is similar in spirit to Williams' $p+1$ factoring
+method~\cite{williams1982}, where the arithmetic of the norm $1$
+subgroup of ${k'}^*$ is performed using Lucas sequences on a subfield
+of index $2$ of $k'$.
+
+Let $\F$ be a finite field of odd characteristic, let $\Delta\in\F$ be
+a quadratic non-residue, let $\delta$ be an element of the algebraic
+closure of $\F$ such that $\delta^2=\Delta$, and define the norm $1$
+subgroup of $\F[\delta]^*$ as
+\[T_2(\F) = \{(x+\delta y)/2 \;\mid\; x,y\in\F \text{ and } x^2-\Delta
+  y^2 = 4\};\] %
+it is easy to verify that $T_2(\F)$ forms a group under
+multiplication. %
+If we see the elements $(x+\delta y)/2$ as points $(x,y)$ on a conic
+$x^2-\Delta y^2=4$, the group law of $T_2(\F)$ induces a group law on
+the conic. %
+By projecting onto the $x$-coordinate, a straightforward calculation
+shows that, for any point $(\theta,*)$ on the conic, its $n$-th power
+has coordinates $(\theta_n,*)$, where $\theta_n$ is defined by the
+Lucas sequence
+\[\theta_0 = 2, \quad \theta_1 = \theta, \quad \theta_{i+1}=\theta\theta_i-\theta_{i-1}.\] %
+We shall denote by $[n]$ the map $\theta\mapsto\theta_n$; notice how
+it does not depend on the choice of $\Delta$.
+
+The generalization of Rains' algorithm is now obvious: by projecting
+on the $x$-coordinate, we work in a field extension twice as small
+compared to the original algorithm. %
+This is summarized in Algorithm~\ref{algorithm:rains-conic}.
+
+\begin{algorithm}[Rains' conic algorithm]
+  \label{algorithm:rains-conic}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $r$; a prime $\ell$
+    such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+    \item $\#\langle q\rangle = 2rs$ for some integer $s$;
+    \end{itemize}
+    a polynomial $h$ of degree $s$ irreducible over $k$.
+    \ENSURE A normal generator of $k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Construct the field extension $k'=k[Z]/h(Z)$;
+    \REPEAT
+    \REPEAT
+    \STATE Take a random element $\theta\in k'$,
+    \UNTIL\label{algorithm:rains-conic:sqtest} $\theta^2-4$ is a quadratic non-residue;
+    \STATE\label{algorithm:rains-conic:power} Compute $\zeta=[(\#k'+1)/\ell]\theta$,
+    \UNTIL $\zeta\ne2$;
+    \STATE\label{algorithm:rains-conic:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}[\sigma]\zeta$;
+    \RETURN\label{algorithm:rains-conic:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}[q^{ri}]\eta(\zeta)$.
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-conic} is correct: on input
+  $q,r,\ell,s$ it returns an element in the same Galois orbit as
+  Algorithm~\ref{algorithm:rains-cyclo} on input $q,r,\ell,2s$. %
+  It computes its output using $O(\MM(sr)(sr\log q+(\ell/r)\log\ell))$
+  operations in $\F_q$ on average, or $\tildO((sr)^2\log q)$ assuming
+  $\ell\in o(sr^2)$.
+\end{proposition}
+\begin{proof}
+  By construction, all the $\ell$-th roots of unity are in
+  $T_2(k')$. %
+  Observe that if $(x+\delta y)/2$ is in $T_2(k')$, then its trace
+  over $k'$ is equal to $x$. %
+  Hence, the value $\zeta$ computed in
+  Step~\ref{algorithm:rains-conic:power} is the trace over $k'$ of a
+  primitive $\ell$-th root of unity. %
+  We conclude by comparing this algorithm with
+  Algorithm~\ref{algorithm:rains-cyclo}.
+
+  The non-residuosity test in Step~\ref{algorithm:rains-conic:sqtest}
+  is done by verifying that the $(\#k'-1)/2$-th power of $\theta$ is
+  equal to $-1$. %
+  We do this in $O(sr\log q)$ operations in $k'$, or
+  $O(sr\MM(sr)\log q)$ operations in $\F_q$.
+
+  To implement the other steps, we need to evaluate the map $[n]$
+  efficiently. %
+  We have the following classical relationships for the Lucas sequence
+  of $\theta$:
+  \begin{equation*}
+    \theta_{2i} = \theta_{i}^2-2,\quad
+    \theta_{2i+1} = \theta_i\theta_{i+1} - \theta,\quad
+    \theta_{2i+2} = \theta_{i+1}^2-2.
+  \end{equation*}
+  Starting with $\theta_0=2$ and $\theta_1=\theta$, we use a binary
+  scheme to deduce $\theta_i,\theta_{i+1}$ from
+  $\theta_{\lfloor i/2\rfloor},\theta_{\lfloor i/2\rfloor+1}$. %
+  We reach $\theta_n$ after $O(\log n)$ steps, each requiring a
+  constant number of operations in $k'$.
+
+  Hence, Step~\ref{algorithm:rains-conic:power} costs
+  $O(sr\MM(sr)\log(q))$ operations in $\F_q$, while
+  Steps~\ref{algorithm:rains-conic:period}
+  and~\ref{algorithm:rains-conic:trace} together cost
+  $O((\MM(sr)\ell\log\ell)/r)$.
+\end{proof}
+
+Although this variant does not exploit the asymptotic improvement
+offered by Proposition~\ref{prop:large-power}, the fact that its
+auxiliary degree $s$ is half the one of the original algorithm usually
+gives an interesting practical improvement. %
+Step~\ref{algorithm:rains-conic:power} can be modified so as to avoid
+the premature projection on the $x$-axis, so that the algorithm of
+Proposition~\ref{prop:large-power} applies. %
+We leave the details of this variant to the reader.
+
+
+\paragraph{Rains' cyclotomic algorithm without auxiliary polynomials}
+Our second variant avoids the construction of the field extension $k'$
+altogether by factoring the cyclotomic polynomial $\Phi_\ell$, thus
+eliminating the need for a precomputed list of irreducible
+polynomials. In the algorithm below we denote by $[\bar{h}]_i$ the
+degree $i$ coefficient of the polynomial $\bar{h}$.
+
+\begin{algorithm}[Rains' cyclotomic algorithm variant]
+  \label{algorithm:rains-cyclo-2}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+    \item $\#\langle q\rangle = rs$ for some integer $s$.
+    \end{itemize}
+    \ENSURE A normal generator of $k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
+    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
+    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-cyclo-2} is correct. %
+  On input $q,r,\ell,s$ it computes its output using
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations in $\F_q$ on average, or
+  $\tildO(\ell r\log (q))$.
+\end{proposition}
+\begin{proof}
+  Let $\zeta$ be the image of $Z$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
+  an $\ell$-th root of unity. By Newton's identities, we have the
+  equality of power series
+  \begin{equation*}
+    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
+  \end{equation*}
+  Hence, summing the $\sigma$-th coefficients in the above series for
+  $\sigma\in S$ gives the sought period.
+
+  The complexity is dominated by the cost of factoring $\Phi_\ell$,
+  that is
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations according to
+  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
+  costs only $O(\MM(\ell r))$ operations, and the final sum
+  $O(\ell r)$ operations.
+\end{proof}
+
+By comparing the latter algorithm with Rains' original one, we see
+that this variant performs better when $s$ is larger than $r$. %
+Although we were unable to prove that this cannot be the case, we saw
+in Section~\ref{sec:selection} that $s$ is typically in
+$O(\log(r))$. %
+Furthermore, the algorithms of Section~\ref{sec:kummer} always have
+better complexity than this one. %
+Thus this latter variant of Rains' algorithms seems to be of purely
+theoretical interest.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
