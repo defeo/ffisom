@@ -52,8 +52,10 @@ cdef class FFEmbWrapper:
         if self.initialized < 1:
             self.compute_gens()
 
+        sig_on()
         self.wrp.build_embedding(self.g1, self.g2)
         self.wrp.get_x_image(self.xim)
+        sig_off()
         self.initialized = 2
 
     def get_emb(self):
