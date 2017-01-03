@@ -685,7 +685,7 @@ defined.
 
 In this section we review what we call \emph{Kummer-type} approaches to the embedding problem. 
 We briefly review the works of Lenstra~\cite{LenstraJr91}, and Allombert~\cite{Allombert02}, then 
-we give a variant of these algorithms with a significantly lower running time complexity.
+we give a variant of these algorithms with a significantly lower complexity.
 As stated above, we let $k,K$ be degree $r$ extensions of $\F_q$, and we let $p$ be their
 characteristic.
 We give our fast versions of the algorithms for two separate cases: the case $p \nmid r$
@@ -702,7 +702,7 @@ factorization.
 In~\cite{Allombert02}, Allombert gives a similar approach with more focus on practical efficiency.
 In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
 polynomial time Las Vegas.
-Even though neither of the two algorithms is given a detailed complexity analyses, both rely
+Even though neither of the two algorithms is given a detailed complexity analysis, both rely
 on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
 in $\F_q$ in both cases.
 
@@ -838,13 +838,13 @@ Hence, we shall set
   \theta_a = \hat\Theta(a)
   =  a\otimes\zeta^{-1} + \sigma(a)\otimes\zeta^{-2} + \cdots + \sigma^{r-1}(a)\otimes\zeta^{-r}
 \end{equation}
-for some $a\in k$. %
+for some $a\in k$ chosen at random. %
 Because of Eq.~\eqref{eq:theta90}, $\theta_a$ is a solution as long as
 it is non-zero. %
 This is reminiscent of Lenstra's algorithm~\cite[Th.~5.2]{LenstraJr91}.
 
 To ensure the existence of $a$ such that $\theta_a\ne0$, we only need
-to prove that $k$ is not entirely contained in $\hat\Theta$. %
+to prove that $k$ is not entirely contained in $\ker\hat\Theta$. %
 But the maps $\sigma^i$ restricted to $k$ are all distinct, thus
 Artin's theorem on character independence (see~\cite[Ch~VI, Theorem~4.1]{lang})
 shows that they are linearly 
@@ -1129,17 +1129,18 @@ it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ 
 The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
 extractions.
 We are not aware of this algorithm appearing anywhere in the literature, however we
-do not claim it to be fully original.
-We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently published a radically
-different generalization of Allombert's algorithm with a very similar complexity in $r$
-(his algorithm has much worse complexity in $q$, though):
-this generalization relies on the fact that Artin-Schreier and Kummer
-theories are special cases of a more general situation.
-As already emphasized by Couveignes and Lercier~\cite{CL08},
-whereas the former theory acts on the additive group of a finite field,
-and the latter on its multiplicative group,
-they can be extended to more general commutative algebraic groups,
-in particular to elliptic curves.
+do not claim it to be fully original. %
+We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently
+published a radically different generalization\footnote{Narayanan's
+  generalization relies on the fact that Artin-Schreier and Kummer
+  theories are special cases of a more general situation. %
+  As already emphasized by Couveignes and Lercier~\cite{CL08}, whereas
+  the former theory acts on the additive group of a finite field, and
+  the latter on its multiplicative group, they can be extended to more
+  general commutative algebraic groups, in particular to elliptic
+  curves.} %
+of Allombert's algorithm with a very similar complexity in $r$ (his
+algorithm has much worse complexity in $q$, though).
 
 An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
@@ -1376,7 +1377,7 @@ the field $k$, the procedure for the field $K$ being identical.
     
     \STATE Construct the field extension $k'=k[Z]/h(Z)$;
     \REPEAT
-    \STATE Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
+    \STATE\label{algorithm:rains-cyclo:power} Compute $\zeta\leftarrow \theta^{(\#k'-1)/\ell}$ for a random $\theta\in k'$
     \UNTIL $\zeta$ is a primitive $\ell$-th root of unity;
     \STATE\label{algorithm:rains-cyclo:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}\zeta^\sigma$;
     \RETURN\label{algorithm:rains-cyclo:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}\eta(\zeta)^{q^{ri}}$.
@@ -1386,7 +1387,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$.
+  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1394,11 +1395,10 @@ the field $k$, the procedure for the field $K$ being identical.
   and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a
   normal generator of $k$. This proves correctness.
 
-  Using the techniques of Section~\ref{sec:introduction},
-  multiplications in $k'$ cost $O(\MM(sr))$ operations in $\F_q$.
-  Hence, the root of unity $\zeta$ is obtained after $O(1)$ tries on
-  average. By Proposition~\ref{prop:large-power}, computing $\zeta$
-  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$.
+  By Proposition~\ref{prop:large-power}, computing $\zeta$
+  in Step~\ref{algorithm:rains-cyclo:power}
+  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$,
+  and the loop is executed $O(1)$ times on average. 
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
@@ -1406,8 +1406,9 @@ the field $k$, the procedure for the field $K$ being identical.
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of
-  $O((\MM(sr)\ell\log\ell)/r)$. The final result is obtained as an
-  element of $k$.
+  $O((\MM(sr)\ell\log\ell)/r)$,
+  using the techniques of Section~\ref{sec:introduction}.
+  The final result is obtained as an element of $k$.
 \end{proof}
 
 The attentive reader will have noticed the irreducible polynomial $h$
@@ -1422,62 +1423,8 @@ less than quadratic in $s$.
 
 However negligible from an asymptotic point of view, the construction
 of the polynomial $h$ and of the field $k'$ take a serious toll on the
-practical performances of Rains' algorithm. Hence, we present now a
-variant of Rains' algorithm which avoids the construction of the field
-extension $k'$ by factoring the cyclotomic polynomial $\Phi_\ell$. In
-the algorithm below we denote by $[\bar{h}]_i$ the degree $i$ coefficient
-of the polynomial $\bar{h}$.
+practical performances of Rains' algorithm. Hence, 
 
-\begin{algorithm}[Rains' cyclotomic algorithm variant]
-  \label{algorithm:rains-cyclo-2}
-  \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
-    \begin{itemize}
-    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
-    \item $\#\langle q\rangle = rs$ for some integer $s$.
-    \end{itemize}
-    \ENSURE A normal generator of $k$ over $\F_q$,
-    with a uniquely defined Galois orbit.
-    
-    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
-    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
-    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
-  \end{algorithmic}
-\end{algorithm}
-
-
-\begin{proposition}
-  Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
-  $q,r,\ell,s$ it computes its output using
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations in $\F_q$, or $\tildO(\ell r\log (q))$.
-\end{proposition}
-\begin{proof}
-  Let $\zeta$ be the image of $h$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
-  an $\ell$-th root of unity. By Newton's identities, we have the
-  equality of power series
-  \begin{equation*}
-    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
-  \end{equation*}
-  Hence, summing the $\sigma$-th coefficients in the above series for
-  $\sigma\in S$ gives the sought period.
-
-  The complexity is dominated by the cost of factoring $\Phi_\ell$,
-  that is
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations according to
-  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
-  costs only $O(\MM(\ell r))$ operations, and the final sum
-  $O(\ell r)$ operations.
-\end{proof}
-
-By comparing the latter algorithm with Rains' original one, we see
-that our variant performs better when $s$ is larger than $r$. Although
-we are unable to prove that this cannot be the case, we shall argue in
-Section~\ref{sec:selection} that $s$ is typically in
-$O(\log(r))$. Furthermore, the algorithms of Section~\ref{sec:kummer}
-always have better complexity than this one. Thus this latter variant
-of Rains' algorithms seems to be of purely theoretical interest.
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
@@ -1675,7 +1622,7 @@ This fails in the elliptic case: there is indeed no guarantee that the
 eigenspace of $\lambda$ can be lifted to a normal basis over some
 number field.
 
-Note, however that, even if the elliptic period is not normal, it is
+Note however that, even if the elliptic period is not normal, it is
 enough for our purpose that it generates $\F_q(x(P))$ as a field, like
 in the example above.  In Appendix~\ref{app:ellprdsdata} we gather
 some experimental evidence suggesting that this might always be the
@@ -1767,7 +1714,7 @@ identical.
   heuristics developed in Appendix~\ref{app:ellprdsdata}, it fails
   with probability $\le 1/q^r$.  On input
   $r,q,E,t,\ell,\lambda$ it computes its output using
-  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$, or
+  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$ on average, or
   $\tildO(r^2\log q)$ assuming $\ell\in o(r^2)$.
 \end{proposition}
 \begin{proof}
@@ -2077,6 +2024,7 @@ configuring the system.
 
 
 \section{Experimental Results}
+\label{sec:experimental-results}
 
 To validate our results, we implemented the algorithms described in
 the previous sections, and compared them to the implementation of
@@ -2218,66 +2166,196 @@ improvement over the state of the art.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\part{Embedding evaluation}
-\label{part:eval}
+\section{Embedding evaluation}
+\label{sec:eval}
+
+We end this work with a review of the known methods for
+\emph{embedding evaluation}. %
+We recall the problem statement: given two finite fields
+$k=\F_q[X]/f(X)$ and $K=\F_q[Y]/g(Y)$, and given an embedding
+$\phi:k\hookrightarrow K$ represented by two elements $\alpha\in k$
+and $\beta\in K$ such that $k=\F_q(\alpha)$ and $\phi(\alpha)=\beta$,
+answer the following questions:
+\begin{itemize}
+\item Given $\gamma\in k$, compute $\phi(\gamma)$;
+\item Given $\delta\in K$, determine whether $\delta\in\phi(k)$;
+\item Given $\delta\in\phi(k)$, compute $\phi^{-1}(\delta)$.
+\end{itemize}
+We are going to assume that elements of $k$ are represented on the
+monomial basis $(1,X,\dots,X^{m-1})$, and elements of $K$ on the
+monomial basis $(1,Y,\dots,Y^{n-1})$.
+
+The two generic solutions we review for this problem are basic linear
+algebra, and an algorithm based modular composition. %
+While the former is very simple and effective, the latter has
+considerably lower space and time asymptotic complexity. %
+We also briefly review a solution, due to Kaltofen and
+Shoup~\cite{kaltofen+shoup98}, that only applies when $\alpha$ is a
+normal element; while this solution is not generic, some embedding
+description algorithms (e.g., Rains' cyclotomic algorithm) naturally
+produce normal generators, it is thus natural to include it in our
+review.
+
+All the methods presented in this section are classic and well
+understood, thus we will keep the presentation short, and will not
+discuss implementation details.
+
+\subsection{Linear algebra}
+\label{sec:linear-algebra}
+
+Since the map $\phi$ is $\F_q$-linear, one obvious solution is to
+explicitly write its matrix on the monomial bases of $k$ and $K$. %
+To stress the fact that $k$ is seen a vector space with a fixed basis
+$(1,X,\dots,X^{m-1})$, we will write $V_X$ for it, and we will
+similarly write $V_Y$ for $K$ with its monomial basis. %
+
+The element $\alpha$ defines another basis
+$(1,\alpha,\dots,\alpha^{m-1})$ of $k$, and we denote by $V_\alpha$
+this vector space isomorphic to $V_X$. %
+Similarly, $\beta$ defines a basis of a subspace $V_\beta\subset V_Y$,
+also isomorphic to $V_\alpha$. %
+Hence, we decompose the map $\phi:V_X\to V_Y$ as a composition of
+three maps:
+\[V_X \xrightarrow{\;\sim\;} V_\alpha \xrightarrow{\;\sim\;} V_\beta \lhook\joinrel\longrightarrow
+  V_Y.\] %
+The middle map from $V_\alpha$ to $V_\beta$ is trivially represented
+by an identity matrix; the only maps that require actual computation
+are the other two. %
+
+For example, the map $V_\beta\hookrightarrow V_Y$ is represented by an
+$n\times m$ matrix whose columns are the coefficients of the elements
+$1,\beta,\dots,\beta^{m-1}$ written on the monomial basis of $V_Y$. %
+The inverse map is then computed by solving a linear system; this
+operation can be sped up by pre-computing, e.g., an LU decomposition
+for the matrix. %
+The computation of the map $V_X\xrightarrow{\sim}V_\alpha$ is done
+analogously.
+
+Summarizing, both the full map $\phi:V_X\to V_Y$ and its inverse can
+be computed by performing one matrix-vector product and solving one
+linear system. %
+The complexity is dominated by the cost of solving the linear system,
+that is $O(m^{\omega-1}n)$ operations over $\F_q$. %
+However this cost can be counted as a pre-computation if we perform an
+LU decomposition; in this case, the cost for evaluating $\phi$ or its
+inverse drops down to $O(mn)$ operations. %
+At any rate, the biggest drawback of this approach is the large memory
+complexity: indeed storing the computed matrices requires $O(mn)$
+elements of $\F_q$.
+
+\subsection{Inverse maps and duality}
+
+The first improvement to the linear algebraic method consists in
+replacing the linear system solving with a much simpler matrix-vector
+product, combined with an efficient change of basis. %
+This technique is not
+new~\cite{shoup94,shoup95,shoup99,bostan+salvy+schost03}, however it
+is seldom found in the literature. %
+We briefly recall it, following the presentation of~\cite{DeDoSc2014}.
+
+Let $k=\F_q[X]/f(X)$ be a finite field with monomial basis
+$(1,X,\dots,X^{m-1})$. %
+The trace $\trace$ from $k$ to $\F_q$ defines a non-degenerate
+bilinear form by
+\[\ang{\gamma,\delta}_k = \trace(\gamma\delta),\]
+which itself determines the \emph{dual basis}
+$(X_0^*,X_1^*,\dots,X_{m-1}^*)$ to $(1,X,\dots,X^{m-1})$,
+characterized by
+\begin{equation*}
+  \ang{X^j,X_i^*}_k = \begin{cases}
+    1 &\text{if $i=j$,}\\
+    0 &\text{otherwise.}
+  \end{cases}
+\end{equation*}
+Given the polynomial $f$, conversions between the monomial and the
+dual basis can be performed very efficiently at a cost of
+$O(\MM(m)\log m)$ operations in $\F_q$ (see~\cite[\S~3]{DeDoSc2014}).
+
+Let now $K=\F_q[Y]/g(Y)$ be another finite field, let $\ang{,}_K$ be
+the bilinear form defined by its trace to $\F_q$, and let
+$\phi:k\hookrightarrow K$ be a field embedding. %
+There exists a unique linear map $\phi^t:K\to k$, called the
+\emph{dual map} of $\phi$, such that
+\begin{equation*}
+  \ang{\phi(\gamma),\delta}_K=\ang{\gamma,\phi^t(\delta)}_k
+  \qquad\text{for any $\gamma\in k$ and $\delta\in K$.}
+\end{equation*}
+If $M=(m_{i,j})$ is the matrix of $\phi$ in the monomial bases of $k$
+and $K$, then its transpose $M^t$ is the matrix of $\phi^t$ in their
+\emph{dual bases}. %
+Indeed,
+\begin{equation}
+  \label{eq:tellegen-matrix}
+  m_{i,j} = \ang{\phi(X^j),Y_i^*} = \ang{X^j,\phi^t(Y_i^*)}.
+\end{equation}
+
+We are now going to show that $\phi^t$ is closely related to the
+inverse map of $\phi$. %
+If $\phi$ is an isomorphism of fields, then we immediately have
+$\phi^t=\phi^{-1}$. %
+Indeed, in this case $\phi$ preserves the bilinear forms:
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \ang{\phi(\gamma),\phi(\delta)}_K
+  \qquad\text{for any $\gamma,\delta\in k$.}
+\end{equation*}
+Hence, duality implies that
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \ang{\gamma,\phi^t\circ\phi(\delta)}_k,
+\end{equation*}
+but then the non-degeneracy of the trace implies that
+$\phi^t\circ\phi$ is the identity map.\footnote{More generally, in the
+  category of finite-dimensional vector spaces with nondegenerate
+  bilinear forms and morphisms that preserve bilinear forms, we have a
+  natural isomorphism between the identity functor and the dual
+  functor.}
+
+The case where $\phi$ is a proper embedding calls for a more careful
+handling. %
+In this case, $\phi$ does not preserve trace, indeed, if $n=[K:\F_q]$,
+\begin{equation*}
+  \frac{n}{m}\ang{\gamma,\delta}_k = \ang{\phi(\gamma),\phi(\delta)}_K.
+\end{equation*}
+If $n/m$ is not a multiple of the characteristic, proceeding like
+before we can show that $(m/n)\phi^t$ is the inverse of $\phi$. %
+To handle the general case, take an element $\eta\in K$ such that
+$\trace_{K/k}(\eta)=1$, and let $H$ be the map defined by
+$\gamma\mapsto\eta\gamma$. %
+Then, by composition of traces, we prove that
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \trace_{k/\F_q}(\gamma\delta) =
+  \trace_{K/\F_q}(\gamma\eta\delta) = \ang{\phi(\gamma),H\circ\phi(\delta)}_K.
+\end{equation*}
+We have thus shown that $\phi^t\circ H\circ\phi$ is the identity map.
+
+Let us apply these findings to the linear algebraic approach of the
+previous subsection. %
+We had an embedding of fields, decomposed as three maps
+\[V_X \xrightarrow{\;\sim\;} V_\alpha \xrightarrow{\;\sim\;} V_\beta
+  \lhook\joinrel\longrightarrow V_Y.\] %
+The maps $V_\alpha\xrightarrow{\sim} V_X$ and
+$V_\beta\hookrightarrow V_Y$ are both field embeddings; the first one
+is represented by its matrix on the monomial bases generated by
+$\alpha$ and $X$; the second one on those generated by $\beta$ and
+$Y$. %
+For both maps, we are interested in computing their inverse; instead
+of solving a linear system, we switch to dual bases and apply the
+discussion above. %
+Thus, the inverse of $V_\beta\hookrightarrow V_Y$ is evaluated as a
+multiplication by a fixed element $\eta$, followed by a conversion to
+the dual basis of $V_Y$, then a matrix-vector product with the
+transposed matrix, and finally a conversion back to the monomial basis
+of $V_\beta$. %
+The inverse of $V_\alpha\xrightarrow{\sim}V_X$ is computed similarly. %
+
+It is easily seen that the complexity is dominated by the transposed
+matrix-vector product, which costs $O(mn)$ operations. %
+Hence, by paying a little overhead in the changes of basis, we have
+completely removed the cost of solving a linear system. %
+We have not reduced yet the large storage cost of the algorithm,
+however.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Monomial-dual bases pairs}
-
-
-Up to this point we have build an embedding $\phi: k \hookrightarrow K$ that sends a generator $\alpha \in k$ to an element $\beta \in K$. These elements are both polynomials $\alpha = g(x), \beta = h(x)$. A standard representation of an isomorphism is usually in terms of its actions on a given basis, which is the monomial basis here. This makes thing more convinient both computaionally and theoretically. Given $\phi$ as above, in this section, we show how to efficiently determine its action on $x$. To do this we exploit dual representations in dual spaces.
-
-Let $V$ be finite-dimentional vector space over a field $F$, and let $V^*$ be its dual. Suppose we have a nondegenerate bilinear form $\ang{,}_V: V \times V \rightarrow F$. This is equivalent to having an isomorphism $\mu_V: V \rightarrow V^*$. Similarly, let $W$ be a finite-dimientional $F$-vector space with a bilinear form $\ang{,}_W$. We say that an $F$-linear map $T: V \rightarrow W$ preserves bilinear forms if $\ang{Tv_1, Tv_2}_W = \ang{v_1, v_2}_V$ for all $v_1, v_2 \in V$. In other words, $T^*(\mu_W(Tv)) = \mu_V(v)$ for all $v \in V$, where $T^*$ is the duall of $T$. This gives a commutative diagram
-\begin{center}
-	\begin{tikzpicture}
-		\node (V) {$V$};
-		\node[below = 2cm of V] (W) {$W$};
-		\node[right = 2cm of V] (Vd) {$V^*$};
-		\node[right = 2cm of W] (Wd) {$W^*$};
-		\draw[->] (V) -- node[above]{$\mu_V$} (Vd);
-		\draw[->] (V) -- node[left]{$T$} (W);
-		\draw[->] (W) -- node[above]{$\mu_W$} (Wd);
-		\draw[->] (Wd) -- node[right]{$T^*$} (Vd);
-	\end{tikzpicture}
-\end{center}
-Formally, the above says that in the category of finite-dimensional vector spaces with nondegenerate bilinear forms and morphisms that preserve bilinear forms, we have a natural isomorphism between the identity functor and the dual functor. In such a construction, $T^*$ is identified as the transpose of $T$.
-
-Now let us specialize the above to our scenario. Let $V = W = k$, and let $F = \F_q$. Define $\tau: k \times k \rightarrow \F_q$ as $\tau(a, b) = \trace_{k / \F_q}(ab)$. This a nondegenerate bilinear form. Also define $T$ as modular composition with $g$, i.e. $T(f) = f(g)$. It is not hard to show that this $T$ preserves $\tau$. The transposed linear map $T^*$ is called power projection \cite{shoup95}. Our goal is to compute $f(x) \in k$ such that $f(g(x)) = x$. The embedding $\phi$ will then be $x \mapsto f(h)$. According to the above diagram we should have $f = \mu_k^{-1}(T^*(\mu_k(x)))$. In other words, we first compute the dual of $x$, and then do a power projection, and convert the result back to monomial basis.
-
-The conversions between monomial and dual bases is done efficiently using the method of \cite{DeDoSc2014}. The power projection is computed efficiently using a divide-and-conquer technique used for computing modular composition \cite{shoup95}. Altogether, the cost of computing $f, f(h)$ is dominated by the cost of computations in the previous sections.
-
-
-\section{Linear algebra}
-
-Once $\beta \in K$ has been computed as a polynomial in $Y$,
-one can compute the powers
-$\beta^i = \sum_{j=0}^{n-1} m_{i,j} Y^j$
-for $i \in \{0, \ldots, n-1\}$ and build a matrix
-$M = \{m_{i, j}\}_{0\leq i \leq m-1, 0 \leq j \leq n -1}$
-representing $\phi$.
-This is trivially done in $O(m)$ operations in $K$.
-For $\gamma = \sum_{i = 0}^{m - 1} c_i X^i \in k$,
-$\phi(\gamma)$ can then be computed by a
-matrix-vector multiplication in $O(m n)$ operations in $\F_q$.
-
-Together, the second and third questions are the inverse image problem.
-They can be answered by first computing 
-an LU or similar matrix decompostions of $M$
-in $O((n (m)^{\omega - 1})$ operations in $\F_q$.
-Answering the second and third questions together is then
-an easy matter.
-
-Note that if $m = n$, that is if $k$ and $K$ are
-isomorphic, then the second question is trivial.
-For the third one, the inverse
-the inverse $M^{-1}$ of $M$ representing $\phi^{-1}$
-can be deduced from an an LU or similar matrix decompostions of $M$.
-For $\delta \in K$, $\phi^{-1}(\delta)$ can then be computed by a
-matrix-vector multiplication in $O(m^2)$ in $\F_q$.
-
-\section{Modular composition}
+\subsection{Modular composition}
 
 As an alternative to using linear algebra,
 $\phi(\gamma)$ can be computed directly using modular composition
@@ -2295,9 +2373,7 @@ to express $\delta \in K$ as a polynomial in $\beta$ in
 $\CC(n)$ operations in $\F_q$.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Algorithms specific to normal bases}
+\subsection{Algorithms specific to normal bases}
 
 In one of their article \cite{}, Kaltofen and Shoup proposed a subquadratic
 implementation of the Black Box Berkelamp Algorithm, a probalistic algorithm to
@@ -2315,7 +2391,7 @@ c_{n-1}\in\F_q$ such that :
 \gamma=c_0\eta+\dots+c_{n-1}\eta^{q^{n-1}}.
 \end{equation}
 Let $u$ be a projection map from $\F_{q^n}$ to $\F_q$. To solve this problem, 
-We apply $n-1$ times the $q$-th power to (\ref{eq:eqnorm}), and apply $u$ to 
+We apply $n-1$ times the $q$-th power to Eq.~\eqref{eq:eqnorm}, and apply $u$ to 
 to each equations to obtain the following system in $\F_q$
 \begin{equation}
 \label{eq:systemnormal}
@@ -2325,7 +2401,7 @@ We introduce the $n\times n$ matrix $Q$ used in the Berlekamp algorithm, its
 $q_{i,j}$'s are the coefficients of
 $X^{iq}=q_{i,n-1}X^{n-1}+q_{i,n-2}X^{n-1}+\dots+q_{i,0}\bmod f(X)$. It 
 is the representation of the $q$-th power map on $\F_q[X]/f(X)$.
-We can then rewrite (\ref{eq:systemnormal}) as
+We can then rewrite Eq.~\eqref{eq:systemnormal} as
 \begin{equation}
 \label{eq:linalgnormal}
 \vec{u}^\top Q^j\vec{\gamma}= \vec{c}\,(\vec{u}^\top Q^{i+j}\vec{\eta})_{i,j}
@@ -2386,6 +2462,196 @@ See~\cite[Theorem 6]{}
 \appendix
 \part*{Appendices}
 \addcontentsline{toc}{part}{Appendices}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{More of Rains' algorithm}
+\label{app:rains-vars}
+
+We have seen that Rains' cyclotomic algorithm suffers in practice from
+the need to build a field extension $k'$ of $k$. %
+In this section we present two variants of Rains' algorithm that help
+reduce the cost associated to the field extension. %
+None of the two variants has an impact on the overall complexity of
+Rains' algorithm.
+
+\paragraph{Rains' conic algorithm}
+The first variant reduces the degree of the field extension from
+$s=[k':k]$ to $s/2$ whenever $s$ is even. %
+This is especially useful when $s=2$, as highlighted in
+Section~\ref{sec:experimental-results}. %
+The algorithm is similar in spirit to Williams' $p+1$ factoring
+method~\cite{williams1982}, where the arithmetic of the norm $1$
+subgroup of ${k'}^*$ is performed using Lucas sequences on a subfield
+of index $2$ of $k'$.
+
+Let $\F$ be a finite field of odd characteristic, let $\Delta\in\F$ be
+a quadratic non-residue, let $\delta$ be an element of the algebraic
+closure of $\F$ such that $\delta^2=\Delta$, and define the norm $1$
+subgroup of $\F[\delta]^*$ as
+\[T_2(\F) = \{(x+\delta y)/2 \;\mid\; x,y\in\F \text{ and } x^2-\Delta
+  y^2 = 4\};\] %
+it is easy to verify that $T_2(\F)$ forms a group under
+multiplication. %
+If we see the elements $(x+\delta y)/2$ as points $(x,y)$ on a conic
+$x^2-\Delta y^2=4$, the group law of $T_2(\F)$ induces a group law on
+the conic. %
+By projecting onto the $x$-coordinate, a straightforward calculation
+shows that, for any point $(\theta,*)$ on the conic, its $n$-th power
+has coordinates $(\theta_n,*)$, where $\theta_n$ is defined by the
+Lucas sequence
+\[\theta_0 = 2, \quad \theta_1 = \theta, \quad \theta_{i+1}=\theta\theta_i-\theta_{i-1}.\] %
+We shall denote by $[n]$ the map $\theta\mapsto\theta_n$; notice how
+it does not depend on the choice of $\Delta$.
+
+The generalization of Rains' algorithm is now obvious: by projecting
+on the $x$-coordinate, we work in a field extension twice as small
+compared to the original algorithm. %
+This is summarized in Algorithm~\ref{algorithm:rains-conic}.
+
+\begin{algorithm}[Rains' conic algorithm]
+  \label{algorithm:rains-conic}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $r$; a prime $\ell$
+    such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+    \item $\#\langle q\rangle = 2rs$ for some integer $s$;
+    \end{itemize}
+    a polynomial $h$ of degree $s$ irreducible over $k$.
+    \ENSURE A normal generator of $k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Construct the field extension $k'=k[Z]/h(Z)$;
+    \REPEAT
+    \REPEAT
+    \STATE Take a random element $\theta\in k'$,
+    \UNTIL\label{algorithm:rains-conic:sqtest} $\theta^2-4$ is a quadratic non-residue;
+    \STATE\label{algorithm:rains-conic:power} Compute $\zeta=[(\#k'+1)/\ell]\theta$,
+    \UNTIL $\zeta\ne2$;
+    \STATE\label{algorithm:rains-conic:period} Compute $\eta(\zeta) \leftarrow \sum_{\sigma\in S}[\sigma]\zeta$;
+    \RETURN\label{algorithm:rains-conic:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}[q^{ri}]\eta(\zeta)$.
+  \end{algorithmic}
+\end{algorithm}
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-conic} is correct: on input
+  $q,r,\ell,s$ it returns an element in the same Galois orbit as
+  Algorithm~\ref{algorithm:rains-cyclo} on input $q,r,\ell,2s$. %
+  It computes its output using $O(\MM(sr)(sr\log q+(\ell/r)\log\ell))$
+  operations in $\F_q$ on average, or $\tildO((sr)^2\log q)$ assuming
+  $\ell\in o(sr^2)$.
+\end{proposition}
+\begin{proof}
+  By construction, all the $\ell$-th roots of unity are in
+  $T_2(k')$. %
+  Observe that if $(x+\delta y)/2$ is in $T_2(k')$, then its trace
+  over $k'$ is equal to $x$. %
+  Hence, the value $\zeta$ computed in
+  Step~\ref{algorithm:rains-conic:power} is the trace over $k'$ of a
+  primitive $\ell$-th root of unity. %
+  We conclude by comparing this algorithm with
+  Algorithm~\ref{algorithm:rains-cyclo}.
+
+  The non-residuosity test in Step~\ref{algorithm:rains-conic:sqtest}
+  is done by verifying that the $(\#k'-1)/2$-th power of $\theta$ is
+  equal to $-1$. %
+  We do this in $O(sr\log q)$ operations in $k'$, or
+  $O(sr\MM(sr)\log q)$ operations in $\F_q$.
+
+  To implement the other steps, we need to evaluate the map $[n]$
+  efficiently. %
+  We have the following classical relationships for the Lucas sequence
+  of $\theta$:
+  \begin{equation*}
+    \theta_{2i} = \theta_{i}^2-2,\quad
+    \theta_{2i+1} = \theta_i\theta_{i+1} - \theta,\quad
+    \theta_{2i+2} = \theta_{i+1}^2-2.
+  \end{equation*}
+  Starting with $\theta_0=2$ and $\theta_1=\theta$, we use a binary
+  scheme to deduce $\theta_i,\theta_{i+1}$ from
+  $\theta_{\lfloor i/2\rfloor},\theta_{\lfloor i/2\rfloor+1}$. %
+  We reach $\theta_n$ after $O(\log n)$ steps, each requiring a
+  constant number of operations in $k'$.
+
+  Hence, Step~\ref{algorithm:rains-conic:power} costs
+  $O(sr\MM(sr)\log(q))$ operations in $\F_q$, while
+  Steps~\ref{algorithm:rains-conic:period}
+  and~\ref{algorithm:rains-conic:trace} together cost
+  $O((\MM(sr)\ell\log\ell)/r)$.
+\end{proof}
+
+Although this variant does not exploit the asymptotic improvement
+offered by Proposition~\ref{prop:large-power}, the fact that its
+auxiliary degree $s$ is half the one of the original algorithm usually
+gives an interesting practical improvement. %
+Step~\ref{algorithm:rains-conic:power} can be modified so as to avoid
+the premature projection on the $x$-axis, so that the algorithm of
+Proposition~\ref{prop:large-power} applies. %
+We leave the details of this variant to the reader.
+
+
+\paragraph{Rains' cyclotomic algorithm without auxiliary polynomials}
+Our second variant avoids the construction of the field extension $k'$
+altogether by factoring the cyclotomic polynomial $\Phi_\ell$, thus
+eliminating the need for a precomputed list of irreducible
+polynomials. In the algorithm below we denote by $[\bar{h}]_i$ the
+degree $i$ coefficient of the polynomial $\bar{h}$.
+
+\begin{algorithm}[Rains' cyclotomic algorithm variant]
+  \label{algorithm:rains-cyclo-2}
+  \begin{algorithmic}[1]
+    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
+    \begin{itemize}
+    \item $(\Z/\ell\Z)^\ast = \langle q\rangle \times S$ for some $S$,
+    \item $\#\langle q\rangle = rs$ for some integer $s$.
+    \end{itemize}
+    \ENSURE A normal generator of $k$ over $\F_q$,
+    with a uniquely defined Galois orbit.
+    
+    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
+    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
+    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
+  \end{algorithmic}
+\end{algorithm}
+
+
+\begin{proposition}
+  Algorithm~\ref{algorithm:rains-cyclo-2} is correct. %
+  On input $q,r,\ell,s$ it computes its output using
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations in $\F_q$ on average, or
+  $\tildO(\ell r\log (q))$.
+\end{proposition}
+\begin{proof}
+  Let $\zeta$ be the image of $Z$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
+  an $\ell$-th root of unity. By Newton's identities, we have the
+  equality of power series
+  \begin{equation*}
+    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
+  \end{equation*}
+  Hence, summing the $\sigma$-th coefficients in the above series for
+  $\sigma\in S$ gives the sought period.
+
+  The complexity is dominated by the cost of factoring $\Phi_\ell$,
+  that is
+  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
+  \MM(\ell r)\log(q))$ operations according to
+  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
+  costs only $O(\MM(\ell r))$ operations, and the final sum
+  $O(\ell r)$ operations.
+\end{proof}
+
+By comparing the latter algorithm with Rains' original one, we see
+that this variant performs better when $s$ is larger than $r$. %
+Although we were unable to prove that this cannot be the case, we saw
+in Section~\ref{sec:selection} that $s$ is typically in
+$O(\log(r))$. %
+Furthermore, the algorithms of Section~\ref{sec:kummer} always have
+better complexity than this one. %
+Thus this latter variant of Rains' algorithms seems to be of purely
+theoretical interest.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2814,4 +3080,5 @@ j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 
 % End:
 
 %  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
-%  LocalWords:  endomorphism eigenspace Allombert's
+%  LocalWords:  endomorphism eigenspace Allombert's polynomially
+%  LocalWords:  automorphism morphism
