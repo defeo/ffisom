@@ -135,7 +135,7 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     t = mytime()
                     a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = False)
                     tloops += mytime(t)
-                except AlarmInterrupt:
+                except (KeyboardInterrupt, AlarmInterrupt):
                     tloops = 0
                     break
                 finally:
@@ -170,7 +170,7 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     t = mytime()
                     a, b = find_gens_cyclorains(k_flint, k_flint, use_lucas = True)
                     tloops += mytime(t)
-                except AlarmInterrupt:
+                except (KeyboardInterrupt, AlarmInterrupt):
                     tloops = 0
                     break
                 finally:
@@ -206,7 +206,7 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 except RuntimeError:
                     # sometimes no suitable elliptic curve exists
                     pass
-                except AlarmInterrupt:
+                except (KeyboardInterrupt, AlarmInterrupt):
                     tloops = 0
                     break
                 finally:
@@ -241,7 +241,7 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                     t = mytime()
                     a, b = find_gens_pari(k, k)
                     tloops += mytime(t)
-                except AlarmInterrupt:
+                except (KeyboardInterrupt, AlarmInterrupt):
                     tloops = 0
                     break
                 finally:
@@ -276,7 +276,7 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                         t = mytime()
                         a, b = find_gens_kummer(k_flint, k_flint, n, algo)
                         tloops += mytime(t)
-                    except AlarmInterrupt:
+                    except (KeyboardInterrupt, AlarmInterrupt):
                         tloops = 0
                         break
                     finally:
