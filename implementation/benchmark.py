@@ -4,7 +4,7 @@ from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.integer_mod import Mod
 from sage.rings.finite_rings.finite_field_constructor import GF
 
-import os, sys, time
+import os, errno, sys, time
 # cputime might get screwed up by openblas
 from sage.misc.misc import walltime, cputime
 mytime = walltime
@@ -71,12 +71,17 @@ def benchmark(pbound = [3, 2**10], nbound = [3, 2**8], cbound = [1, Infinity], o
                 # than computing random irreducible polynomials
                 try:
                     M._start()
-                except (RuntimeError, OSError) as err:
+                except OSError as err:
                     # but it can also cause fork issues...
                     # let's accept this
                     # and fail as the situation will only worsen
+                    # unless it is "just" a memory issue
+                    # which should be mitigated by COW but is not
                     #print(err)
-                    raise
+                    if err.errno == errno.ENOMEM:
+                        break
+                    else:
+                        raise
                 try:
                     k_magma = M(k)
                     k_rand_magma = M(k_rand)
