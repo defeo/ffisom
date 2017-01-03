@@ -2166,66 +2166,196 @@ improvement over the state of the art.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\part{Embedding evaluation}
-\label{part:eval}
+\section{Embedding evaluation}
+\label{sec:eval}
+
+We end this work with a review of the known methods for
+\emph{embedding evaluation}. %
+We recall the problem statement: given two finite fields
+$k=\F_q[X]/f(X)$ and $K=\F_q[Y]/g(Y)$, and given an embedding
+$\phi:k\hookrightarrow K$ represented by two elements $\alpha\in k$
+and $\beta\in K$ such that $k=\F_q(\alpha)$ and $\phi(\alpha)=\beta$,
+answer the following questions:
+\begin{itemize}
+\item Given $\gamma\in k$, compute $\phi(\gamma)$;
+\item Given $\delta\in K$, determine whether $\delta\in\phi(k)$;
+\item Given $\delta\in\phi(k)$, compute $\phi^{-1}(\delta)$.
+\end{itemize}
+We are going to assume that elements of $k$ are represented on the
+monomial basis $(1,X,\dots,X^{m-1})$, and elements of $K$ on the
+monomial basis $(1,Y,\dots,Y^{n-1})$.
+
+The two generic solutions we review for this problem are basic linear
+algebra, and an algorithm based modular composition. %
+While the former is very simple and effective, the latter has
+considerably lower space and time asymptotic complexity. %
+We also briefly review a solution, due to Kaltofen and
+Shoup~\cite{kaltofen+shoup98}, that only applies when $\alpha$ is a
+normal element; while this solution is not generic, some embedding
+description algorithms (e.g., Rains' cyclotomic algorithm) naturally
+produce normal generators, it is thus natural to include it in our
+review.
+
+All the methods presented in this section are classic and well
+understood, thus we will keep the presentation short, and will not
+discuss implementation details.
+
+\subsection{Linear algebra}
+\label{sec:linear-algebra}
+
+Since the map $\phi$ is $\F_q$-linear, one obvious solution is to
+explicitly write its matrix on the monomial bases of $k$ and $K$. %
+To stress the fact that $k$ is seen a vector space with a fixed basis
+$(1,X,\dots,X^{m-1})$, we will write $V_X$ for it, and we will
+similarly write $V_Y$ for $K$ with its monomial basis. %
+
+The element $\alpha$ defines another basis
+$(1,\alpha,\dots,\alpha^{m-1})$ of $k$, and we denote by $V_\alpha$
+this vector space isomorphic to $V_X$. %
+Similarly, $\beta$ defines a basis of a subspace $V_\beta\subset V_Y$,
+also isomorphic to $V_\alpha$. %
+Hence, we decompose the map $\phi:V_X\to V_Y$ as a composition of
+three maps:
+\[V_X \xrightarrow{\;\sim\;} V_\alpha \xrightarrow{\;\sim\;} V_\beta \lhook\joinrel\longrightarrow
+  V_Y.\] %
+The middle map from $V_\alpha$ to $V_\beta$ is trivially represented
+by an identity matrix; the only maps that require actual computation
+are the other two. %
+
+For example, the map $V_\beta\hookrightarrow V_Y$ is represented by an
+$n\times m$ matrix whose columns are the coefficients of the elements
+$1,\beta,\dots,\beta^{m-1}$ written on the monomial basis of $V_Y$. %
+The inverse map is then computed by solving a linear system; this
+operation can be sped up by pre-computing, e.g., an LU decomposition
+for the matrix. %
+The computation of the map $V_X\xrightarrow{\sim}V_\alpha$ is done
+analogously.
+
+Summarizing, both the full map $\phi:V_X\to V_Y$ and its inverse can
+be computed by performing one matrix-vector product and solving one
+linear system. %
+The complexity is dominated by the cost of solving the linear system,
+that is $O(m^{\omega-1}n)$ operations over $\F_q$. %
+However this cost can be counted as a pre-computation if we perform an
+LU decomposition; in this case, the cost for evaluating $\phi$ or its
+inverse drops down to $O(mn)$ operations. %
+At any rate, the biggest drawback of this approach is the large memory
+complexity: indeed storing the computed matrices requires $O(mn)$
+elements of $\F_q$.
+
+\subsection{Inverse maps and duality}
+
+The first improvement to the linear algebraic method consists in
+replacing the linear system solving with a much simpler matrix-vector
+product, combined with an efficient change of basis. %
+This technique is not
+new~\cite{shoup94,shoup95,shoup99,bostan+salvy+schost03}, however it
+is seldom found in the literature. %
+We briefly recall it, following the presentation of~\cite{DeDoSc2014}.
+
+Let $k=\F_q[X]/f(X)$ be a finite field with monomial basis
+$(1,X,\dots,X^{m-1})$. %
+The trace $\trace$ from $k$ to $\F_q$ defines a non-degenerate
+bilinear form by
+\[\ang{\gamma,\delta}_k = \trace(\gamma\delta),\]
+which itself determines the \emph{dual basis}
+$(X_0^*,X_1^*,\dots,X_{m-1}^*)$ to $(1,X,\dots,X^{m-1})$,
+characterized by
+\begin{equation*}
+  \ang{X^j,X_i^*}_k = \begin{cases}
+    1 &\text{if $i=j$,}\\
+    0 &\text{otherwise.}
+  \end{cases}
+\end{equation*}
+Given the polynomial $f$, conversions between the monomial and the
+dual basis can be performed very efficiently at a cost of
+$O(\MM(m)\log m)$ operations in $\F_q$ (see~\cite[\S~3]{DeDoSc2014}).
+
+Let now $K=\F_q[Y]/g(Y)$ be another finite field, let $\ang{,}_K$ be
+the bilinear form defined by its trace to $\F_q$, and let
+$\phi:k\hookrightarrow K$ be a field embedding. %
+There exists a unique linear map $\phi^t:K\to k$, called the
+\emph{dual map} of $\phi$, such that
+\begin{equation*}
+  \ang{\phi(\gamma),\delta}_K=\ang{\gamma,\phi^t(\delta)}_k
+  \qquad\text{for any $\gamma\in k$ and $\delta\in K$.}
+\end{equation*}
+If $M=(m_{i,j})$ is the matrix of $\phi$ in the monomial bases of $k$
+and $K$, then its transpose $M^t$ is the matrix of $\phi^t$ in their
+\emph{dual bases}. %
+Indeed,
+\begin{equation}
+  \label{eq:tellegen-matrix}
+  m_{i,j} = \ang{\phi(X^j),Y_i^*} = \ang{X^j,\phi^t(Y_i^*)}.
+\end{equation}
+
+We are now going to show that $\phi^t$ is closely related to the
+inverse map of $\phi$. %
+If $\phi$ is an isomorphism of fields, then we immediately have
+$\phi^t=\phi^{-1}$. %
+Indeed, in this case $\phi$ preserves the bilinear forms:
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \ang{\phi(\gamma),\phi(\delta)}_K
+  \qquad\text{for any $\gamma,\delta\in k$.}
+\end{equation*}
+Hence, duality implies that
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \ang{\gamma,\phi^t\circ\phi(\delta)}_k,
+\end{equation*}
+but then the non-degeneracy of the trace implies that
+$\phi^t\circ\phi$ is the identity map.\footnote{More generally, in the
+  category of finite-dimensional vector spaces with nondegenerate
+  bilinear forms and morphisms that preserve bilinear forms, we have a
+  natural isomorphism between the identity functor and the dual
+  functor.}
+
+The case where $\phi$ is a proper embedding calls for a more careful
+handling. %
+In this case, $\phi$ does not preserve trace, indeed, if $n=[K:\F_q]$,
+\begin{equation*}
+  \frac{n}{m}\ang{\gamma,\delta}_k = \ang{\phi(\gamma),\phi(\delta)}_K.
+\end{equation*}
+If $n/m$ is not a multiple of the characteristic, proceeding like
+before we can show that $(m/n)\phi^t$ is the inverse of $\phi$. %
+To handle the general case, take an element $\eta\in K$ such that
+$\trace_{K/k}(\eta)=1$, and let $H$ be the map defined by
+$\gamma\mapsto\eta\gamma$. %
+Then, by composition of traces, we prove that
+\begin{equation*}
+  \ang{\gamma,\delta}_k = \trace_{k/\F_q}(\gamma\delta) =
+  \trace_{K/\F_q}(\gamma\eta\delta) = \ang{\phi(\gamma),H\circ\phi(\delta)}_K.
+\end{equation*}
+We have thus shown that $\phi^t\circ H\circ\phi$ is the identity map.
+
+Let us apply these findings to the linear algebraic approach of the
+previous subsection. %
+We had an embedding of fields, decomposed as three maps
+\[V_X \xrightarrow{\;\sim\;} V_\alpha \xrightarrow{\;\sim\;} V_\beta
+  \lhook\joinrel\longrightarrow V_Y.\] %
+The maps $V_\alpha\xrightarrow{\sim} V_X$ and
+$V_\beta\hookrightarrow V_Y$ are both field embeddings; the first one
+is represented by its matrix on the monomial bases generated by
+$\alpha$ and $X$; the second one on those generated by $\beta$ and
+$Y$. %
+For both maps, we are interested in computing their inverse; instead
+of solving a linear system, we switch to dual bases and apply the
+discussion above. %
+Thus, the inverse of $V_\beta\hookrightarrow V_Y$ is evaluated as a
+multiplication by a fixed element $\eta$, followed by a conversion to
+the dual basis of $V_Y$, then a matrix-vector product with the
+transposed matrix, and finally a conversion back to the monomial basis
+of $V_\beta$. %
+The inverse of $V_\alpha\xrightarrow{\sim}V_X$ is computed similarly. %
+
+It is easily seen that the complexity is dominated by the transposed
+matrix-vector product, which costs $O(mn)$ operations. %
+Hence, by paying a little overhead in the changes of basis, we have
+completely removed the cost of solving a linear system. %
+We have not reduced yet the large storage cost of the algorithm,
+however.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Monomial-dual bases pairs}
-
-
-Up to this point we have build an embedding $\phi: k \hookrightarrow K$ that sends a generator $\alpha \in k$ to an element $\beta \in K$. These elements are both polynomials $\alpha = g(x), \beta = h(x)$. A standard representation of an isomorphism is usually in terms of its actions on a given basis, which is the monomial basis here. This makes thing more convinient both computaionally and theoretically. Given $\phi$ as above, in this section, we show how to efficiently determine its action on $x$. To do this we exploit dual representations in dual spaces.
-
-Let $V$ be finite-dimentional vector space over a field $F$, and let $V^*$ be its dual. Suppose we have a nondegenerate bilinear form $\ang{,}_V: V \times V \rightarrow F$. This is equivalent to having an isomorphism $\mu_V: V \rightarrow V^*$. Similarly, let $W$ be a finite-dimientional $F$-vector space with a bilinear form $\ang{,}_W$. We say that an $F$-linear map $T: V \rightarrow W$ preserves bilinear forms if $\ang{Tv_1, Tv_2}_W = \ang{v_1, v_2}_V$ for all $v_1, v_2 \in V$. In other words, $T^*(\mu_W(Tv)) = \mu_V(v)$ for all $v \in V$, where $T^*$ is the duall of $T$. This gives a commutative diagram
-\begin{center}
-	\begin{tikzpicture}
-		\node (V) {$V$};
-		\node[below = 2cm of V] (W) {$W$};
-		\node[right = 2cm of V] (Vd) {$V^*$};
-		\node[right = 2cm of W] (Wd) {$W^*$};
-		\draw[->] (V) -- node[above]{$\mu_V$} (Vd);
-		\draw[->] (V) -- node[left]{$T$} (W);
-		\draw[->] (W) -- node[above]{$\mu_W$} (Wd);
-		\draw[->] (Wd) -- node[right]{$T^*$} (Vd);
-	\end{tikzpicture}
-\end{center}
-Formally, the above says that in the category of finite-dimensional vector spaces with nondegenerate bilinear forms and morphisms that preserve bilinear forms, we have a natural isomorphism between the identity functor and the dual functor. In such a construction, $T^*$ is identified as the transpose of $T$.
-
-Now let us specialize the above to our scenario. Let $V = W = k$, and let $F = \F_q$. Define $\tau: k \times k \rightarrow \F_q$ as $\tau(a, b) = \trace_{k / \F_q}(ab)$. This a nondegenerate bilinear form. Also define $T$ as modular composition with $g$, i.e. $T(f) = f(g)$. It is not hard to show that this $T$ preserves $\tau$. The transposed linear map $T^*$ is called power projection \cite{shoup95}. Our goal is to compute $f(x) \in k$ such that $f(g(x)) = x$. The embedding $\phi$ will then be $x \mapsto f(h)$. According to the above diagram we should have $f = \mu_k^{-1}(T^*(\mu_k(x)))$. In other words, we first compute the dual of $x$, and then do a power projection, and convert the result back to monomial basis.
-
-The conversions between monomial and dual bases is done efficiently using the method of \cite{DeDoSc2014}. The power projection is computed efficiently using a divide-and-conquer technique used for computing modular composition \cite{shoup95}. Altogether, the cost of computing $f, f(h)$ is dominated by the cost of computations in the previous sections.
-
-
-\section{Linear algebra}
-
-Once $\beta \in K$ has been computed as a polynomial in $Y$,
-one can compute the powers
-$\beta^i = \sum_{j=0}^{n-1} m_{i,j} Y^j$
-for $i \in \{0, \ldots, n-1\}$ and build a matrix
-$M = \{m_{i, j}\}_{0\leq i \leq m-1, 0 \leq j \leq n -1}$
-representing $\phi$.
-This is trivially done in $O(m)$ operations in $K$.
-For $\gamma = \sum_{i = 0}^{m - 1} c_i X^i \in k$,
-$\phi(\gamma)$ can then be computed by a
-matrix-vector multiplication in $O(m n)$ operations in $\F_q$.
-
-Together, the second and third questions are the inverse image problem.
-They can be answered by first computing 
-an LU or similar matrix decompostions of $M$
-in $O((n (m)^{\omega - 1})$ operations in $\F_q$.
-Answering the second and third questions together is then
-an easy matter.
-
-Note that if $m = n$, that is if $k$ and $K$ are
-isomorphic, then the second question is trivial.
-For the third one, the inverse
-the inverse $M^{-1}$ of $M$ representing $\phi^{-1}$
-can be deduced from an an LU or similar matrix decompostions of $M$.
-For $\delta \in K$, $\phi^{-1}(\delta)$ can then be computed by a
-matrix-vector multiplication in $O(m^2)$ in $\F_q$.
-
-\section{Modular composition}
+\subsection{Modular composition}
 
 As an alternative to using linear algebra,
 $\phi(\gamma)$ can be computed directly using modular composition
@@ -2243,9 +2373,7 @@ to express $\delta \in K$ as a polynomial in $\beta$ in
 $\CC(n)$ operations in $\F_q$.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Algorithms specific to normal bases}
+\subsection{Algorithms specific to normal bases}
 
 In one of their article \cite{}, Kaltofen and Shoup proposed a subquadratic
 implementation of the Black Box Berkelamp Algorithm, a probalistic algorithm to
