@@ -2286,7 +2286,7 @@ We are going to assume that elements of $k$ are represented on the
 monomial basis $(1,X,\dots,X^{m-1})$, and elements of $K$ on the
 monomial basis $(1,Y,\dots,Y^{n-1})$.
 
-We review three generic solutions for this problem, each built on top
+We review three solutions for this problem, each built on top
 of the previous one. %
 The first one uses basic linear algebra; it is simple and effective,
 but has large space and time complexities. %
@@ -2295,13 +2295,6 @@ however it is still based on linear algebra, thus it has the same
 storage requirements as the previous method. %
 The last one replaces linear algebra with modular composition, thus
 providing the best space and time complexities overall. 
-
-We also briefly review a solution, due to Kaltofen and
-Shoup~\cite{kaltofen+shoup98}, that only applies when $\alpha$ is a
-normal element; while this solution is not generic, some embedding
-description algorithms (e.g., Rains' cyclotomic algorithm) naturally
-produce normal generators, it is thus natural to include it in our
-review.
 
 All the methods presented in this section are classic and well
 understood, thus we will keep the presentation short, and will not
