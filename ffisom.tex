@@ -222,8 +222,6 @@ K$, unique up to $\F_q$-automorphisms of $k$. The goal of this paper
 is to describe algorithms to efficiently represent and evaluate one
 such embedding.
 
-\todo{Motivation, previous work.}
-
 All the algorithms we are aware of, split the embedding problem in two
 sub-problems:
 \begin{enumerate}
@@ -245,7 +243,118 @@ sub-problems:
 \end{enumerate}
 
 
-\paragraph{Fundamental algorithms and complexity}
+\paragraph{Motivation, previous work}
+The first to get interested in this problem was H.~Lenstra: in his
+seminal paper~\cite{LenstraJr91} he shows that it can be solved in
+deterministic polynomial time, by using a representation for finite
+fields that he calls \emph{explicit data}.\footnote{Technically,
+  Lenstra only proved his theorem in the case where $k$ and $K$ are
+  isomorphic; however, the generalization to the embedding problem
+  poses no difficulties.} %
+In practice, the embedding problem arises naturally when designing a
+computer algebra system: as soon as a system is capable of
+representing arbitrary finite fields, it is natural to ask it to
+compute the morphisms between them. %
+Ultimately, by representing effectively the lattice of finite fields
+with inclusions, the user is given access to the algebraic closure of
+$\F_q$. %
+The first system to implement a general embedding algorithm was
+Magma~\cite{MAGMA}. %
+As detailed by its developers~\cite{bosma+cannon+steel97}, it used a
+much simpler approach than Lenstra's algorithm, entirely based on
+polynomial factorization and linear algebra. %
+Lenstra's algorithm was later revived by
+Allombert~\cite{Allombert02,Allombert02-rev}, who modified some key
+steps in order to make it practical; his implementation has since been
+part of the PARI/gp system~\cite{Pari}.
+
+Meanwhile, a distinct family of algorithms for the embedding problem
+was started by Pinch~\cite{Pinch}, and later improved by
+Rains~\cite{rains2008}. %
+These algorithms, based on principle radically different from
+Lenstra's, are intrinsically probabilistic. %
+Although their worst-case complexity is no better than that of
+Allombert's algorithm, they are potentially much more efficient on a
+large set of parameters. %
+This potential was understood by Magma's developers, who implemented
+Rains' algorithm in Magma v2.14.%
+\footnote{As a matter of fact, Rains' algorithm was never published;
+  the only publicly available source for it is in Magma's source code
+  (file \texttt{package/Ring/FldFin/embed.m}, since v2.14).}
+
+
+\paragraph{Our contribution}
+This work aims to be, chiefly, a complete review of all known
+algorithms for the embedding problem. %
+After laying out the foundations in the next section, we start with
+algorithms for the embedding description problem. %
+
+Section~\ref{sec:kummer} describes the family of algorithms based
+(more or less loosely) on Lenstra's work; we call these
+\emph{Kummer-type} algorithms. %
+In doing so, we pay a particular attention to Allombert's algorithm:
+to our knowledge, this is the fist detailed and complete complexity
+analysis of this algorithm and variants. %
+Thanks to our work on asymptotic complexity, we were able to devise
+improvements to the original algorithm that largely outperform it both
+in theory and practice. %
+
+In Section~\ref{sec:rains-algorithm} we describe Rains' algorithm. %
+Rains' original preprint~\cite{rains2008} went unpublished, thus we
+give here a complete description ans analysis of his algorithm, for
+reference. %
+We also give some original variants of Rains' algorithm of lesser
+interest in Appendix~\ref{app:rains-vars}.
+
+Then, in Section~\ref{sec:rains-elliptic} we present a generalization
+of Rains' algorithm using elliptic curves. %
+The possibility of this algorithm was hinted at by Rains, but never
+fully developed; we show that it is indeed possible to use
+\emph{elliptic periods} to solve the embedding description problem,
+and that the resulting algorithm behaves well both in theory and in
+practice. %
+While working out the correctness proof of the elliptic variant of
+Rains' algorithm, we encounter an unexpected difficulty: whereas roots
+of unity enjoy Galois properties that guarantee the success of Rains'
+original algorithm, points of elliptic curves fail to provide the
+same. %
+Heuristically, the failure probability of the elliptic variant is
+extremely small, however we are not able to prove it formally. %
+Our experimental searches even seem to suggest that the failure
+probability might be, surprisingly, zero. %
+We state this as a conjecture on elliptic periods (see
+Conjecture~\ref{conj:ellperiods}); our findings and supporting
+evidence are summarized in Appendix~\ref{app:ellprdsdata}.
+
+Section~\ref{sec:selection} does a global comparison of all the
+algorithms presented previously. %
+In particular, Rains' algorithm and variants require a non-trivial
+search for parameters, which we discuss thoroughly. %
+Then we present an algorithm to select the best performing embedding
+description algorithm, from a practical point of view. %
+This theoretical study is complemented by the experimental
+Section~\ref{sec:experimental-results}, where we compare our
+implementations of all the algorithms; our source code is made
+available through the Git repository
+\url{https://github.com/defeo/ffisom} for replication and further
+scrutiny.
+
+Our review could not be complete without a presentation of all the
+embedding evaluation algorithms, which we undertake in
+Section~\ref{sec:eval}. %
+Given that the algorithms of this section are much more classical and
+well understood, we only give a theoretical presentation, with no
+experimental support. %
+
+In conclusion, we hope that our review will constitute a reference
+guide for researchers and engineers interested in implementing
+embeddings of finite field in a computer algebra system.
+
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+\subsection{Fundamental algorithms and complexity}
 We review the fundamental building blocks that constitute the
 algorithms presented next.  We are going to measure all complexities
 in number of operations $+$, $\times$, $\div$ in $\F_q$, unless
@@ -619,20 +728,10 @@ the depth of the recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and the coeff
 halved each time, we have the desired result.
 \end{proof}
 
+\subsection{Embedding description}
 
-
-
-
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\part{Embedding description}
-
-This part is devoted to the problem of describing the embedding of
-$k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; we let $m=\deg f$ and
+We are finally ready to address the problem of describing the embedding of
+$k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; throughout the paper we let $m=\deg f$ and
 $n=\deg g$, so that $m|n$. The \emph{embedding description problem}
 asks to find two elements $\alpha\in k$ and $\beta\in K$ such that
 $\alpha\mapsto\beta$ for some field embedding $\phi:k\to K$. This is
@@ -1220,6 +1319,7 @@ extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\l
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Rains' algorithm}
+\label{sec:rains-algorithm}
 
 We now move on to a different family of algorithms based on the theory of
 algebraic groups. The simplest of these algorithms is Pinch's
@@ -1248,7 +1348,7 @@ defines a valid embedding. Pinch's algorithm tests all possible
 exponents $e$, until a suitable one is found. To test for the validity
 of a given $e$, it applies the embedding $\phi:\zeta_1\mapsto\zeta_2$
 to the class of $X$ in $k$, and verfies that its image is a root of
-$f$ in $K$ (see Part~\ref{part:eval} for details on embedding
+$f$ in $K$ (see Section~\ref{sec:eval} for details on embedding
 evaluation).
 
 The trial-and-error nature of Pinch's algorithm makes it impractical,
@@ -1260,11 +1360,7 @@ idea in greater detail in Section~\ref{sec:rains-elliptic}.
 
 This section is devoted to a different way of improving Pinch's
 algorithm, imagined by Rains~\cite{rains2008}, and implemented in the
-Magma computer algebra system~\cite{MAGMA}. Rains' original preprint
-went unpublished\footnote{The only publicly available source for
-  Rains' algorithm is Magma's source code (file
-  \texttt{package/Ring/FldFin/embed.m}, since v2.14).}, thus we
-describe his algorithm in detail for completeness. Rains' technical
+Magma computer algebra system~\cite{MAGMA}. Rains' technical
 contribution is twofold: first he replaces roots of unity with
 Gaussian periods to avoid trial-and-error, second he moves to slightly
 larger extension fields to ensure the existence of a small $\ell$ as
@@ -1407,7 +1503,7 @@ the field $k$, the procedure for the field $K$ being identical.
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of
   $O((\MM(sr)\ell\log\ell)/r)$,
-  using the techniques of Section~\ref{sec:introduction}.
+  using the techniques of Section~\ref{sec:preliminaries}.
   The final result is obtained as an element of $k$.
 \end{proof}
 
@@ -2499,99 +2595,13 @@ Proposition~\ref{prop:trace-like}.
 
 
 
-\subsection{Algorithms specific to normal bases}
-
-In one of their article \cite{}, Kaltofen and Shoup proposed a subquadratic
-implementation of the Black Box Berkelamp Algorithm, a probalistic algorithm to
-factor a monic square free polynomial over finite fields. They mention that
-an implementation of an automorphism projection algorithm can be used to solve 
-the conversion to a normal basis coordinates problem. For a complete description
-of the factorization algorithm, we redirect the reader to the section 3 of 
-\cite{}. We focus on describing their implementation to help solve our problem.
-
-Given an irreducible polynomial $f\in\F_q[X]$ of degree $n$, a normal element 
-$\eta$ and an element $\gamma\in\F_q[X]/f(X)$, we wish to compute $c_0,\dots,
-c_{n-1}\in\F_q$ such that :
-\begin{equation}
-\label{eq:eqnorm}
-\gamma=c_0\eta+\dots+c_{n-1}\eta^{q^{n-1}}.
-\end{equation}
-Let $u$ be a projection map from $\F_{q^n}$ to $\F_q$. To solve this problem, 
-We apply $n-1$ times the $q$-th power to Eq.~\eqref{eq:eqnorm}, and apply $u$ to 
-to each equations to obtain the following system in $\F_q$
-\begin{equation}
-\label{eq:systemnormal}
-u(\gamma^{q^j})=\sum_{i=0}^{n-1}{c_iu(\eta^{q^{i+j}})}\qquad(0\leq j<n).
-\end{equation}
-We introduce the $n\times n$ matrix $Q$ used in the Berlekamp algorithm, its
-$q_{i,j}$'s are the coefficients of
-$X^{iq}=q_{i,n-1}X^{n-1}+q_{i,n-2}X^{n-1}+\dots+q_{i,0}\bmod f(X)$. It 
-is the representation of the $q$-th power map on $\F_q[X]/f(X)$.
-We can then rewrite Eq.~\eqref{eq:systemnormal} as
-\begin{equation}
-\label{eq:linalgnormal}
-\vec{u}^\top Q^j\vec{\gamma}= \vec{c}\,(\vec{u}^\top Q^{i+j}\vec{\eta})_{i,j}
-\qquad(0\leq j<n, 0\leq i<n),
-\end{equation}
-where $\vec{c}^\top=(c_0,c_1,\dots,c_{n-1})$, $\vec{\gamma}$ and $\vec{\eta}$
-are the vectors containing the coordinates of $\gamma$ and $\eta$, respectively, 
-in respect with the power basis.
-
-The algorithm we are interested in focuses on computing the elements of the form 
-$\vec{u}^\top Q^j\vec{\gamma}$, \emph{i.e.} solves the automorphism projection 
-problem. To optimize the computation, the algorithm is be paramterized by a
-$0\leq\beta\leq1$. We split the computation in several parts, set 
-$t=\lceil{n^\beta}\rceil$ and $m=\lceil{k/t}\rceil$, where $k=o(n)$, the 
-elements we want to compute are
-\begin{equation}
-\label{eq:normalsplit}
-(\vec{u}^\top Q^{tj})\cdot(Q^l\vec{\gamma})\qquad(0\leq j<m, 0\leq l <t).
-\end{equation}
-In our case, we fix $k=n$.
-
-\begin{algorithm}
-  [Automorphism Projection]
-  \label{algorithm:autoproj}
-  \begin{algorithmic}[1]
-    \REQUIRE $u$ defined as above, $\gamma$ an element of $\F_q[X]/f(X)$ and 
-$0\leq\beta\leq1$.
-    \ENSURE $(\vec{u}^\top Q^i\vec{\gamma})$ for $0\leq i<k$.
-    \STATE $b_l\leftarrow Q^l\vec{\gamma}$ for $0\leq l<t$.
-    \STATE Compute $X^{q^t}\bmod f(X)$.
-    \STATE $a_j\leftarrow\vec{u}^\top Q^{tj}$ for $0\leq j<m$.
-    \RETURN $(a_j.b_l)_{l+tj=i}$ for $0\leq i<n$.
-  \end{algorithmic}
-\end{algorithm}
-
-The first step is done using a simple square and multiply algorithm, since
-the left mulitplication by $Q$ is equivalent to raising to $q$. For the second 
-step we use the Algorithm 5.2 from \cite{} of von Zur Gathen and Shoup. It only 
-remains to compute $m-1$ transposed modular composition to carry out the right 
-multiplications by $Q^t$. We have the following result :
-
-\begin{theorem}
-There exist probabilistic algorithms that can solve the above problem in 
-\begin{equation}
-O(n^{(\omega+1)/2+(1-\beta)(\omega-1)/2+o(1)}+n^{1+\beta+o(1)}\log{q})
-\end{equation}
-arithmetic operations in $\F_q$ for any $\beta$ with $0\leq\beta\leq1$.
-Furthermore, for a specific choice of parameters, the cost of operations is
-exactly $O(n^{1.815})\log{q}$.
-\end{theorem}
-
-\begin{proof}
-See~\cite[Theorem 6]{}
-\end{proof}
-
-
-
 \appendix
 \part*{Appendices}
 \addcontentsline{toc}{part}{Appendices}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{More of Rains' algorithm}
+\section{More variants of Rains' algorithm}
 \label{app:rains-vars}
 
 We have seen that Rains' cyclotomic algorithm suffers in practice from
@@ -3207,4 +3217,4 @@ j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 
 
 %  LocalWords:  isomorphism cyclotomic coprime subfield Frobenius
 %  LocalWords:  endomorphism eigenspace Allombert's polynomially
-%  LocalWords:  automorphism morphism
+%  LocalWords:  automorphism morphism morphisms
