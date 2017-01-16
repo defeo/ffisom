@@ -849,9 +849,7 @@ are not fields if $r$ is not prime), and constructs
 $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$ in a way equivalent
 to Lenstra's using linear algebra:
 the solution to Hilbert's theorem 90 is deduced
-from an element in the kernel of the $\F_q$-linear map $h(x^q)$,
-whose matrix is constructed using
-Horner's method at a cost of $O(s r^\omega)$.
+from an element in the kernel of the $\F_q$-linear map $h(x^q)$.
 At this point, rather than computing a discrete
 logarithm, Allombert points out that there exists a $c\in\F_q(\zeta)$
 such that $\theta_1\mapsto c\theta_2$, and that such value can be
@@ -953,6 +951,67 @@ $\theta_a\ne0$. Since the map $\hat\Theta$ is
 $\F_q$-linear and non-zero, it has rank at least 1, thus a
 random $\theta_a$ is zero with probability $< 1 / q$. Therefore, we only 
 need $O(1)$ trials to find $\theta_1$ (and $\theta_2$).
+
+Before presenting subquadratic algorithms, we briefly describe
+Allombert's algorithms.
+
+\paragraph{Case 0: Allombert's algorithms}
+Both Allombert's algorithm rely on linear algebra.
+
+The first version of the algorithm simply computes an eigenvalue of
+$\sigma$ for $\zeta$ over $\F_q(\zeta)$ at a cost of
+$O(\MM(r) \log q + r \MM(r) + \MMM(rs))$.
+
+In his revised algorithm, Allombert remarks that
+from an element in the kernel of $\hat{h}$ over $k$,
+a solution to Hilbert's theorem 90 can be deduced
+by evaluating $h'(S)=h(S)/(S-\zeta)$ over $k[\zeta]$.
+
+Furthermore, if we set $h(S)=S^s+\sum_{i=0}^{s-1}h_iS^i$, we can
+explicitly write $h'$ as
+\begin{equation}
+  \label{eq:hprime}
+  h'(S)=\sum_{i=0}^{s-1}h_i'(S)\zeta^i,\quad
+  \text{where}\quad
+  \left\{\begin{aligned}
+    h_{s-1}'(S) &= 1,\\
+    h_{i-1}'(S) &= h_i'(S) S + h_i.
+  \end{aligned}\right.
+\end{equation}
+Indeed, Horner's rule shows that $h_{-1}'(S)=h(S)$, and by direct
+calculation we find that $(S-\zeta)\cdot h'(S) = h'_{-1}(S)$.
+
+\begin{proposition}
+Using Allombert's algorithm, a solution $\theta$ to
+Hilbert's theorem 90 can be computed in
+$O(s \MM(r) \log(q) + r \MM(r) + \sqrt{s} \MMM(r))$ operations.
+\end{proposition}
+
+\begin{proof}
+After computing the matrix of $\sigma$ over $k$ at a cost of
+$O(\MM(r) \log(q) + r \MM(r))$ operations, one can compute
+the matrix of $\hat{h}$ in $O(\sqrt{s} \MMM(r))$ operations
+using Paterson--Stockmeyer algorithm.%
+\footnote{
+Alternatively, as is implementated in PARI/GP,
+one can first compute the powers $x^{q^i}$ for $0 \leq i \leq s$
+at a cost of $O(s r^2)$ using the matrix of $\sigma$
+(or $O(s M(r) \loq q)$ using modular exponentiation),
+and deduce the powers $x^{j q^i}$ for $2 \leq j \leq r$
+at a cost $O(s r \MM(r))$,
+in order to iteratively compute the matrix of $\hat{h}$
+for an additional cost of $O(s r^2)$ for scalar
+multiplications by the coefficients of $h$.
+The total cost being $O(s r \MM(r))$.
+}
+
+Computing an element in the kernel of $\hat{h}$
+over $k$ costs $O(\MMM(r))$ operations.
+
+The final evaluation of $\hat{h'}$ can be done
+naively in $O(s \MM(r) \log(q))$ using modular exponentiation
+(or $O(s r^2)$ using the matrix of $\sigma$).
+\end{proof}
 
 We now give three different algorithms to compute $\theta_a$ efficiently.
 Which algorithm has the best asymptotic complexity depends on the
