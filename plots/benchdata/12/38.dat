@@ -1,0 +1,9 @@
+# ./benchmark.sh 38 2**40 2**40+2**8 2**11 2**11+2**5 2 3 3600
+# model name	: Intel(R) Xeon(R) CPU E5-4650 v2 @ 2.40GHz
+# SageMath version 7.5.rc0, Release Date: 2016-12-18
+# ffisom revision cbe82210cdc5a3a249fe7d33424f82af31f91883
+# Magma V2.22-7
+# command="import os; sys.path.append(os.getcwd()); from benchmark import *; benchmark(pbound=[2**40, 2**40+2**8], nbound=[2**11, 2**11+2**5], prime=2, loops=3, tloop=3600, verbose=True, write=True, overwrite=False, fname=os.getcwd()+'/38.dat', )"
+1099511627791 2053 (46, 2052) 0 0 0 0 0 0 0 2125.90521693 2123.9070487 1923.32092929 1922.9499166 0
+1099511627791 2063 (2, 2062) 0 0 0 0 0 0 0 2491.44109265 2495.29654638 2020.97293766 2008.45262297 0
+1099511627791 2069 (2, 1034) 0 0 3179.22236029 0 0 0 2455.89984632 1521.65476433 1522.05503702 1235.69579005 1456.48073165 3382.43339562
