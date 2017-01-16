@@ -996,7 +996,7 @@ using Paterson--Stockmeyer algorithm.%
 Alternatively, as is implementated in PARI/GP,
 one can first compute the powers $x^{q^i}$ for $0 \leq i \leq s$
 at a cost of $O(s r^2)$ using the matrix of $\sigma$
-(or $O(s M(r) \loq q)$ using modular exponentiation),
+(or $O(s \MM(r) \log q)$ using modular exponentiation),
 and deduce the powers $x^{j q^i}$ for $2 \leq j \leq r$
 at a cost $O(s r \MM(r))$,
 in order to iteratively compute the matrix of $\hat{h}$
