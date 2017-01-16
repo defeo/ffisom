@@ -1,1 +1,13 @@
 # n r (o, c) magma cyclo_rains conic_rains elliptic_rains pari kummer_cyclo_linalg kummer_linalg_only kummer_linalg kummer_modcomp kummer_cofactor kummer_iterfrob kummer_mpe
+# magma = using Magma and its cyclotomic Rains implementation
+# cyclo_rains = Rains with the multiplicative group
+# conic_rains = Rains with conics, only when o = 2 and divisibility constraints
+# elliptic_rains = Rains with elliptic curves
+# pari = PARI/GP and its Allombert postprint implementation, i.e. using custom code to evaluate H(Frob), linear algebra to find an element in the kernel and lifting using linear algebra to compute frobenii
+# kummer_cyclo_linagl = linear algebra directly over the cyclotomic extension
+# kummer_linalg_only = emulation of pari, i.e.linear algebra used to compute the matrix H(Frob), its kernel and frobenii computation when lifting
+# kummer_linalg = variation of pari using Horner/BSGS to compute H(Frob), linalg to compute kernel and modular exponentiation to compute frobenii when lifting
+# kummer_modcomp = use a trace like formula and modular composition over the base field
+# kummer_cofactor = variation of pari using BSGS/AE to compute element in kernel of H(Frob) and modular exponentiation to compute frobenii when lifting
+# kummer_iterfrob = naive iterated frobenii computing them using modular exponentiation over the base field
+# kummer_mpr = smart iterated frobenii computing them using multi point evalution over the cyclotomic extension
