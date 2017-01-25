@@ -1328,43 +1328,50 @@ The main result of this section is given in Theorem~\ref{theorem:isom-root} belo
 We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} to compute a $v$-th 
 roots in $k(\zeta)$.
 
-First note that if $\vu$ is coprime with $q-1$ (that is $t$ defined above is $0$)  then a modular exponentiation by $\vu^{-1}$ in $k(\zeta)$ trivially yields a solution.
+First note that if $v$ is coprime with $q-1$ (that is $t$ defined above is $0$)  then a modular exponentiation by $v^{-1}$ in $k(\zeta)$ trivially yields a solution.
 
-Let's now suppose that $\vu$ divides $q-1$.
-Then one reduces the root extraction in $k(\zeta)$ to a root extraction in a smaller extension of $\F_p$ using~\cite[Algorithm~3]{doliskanischost2011}.
+Let's now suppose that $v$ divides $q-1$.
+Then one reduces the root extraction in $k(\zeta)$ to a root extraction
+in a smaller extension of $\F_q$ using~\cite[Algorithm~3]{doliskanischost2011}.%
+\footnote{Note that \cite[Algorithm~3]{doliskanischost2011} reduces the
+root extraction into the smallest possible extension of $\F_p$.
+Here we restrict to the smallest possible extension of $\F_q$
+to ensure that $\zeta^{q^s} = \zeta$.
+The original algorithm would use powering to $p^{s'}$
+where $s'$ is the order of $p$ modulo $v$ and $s'$ divides $s$
+whereas ours will use powerings by $q^s$.}
 The critical computation in this algorithm is the trace-like computation performing the reduction.
 
 The initial exponentiation corresponding to Step 6 of~\cite[Algorithm~3]{doliskanischost2011}
-computes $\lambda = a^{p^s' - 1}/\vu}$ where $s'$ is the order of $p$
-modulo $\nu$ (note that $s'$ divides $s$)
+computes $\lambda = a^{(q^s - 1)/v}$
 and can be done using the technique
 in~\cite[Lemma~14]{shoup94}.
 A simple analysis shows that this can be done in $O(\MM(rs)\log(v)\log(s) + 
 s\CC(r)\log(s) + \MM(rs)\log(q))$ operations in $\F_q$.
 
 The trace-like computation of
-$1 + \lambda + \lambda^{1+p^{s'}} + \cdots + \lambda^{1+p^{s'}+\cdots+p^{s-2s'}}$
+$1 + \lambda + \lambda^{1+q^{s}} + \cdots + \lambda^{1+q^{s}+\cdots+q^{v-2s}}$
 corresponding to Step 7 of~\cite[Algorithm~3]{doliskanischost2011}
 (and \cite[Algorithm~2]{doliskanischost2011}) can be adapted as follows.
-Note that an element $\lambda \in k(\zeta)$ can be written as
-$\lambda = \lambda_0(x) + \lambda_1(x) \zeta + \cdots + \lambda_{s - 1}(x) \zeta^{s - 1}$, 
-where $x$ is the image of $X$ in $k=\F_q[X]/f(X)$.
-By a slight variation on the proof of Propostion~\ref{prop:trace-like}, we compute the power
-\todo{oops, $s \neq s'$ so $\zeta^{p^s'} \neq \zeta$}
-\[ \lambda^{p^{i s'}} = \sum_{j = 0}^{s - 1} \lambda_j(x^{p^{i s'}}) \zeta^j = \sum_{j = 0}^{s - 1} \lambda_j(\xi_i) \zeta^j = 
-\lambda(\xi_i)\]
-where $\xi_i = x^{p^{is'}}$
-using $O(s\CC(r))$ operations in $\F_q$.
-Also, to compute $x^{q^s}$ we first compute 
-$x^q$ using $O(\MM(r)\log(q))$ operations in $\F_q$, and then do $\log(s)$ modular compositions in  $k$.
-Then for any $\lambda \in k(\zeta)$, $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ operations in $\F_q$. Therefore, the 
-complexity of~\cite[Algorithm~2]{doliskanischost2011} will be $O(s\CC(r)\log(i) + 
-\MM(r)\log(q))$ operations in $\F_q$.
+Let $x$ be the image of $X$ in $k=\F_q[X]/f(X)$.
+To compute $x^{q^s}$ we first compute $x^q$ using $O(\MM(r)\log(q))$
+operations in $\F_q$, and then do $\log(s)$ modular compositions in  $k$.
+To compute $\lambda^{q^s}$,
+note that an element $\lambda \in k(\zeta)$ can be written as
+$\lambda = \lambda_0(x) + \lambda_1(x) \zeta + \cdots + \lambda_{s - 1}(x) \zeta^{s - 1}$
+and the $\zeta^{q^s} = \zeta$.
+Therefore for any $i$,
+\[
+\lambda^{q^{i s}} = \sum_{j = 0}^{s - 1} \lambda_j(x^{q^{i s}}) \left(\zeta^{q^{i s}}\right)^j = \sum_{j = 0}^{s - 1} \lambda_j(x^{q^{i s}}) \zeta^j = \lambda\left(x^{q^{i s}}\right).
+\]
+In particular, $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ operations in $\F_q$
+and~\cite[Algorithm~2]{doliskanischost2011} can be applied in a straightforward
+way with a complexity of $O(s\CC(r)\log(i) + \MM(r)\log(q))$ operations in $\F_q$.
 
 The minimal polynomial, root extraction in the subfield and embedding computation corresponding to Steps 9, 10 and 11, have a negligible cost.
-Therefore, the complexity
-of~\cite[Algorithm~3]{doliskanischost2011} will be $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + 
-\MM(rs)\log(q))$ operations in $\F_q$.
+Therefore, the complexity of~\cite[Algorithm~3]{doliskanischost2011} will be
+$O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + \MM(rs)\log(q))$
+operations in $\F_q$.
 
 \begin{proof}[Proof of Theorem~\ref{theorem:isom-root}]
 Now, we can construct the embedding of Theorem~\ref{theorem:isom-root} as follows. We first build the 
