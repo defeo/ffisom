@@ -1208,22 +1208,25 @@ overall cost of the best variations of Allombert's algorithm.
 \label{sec:fast-artin-schreier}
 
 This section is devoted to the case $r = p^d$ for some positive integer $d$.
-The technique we present here originates in~\cite[Lemma 5]{Adleman-Lenstra},
-and appears again in~\cite{LenstraJr91} and~\cite{Allombert02}.
-The chief difference with previous work consists in replacing linear algebra
-with a technique to solve Hilbert's additive theorem 90 similar to the one in
-the previous section.
+The technique we present here originates in Adleman and Lenstra's work~\cite[Lemma 5]{Adleman-Lenstra},
+and appears again in Lenstra's~\cite{LenstraJr91}
+and Allombert's~\cite{Allombert02}.
+The chief difference with previous work onc again consists
+in replacing linear algebra
+with a technique to solve the additive version of Hilbert's theorem 90
+similar to the one in the previous section.
 Recently, Narayanan~\cite[Sec.~4]{narayanan2016fast} independently described
 a related variant with a similar complexity.
 
 The idea is to build a 
-tower inside the extension $k/\F_q$ using polynomials of the form $X^p - X - a$ where $a \in k$. To 
-start, let $a_1 \in \F_q$ be such that $\trace_{\F_q/\F_p}(a_1) \ne 0$. Let $\sigma \in 
-\gal(\F_q/\F_p)$ be a generator. Then by the additive Hilbert's theorem 90 there is no element 
-$\alpha \in \F_q$ such that $\sigma(\alpha) - \alpha = a_1$. Equivalently, the polynomial $f_1 = 
-X^p - X - a_1$ has no root in $\F_q$. By the Artin--Schreier theorem in~\cite[Ch VI]{lang} $f_1$ 
-is irreducible over $\F_q$. For a root $\alpha_1 \in k$ of $f_1$ the extension $\F_q(\alpha_1) / 
-\F_q$ is of degree $p$.
+tower inside the extension $k/\F_q$ using polynomials of the form $X^p - X - a$ where $a \in k$.
+To  start, let $a_1 \in \F_q$ be such that $\trace_{\F_q/\F_p}(a_1) \ne 0$.
+Let $\sigma \in  \gal(\F_q/\F_p)$ be a generator of the Galois group.
+Then by the additive version of  Hilbert's theorem 90 there is no element 
+$\alpha \in \F_q$ such that $\sigma(\alpha) - \alpha = a_1$.
+Equivalently, the polynomial $f_1 =  X^p - X - a_1$ has no root in $\F_q$.
+By the Artin--Schreier theorem in~\cite[Ch VI]{lang} $f_1$ 
+is irreducible over $\F_q$. For a root $\alpha_1 \in k$ of $f_1$ the extension $\F_q(\alpha_1) / \F_q$ is of degree $p$.
 Now let $a_2 = a_1\alpha_1^{p - 1}$. Then by~\cite[Lemma 5]{Adleman-Lenstra} the polynomial $f_2 = 
 X^p - X - a_2$ is irreducible over $\F_q(\alpha_1)$. So, for a root $\alpha_2 \in k$ of $f_2$ the 
 extension $\F_q(\alpha_2, \alpha_1) / \F_q(\alpha_1)$ is of degree $p$. Continuing the above 
@@ -1238,8 +1241,9 @@ in~\cite{LenstraJr91, Allombert02, shoup93}. By construction, $\alpha_i \notin \
 $\F_q$ is of degree $r = p^d$. Therefore, $k = \F_q(\alpha_d)$, and the element $\alpha_d$ is 
 uniquely defined up to $\F_q$-isomorphism.
 
-The above constructions boils down to computing a root of the polynomial $f = X^p - X - a \in 
-k[X]$. We show how to compute such root. By construction, $a$ is always in an intermediate subfield 
+The above construction boils down to computing a root of the polynomial $f = X^p - X - a \in k[X]$.
+We now show how to efficiently compute such a root.
+By construction, $a$ is always in an intermediate subfield 
 $\F_q \subseteq k' \subset k$. This means 
 \[ \trace_{k / \F_p}(a) = \trace_{k' / \F_p}(\trace_{k / k'}(a)) = \trace_{k' / \F_p}(p^ia) = 0  \]
 for some $i > 0$. By Hilbert's theorem 90 there exists $\alpha \in k$ such that $\alpha - 
@@ -1251,7 +1255,8 @@ $\theta \in k$ with nonzero trace, $\alpha$ can be explicitly set as
 	\alpha = \frac{1}{\trace(\theta)}[a\sigma(\theta) + (a + \sigma(a))\sigma^2(\theta) + \cdots + 
 	(a + \sigma(a) + \cdots + \sigma^{rt - 2}(a))\sigma^{rt - 1}(\theta)]
 \end{equation}
-where $t = [\F_q : \F_p]$. To compute Eq.~\eqref{equ:art-sch-hil} efficiently, we define
+where $t = [\F_q : \F_p]$.
+To compute $\alpha$ using Eq.~\eqref{equ:art-sch-hil} efficiently, we define
 \[ \xi_i = \sigma^i(x), \quad \beta_i(u) = u + \sigma(u) + \cdots + \sigma^{i - 1}(u), \quad 
 \alpha_i(v) = \beta_1(a)\sigma(v) + \cdots + \beta_i(a)\sigma^i(v). \]
 A simple calculation gives
@@ -1285,8 +1290,11 @@ computed. As before, the action of $\sigma^j$ is the same as composing with $\xi
 of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(\CC(r))$ 
 operations in $\F_q$. The initial value of $\xi_1 = x^q$ is computed using $O(\MM(r)\log(q))$ 
 operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(rt) + 
-\MM(r)\log(q))$ operations in $\F_q$. Now, to compute $\alpha_d$ in Eq.~\eqref{equ:art-sch-tower} we 
-need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is computed only once. 
+\MM(r)\log(q))$ operations in $\F_q$.
+
+Now, to compute $\alpha_d$ in Eq.~\eqref{equ:art-sch-tower} we 
+need to take $d$ roots where $d \in O(\log(r) / \log(p))$ which leads to the following result. (Note that $\xi_1$ is computed only once and reused thereafter.)
+
 \begin{proposition}
 	Let $r = p^d$ for a positive integer $d$, and let $t = [\F_q : \F_p]$. An isomorphism of two 
 	extensions $k / \F_q$, $K / \F_q$ of degree $r$ can be constructed using 
@@ -1297,7 +1305,7 @@ need to take $d$ roots where $d \in O(\log(r) / \log(p))$. Note that $\xi_1$ is 
 \subsection{Faster algorithm for large powers}
 \label{sec:fast-algor-large}
 
-We end this section, with an algorithm that is particularly efficient when the extension 
+We end this section with an algorithm that is particularly efficient when the extension 
 degree $r$ is a prime power. Allombert's algorithm works well in this case, however its
 complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for some prime $v\ne p$,
 it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ instead.
@@ -1330,16 +1338,9 @@ root extractions in $k(\zeta)$. Therefore, $\theta$ is a generator for the uniqu
 $k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of $\theta$ is such that $k = 
 \F_q(\alpha)$. %
 Doing the same in $K$ yields an element $\beta\in K$ such that
-$\alpha\mapsto\beta$ defines an isomorphism. %
-The main result of this section is given in Theorem~\ref{theorem:isom-root} below.
-
-\begin{theorem}
-	\label{theorem:isom-root}
-	Let $r = v^d$ where $v \ne p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
-	order of $q$ in $\Z / v\Z$. Given extensions $k/\F_q$, $K/\F_q$ of degree $r$, an
-        embedding $k\hookrightarrow K$ can be constructed at the cost of 
-	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
-\end{theorem}
+the map $\alpha\mapsto\beta$ defines an isomorphism. %
+The main difficulty in applying such an algorithm resides in computing
+efficiently $v$-th root in $k(\zeta)$ and is addressed below.
 
 
 \paragraph{Computing $v$-th roots in $k(\zeta)$}
@@ -1391,8 +1392,18 @@ Therefore, the complexity of~\cite[Algorithm~3]{doliskanischost2011} will be
 $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + \MM(rs)\log(q))$
 operations in $\F_q$.
 
-\begin{proof}[Proof of Theorem~\ref{theorem:isom-root}]
-Now, we can construct the embedding of Theorem~\ref{theorem:isom-root} as follows. We first build the 
+
+We can finally state the main result of this section.
+\begin{theorem}
+	\label{theorem:isom-root}
+	Let $r = v^d$ where $v \ne p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
+	order of $q$ in $\Z / v\Z$. Given extensions $k/\F_q$, $K/\F_q$ of degree $r$, an
+        embedding $k\hookrightarrow K$ can be constructed at the cost of 
+	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+\end{theorem}
+
+\begin{proof}
+We can construct the embedding of Theorem~\ref{theorem:isom-root} as follows. We first build the 
 extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in $\F_q(\zeta)$. 
 Then $\eta$ is an $r$-power in $k(\zeta)$ and $K(\zeta)$. To obtain $r$-th roots $\theta_1\in k$, $\theta_2\in K$ of $\eta$ we take $d$ 
 successive $v$-th roots using the algorithm sketched above. 
