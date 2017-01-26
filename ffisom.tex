@@ -38,6 +38,7 @@
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem*{problem}{Problem}
 \newtheorem{example}[theorem]{Example}
 \newtheorem*{remark}{Remark}
 \newtheorem{note}[theorem]{Note}
@@ -228,7 +229,7 @@ sub-problems:
 \item Determine elements $\alpha\in k$ and $\beta\in K$ such that
   $k=\F_q(\alpha)$, and such that there exists an
   embedding $\phi$ mapping $\alpha\mapsto\beta$. We refer to this
-  problem as the \emph{Embedding description}.
+  problem as the \emph{embedding description problem}.
   It is easily seen that $\alpha$ and $\beta$ describe an embedding
   if and only if they share the same minimal polynomial.
 \item Given elements $\alpha$ and $\beta$ as above, given $\gamma\in
@@ -238,8 +239,8 @@ sub-problems:
   \item Test if $\delta\in\phi(k)$.
   \item If $\delta\in\phi(k)$, compute $\phi^{-1}(\delta)\in k$.
   \end{itemize}
-  We refer collectively to these problems as the \emph{Embedding
-    evaluation}.
+  We refer collectively to these problems as the \emph{embedding
+    evaluation problem}.
 \end{enumerate}
 
 
@@ -266,7 +267,7 @@ polynomial factorization and linear algebra. %
 Lenstra's algorithm was later revived by
 Allombert~\cite{Allombert02,Allombert02-rev} who modified some key
 steps in order to make it practical; his implementation has since been
-part of the PARI/gp system~\cite{Pari}.
+part of the PARI/GP system~\cite{Pari}.
 
 Meanwhile, a distinct family of algorithms for the embedding problem
 was started by Pinch~\cite{Pinch}, and later improved by
@@ -727,7 +728,7 @@ the depth of the recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and the coeff
 halved each time, we have the desired result.
 \end{proof}
 
-\subsection{Embedding description}
+\subsection{Embedding description problem reduction}
 
 We are finally ready to address the problem of describing the embedding of
 $k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; throughout the paper we let $m=\deg f$ and
@@ -761,13 +762,31 @@ or
   \beta = \sum_{\substack{r|m,\\\gcd(r,m/r)=1}}\beta_r.
 \end{equation*}
 
-In the next sections, we present algorithms to solve this problem. To
-simplify the exposition, we will assume that $[k:\F_q]=[K:\F_q]=r$.
+Moreover, to treat the general embedding description problem,
+it is sufficient to treat it in the case where $[k:\F_q]=[K:\F_q]=r$,
+that is the computation of an isomorphism.
 Indeed, we can reduce to this situation by applying
 Proposition~\ref{prop:subfield}, at an additional cost of
 $O(\CC(n)\log(n) + \MM(n)\log(q))$ for each primary factor $r$.
 
-All algorithms presented next are going to rely on one common
+Therefore, to simplify the exposition, we focus on algorithms
+solving the following problem.
+\begin{problem}{Prime power degree extensions isomorphism}
+\label{prob:embedding}
+Let $r$ be a prime power and $k, K$ a couple of extensions of $\F_q$
+of degree $r$.
+How to efficiently compute an isomorphism between $k$ and $K$?
+\end{problem}
+Note that although some algorithms are restricted to this situation,
+especially those presented in Section~\ref{sec:kummer},
+some of them could still be readily applied to a more general situation,
+especially those from Sections~\ref{sec:rains-algorithm}
+and~\ref{sec:rains-elliptic}.
+For efficiency reason, treating each primary part independently is
+almost always a good idea.
+
+Finally, note that
+all algorithms presented next are going to rely on one common
 principle: construct an element in $k$ (and in $K$) such that its
 minimal polynomial (or, equivalently, its orbit under the absolute
 Galois group of $\F_q$) is uniquely (or \emph{almost} uniquely)
@@ -781,11 +800,12 @@ defined.
 \section{Kummer-type algorithms}
 \label{sec:kummer}
 
-In this section we review what we call \emph{Kummer-type} approaches to the embedding problem. 
+In this section we review what we call \emph{Kummer-type} approaches to the embedding problem for prime power degree extensions. 
 We briefly review the works of Lenstra~\cite{LenstraJr91},
 and Allombert~\cite{Allombert02,Allombert02-rev}, then 
 we give variants of these algorithms with a significantly lower complexities.
 As stated above, we let $k, K$ be degree $r$ extensions of $\F_q$,
+where $r$ is a prime power,
 and we let $p$ be their characteristic.
 We give our fast versions of the algorithms for two separate cases: the case $p \nmid r$
 is treated in Section~\ref{sec:fast-kummer}, the case $r = p^d$, where $d$ 
@@ -868,7 +888,7 @@ such that $\theta_1\mapsto c\theta_2$ defines an isomorphism,
 and that such value can be
 computed as the $r$-th root of $\theta_1^r/\theta_2^r$.
 Finally, by making the automorphism group of $k[\zeta]$ over $k$ act
-on $\theta_1$ and $\theta_2$, he obtains an embedding $k \hookrightarrow K$.
+on $\theta_1$ and $\theta_2$, he obtains an embedding $k \hookrightarrow K$.%
 
 
 \subsection{Fast Kummer-type algorithm for $p \nmid r$}
@@ -1003,7 +1023,15 @@ As before $O(1)$ trials are enough to get $\theta_a \neq 0$.
 
 \paragraph{Case 0: Allombert's algorithms}
 Before presenting subquadratic algorithms, we briefly describe
-Allombert's algorithms which both rely on linear algebra.
+Allombert's algorithms which both rely on linear algebra.%
+\footnote{
+Note that Allombert's algorithms can be directly be applied to any extension
+degree $r$ as long as $p \nmid r$
+and do not require $r$ to be a prime power.
+In practice it is more efficient to perform computations
+for each primary factor independently
+and glue the results together in the end.
+}
 
 The first version of the algorithm~\cite{Allombert02}
 simply computes the matrix of the Frobenius of $k/\F_q$
@@ -1302,11 +1330,12 @@ need to take $d$ roots where $d \in O(\log(r) / \log(p))$ which leads to the fol
 \end{proposition}
 
 
-\subsection{Faster algorithm for large powers}
+\subsection{Faster algorithm for high-degree prime powers}
 \label{sec:fast-algor-large}
 
 We end this section with an algorithm that is particularly efficient when the extension 
-degree $r$ is a prime power. Allombert's algorithm works well in this case, however its
+degree $r$ is a high-degree prime power.
+Allombert's algorithm works well in this case, however its
 complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for some prime $v\ne p$,
 it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ instead.
 The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
@@ -2421,7 +2450,7 @@ discuss implementation details.
 
 Since the map $\phi$ is $\F_q$-linear, one obvious solution is to
 explicitly write its matrix on the monomial bases of $k$ and $K$. %
-This is the solution employed by both the PARI/gp~\cite{Pari} and the
+This is the solution employed by both the PARI/GP~\cite{Pari} and the
 Magma~\cite{MAGMA,bosma+cannon+steel97} computer algebra systems. %
 To stress the fact that $k$ is seen a vector space with a fixed basis
 $(1,X,\dots,X^{m-1})$, we will write $V_X$ for it, and we will
