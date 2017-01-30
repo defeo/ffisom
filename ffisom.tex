@@ -3287,19 +3287,20 @@ are to be found, they should be seeked
 for small values of $q$ and $r$ as the probability that a random element
 does not generate $\F_{q^r}$ is expected to decrease as $q^{-r}$.
 
-\paragraph{Search strategies}
-Therefore, for small values of $q$,
+\paragraph{Search strategy 1}
+For small values of $q$,
 one can generate random elliptic curves over $\F_q$,
-select those with $l$-torsion over an extension of small degree $r$,
+look for small values of $l$ which are Elkies primes,
 compute a point of $l$-torsion defined over $\F_{q^r}$,
 the associated elliptic period and its minimal polynomial.
 
 If one restricts to prime values of $q$ and $r$ and supposes elements
-of $\F_q^r$ are represented as polynomials with coefficients in $\F_q$,
+of $\F_{q^r}$ are represented as polynomials with coefficients in $\F_q$,
 the computation of the minimal polynomial can be avoided:
 one simply checks that the elliptic period is not in $\F_q$,
 i.e. a constant polynomial.
 
+\paragraph{Search strategy 2}
 With further restrictions on $r$ and $l$ it is possible to avoid
 the computation of an actual $l$-torsion point as well.
 For example, let $r$ be a prime such that $l = 4 r + 1$ is prime
@@ -3326,6 +3327,7 @@ For large values of $q$ it could be replaced by using modular polynomials
 and isogeny computations \`a la SEA, but the chances of finding counterexamples
 are higher for small $q$'s and this would give no practical improvement.
 
+\paragraph{Search strategy 3}
 Finally, one can apply the above approach in a global way:
 pick an elliptic curve defined over the rationals
 and known to have rational $l$-torsion over an extension of degree $r$,
@@ -3351,7 +3353,54 @@ defined over a septic number field (and a fortiori over the rationals)
 with $29$-torsion~\cite{Derickx201452}.
 
 \paragraph{Experimental results}
+All above strategies were implemented and ran on different ranges of parameters.
 
+For strategy 1, for different ranges of $l$ we tested all elliptic curves
+defined over $\F_q$ with $q$ prime up to some bounds
+and such that $l$ is an Elkies prime with an eigenvalue
+of prime order $r$ (without any bound on $r$).
+The greatest $q$ tested are given in Table~\ref{table:strat1}.
+\begin{figure}[!ht]
+\[
+\begin{array}{|*{6}{c|}}
+\hline
+l & [0, 100] & [100, 200] & [200, 300] & [300, 400] & [400, 500] \\
+\hline
+q_{\max} & 4957 & 2767 & 2063 & 1171 & 983 \\
+\hline
+\hline
+l & [500, 600] & [600, 700] & [700, 800] & [800, 900] & [900, 1001] \\
+\hline
+q_{\max} & 467 & 1283 & 503 & 271 & 419 \\
+\hline
+\end{array}
+\]
+\caption{Largest value of $q$ tested for a given range of $l$ with strategy 1.}
+\label{table:strat1}
+\end{figure}
+
+For strategy 2, we picked up small values of $r$ and $l = 4 \cdot r + 1$
+and checked all elliptic curves defined over $\F_q$ with $q$ prime up
+to some bound.
+The greatest $q$ tested are given in Table~\ref{table:strat1}.
+\begin{figure}[!ht]
+\[
+\begin{array}{|*{6}{c|}}
+\hline
+r & 3 & 7 & 13 & 37 & 43 \\
+\hline
+q_{\max} & & & & & \\
+\hline
+\end{array}
+\]
+\caption{Largest value of $q$ tested for a given $r$ with strategy 2.}
+\label{table:strat2}
+\end{figure}
+
+For strategy 3, we tested all rational values of $t$
+with numerator and denominator of absolute values less than $10000$.
+
+No counter-example was found.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
