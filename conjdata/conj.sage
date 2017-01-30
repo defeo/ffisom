@@ -192,7 +192,7 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 	else:
 		h = Hom(K, L)[0]
 		EL = EllipticCurve([h(a) for a in E.a_invariants()])
-	m = EL.cardinality()
+	m = E.cardinality(extension_degree=r)
 	ml = ZZ(m/l)
 
 	P = EL(0)
@@ -324,7 +324,7 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
 	return is_normal(period, r, K.order(), K.characteristic())
 
-# Test l = 2*r+1
+# Test l = 4*r+1
 def test_p(ell, r, i, p):
 	count = 0
 	ex = []
