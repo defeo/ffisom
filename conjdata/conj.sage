@@ -344,7 +344,7 @@ def test_p(ell, r, i, p):
 
 def test_ell(ell, max_p=Infinity, abort=True):
 	r = (ell - 1)//4
-        assert(is_prime(r))
+    assert(is_prime(r))
 	i = Zmod(ell)(-1).sqrt()
 	i = min(i, -i).lift()
 	p = 3
