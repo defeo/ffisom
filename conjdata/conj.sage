@@ -323,3 +323,61 @@ def check_ff_cyclo(K = GF(7), l = 5):
 		zeta = L.random_element()**ml
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
 	return is_normal(period, r, K.order(), K.characteristic())
+
+# Test l = 2*r+1
+def test_p(ell, r, i, p):
+	count = 0
+	ex = []
+	for j in GF(p):
+	if j != 0 and j != 1728:
+		E = EllipticCurve(j=j)
+		phi = E.division_polynomial(ell)
+		x = phi.parent().gen()
+		f = gcd(phi, pow(x, p**r, phi) - x)
+		if f.degree() == 2*r:
+			count += 1
+			I = E.multiplication_by_m(i, x_only=True)
+			I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
+			if (I + x).degree() <= 0:
+				ex.append(E)
+	return count, ex
+
+def test_ell(ell, max_p=Infinity, abort=True):
+	r = (ell - 1)//4
+        assert(is_prime(r))
+	i = Zmod(ell)(-1).sqrt()
+	i = min(i, -i).lift()
+	p = 3
+	ex = []
+	while p <= max_p:
+		t = test_p(ell, r, i, p)
+		print p, t, ex
+		if t[1]:
+			ex.append(t)
+			if abort:
+				return ex
+		p = next_prime(p)
+	return ex
+
+# generate rational curves with 13-torsion over cubic extension
+def test_X0(T=QQ, period=None, abort=True):
+	_.<t> = QQ[]
+	j = (t^4 - t^3 + 5*t^2 + t + 1)*(t^8 - 5*t^7 + 7*t^6 - 5*t^5 + 5*t^3 + 7*t^2 + 5*t + 1)^3/(t^13 * (t^2 - 3*t - 1))
+	ex = []
+	if period is None:
+		period = lambda I: I + I.parent().gen()
+	for t in T:
+		if t != 0:
+	                E = EllipticCurve(j=j(t))    # this is the slowest computation
+			I = period(E.multiplication_by_m(5, x_only=True))
+			for phi in E.isogenies_prime_degree(13):
+				f = phi.kernel_polynomial().factor()[0][0]
+				m = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
+				J = E.j_invariant()
+				badp = E.discriminant() * J.numerator() * (J-1728).numerator()
+				goodp = filter(lambda (p,m): not p.divides(badp), gcd(m[1:]).factor())
+				if goodp:
+					ex.append((t, J, goodp))
+				print t, J, ex
+				if abort and goodp:
+					return ex
