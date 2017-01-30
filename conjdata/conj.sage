@@ -329,17 +329,17 @@ def test_p(ell, r, i, p):
 	count = 0
 	ex = []
 	for j in GF(p):
-	if j != 0 and j != 1728:
-		E = EllipticCurve(j=j)
-		phi = E.division_polynomial(ell)
-		x = phi.parent().gen()
-		f = gcd(phi, pow(x, p**r, phi) - x)
-		if f.degree() == 2*r:
-			count += 1
-			I = E.multiplication_by_m(i, x_only=True)
-			I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
-			if (I + x).degree() <= 0:
-				ex.append(E)
+		if j != 0 and j != 1728:
+			E = EllipticCurve(j=j)
+			phi = E.division_polynomial(ell)
+			x = phi.parent().gen()
+			f = gcd(phi, pow(x, p**r, phi) - x)
+			if f.degree() == 2*r:
+				count += 1
+				I = E.multiplication_by_m(i, x_only=True)
+				I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
+				if (I + x).degree() <= 0:
+					ex.append(E)
 	return count, ex
 
 def test_ell(ell, max_p=Infinity, abort=True):
