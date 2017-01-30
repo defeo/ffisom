@@ -279,7 +279,7 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 			continue
 		if p > pmax:
 			break
-		linfty = p.n()**(rmax*dmax)+2*p.n()**(1/2*rmax*dmax)
+		linfty = Infinity if rmax is Infinity or dmax is Infinity else p.n()**(rmax*dmax)+2*p.n()**(1/2*rmax*dmax)
 		if verbose:
 			print "p =", p, ", d =", dbound, ", l =", lbound, ", linfty =", linfty, ", sbound =", sbound, ", rbound =", rbound, ", prime =", prime
 		ldcnt = 0
@@ -294,7 +294,7 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 			if l > min(lmax, linfty):
 				break
 			lpcnt += 1
-			if verbose and lpcnt % 10**5 == 0:
+			if verbose and lpcnt % 10**5 == 0:	
 				print "lpcnt =", lpcnt, ", l =", l
 			lm1d2 = ZZ((l-1)/2)
 			if not ((rmax != Infinity and any(lm1d2 % r == 0 and ZZ(lm1d2/r).gcd(r) == 1 for r in xrange(rmin, rmax))) or any(rmin <= r and r <= rmax for r in ZZ((l-1)/2).divisors())):
