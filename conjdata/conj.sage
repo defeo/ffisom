@@ -326,7 +326,7 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	return is_normal(period, r, K.order(), K.characteristic())
 
 # Test l = 4*r+1
-def test_p(ell, r, i, p, smart=False):
+def test_p(ell, r, i, p, smart=True):
 	count = 0
 	ex = []
 	xell = polygen(GF(ell))
@@ -343,6 +343,10 @@ def test_p(ell, r, i, p, smart=False):
 						continue
 					r1 = froots[0][0].multiplicative_order()
 					r2 = froots[1][0].multiplicative_order()
+					if r1 % 2 == 0:
+						r1 = r1 / 2
+					if r2 % 2 == 0:
+						r2 = r2 / 2
 					if r1 == r2 or (r != r1 and r != r2):
 						continue
 				phi = E.division_polynomial(ell)
@@ -356,7 +360,7 @@ def test_p(ell, r, i, p, smart=False):
 						ex.append(E)
 	return count, ex
 
-def test_ell(ell, max_p=Infinity, abort=True, smart=False):
+def test_ell(ell, max_p=Infinity, abort=True, smart=True):
 	r = (ell - 1)//4
 	assert(is_prime(r))
 	i = Zmod(ell)(-1).sqrt()
