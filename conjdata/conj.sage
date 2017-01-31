@@ -364,8 +364,6 @@ def test_ell(ell, max_p=Infinity, abort=True, smart=False):
 	p = 3
 	ex = []
 	while p <= max_p:
-		if p == ell:
-			continue
 		t = test_p(ell, r, i, p, smart=smart)
 		print p, t, ex
 		if t[1]:
