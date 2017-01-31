@@ -335,7 +335,7 @@ def test_p(ell, r, i, p, smart=False):
 			E = EllipticCurve(j=j)
 			L = [E, E.quadratic_twist()]
 			for E in L:
-				if smart:
+				if smart and p != ell:
 					t = E.trace_of_frobenius()
 					f = xell**2-t*xell+p
 					froots = f.roots()
