@@ -1,5 +1,6 @@
 import sys
 
+# check all curves for l in a given range
 class CounterExampleException(Exception):
 	def __init__(self, q, l, E, r, s = None, e = None):
 		self.q = q
@@ -325,24 +326,37 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	return is_normal(period, r, K.order(), K.characteristic())
 
 # Test l = 4*r+1
-def test_p(ell, r, i, p):
+def test_p(ell, r, i, p, smart=False):
 	count = 0
 	ex = []
+	xell = polygen(GF(ell))
 	for j in GF(p):
 		if j != 0 and j != 1728:
 			E = EllipticCurve(j=j)
-			phi = E.division_polynomial(ell)
-			x = phi.parent().gen()
-			f = gcd(phi, pow(x, p**r, phi) - x)
-			if f.degree() == 2*r:
-				count += 1
-				I = E.multiplication_by_m(i, x_only=True)
-				I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
-				if (I + x).degree() <= 0:
-					ex.append(E)
+			L = [E, E.quadratic_twist()]
+			for E in L:
+				if smart:
+					t = E.trace_of_frobenius()
+					f = xell**2-t*xell+p
+					froots = f.roots()
+					if len(froots) != 2:
+						continue
+					r1 = froots[0][0].multiplicative_order()
+					r2 = froots[1][0].multiplicative_order()
+					if r1 == r2 or (r != r1 and r != r2):
+						continue
+				phi = E.division_polynomial(ell)
+				x = phi.parent().gen()
+				f = gcd(phi, pow(x, p**r, phi) - x)
+				if f.degree() == 2*r:
+					count += 1
+					I = E.multiplication_by_m(i, x_only=True)
+					I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
+					if (I + x).degree() <= 0:
+						ex.append(E)
 	return count, ex
 
-def test_ell(ell, max_p=Infinity, abort=True):
+def test_ell(ell, max_p=Infinity, abort=True, smart=False):
 	r = (ell - 1)//4
 	assert(is_prime(r))
 	i = Zmod(ell)(-1).sqrt()
@@ -350,7 +364,9 @@ def test_ell(ell, max_p=Infinity, abort=True):
 	p = 3
 	ex = []
 	while p <= max_p:
-		t = test_p(ell, r, i, p)
+		if p == ell:
+			continue
+		t = test_p(ell, r, i, p, smart=smart)
 		print p, t, ex
 		if t[1]:
 			ex.append(t)
