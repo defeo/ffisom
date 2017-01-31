@@ -326,7 +326,7 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	return is_normal(period, r, K.order(), K.characteristic())
 
 # Test l = 4*r+1
-def test_p(ell, r, i, p, smart=True):
+def test_p(ell, r, d, i, p, smart=True):
 	count = 0
 	ex = []
 	xell = polygen(GF(ell))
@@ -350,25 +350,32 @@ def test_p(ell, r, i, p, smart=True):
 					if r1 == r2 or (r != r1 and r != r2):
 						continue
 				phi = E.division_polynomial(ell)
-				x = phi.parent().gen()
+				R = phi.parent()
+				x = R.gen()
 				f = gcd(phi, pow(x, p**r, phi) - x)
-				if f.degree() == 2*r:
+				if f.degree() == d*r:
 					count += 1
 					I = E.multiplication_by_m(i, x_only=True)
-					I = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
-					if (I + x).degree() <= 0:
+					I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
+					J = I
+					P = x + I
+					for _ in range(1, d):
+						J = J(I) % f
+						P += J
+					if P.degree() <= 0:
 						ex.append(E)
 	return count, ex
 
-def test_ell(ell, max_p=Infinity, abort=True, smart=True):
-	r = (ell - 1)//4
+def test_ell(ell, d = 2, max_p=Infinity, abort=True, smart=True):
+	assert((ell-1)%2*d==0)
+	r = (ell - 1)//(2*d)
 	assert(is_prime(r))
-	i = Zmod(ell)(-1).sqrt()
-	i = min(i, -i).lift()
+	i = Zmod(ell)(-1).nth_root(d, all=True)
+	i = min(i).lift()
 	p = 3
 	ex = []
 	while p <= max_p:
-		t = test_p(ell, r, i, p, smart=smart)
+		t = test_p(ell, r, d, i, p, smart=smart)
 		print p, t, ex
 		if t[1]:
 			ex.append(t)
