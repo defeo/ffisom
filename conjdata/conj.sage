@@ -354,6 +354,11 @@ def test_p(ell, r, d, i, p, smart=True):
 				x = R.gen()
 				f = gcd(phi, pow(x, p**r, phi) - x)
 				if f.degree() == d*r:
+					if smart > 1:
+						F = f.factor()
+						if len(F) != d:
+							continue
+						f = F[0][0]
 					count += 1
 					I = E.multiplication_by_m(i, x_only=True)
 					I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
