@@ -3355,22 +3355,26 @@ and for $r = 7$ and $l = 29$ there is no infinite family of curves
 defined over a septic number field (and a fortiori over the rationals)
 with $29$-torsion~\cite{Derickx201452}.
 
-Contrary to strategy 2, larger values of $d$ are of little interest.
+In fact, more general facts prevent rational curves with $29$-torsion
+over a septic extension of $\Q$ to exist and prevent the extension
+of strategy 3 to other prime values $l$.
 Indeed, there is no rational elliptic curve with prime $l$-torsion
-over extensions of degree less than $(l-1)/2$,
-except for $l = 13$ and $l = 37$~\cite{Lozano-Robledo2013}.
-For $l = 13$, as aforementioneds there is an infinite family of rational
-elliptic curves with $13$-torsion defined over a cubic extension.
-For $l = 37$, the only rational elliptic curve breaking the bound is the one
-with $j$-invariant $-7\cdot11^3$,
+over extensions of degree less than $l-1$ when $l \geq 11$,
+implying that we can not use such values of $l$ with any $d$,
+except for $l = 11, 17, 19, 43, 67, 163$ for which the bound is $(l-1)/2$,
+and the exceptional values $l = 13$ and $l = 37$~\cite{Lozano-Robledo2013},
+all of which equipped with rational $l$-isogenies
+and corresponding to non-cuspidal rational points on $X_0(N)$.
+For $l = 11, 17, 19, 43, 67, 163$, there are only finitely many
+rational elliptic curves reaching the $(l-1)/2$ bound,
+For $l = 13$, as aforementioned, there is an infinite family of rational
+elliptic curves coming with a rational $13$-isogeny
+and with $13$-torsion defined over a cubic extension of $\Q$.
+For $l = 37$, the only rational elliptic curve breaking the bound
+is the one with $j$-invariant $-7\cdot11^3$,
 which comes with a rational $37$-isogeny~\cite{Mazur1974},
 yielding $37$-torsion over an extension of $\Q$ of degree $(l-1)/3 = 12$
 (and abscissae of the torsion points defined over a sextic subextension).
-For other prime values of $l \neq 13, 37$, the above constraint
-implies $d r = (l-1)/2$.
-Therefore the only case of interest would be $d = 2$
-and having the abscissae of the torsion points defined
-over a subextension of degree $(l-1)/4$.
 
 \paragraph{Experimental results}
 All above strategies were implemented and ran on different ranges of parameters.
