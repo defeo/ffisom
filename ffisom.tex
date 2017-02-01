@@ -3384,31 +3384,31 @@ kernel polynomial $f_\lambda$ is irreducible.
 \paragraph{Experimental results}
 All above strategies were implemented and ran on different ranges of parameters.
 
-For strategy 1, for different ranges of $l$ we tested all elliptic curves
+For strategy 1, for different ranges of $\ell$ we tested all elliptic curves
 defined over $\F_q$ with $q$ prime up to some bounds
-and such that $l$ is an Elkies prime with an eigenvalue
+and such that $\ell$ is an Elkies prime with an eigenvalue
 of prime order $r$ (without any bound on $r$).
 The greatest $q$ tested are given in Table~\ref{table:strat1}.
 \begin{figure}[!ht]
 \[
 \begin{array}{|*{6}{c|}}
 \hline
-l & [0, 100] & [100, 200] & [200, 300] & [300, 400] & [400, 500] \\
+\ell & [0, 100] & [100, 200] & [200, 300] & [300, 400] & [400, 500] \\
 \hline
 q_{\max} & 4957 & 2767 & 2063 & 1171 & 983 \\
 \hline
 \hline
-l & [500, 600] & [600, 700] & [700, 800] & [800, 900] & [900, 1001] \\
+\ell & [500, 600] & [600, 700] & [700, 800] & [800, 900] & [900, 1001] \\
 \hline
 q_{\max} & 467 & 1283 & 503 & 271 & 419 \\
 \hline
 \end{array}
 \]
-\caption{Largest value of $q$ tested for a given range of $l$ with strategy 1.}
+\caption{Largest value of $q$ tested for a given range of $\ell$ with strategy 1.}
 \label{table:strat1}
 \end{figure}
 
-For strategy 2, we picked up small values of $r$ and $l = 4 \cdot r + 1$
+For strategy 2, we picked up small values of $r$ and $\ell = 2 \cdot 2 \cdot r + 1$
 and checked all elliptic curves defined over $\F_q$ with $q$ prime up
 to some bound.
 The greatest $q$ tested are given in Table~\ref{table:strat1}.
