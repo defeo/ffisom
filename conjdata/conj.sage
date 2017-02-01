@@ -364,7 +364,7 @@ def test_p(ell, r, d, i, p, smart=True):
 					I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
 					J = I
 					P = x + I
-					for _ in range(1, d):
+					for _ in range(1, d-1):
 						J = J(I) % f
 						P += J
 					if P.degree() <= 0:
