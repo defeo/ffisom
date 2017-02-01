@@ -3301,18 +3301,19 @@ one simply checks that the elliptic period is not in $\F_q$,
 i.e. a constant polynomial.
 
 \paragraph{Search strategy 2}
-With further restrictions on $r$ and $l$ it is possible to avoid
-the computation of an actual $l$-torsion point as well.
-For example, let $r$ be a prime such that $l = 2 d r + 1$
+With further restrictions on $r$ and $\ell$ it is possible to avoid
+the computation of an actual $\ell$-torsion point as well.
+For example, let $r$ be a prime such that $\ell = 2 d r + 1$
 with $d = 2$ is prime
 and suppose that $l$ is an Elkies prime for $E$:
-the $l$-division polynomial $f_l$ of $E$ has two factors
+the $\ell$-division polynomial $f_\ell$ of $E$ has two factors
 $h_1$ and $h_2$ of degree $r$ over $\F_{q}$
 (whose product is $f_\lambda$).
 The elliptic period is defined as $x(P) + x([i] P)$ for some
-$i \in \left(Z / l \Z\right)^*$ such that $i^2 \equiv -1 \pmod{l}$
-and any $P \in E(\F_{q^r})[l]$
-and the mapping $x + m_i(x)$ sends the roots of $h_1$
+$i \in \left(Z / \ell \Z\right)^*$ such that $i^2 \equiv -1 \pmod{\ell}$
+and any $P \in E(\F_{q^r})[\ell]$.
+Let $m_i$ be multiplication by $i$ map on the curve.
+Then the mapping $x + m_i(x)$ sends the roots of $h_1$
 and the roots of $h_2$ onto the ellptic periods.
 If we suppose that the period is not generating $\F_{q}$ which implies that
 $\Res_x(h_1(x),y-x-m_i(x)) = \Res_x(h_2,y-x-m_i(x))$
@@ -3324,11 +3325,11 @@ or $h_2$,
 we conclude that $m_i(x) \equiv (t-x) \pmod{h_1 h_2}$.
 Hence, we can just compute $x + m_i(x) \pmod{h_1 h_2}$
 and see if it is a constant.
-The dominating step in this approach is the factorization of $f_l$.
+The dominating step in this approach is the factorization of $f_\ell$.
 For large values of $q$ it could be replaced by using modular polynomials
 and isogeny computations \`a la SEA, but the chances of finding counterexamples
 are higher for small $q$'s and this would give no practical improvement.
-Such an approach can also be generalized to larger values of $d$.
+Such an approach can easily be generalized to larger values of $d$.
 
 \paragraph{Search strategy 3}
 Finally, one can apply the above approach in a global way:
@@ -3350,31 +3351,31 @@ j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 
 Among them is is curve~\texttt{147b1} in Cremona's table~\cite{cremona_tables}.
 In practice, the limiting step of this method is computing the $j$-invariant
 of the curves because its height quickly grows.
-The few following candidates for $r$ and $l$ can not be used.
-Indeed, for $r = 5$ and $l = 21$,% (which is not prime)
+The few following candidates for $r$ and $\ell$ can not be used.
+Indeed, for $r = 5$ and $\ell = 21$,% (which is not prime)
 there exists no rational elliptic curve (and a fortiori no infinite family)
 with $21$-torsion over a quintic extension of $\Q$~\cite{gonzalez-jimenez_complete_2016},
-and for $r = 7$ and $l = 29$ there is no infinite family of curves
+and for $r = 7$ and $\ell = 29$ there is no infinite family of curves
 defined over a septic number field (and a fortiori over the rationals)
 with $29$-torsion~\cite{Derickx201452}.
 
 In fact, more general facts prevent such constructions.
-Indeed, rational elliptic  curves with rational $l$-isogenies exist only for
-a finite set of values of $l$~\cite{Mazur1974}
+Indeed, rational elliptic  curves with rational $\ell$-isogenies exist only for
+a finite set of values of $\ell$~\cite{Mazur1974}
 corresponding to non-cuspidal rational points on $X_0(N)$.
-Moreover, among the suitable prime values for $l \geq 11$,
-only $l = 13$ provides an infinite family~\cite{Lozano-Robledo2013}.
-For $l = 11, 17, 19, 43, 67, 163$, there are only finitely
-many rational elliptic curves equipped with a rational $l$-isogeny;
+Moreover, among the suitable prime values for $\ell \geq 11$,
+only $\ell = 13$ provides an infinite family~\cite{Lozano-Robledo2013}.
+For $\ell = 11, 17, 19, 43, 67, 163$, there are only finitely
+many rational elliptic curves equipped with a rational $\ell$-isogeny;
 moreover, except for the $j$-invariant $j = -17\cdot373^3/2^{17}$
-associated with $l = 17$, all kernel polynomials $f_\lambda$
-are irreducible of degree $(l-1)/2$.
-For $l = 13$, as aforementioned, there is an infinite family of rational
+associated with $\ell = 17$, all kernel polynomials $f_\lambda$
+are irreducible of degree $(\ell-1)/2$.
+For $\ell = 13$, as aforementioned, there is an infinite family of rational
 elliptic curves coming with a rational $13$-isogeny
 and with $13$-torsion defined over a cubic extension of $\Q$.
-For $l = 37$, there is a couple of rational elliptic curves with a rational
+For $\ell = 37$, there is a couple of rational elliptic curves with a rational
 $37$-isogeny: one with $j$-invariant $-7\cdot11^3$ whose $37$-torsion
-is defined over an extension of $\Q$ of degree $(l-1)/3 = 12$
+is defined over an extension of $\Q$ of degree $(\ell-1)/3 = 12$
 and abscissae of the torsion points are defined over a sextic subextension,
 and another with $j$-invariant $-7\cdot137^3\cdot2083^3$ whose
 kernel polynomial $f_\lambda$ is irreducible.
