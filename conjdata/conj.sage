@@ -405,9 +405,34 @@ def test_X0(T=QQ, period=None, abort=True):
 				m = I.numerator().mod(f) * I.denominator().inverse_mod(f) % f
 				J = E.j_invariant()
 				badp = E.discriminant() * J.numerator() * (J-1728).numerator()
-				goodp = filter(lambda (p,m): not p.divides(badp), gcd(m[1:]).factor())
+				goodp = filter(lambda (p): not p.divides(badp), gcd(m.list()[1:]).factor())
 				if goodp:
 					ex.append((t, J, goodp))
 				print t, J, ex
 				if abort and goodp:
 					return ex
+
+def test_curve(E, ell, d, r, factor=False):
+	assert(ell == 2*d*r+1)
+	assert(ell.is_prime())
+	f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
+	if factor:
+		f = f.factor()[0][0]
+	print f.degree()
+	i = Zmod(ell)(-1).nth_root(d, all=True)
+	i = min(i).lift()
+	R = f.parent()
+	x = R.gen()
+	I = E.multiplication_by_m(i, x_only=True)
+	I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
+	J = I
+	P = x + I
+	for _ in range(1, d-1):
+		J = J(I) % f
+		P += J
+	print [log(abs(c),2).n() for c in P]
+	return P
+	j = E.j_invariant()
+	badp = E.discriminant() * j.numerator() * (j-1728).numerator()
+	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
+	print goodp

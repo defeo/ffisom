@@ -3335,52 +3335,72 @@ Such an approach can easily be generalized to larger values of $d$.
 
 \paragraph{Search strategy 3}
 Finally, one can apply the above approach in a global way:
-pick an elliptic curve defined over the rationals
-and known to have a rational $l$-isogeny over $\Q$
-and $l$-torsion over an extension of degree $r$ (or $2r$).
-Then one can compute the kernel polynomial of the isogeny
-$f_\lambda = h_1 h_2$ with $h_1, h_2$ of degree $r$ 
-and check that the content of $x + m_i(x) \pmod{h_1}$ does not contain
-primes outside those of bad reduction or
-with reduction equipped with more than a couple of automorphisms.
-For $r=3$, $d = 2$ and $l = 2 d r + 1 = 13$,
+pick a rational elliptic curve and known to have a rational $\ell$-isogeny
+and $\ell$-torsion over an extension of degree $r$ (or $2r$)
+with $\ell = 2 d r + 1$,
+then compute the kernel polynomial of the isogeny
+$f_\lambda = h_1 \ldots h_d$ with $h_1, \ldots, h_d$ of degree $r$ 
+and check that there is no prime outside those of bad reduction or
+with reduction equipped with more than a couple of automorphisms
+dividing all the coefficients, except possibly the constant one, of
+$x + m_i(x) + \ldots + (m_i \circ \cdots \circ m_i) (x) \pmod{h_k}$,
+where $k$ is any index and $i$ a $d$-th root of $-1$ in
+$\left(Z / \ell \Z\right)^*$.
+
+For $r=3$, $d = 2$ and $\ell = 2 d r + 1 = 13$,
 there are infinitely many such curves
 and they all belong to a parametrized family
 exhibited by Daniels et al.~\cite{daniels_torsion_2015} with $j$-invariant:
 \[
 j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)} \enspace .
 \]
-Among them is is curve~\texttt{147b1} in Cremona's table~\cite{cremona_tables}.
+%Among them is is curve~\texttt{147b1} in Cremona's table~\cite{cremona_tables}.
 In practice, the limiting step of this method is computing the $j$-invariant
 of the curves because its height quickly grows.
-The few following candidates for $r$ and $\ell$ can not be used.
-Indeed, for $r = 5$ and $\ell = 21$,% (which is not prime)
-there exists no rational elliptic curve (and a fortiori no infinite family)
-with $21$-torsion over a quintic extension of $\Q$~\cite{gonzalez-jimenez_complete_2016},
-and for $r = 7$ and $\ell = 29$ there is no infinite family of curves
-defined over a septic number field (and a fortiori over the rationals)
-with $29$-torsion~\cite{Derickx201452}.
 
-In fact, more general facts prevent such constructions.
-Indeed, rational elliptic  curves with rational $\ell$-isogenies exist only for
-a finite set of values of $\ell$~\cite{Mazur1974}
-corresponding to non-cuspidal rational points on $X_0(N)$.
-Moreover, among the suitable prime values for $\ell \geq 11$,
-only $\ell = 13$ provides an infinite family~\cite{Lozano-Robledo2013}.
-For $\ell = 11, 17, 19, 43, 67, 163$, there are only finitely
-many rational elliptic curves equipped with a rational $\ell$-isogeny;
-moreover, except for the $j$-invariant $j = -17\cdot373^3/2^{17}$
-associated with $\ell = 17$, all kernel polynomials $f_\lambda$
-are irreducible of degree $(\ell-1)/2$.
-For $\ell = 13$, as aforementioned, there is an infinite family of rational
-elliptic curves coming with a rational $13$-isogeny
-and with $13$-torsion defined over a cubic extension of $\Q$.
+The few following candidates for $r$ and $\ell$ when $d = 2$ can not be used.
+Indeed, for $r = 5$ and $\ell = 21$,% (which is not prime)
+there exist four rational elliptic curves with a rational $21$-isogeny,
+but none of them has $21$-torsion defined over a quintic extension of
+$\Q$~\cite{gonzalez-jimenez_complete_2016} or one of degree $10$
+(indeed the kernel polynomials have no factor of degree $5$ or $10$),
+and for $r = 7$ and $\ell = 29$ there is no rational elliptic curve
+with rational $29$-torsion~\cite{Mazur1974} (or elliptic curves defined
+over a septic number field with $29$-torsion~\cite{Derickx201452}).
+
+More generally, rational elliptic  curves with rational $\ell$-isogenies
+exist only for a finite set of values of $\ell$ corresponding
+to non-cuspidal rational points on $X_0(\ell)$.
+Among the suitable prime values for $\ell \geq 13$~\cite{Mazur1974},
+only $\ell = 13$ provides an infinite family~\cite{Lozano-Robledo2013}
+Among this family are the aforementioned curves
+with $13$-torsion defined over a cubic extension.%
+\footnote{The larger family of rational elliptic curves
+with a rational $13$-isogeny is parametrized by
+$j(t) = \frac{\left(t^2 + 5t + 13\right)\left(t^4 + 7t^3 + 20t^2 + 19t + 1\right)^3}{t}$~\cite{najman_cubic}.}
+For $\ell = 17, 19$, the factorization of $(\ell-1)/2$ does not allow
+coprime values for $d$ and $r$.
 For $\ell = 37$, there is a couple of rational elliptic curves with a rational
-$37$-isogeny: one with $j$-invariant $-7\cdot11^3$ whose $37$-torsion
-is defined over an extension of $\Q$ of degree $(\ell-1)/3 = 12$
-and abscissae of the torsion points are defined over a sextic subextension,
-and another with $j$-invariant $-7\cdot137^3\cdot2083^3$ whose
-kernel polynomial $f_\lambda$ is irreducible.
+$37$-isogeny.
+The first one has $j$-invariant $-7\cdot11^3$
+% $37$-torsion$ is defined over an extension of $\Q$ of degree $(\ell-1)/3 = 12$
+and its kernel polynomial splits into three factors of degree $6$
+leaving no possibility for coprime $d$ and $r$.
+The other one has $j$-invariant $-7\cdot137^3\cdot2083^3$
+and its kernel polynomial $f_\lambda$ is irreducible.
+For each $\ell = 43, 67, 163$, there is exactly one rational elliptic curve
+with a rational $\ell$-isogeny
+and the corresponding kernel polynomial $f_\lambda$ are all irreducible.
+For these four last curves, the factorization of $(\ell-1)/2$ leaves
+the possibility to define coprime values for $d$ and $r$.
+One could still proceed as above and use such values hoping that
+$f_\lambda$ would split as needed over $\F_p$.
+The only non-prime value of interest apart from $21$ mentioned above
+would be $\ell = 25 = 2^3\cdot3+1$ which could be suitable for $d=4$ and $r=3$.
+Unfortunately, among the infinite family of rational elliptic curve with
+a rational $25$-isogeny, none of them has $25$-torsion defined over a cubic
+extension~\cite{najman_cubic}, and only a finite number might have it defined
+over a sextic extension~\cite{Derickx201452}.
 
 
 \paragraph{Experimental results}
