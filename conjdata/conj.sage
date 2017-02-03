@@ -390,7 +390,7 @@ def test_ell(ell, d = 2, max_p=Infinity, abort=True, smart=True):
 	return ex
 
 # generate rational curves with 13-torsion over cubic extension
-def test_X0(T=QQ, period=None, abort=True):
+def test_X0of13(T=QQ, period=None, abort=True):
 	_.<t> = QQ[]
 	j = (t^4 - t^3 + 5*t^2 + t + 1)*(t^8 - 5*t^7 + 7*t^6 - 5*t^5 + 5*t^3 + 7*t^2 + 5*t + 1)^3/(t^13 * (t^2 - 3*t - 1))
 	ex = []
@@ -431,7 +431,6 @@ def test_curve(E, ell, d, r, factor=False):
 		J = J(I) % f
 		P += J
 	print [log(abs(c),2).n() for c in P]
-	return P
 	j = E.j_invariant()
 	badp = E.discriminant() * j.numerator() * (j-1728).numerator()
 	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
