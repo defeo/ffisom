@@ -3336,8 +3336,9 @@ Such an approach can easily be generalized to larger values of $d$.
 \paragraph{Search strategy 3}
 Finally, one can apply the above approach in a global way:
 pick a rational elliptic curve and known to have a rational $\ell$-isogeny
-and $\ell$-torsion over an extension of degree $r$ (or $2r$)
-with $\ell = 2 d r + 1$,
+to ensure that $\ell$ is an Elkies prime modulo $p$,
+and such that the $\ell$-torsion (or its abscissae) is defined
+over an extension of degree $r$ (or $2r$) with $\ell = 2 d r + 1$,
 then compute the kernel polynomial of the isogeny
 $f_\lambda = h_1 \ldots h_d$ with $h_1, \ldots, h_d$ of degree $r$ 
 and check that there is no prime outside those of bad reduction or
@@ -3375,6 +3376,8 @@ j(t) = \frac{\left(t^2 + 5t + 13\right)\left(t^4 + 7t^3 + 20t^2 + 19t + 1\right)
 \]
 Within this family are the aforementioned curves
 with $13$-torsion defined over a cubic extension.
+The other curves only have $13$-torsion (or its abscissae) defined
+over a sextic extension but they can be used in a similar manner.
 For $\ell = 17, 19, 163$, the factorizations of $(\ell-1)/2 = 2^3, 3^2, 3^4$
 do not allow coprime values for $d$ and $r$.
 For $\ell = 37$, there is a couple of rational elliptic curves with a rational
