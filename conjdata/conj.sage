@@ -428,14 +428,16 @@ def find_X1of25(T = QQ):
         if 5 in L:
             print t, L
 
-# test other X_0(N)
-def test_curve(E, ell, d, r, factor=False):
+# test other X_0(ell) for prime ell
+# this gives nothing for 43, 67 there is no bad p and things look ok
+# in particular only ell is in denominators and there is no gcd
+# for 37 things get huge and messy, there are lot of things in denominators...
+def test_X0ofPrime(E, ell, d, r):
 	assert(ell == 2*d*r+1)
 	assert(ell.is_prime())
 	f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
-	if factor:
+	if d == 2:
 		f = f.factor()[0][0]
-	print f.degree()
 	i = Zmod(ell)(-1).nth_root(d, all=True)
 	i = min(i).lift()
 	R = f.parent()
@@ -451,4 +453,4 @@ def test_curve(E, ell, d, r, factor=False):
 	j = E.j_invariant()
 	badp = E.discriminant() * j.numerator() * (j-1728).numerator()
 	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
-	print goodp
+	return goodp
