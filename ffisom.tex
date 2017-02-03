@@ -3349,16 +3349,17 @@ x + m_i(x) + \cdots + (\underbrace{m_i \circ \cdots \circ m_i}_\text{$d-1$ times
 \]
 where $i$ a $d$-th root of $-1$ in $\left(Z / \ell \Z\right)^*$.
 
-For $r=3$, $d = 2$ and $\ell = 2 d r + 1 = 13$,
-there are infinitely many such curves
-and they all belong to a parametrized family
-exhibited by Daniels et al.~\cite{daniels_torsion_2015} with $j$-invariant:
+For $r=3$, $d = 2$ and $\ell = 2 d r + 1 = 13$, there exists a suitable
+infinite family of elliptic curve which is quite easy to construct.
+Indeed, Daniels et al.~\cite{daniels_torsion_2015} showed that
+all rational elliptic curves with $13$-torsion defined over a cubic extension
+of $\Q$ belong to the parametrized family with $j$-invariant:
 \[
-j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)} \enspace .
+j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)}
 \]
 %Among them is is curve~\texttt{147b1} in Cremona's table~\cite{cremona_tables}.
-In practice, the limiting step of this method is computing the $j$-invariant
-of the curves because its height quickly grows.
+In practice, the limiting step when using this family is computing
+the $j$-invariant of the curves because its height quickly grows.
 
 The next candidate for prime $r$ and $\ell$, and $d = 2$, can not be used.
 Indeed, for $r = 7$ and $\ell = 29$, there is no rational elliptic curve
@@ -3374,10 +3375,12 @@ only $\ell = 13$ provides an infinite family parametrized~\cite{Lozano-Robledo20
 \[
 j(t) = \frac{\left(t^2 + 5t + 13\right)\left(t^4 + 7t^3 + 20t^2 + 19t + 1\right)^3}{t} \enspace .
 \]
-Within this family are the aforementioned curves
-with $13$-torsion defined over a cubic extension.
-The other curves only have $13$-torsion (or its abscissae) defined
-over a sextic extension but they can be used in a similar manner.
+Within this family are the aforementioned curves with $13$-torsion
+defined over a cubic extension of $\Q$.
+The kernel polynomials of the other elliptic curves might be of degree $6$,
+but they can still be used, just as in the case of the cyclotomic Rains
+algorithm with an auxiliary extension.
+
 For $\ell = 17, 19, 163$, the factorizations of $(\ell-1)/2 = 2^3, 3^2, 3^4$
 do not allow coprime values for $d$ and $r$.
 For $\ell = 37$, there is a couple of rational elliptic curves with a rational
