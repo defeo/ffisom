@@ -3359,11 +3359,6 @@ In practice, the limiting step of this method is computing the $j$-invariant
 of the curves because its height quickly grows.
 
 The next candidate for prime $r$ and $\ell$, and $d = 2$, can not be used.
-%Indeed, for $r = 5$ and $\ell = 21$,% (which is not prime)
-%there exist four rational elliptic curves with a rational $21$-isogeny,
-%but none of them has $21$-torsion defined over a quintic extension of
-%$\Q$~\cite{gonzalez-jimenez_complete_2016} or one of degree $10$
-%(indeed the kernel polynomials have no factor of degree $5$ or $10$),
 Indeed, for $r = 7$ and $\ell = 29$, there is no rational elliptic curve
 with a rational $29$-isogeny~\cite{Mazur1974} (or elliptic curves defined
 over a septic number field with $29$-torsion~\cite{Derickx201452}).
@@ -3400,7 +3395,40 @@ coprime values for $d$ and $r$ although the irreducibility of $f_\lambda$
 limits the probability of a splitting into $d$ factors modulo $p$ even
 if one finds a $p$ as above.
 
-%A few odd composite values of $\ell$ can also be considered.
+A few composite values of $\ell$ for which rational elliptic curves
+with a rational $\ell$-isogeny can also be considered.
+The first value for $\ell$ is $\ell = 21$, with $\phi(21) = 2\cdot2\cdot3$.
+There are exactly four rational elliptic curves with a rational $21$-isogeny
+labeled \texttt{162b1}, \texttt{162b2}, \texttt{162b3}, and \texttt{162b4}.
+All of them have a rational point of $3$-torsion.
+The elliptic curve~\texttt{162b1} is the unique elliptic curve
+with $21$-torsion over a cubic extension of $\Q$~\cite{najman_cubic},
+and indeed its  kernel polynomial factorizes into one linear factor
+and three cubic factors.
+For the three other curves, the kernel polynomial factor into
+one linear factor, one cubic and one sextic.
+One can therefore use $d=2$ and $r=3$ in this case.
+The second value for $\ell$ is $\ell = 25$, with $\phi(25) = 2\cdot2\cdot5$.
+In this case there is an infinity of rational elliptic curves
+with a rational $25$-isogeny parametrized\cite{Lozano-Robledo2013} by
+\[
+j(t) =
+\frac{\left(t^10+10t^8+35t^6-12t^5+50t^4-60t^3+25t^2-60t+16\right)^3}
+{t^5+5t^3+5t-11}\enspace .
+\]
+There is also an infinity of elliptic curves defined over a quintic
+extension $K$ of $\Q$ with $25$-torsion defined over
+$K$~\cite{Derickx201452,2016arXiv160807549D}.
+If one of these curves is actually defined over $\Q$,
+it has rational $5$-torsion~\cite{gonzalez-jimenez_complete_2016}.
+Parametrizing such curves is outside the scope of this work,
+but one can still sample curves within the larger family
+and compute periods for $d=2$ and $r=5$.
+Note that in this case, $25$ is not squarefree,
+so one should compute periods using the more general formula
+from~\cite{feistel1999normal}.
+The third value for $\ell$ is $\ell = 27$, but $\phi(27) = 2\cdot3^2$,
+and there are no suitable coprime values for $d$ and $r$.
 
 \paragraph{Experimental results}
 All above strategies were implemented and ran on different ranges of parameters.
