@@ -25,17 +25,19 @@ def prime_powers(bound):
                     pass
     return primes, ppowers
 
-def parse_timings(datasets=['04/{:0>2}'.format(i) for i in range(1,12)] +
-                      ['05/{:0>2}'.format(i) for i in [1,2,3,4,5,6,7,8,10]]):
+def parse_timings(datasets=['12/{:0>2}'.format(i) for i in filter(lambda x: x != 36 and x != 39,
+                                                                      range(1,41))]):
     '''
     Parse timing data from files. Returns a pandas DataFrame.
     '''
     def read_file(f):
         d = pd.read_table(f, sep=r'[,\)]? \(?', comment='#', engine='python',
-                            names=['prime', 'degree', 'rains_aux', 'allombert_aux',
-                                       't_rains', 't_conic_rains', 't_ellrains',
-                                       't_pari', 't_allom_linalg', 't_allom_modcomp',
-                                       't_allom_cofactor', 't_allom_iterfrob'],
+                            names=['prime', 'degree', 'rains_aux', 'kummer_aux',
+                                       't_magma', 't_cyclo_rains', 't_conic_rains',
+                                       't_elliptic_rains', 't_pari', 't_kummer_cyclo_linalg',
+                                       't_kummer_linalg_only', 't_kummer_linalg',
+                                       't_kummer_modcomp', 't_kummer_cofactor',
+                                       't_kummer_iterfrob', 't_kummer_mpe'],
                             na_values='0')
         d['dataset'] = f
         return d
@@ -57,20 +59,22 @@ def plot_rains(d, size=(10,10)):
     # Plot cyclotomic Rains', one line per auxiliary extension degree up to 9
     df = d.groupby([d.rains_aux, d.degree]).median().loc[:9]
     ax.set_xlim(df.index.min()[1], df.index.max()[1])
-    ax.set_ylim(df.t_rains.min(), df.t_rains.max())
+    ax.set_ylim(df.t_cyclo_rains.min(), df.t_cyclo_rains.max())
     for key, g in df.groupby(level=0):
-        ax.plot(g.index.get_level_values('degree'), g.t_rains, label=key, color='blue')
+        ax.plot(g.index.get_level_values('degree'), g.t_cyclo_rains, label=key, color='m')
     # Plot conic Rains'
     df = d[~d.t_conic_rains.isnull()]
-    df = df.groupby(df.degree).median()
-    ax.plot(df.index, df.t_conic_rains, 'g')
+    df = df.groupby(df.degree).t_conic_rains.median()
+    ax.plot(df.index, df, color='y')
     # Plot elliptic Rains', scatter style
-    ax.plot(d.degree, d.t_ellrains, 'r.', ms=2)
+    df = d[~d.t_elliptic_rains.isnull()]
+    df = df.groupby(df.degree).t_elliptic_rains.median()
+    ax.plot(df.index, df, color='k')
 
     # Legend
-    cyclo = mlines.Line2D([], [], color='blue', label="Cyclotomic Rains'")
-    conic = mlines.Line2D([], [], color='green', label="Conic Rains'")
-    ell = mlines.Line2D([], [], color='red', label="Elliptic Rains'")
+    cyclo = mlines.Line2D([], [], color='m', label="Cyclotomic Rains'")
+    conic = mlines.Line2D([], [], color='y', label="Conic Rains'")
+    ell = mlines.Line2D([], [], color='k', label="Elliptic Rains'")
     ax.legend(handles=[cyclo, conic, ell], loc=2)
 
     return fig
@@ -88,17 +92,20 @@ def plot_allombert_lowaux(d, size=(10,10)):
 
     # Plot this columns, with legend and z-order
     cols = [
-        ('Case 1', 't_allom_modcomp', 3),
-        ('Case 2', 't_allom_cofactor', 4),
-        ('Case 2 (variant)', 't_allom_linalg', 2),
-        ('Case 3', 't_allom_iterfrob', 0),
-        ('PARI/gp', 't_pari', 1)
+        ('Case 1', 't_kummer_modcomp', 4),
+        ('Case 2', 't_kummer_cofactor', 5),
+        ('Case 3', 't_kummer_mpe', 0),
+        ('Case 3 (var)', 't_kummer_iterfrob', 2),
+        ('PARI/gp', 't_pari', 1),
+        ('Original', 't_kummer_linalg_only', 3),
+#        ('cyclo linalg', 't_kummer_cyclo_linalg', 6),
+#        ('linalg', 't_kummer_linalg', 7),
     ]
     # Only plot if aux degree is <= 10 and all algorithms were run
-    df = d[(d.allombert_aux <= 10) & reduce(lambda x,y: x & ~d[y[1]].isnull(), cols, True)]
+    df = d[(d.kummer_aux <= 10) & reduce(lambda x,y: x & ~d[y[1]].isnull(), cols, True)]
     
     ax.set_xlim(df.degree.min(), df.degree.max()+5)
-    ax.set_ylim(0, df.t_pari.max())
+    ax.set_ylim(0, df.t_kummer_iterfrob.max())
 
     for name, c, z in cols:
         data = df[c].values
@@ -131,26 +138,29 @@ def plot_allombert_anyaux(d, size=(10,10)):
         dd = df[~df[col].isnull()]
         data = dd[col] / dd.deg_sq
         # scatter plot
-        scat,  = ax.plot(dd.allombert_aux, data, *args, ls='none',
+        scat,  = ax.plot(dd.kummer_aux, data, *args, ls='none',
                              marker=marker, alpha=0.4, ms=2, **kwds)
         # degree 2 linear regression
-        linreg = np.polyfit(dd.allombert_aux, data, 2)
-        x = np.linspace(1, dd.allombert_aux.max(), 100)
+        linreg = np.polyfit(dd.kummer_aux, data, 2)
+        x = np.linspace(1, dd.kummer_aux.max(), 100)
         ax.plot(x, np.polyval(linreg, x), *args, lw=1,
                     color=scat.get_color(), label=label, **kwds)
 
     # Plot the algorithms
-    plot_algo('t_allom_modcomp', label="Case 1", zorder=1)
-    plot_algo('t_allom_cofactor', label="Case 2", zorder=0)
-    plot_algo('t_allom_linalg', label="Case 2 (variant)", zorder=2)
-    plot_algo('t_allom_iterfrob', label="Case 3", zorder=3)
-    plot_algo('t_pari', marker='x', label="PARI/gp", zorder=4)
+    plot_algo('t_kummer_modcomp', label="Case 1", zorder=2)
+    plot_algo('t_kummer_cofactor', label="Case 2", zorder=0)
+    plot_algo('t_kummer_mpe', label="Case 3", zorder=4)
+    plot_algo('t_kummer_iterfrob', label="Case 3 (var)", zorder=1)
+    plot_algo('t_pari', marker='x', label="PARI/gp", zorder=5)
+    plot_algo('t_kummer_linalg_only', label="Original", zorder=3)
+#    plot_algo('t_kummer_cyclo_linalg', label="cyclo linalg", zorder=6)
+#    plot_algo('t_kummer_linalg', label="linalg", zorder=7)
 
     # Add a vertical line for the reference
-    ax.plot([0, df.allombert_aux.max()+10], [1, 1], 'k--', label='$r^2$')
+    ax.plot([0, df.kummer_aux.max()+10], [1, 1], 'k--', label='$r^2$')
     
-    ax.set_xlim(0, df.allombert_aux.max()+10)
-    ax.set_ylim(0, 2*(df.t_allom_iterfrob / df.deg_sq).max())
+    ax.set_xlim(0, df.kummer_aux.max()+10)
+    ax.set_ylim(0, (df.t_kummer_modcomp / df.deg_sq).max())
 
     # Legend
     ax.legend(loc=1)
@@ -172,14 +182,14 @@ def plot_all(d, size=(10,10)):
     # Plot Allombert's Case 2 variant
     # Group auxiliary degree by successive powers of 8
     b = 8
-    partitions = [(b**i, b**(i+1)) for i in range(int(math.log(d.allombert_aux.max(), b) + 1))]
+    partitions = [(b**i, b**(i+1)) for i in range(int(math.log(d.kummer_aux.max(), b) + 1))]
     for l, h in partitions:
-        df = d[(d.allombert_aux >= l) & (d.allombert_aux < h)
-                   & ~d.t_allom_cofactor.isnull()].groupby('degree').t_allom_cofactor
+        df = d[(d.kummer_aux >= l) & (d.kummer_aux < h)
+                   & ~d.t_kummer_cofactor.isnull()].groupby('degree').t_kummer_cofactor
         # plot median time as a line
         median = df.median()
         pl, = ax.plot(median.index, median, alpha=0.3,
-                          label=r"Allombert's (2) $s\in[%d,%d]$" % (l, h-1))
+                          label=r"Allombert (2) $s\in[%d,%d]$" % (l, h-1))
         # and min/max as an area
         ax.fill_between(median.index, df.min(), df.max(), alpha=0.1,
                             facecolor=pl.get_color(), edgecolor='none')
@@ -187,14 +197,15 @@ def plot_all(d, size=(10,10)):
     # Plot cyclotomic Rains', auxiliary degree 1
     df = d[d.rains_aux==1]
     df = df.groupby(df.degree).median()
-    ax.plot(df.index, df.t_rains, lw=2, color='black', label="Cyclotmic Rains' $s=1$")
+    ax.plot(df.index, df.t_cyclo_rains, lw=2,  label="Cyclotmic Rains' $s=1$")
     # Plot conic Rains'
     df = d[~d.t_conic_rains.isnull()]
     df = df.groupby(df.degree).median()
-    ax.plot(df.index, df.t_conic_rains, lw=2, color='purple', label="Conic Rains'")
-    # Plot elliptic Rains', scatter style
-    df = d.sort_values('degree')
-    ax.plot(df.degree, df.t_ellrains, '.', ms=1, label="Elliptic Rains'")
+    ax.plot(df.index, df.t_conic_rains, lw=2, label="Conic Rains'")
+    # Plot elliptic Rains'
+    df = d[~d.t_elliptic_rains.isnull()]
+    df = df.groupby(df.degree).median()
+    ax.plot(df.index, df.t_elliptic_rains, lw=2, label="Elliptic Rains'")
     
     # Legend
     ax.legend(loc=2)
@@ -209,7 +220,7 @@ def pdf_plots(prefix='bench-'):
     
     # Take out non-prime-powers to limit noise
     primes, ppowers = prime_powers(d.degree.max())
-    d = d[d.degree.isin(ppowers) & (d.prime > 103) & (d.prime < 2**13)]
+    d = d[d.degree.isin(ppowers) & (d.prime > 100) & (d.prime < 2**20)]
 
     # Global figure configurations
     plt.rc('text', usetex=True)
@@ -226,7 +237,7 @@ def pdf_plots(prefix='bench-'):
     plot = plot_allombert_anyaux(d, (5,4))
     plot.savefig(prefix + 'allombert-anyaux.pdf', bbox_inches='tight')
 
-    allombert = plot_all(d, (5,4))
+    allombert = plot_all(d[d.degree < 2**10], (6,5))
     allombert.savefig(prefix + 'all.pdf', bbox_inches='tight')
 
     
