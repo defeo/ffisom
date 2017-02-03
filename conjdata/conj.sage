@@ -412,6 +412,23 @@ def test_X0of13(T=QQ, period=None, abort=True):
 				if abort and goodp:
 					return ex
 
+# find curves with a rational $25$-isogeny
+# and $25$-torsion (or some abscissae) over a quintic number field
+def find_X1of25(T = QQ):
+    x = polygen(QQ)
+    j25 = (x^10+10*x^8+35*x^6-12*x^5+50*x^4-60*x^3+25*x^2-60*x+16)^3/(x^5+5*x^3+5*x-11)
+    for t in T:
+        try:
+            j = j25(t)
+        except ZeroDivisionError:
+            continue
+        E = EllipticCurve(j=j)
+        f = E.division_polynomial(25)
+        L = [g.degree() for g, _ in f.factor()]
+        if 5 in L:
+            print t, L
+
+# test other X_0(N)
 def test_curve(E, ell, d, r, factor=False):
 	assert(ell == 2*d*r+1)
 	assert(ell.is_prime())
