@@ -155,11 +155,17 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		r = s
 		lb = mu
 
-	# Exclude trivial and even cases
-	if r == 1 or r % 2 == 0 or r.gcd(d) != 1:
+	# Exclude trivial case
+	if r == 1:
 		return None
 	if r < rmin or rmax < r:
 		return None
+	# Exclude tower case
+	if r.gcd(d) != 1:
+		return None
+	# Remove -1
+	if r % 2 == 0:
+		r /= 2
 
 	if prime and not r.is_prime():
 		return None
