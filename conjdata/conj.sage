@@ -412,6 +412,38 @@ def test_X0of13(T=QQ, period=None, abort=True):
 				if abort and goodp:
 					return ex
 
+# test other X_0(ell) for prime ell
+# this gives nothing for 43, 67 there is no bad p and things look ok
+# in particular only ell is in denominators and there is no gcd
+# for 37 things get huge and messy, there are lot of things in denominators...
+def test_X0ofPrime(E, ell, d, r, print_height=True, early_stop=False):
+	assert(ell.is_prime())
+	assert(ell == 2*d*r+1)
+	f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
+	#if d == 2:
+	#	f = f.factor()[0][0]
+	i = Zmod(ell)(-1).nth_root(d, all=True)
+	i = min(i).lift()
+	R = f.parent()
+	x = R.gen()
+	I = E.multiplication_by_m(i, x_only=True)
+	I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
+	J = I
+	P = x + I
+	for _ in range(1, d-1):
+		J = J(I) % f
+		P += J
+	if print_height:
+		print [log(abs(c),2).n() for c in P]
+	if early_stop:
+		return P, []
+	if P.degree() <= 1:
+		return P, []
+	j = E.j_invariant()
+	badp = E.discriminant() * j.numerator() * (j-1728).numerator()
+	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
+	return P, goodp
+
 # find curves with a rational $25$-isogeny
 # and $25$-torsion (or some abscissae) over a quintic number field
 def find_X1of25(T = QQ):
@@ -428,29 +460,14 @@ def find_X1of25(T = QQ):
         if 5 in L:
             print t, L
 
-# test other X_0(ell) for prime ell
-# this gives nothing for 43, 67 there is no bad p and things look ok
-# in particular only ell is in denominators and there is no gcd
-# for 37 things get huge and messy, there are lot of things in denominators...
-def test_X0ofPrime(E, ell, d, r):
-	assert(ell == 2*d*r+1)
-	assert(ell.is_prime())
-	f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
-	if d == 2:
-		f = f.factor()[0][0]
-	i = Zmod(ell)(-1).nth_root(d, all=True)
-	i = min(i).lift()
-	R = f.parent()
-	x = R.gen()
-	I = E.multiplication_by_m(i, x_only=True)
-	I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
-	J = I
-	P = x + I
-	for _ in range(1, d-1):
-		J = J(I) % f
-		P += J
-	print [log(abs(c),2).n() for c in P]
-	j = E.j_invariant()
-	badp = E.discriminant() * j.numerator() * (j-1728).numerator()
-	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
-	return goodp
+C15 = ["50A1", "50A2", "50A3", "50A4", "50B1", "50B2", "50B3", "50B4"]
+C21 = ["162B1", "162B2", "162B3", "162B4","162C1", "162C2", "162C3", "162C4"]
+C27 = ["27A2", "27A4"]
+def pattern_X0ofComposite(n=15, C=C15):
+	for c in C:
+		E = EllipticCurve(c)
+		f = E.division_polynomial(n)
+		for l in n.divisors()[1:-1]:
+			f = f/f.gcd(E.division_polynomial(l))
+		print c, [g.degree() for g,_ in f.factor()]
+
