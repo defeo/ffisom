@@ -3388,45 +3388,76 @@ defined over a cubic extension of $\Q$,
 which is completely equivalent for this approach,
 or over a sextic extension of $\Q$,
 in which case the kernel polynomials are irreducible of degree $6$.
-Nevertheless, they can still be used, in the same way as the cyclotomic
-Rains algorithm with an auxiliary extension degree $s = 2$.
+These curves can still be used with $r = 3$ and $d = 2$,
+but if a candidate counterexample is found, it should be checked
+that the kernel polynomial splits as two cubic factors over $\F_p$.
+Indeed, elliptic periods are not normal, and the trace trick used
+in the cyclotomic Rains algorithm with an auxiliary extension degree
+$s = 2$ does not apply.
 We now treat the other prime values for $\ell \geq 13$.
+Curves labels come from Cremona's tables~\cite{cremona_tables}.
 
-For $\ell = 17$, there are two rational elliptic curves
+For $\ell = 17$, with $(\ell-1)/2 = 2^3$,
+there are two rational elliptic curves
 with a rational $17$-isogeny.
-The first one is curve~\texttt{14450P1}
-in Cremona's tables~\cite{cremona_tables}
-and its kernel polynomial splits into two quartic factor.
-This implies that $2$ would divide both $(\ell-1)/(2 r s)$ and $r s$.
-Therefore this curve can not be used.
-The second curve is curve~\texttt{14450P1}
-and its kernel polynomial is irreducible.
-Therefore, it can be used with $r s = (\ell-1)/2 = 2^3$.
+The factorization of $(\ell-1)/2$ implies
+that $2$ would divide both $r$ and $d$
+except in trivial cases where $r = 2^3$ and $d = 1$.
+Therefore, both curves can not be used.
+%The first one is curve~\texttt{14450P1}
+%in Cremona's tables~\cite{cremona_tables}
+%and its kernel polynomial splits into two quartic factor.
+%Therefore this curve can not be used.
+%The second curve is curve~\texttt{14450P1}
+%and its kernel polynomial is irreducible.
+%%Therefore, it can be used with $r s = (\ell-1)/2 = 2^3$.
 
-For $\ell = 19$, there are two rational elliptic curves
-with a rational $19$-isogeny:
-curves~\texttt{361A1} and \texttt{361A2},
-and both their kernel polynomials are irreducible.
-Therefore, they both can be used with $r s = (\ell-1)/2 = 2\cdot3$.
+For $\ell = 19$,  with $(\ell-1)/2 = 2\cdot3$,
+there are two rational elliptic curves
+with a rational $19$-isogeny
+and they all have irreducible kernel polynomials.
+%curves~\texttt{361A1} and \texttt{361A2},
+Therefore, they both can be used with $r = 3$ and $d = 2$,
+and $r = 2$ and $d = 3$.
 
-For $\ell = 37$, there are two rational elliptic curves
+For $\ell = 37$, with $(\ell-1)/2 = 2\cdot3^2$,
+there are two rational elliptic curves
 with a rational $37$-isogeny.
 The first one is curve~\texttt{1225H1}
 % in Cremona's tables~\cite{cremona_tables}
 % with $j$-invariant $-7\cdot11^3$
 % $37$-torsion$ is defined over an extension of $\Q$ of degree $(\ell-1)/3 = 12$
 and its kernel polynomial splits into three sextic factors.
-The only possibility for $r$ is therefore $r = 2$.
+It implies that $3$ must divide $d$ and can not divide $r$.
+Therefore, the curve can only be used with $r = 2$ and $d = 3^2$.
 The second curve is curve~\texttt{1225H2}
 %in Cremona's tables~\cite{cremona_tables}
 %with $j$-invariant $-7\cdot137^3\cdot2083^3$
 and its kernel polynomial is irreducible.
-Therefore, it can be used with $r s = (\ell-1)/2 = 2\cdot3^2$.
+Therefore, it can be used with $r = 2$ and $d = 3^2$,
+and $r = 3^2$ and $d = 2$.
 
-For each $\ell = 43, 67, 163$, there are two rational elliptic curves
-with a rational $\ell$-isogeny 
+For $\ell = 43$, with $(\ell-1)/2 = 3\cdot7$
+there are two rational elliptic curves
+with a rational $43$-isogeny 
 and they all have irreducible kernel polynomials.
-Therefore, they can be used with $r s = (\ell-1)/2 = 3\cdot7, 3\cdot11, 3^4$.
+Therefore, they can be used with $r = 3$ and $d = 7$,
+and $r = 7$ and $d = 3$.
+
+For $\ell = 67$, with $(\ell-1)/2 = 3\cdot11$
+there are two rational elliptic curves
+with a rational $67$-isogeny 
+and they all have irreducible kernel polynomials.
+Therefore, they can be used with $r = 3$ and $d = 11$,
+and $r = 11$ and $d = 3$.
+
+For $\ell = 163$, with $(\ell-1)/2 = 3^4$,
+there are two rational elliptic curves
+with a rational $163$-isogeny.
+The factorization of $(\ell-1)/2$ implies
+that $3$ would divide both $r$ and $d$
+except in trivial cases where $r = 3^4$ and $d = 1$.
+Therefore, both curves can not be used.
 
 There are also a few odd composite values $\ell \geq 13$
 for which rational elliptic curves with a rational $\ell$-isogeny exist.
@@ -3439,14 +3470,15 @@ using the more general formula from~\cite{feisel1999normal}.
 
 For $\ell = 15$, with $\phi(15)/2 = 2^2$,
 there are eight rational elliptic curves with a rational $15$-isogeny.
-For curves~\texttt{50a3}, \texttt{50a4}, \texttt{50b1} and \texttt{50b2},
-the part of the kernel polynomial corresponding to primitive $15$-torsion
-splits into two quadratic factors, whereas,
-for curves~\texttt{50a1}, \texttt{50a2}, \texttt{50b3} and \texttt{50b4},
-this part is a quartic irreducible.
-Therefore, the former four curves can not be used because $2$ would divide
-both $r = 2$ and $\phi(25)/(2 r) = 2$,
-whereas the latter four ones can be used with $r s = 2^2$.
+The factorization of $(\ell-1)/2$ implies
+that $2$ would divide both $r$ and $d$
+except in trivial cases where $r = 2^2$ and $d = 1$.
+Therefore, none of these curves can be used.
+%For curves~\texttt{50a3}, \texttt{50a4}, \texttt{50b1} and \texttt{50b2},
+%the part of the kernel polynomial corresponding to primitive $15$-torsion
+%splits into two quadratic factors, whereas,
+%for curves~\texttt{50a1}, \texttt{50a2}, \texttt{50b3} and \texttt{50b4},
+%this part is a quartic irreducible.
 
 %For $\ell = 16$, with $\phi(\ell)/2 = 2^2$,
 %the multiplicative group is not cyclic.
@@ -3460,8 +3492,7 @@ For curves~\texttt{162b1} and ~\texttt{162c2},
 the part of the kernel polynomial corresponding to primitive $21$-torsion
 splits into two cubic factors, whereas,
 for the six other curves, this part is a sextic irreducible.
-Therefore, the two former curves, can only be used with $r = 3$ (and $d = 2$),
-whereas the six latter ones can be used with $r s = 2\cdot3$.
+Therefore, all these curves can only be used with $r = 3$ and $d = 2$.
 
 For $\ell = 25$, with $\phi(25)/2 = 2\cdot5$,
 there is an infinity of rational elliptic curves
@@ -3478,13 +3509,17 @@ If one of these curves is actually defined over $\Q$,
 it has rational $5$-torsion~\cite{gonzalez-jimenez_complete_2016}.
 Parametrizing such curves is outside the scope of this work,
 but one can still sample curves within the larger family
-and compute periods for $r s = 10$.
+and compute periods for $r = 5$ and $d = 2$.
 
 For $\ell = 27$, with $\phi(27)/2 = 3^2$,
 there are two rational elliptic curves with a rational $27$-isogeny.
-For both curves, the part of the kernel polynomial corresponding to
-primitive $27$-torsion is irreducible of degree $9$.
-Therefore, the both can be used with $r s = 3^2$.
+The factorization of $(\ell-1)/2$ implies
+that $3$ would divide both $r$ and $d$
+except in trivial cases where $r = 3^2$ and $d = 1$.
+Therefore, none of these curves can be used.
+%For both curves, the part of the kernel polynomial corresponding to
+%primitive $27$-torsion is irreducible of degree $9$.
+%Therefore, the both can be used with $r s = 3^2$.
 
 \paragraph{Experimental results}
 All above strategies were implemented and ran on different ranges of parameters.
