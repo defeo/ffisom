@@ -3495,7 +3495,9 @@ For curves~\texttt{162b1} and ~\texttt{162c2},
 the part of the kernel polynomial corresponding to primitive $21$-torsion
 splits into two cubic factors, whereas,
 for the six other curves, this part is a sextic irreducible.
-Therefore, all these curves can only be used with $r = 3$ and $d = 2$.
+Therefore, the former curves can only be used with $r = 3$ and $d = 2$,
+whereas the latter ones can be used both with $r = 2$ and $d = 3$,
+and $r = 3$ and $d = 2$.
 
 For $\ell = 25$, with $\phi(25)/2 = 2\cdot5$,
 there is an infinity of rational elliptic curves
@@ -3511,8 +3513,13 @@ $K$~\cite{Derickx201452,2016arXiv160807549D}.
 If one of these curves is actually defined over $\Q$,
 it has rational $5$-torsion~\cite{gonzalez-jimenez_complete_2016}.
 Parametrizing such curves is outside the scope of this work,
-but one can still sample curves within the larger family
-and compute periods for $r = 5$ and $d = 2$.
+but one can still sample curves within the larger family,
+compute the kernel polynomial over the rationals,
+and compute periods for $r = 2$ and $d = 5$, or $r = 5$ and $d = 2$,
+if it is irreducible,
+and $r = 5$ and $d = 2$ if it splits into two quintic factors,
+and check that the kernel polynomial of the candidate counterexamples
+factors as expected over $\F_p$.
 
 For $\ell = 27$, with $\phi(27)/2 = 3^2$,
 there are two rational elliptic curves with a rational $27$-isogeny.

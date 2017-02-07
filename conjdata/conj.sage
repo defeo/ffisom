@@ -454,7 +454,7 @@ def test_X0ofPrime(E, ell, d, r, print_height=True, early_stop=False):
 
 # find curves with a rational $25$-isogeny
 # and $25$-torsion (or some abscissae) over a quintic number field
-def find_X1of25(T = QQ):
+def find_X1of25(T = QQ, verbose = False):
     x = polygen(QQ)
     j25 = (x^10+10*x^8+35*x^6-12*x^5+50*x^4-60*x^3+25*x^2-60*x+16)^3/(x^5+5*x^3+5*x-11)
     for t in T:
@@ -464,8 +464,9 @@ def find_X1of25(T = QQ):
             continue
         E = EllipticCurve(j=j)
         f = E.division_polynomial(25)
+        f = f/f.gcd(E.division_polynomial(5))
         L = [g.degree() for g, _ in f.factor()]
-        if 5 in L:
+        if 5 in L or verbose:
             print t, L
 
 C15 = ["50A1", "50A2", "50A3", "50A4", "50B1", "50B2", "50B3", "50B4"]
