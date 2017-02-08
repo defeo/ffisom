@@ -469,9 +469,9 @@ def find_X1of25(T = QQ, verbose = False):
         if 5 in L or verbose:
             print t, L
 
-C15 = ["50A1", "50A2", "50A3", "50A4", "50B1", "50B2", "50B3", "50B4"]
-C21 = ["162B1", "162B2", "162B3", "162B4","162C1", "162C2", "162C3", "162C4"]
-C27 = ["27A2", "27A4"]
+C15 = ["50A1", "50A2", "50A3", "50A4"]
+C21 = ["162B1", "162B2", "162B3", "162B4"]
+C27 = ["27A2"]
 def pattern_X0ofComposite(n=15, C=C15):
 	for c in C:
 		E = EllipticCurve(c)
