@@ -149,11 +149,6 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 	mu = froots[1][0]
 	r = lb.multiplicative_order()
 	s = mu.multiplicative_order()
-	# Remove -1
-	if r % 2 == 0:
-		r /= 2
-	if s % 2 == 0:
-		s /= 2
 	if r == s:
 		return None
 	if r > s:
@@ -167,6 +162,9 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		return None
 	# Exclude tower case
 	if r.gcd(d) != 1:
+		return None
+	# We need torsion points so cannot remove -1
+	if r % 2 == 0:
 		return None
 
 	if prime and not r.is_prime():
