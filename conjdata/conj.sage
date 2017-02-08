@@ -341,42 +341,40 @@ def test_p(ell, r, d, i, p, smart=True):
 	for j in GF(p):
 		if j != 0 and j != 1728:
 			E = EllipticCurve(j=j)
-			L = [E, E.quadratic_twist()]
-			for E in L:
-				if smart and p != ell:
-					t = E.trace_of_frobenius()
-					f = xell**2-t*xell+p
-					froots = f.roots()
-					if len(froots) != 2:
+			if smart and p != ell:
+				t = E.trace_of_frobenius()
+				f = xell**2-t*xell+p
+				froots = f.roots()
+				if len(froots) != 2:
+					continue
+				r1 = froots[0][0].multiplicative_order()
+				r2 = froots[1][0].multiplicative_order()
+				if r1 % 2 == 0:
+					r1 = r1 / 2
+				if r2 % 2 == 0:
+					r2 = r2 / 2
+				if r1 == r2 or (r != r1 and r != r2):
+					continue
+			phi = E.division_polynomial(ell)
+			R = phi.parent()
+			x = R.gen()
+			f = gcd(phi, pow(x, p**r, phi) - x)
+			if f.degree() == d*r:
+				count += 1
+				I = E.multiplication_by_m(i, x_only=True)
+				I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
+				if smart > 1:
+					F = f.factor()
+					if len(F) != d:
 						continue
-					r1 = froots[0][0].multiplicative_order()
-					r2 = froots[1][0].multiplicative_order()
-					if r1 % 2 == 0:
-						r1 = r1 / 2
-					if r2 % 2 == 0:
-						r2 = r2 / 2
-					if r1 == r2 or (r != r1 and r != r2):
-						continue
-				phi = E.division_polynomial(ell)
-				R = phi.parent()
-				x = R.gen()
-				f = gcd(phi, pow(x, p**r, phi) - x)
-				if f.degree() == d*r:
-					count += 1
-					I = E.multiplication_by_m(i, x_only=True)
-					I = I.numerator().mod(f) * R(I.denominator()).inverse_mod(f) % f
-					if smart > 1:
-						F = f.factor()
-						if len(F) != d:
-							continue
-						f = F[0][0]
-					J = I % f
-					P = x + I
-					for _ in range(1, d-1):
-						J = J(I) % f
-						P += J
-					if P.degree() <= 0:
-						ex.append(E)
+					f = F[0][0]
+				J = I % f
+				P = x + J
+				for _ in range(1, d-1):
+					J = J(I) % f
+					P += J
+				if P.degree() <= 0:
+					ex.append(E)
 	return count, ex
 
 def test_ell(ell, d = 2, max_p=Infinity, abort=True, smart=True):
@@ -423,11 +421,13 @@ def test_X0of13(T=QQ, period=None, abort=True):
 # test other X_0(ell) for prime ell
 # this gives nothing for 43, 67 there is no bad p and things look ok
 # in particular only ell is in denominators and there is no gcd
-# for 37 things get huge and messy, there are lot of things in denominators...
-def test_X0ofPrime(E, ell, d, r, print_height=True, early_stop=False):
+def test_X0ofPrime(E, ell, d, r, naive=False, print_height=True, early_stop=False):
 	assert(ell.is_prime())
 	assert(ell == 2*d*r+1)
-	f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
+	if naive:
+		f = E.division_polynomial(ell).factor()[0][0]
+	else:
+		f = E.isogenies_prime_degree(ell)[0].kernel_polynomial()
 	#if d == 2:
 	#	f = f.factor()[0][0]
 	i = Zmod(ell)(-1).nth_root(d, all=True)
