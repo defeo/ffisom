@@ -2275,14 +2275,16 @@ of Allombert's algorithm described in Section~\ref{sec:fast-kummer}
 were implemented in C on top of the Flint
 library~\cite{hart2010flint}. Rains' cyclotomic and elliptic
 algorithms were implemented in Sage~\cite{Sage} (which itself uses
-Pari and Flint for representing finite fields), with critical code
-rewritten in C/Cython (\todo{JP, do you want to give a better pointer
-  to ellmul?}). Our code only handles $q$ prime and $m,n$ odd.
+Pari and Flint to implement finite fields), with critical code
+rewritten in C/Cython.
+Our code only handles $q$ prime and $m,n$ odd.
 
 We ran tests for a wide range of primes $q$ between $5$ and
 $2^{60}+3175$, and prime powers $r$ between $5$ and $1021$. All tests
-were run on an Intel \todo{JP, what can you tell us?}. We report in
-Figure~\ref{fig:bench} statistics only on the runs for
+were run on an
+% data available at the top of 0x.dat, change it if you change dataset
+Intel(R) Xeon(R) CPU E5-4650 v2 clocked at 2.40GHz.
+We report in Figure~\ref{fig:bench} statistics only on the runs for
 $2^{10}<q<2^{13}$; other ranges show very similar trends. The source
 code and the full datasets can be downloaded at
 \url{https://github.com/defeo/ffisom}.
