@@ -3539,23 +3539,30 @@ Therefore, this curve can not be used.
 \paragraph{Experimental results}
 All above strategies were implemented and ran on different ranges of parameters.
 
-For strategy 1, for different ranges of $\ell$ we tested all elliptic curves
-defined over $\F_q$ with $q$ prime up to some bounds
+For strategy 1, for prime values of $\ell$ in different ranges,
+we tested all elliptic curves defined over $\F_q$
+with $q$ prime up to some bounds
 and such that $\ell$ is an Elkies prime with an eigenvalue
-of prime order $r$ (without any bound on $r$).
-The greatest $q$ tested are given in Table~\ref{table:strat1}.
+of odd prime order $r$ (without any bound on $r$).
+The greatest values of $q$ and the total number of curves tested
+are given in Table~\ref{table:strat1}.
+Among all ranges we tested more than 43 millions of curves.
 \begin{figure}[!ht]
 \[
 \begin{array}{|*{6}{c|}}
 \hline
 \ell & [0, 100] & [100, 200] & [200, 300] & [300, 400] & [400, 500] \\
 \hline
-q_{\max} & 4957 & 2767 & 2063 & 1171 & 983 \\
+q_{\max} & 10729 & 8147 & 5807 & 4919 & 6427 \\
+\hline
+\text{nr. of curves} & 18321275 & 9371913 & 4567947 & 2936870 & 3587951 \\
 \hline
 \hline
 \ell & [500, 600] & [600, 700] & [700, 800] & [800, 900] & [900, 1001] \\
 \hline
-q_{\max} & 467 & 1283 & 503 & 271 & 419 \\
+q_{\max} & 3307 & 2939 & 1993 & 3643 & 4051 \\
+\hline
+\text{nr. of curves} & 1062818 & 1061413 & 450676 & 1194598 & 1284669 \\
 \hline
 \end{array}
 \]
@@ -3563,17 +3570,23 @@ q_{\max} & 467 & 1283 & 503 & 271 & 419 \\
 \label{table:strat1}
 \end{figure}
 
-For strategy 2, we picked up small values of $r$ and $\ell = 2 \cdot 2 \cdot r + 1$
+For strategy 2, we picked up small values of $r$ for which
+$\ell = 2 \cdot d \cdot r + 1$ with $d = 2$ is prime,
 and checked all elliptic curves defined over $\F_q$ with $q$ prime up
 to some bound.
-The greatest $q$ tested are given in Table~\ref{table:strat1}.
+The greatest values of $q$ tested are given in Table~\ref{table:strat1}.
 \begin{figure}[!ht]
 \[
 \begin{array}{|*{6}{c|}}
 \hline
 r & 3 & 7 & 13 & 37 & 43 \\
 \hline
-q_{\max} & & & & & \\
+q_{\max} & 78593 & 29531 & 10993 & 1987 & 1291 \\
+\hline
+\hline
+r & 67 & 73 & 79 & 97 & 127 \\
+\hline
+q_{\max} & 691 & 743 & 577 & 419 & 271 \\
 \hline
 \end{array}
 \]
@@ -3581,10 +3594,17 @@ q_{\max} & & & & & \\
 \label{table:strat2}
 \end{figure}
 
-For strategy 3, we tested all rational values of $t$
-with numerator and denominator of absolute values less than $10000$.
+For strategy 3, we tested all rational elliptic curves
+with a rational $13$-isogeny and $13$-torsion defined over a cubic extension
+in the infinite family parametrized by
+\[
+j(t) = \frac{\left(t^2 + 5t + 13\right)\left(t^4 + 7t^3 + 20t^2 + 19t + 1\right)^3}{t}
+\]
+for rational values of $t$ with numerator and denominator of absolute values
+less than $1538$.
+We also tested the sporadic curves for prime values of $\ell = 37, 43, 67$.
 
-No counter-example was found.
+Among all these computations, no counterexample was found.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
