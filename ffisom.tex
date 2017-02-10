@@ -3294,9 +3294,9 @@ For small values of $q$,
 one can generate random elliptic curves over $\F_q$,
 look for small values of $l$ which are Elkies primes,
 compute a point of $l$-torsion defined over $\F_{q^r}$,
-the associated elliptic period and its minimal polynomial.
+the associated elliptic period and its minimal polynomial over $\F_q$.
 
-If one restricts to prime values of $q$ and $r$ and supposes elements
+If one restricts to prime values of $r$ and supposes elements
 of $\F_{q^r}$ are represented as polynomials with coefficients in $\F_q$,
 the computation of the minimal polynomial can be avoided:
 one simply checks that the elliptic period is not in $\F_q$,
@@ -3310,7 +3310,7 @@ with $d = 2$ is prime
 and suppose that $l$ is an Elkies prime for $E$:
 the $\ell$-division polynomial $f_\ell$ of $E$ has two factors
 $h_1$ and $h_2$ of degree $r$ over $\F_{q}$
-(whose product is $f_\lambda$).
+(whose product is $f_\lambda$ the kernel polynomial of an $\ell$-isogeny).
 The elliptic period is defined as $x(P) + x([i] P)$ for some
 $i \in \left(Z / \ell \Z\right)^*$ such that $i^2 \equiv -1 \pmod{\ell}$
 and any $P \in E(\F_{q^r})[\ell]$.
@@ -3324,9 +3324,9 @@ then by Galois invariance $x + m_i(x) \equiv t \pmod{h_1}$
 for a constant $t \in \F_{q}$,
 and since the periods do not depend on the initial choice of $h_1$
 or $h_2$,
-we conclude that $m_i(x) \equiv (t-x) \pmod{h_1 h_2}$.
-Hence, we can just compute $x + m_i(x) \pmod{h_1 h_2}$
-and see if it is a constant.
+we conclude that $m_i(x) \equiv (t-x) \pmod{f_\lambda}$.
+Hence, we can just compute $x + m_i(x) \pmod{f_\lambda}$ (or $\pmod{h_1}$
+or $\pmod{h_2}$) and see if it is a constant.
 The dominating step in this approach is the factorization of $f_\ell$.
 For large values of $q$ it could be replaced by using modular polynomials
 and isogeny computations \`a la SEA, but the chances of finding counterexamples
@@ -3350,9 +3350,9 @@ x + m_i(x) + \cdots + (\underbrace{m_i \circ \cdots \circ m_i}_\text{$d-1$ times
 where $i$ a $d$-th root of $-1$ in $\left(Z / \ell \Z\right)^*$.
 If such a prime $p$ is found, the reduction modulo $p$ is a
 candidate for a counterexample.
-It should still be checked that modulo $p$ the kernel polynomial
-does not split into more factor as over the rational
-and the corresponding counterexample explicitly computed.
+It should still be checked that over $\F_q = \F_p$ the kernel polynomial
+does not split into more factors as over $\Q$
+and the corresponding counterexample should be explicitly computed.
 
 For $r = 3$, $d = 2$ and $\ell = 2 d r + 1 = 13$, there exists an
 infinite family of elliptic curves suitable for this approach.
@@ -3370,7 +3370,7 @@ The next candidate for prime $r$ and $\ell$, and $d = 2$, can not be used.
 Indeed, for $r = 7$ and $\ell = 29$, there is no rational elliptic curve
 with a rational $29$-isogeny~\cite{Mazur1974} (or elliptic curves defined
 over a septic number field with $29$-torsion~\cite{Derickx201452}).
-More generally, rational elliptic  curves with rational $\ell$-isogenies
+More generally, rational elliptic curves with rational $\ell$-isogenies
 exist only for a finite set of values of $\ell$ corresponding
 to non-cuspidal rational points on $X_0(\ell)$, leaving few chances
 to find other interesting curves.
@@ -3397,12 +3397,13 @@ $s = 2$ does not apply.
 
 We now treat the other prime values for $\ell \geq 13$
 for which only a finite number of $\overline{\Q}$-isomorphism
-classes of rational elliptic curves come with an $\ell$-isogeny.
+classes of rational elliptic curves come with a rational $\ell$-isogeny.
 Curves labels come from Cremona's tables~\cite{cremona_tables}.
 
 For $\ell = 17$, with $(\ell-1)/2 = 2^3$,
 there are two rational elliptic curves
 with a rational $17$-isogeny.
+%curves~\texttt{14450P1} and \texttt{14450P2}.
 The factorization of $(\ell-1)/2$ implies
 that $2$ would divide both $r$ and $d$
 except in trivial cases where $r = 2^3$ and $d = 1$.
@@ -3428,7 +3429,7 @@ Therefore, none of these curves can be used.
 For $\ell = 37$, with $(\ell-1)/2 = 2\cdot3^2$,
 there are two rational elliptic curves
 with a rational $37$-isogeny.
-The first one is curve~\texttt{1225H1}
+The first curve is curve~\texttt{1225H1}
 % in Cremona's tables~\cite{cremona_tables}
 % with $j$-invariant $-7\cdot11^3$
 % $37$-torsion$ is defined over an extension of $\Q$ of degree $(\ell-1)/3 = 12$
@@ -3491,12 +3492,13 @@ Therefore, none of these curves can be used.
 For $\ell = 21$, with $\phi(21)/2 = 2\cdot3$,
 there are four rational elliptic curves with a rational $21$-isogeny
 All of them have a rational point of $3$-torsion,
-and curve~\texttt{162b1} is the unique rational elliptic curve
+and among them, curve~\texttt{162B1} is the unique rational elliptic curve
 with $21$-torsion over a cubic extension of $\Q$~\cite{najman_cubic}.
-For curve~\texttt{162b1},
+For curve~\texttt{162B1},
 the part of the kernel polynomial corresponding to primitive $21$-torsion
 splits into two cubic factors, whereas,
-for the three other curves, this part is a sextic irreducible.
+for the three other curves~\texttt{162B2}, \texttt{162B3} and\texttt{162B4},
+this part is a sextic irreducible.
 Therefore, the former curve can only be used with $r = 3$ and $d = 2$,
 whereas the latter ones can be used both with $r = 2$ and $d = 3$,
 and $r = 3$ and $d = 2$.
@@ -3514,14 +3516,15 @@ extension $K$ of $\Q$ with $25$-torsion defined over
 $K$~\cite{Derickx201452,2016arXiv160807549D}.
 If one of these curves is actually defined over $\Q$,
 it has rational $5$-torsion~\cite{gonzalez-jimenez_complete_2016}.
-Parametrizing such curves is outside the scope of this work,
+Proving that there is an infinity of such curves or
+parametrizing them is outside the scope of this work,
 but one can still sample curves within the larger family,
 compute the kernel polynomial over the rationals,
 and compute periods for $r = 2$ and $d = 5$, or $r = 5$ and $d = 2$,
 if it is irreducible,
 and $r = 5$ and $d = 2$ if it splits into two quintic factors,
-and check that the kernel polynomial of the candidate counterexamples
-factors as expected over $\F_p$.
+and finally check that the kernel polynomials of the candidate counterexamples
+factors as expected over $\F_q = \F_p$.
 
 For $\ell = 27$, with $\phi(27)/2 = 3^2$,
 there is one rational elliptic curve with a rational $27$-isogeny.
