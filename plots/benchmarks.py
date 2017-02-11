@@ -44,6 +44,24 @@ def parse_timings(datasets=['12/{:0>2}'.format(i) for i in filter(lambda x: x !=
     d = pd.concat([read_file('benchdata/%s.dat' % run) for run in datasets])
     return d
 
+def plot_magma(d, size=(10,10)):
+    '''
+    Plot our implementation of cyclotomic Rains' vs Magma
+    '''
+    
+    # Figure settings
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(111)
+    ax.loglog(basex=2, basey=2)
+    ax.set_xlabel("Cyclotomic Rains' (seconds)")
+    ax.set_ylabel('Magma (ratio)')
+
+    df = d[~d.t_magma.isnull() & ~d.t_cyclo_rains.isnull()]
+    data = df.t_magma / df.t_cyclo_rains
+    ax.plot(df.t_cyclo_rains, data, '.', ms=1, alpha=0.5)
+
+    return fig
+
 def plot_rains(d, size=(10,10)):
     '''
     Plot cyclotomic Rains' vs conic Rains' vs elliptic Rains' algorithm.
@@ -66,7 +84,7 @@ def plot_rains(d, size=(10,10)):
     df = d[~d.t_conic_rains.isnull()]
     df = df.groupby(df.degree).t_conic_rains.median()
     ax.plot(df.index, df, color='y')
-    # Plot elliptic Rains', scatter style
+    # Plot elliptic Rains'
     df = d[~d.t_elliptic_rains.isnull()]
     df = df.groupby(df.degree).t_elliptic_rains.median()
     ax.plot(df.index, df, color='k')
@@ -96,7 +114,7 @@ def plot_allombert_lowaux(d, size=(10,10)):
         ('Case 2', 't_kummer_cofactor', 5),
         ('Case 3', 't_kummer_mpe', 0),
         ('Case 3 (var)', 't_kummer_iterfrob', 2),
-        ('PARI/gp', 't_pari', 1),
+        ('PARI/GP', 't_pari', 1),
         ('Original', 't_kummer_linalg_only', 3),
 #        ('cyclo linalg', 't_kummer_cyclo_linalg', 6),
 #        ('linalg', 't_kummer_linalg', 7),
@@ -129,7 +147,7 @@ def plot_allombert_anyaux(d, size=(10,10)):
     fig = plt.figure(figsize=size)
     ax = fig.add_subplot(111)
     ax.set_xlabel(r'order of $q$ mod $r$')
-    ax.set_ylabel(r'ratio $\times 10^4$')
+    ax.set_ylabel(r'ratio')
 
     # Add a reference column for scaling timings with respect to degree^2
     df = pd.concat([d, pd.Series(d.degree**2 * 10**-4, name='deg_sq')], axis=1)
@@ -151,7 +169,7 @@ def plot_allombert_anyaux(d, size=(10,10)):
     plot_algo('t_kummer_cofactor', label="Case 2", zorder=0)
     plot_algo('t_kummer_mpe', label="Case 3", zorder=4)
     plot_algo('t_kummer_iterfrob', label="Case 3 (var)", zorder=1)
-    plot_algo('t_pari', marker='x', label="PARI/gp", zorder=5)
+    plot_algo('t_pari', label="PARI/GP", zorder=5)
     plot_algo('t_kummer_linalg_only', label="Original", zorder=3)
 #    plot_algo('t_kummer_cyclo_linalg', label="cyclo linalg", zorder=6)
 #    plot_algo('t_kummer_linalg', label="linalg", zorder=7)
@@ -228,6 +246,9 @@ def pdf_plots(prefix='bench-'):
     plt.rc('legend', fontsize=10)
 
     # Save pdf plots
+    plot = plot_magma(d, (5,4))
+    plot.savefig(prefix + 'magma.pdf', bbox_inches='tight')
+    
     plot = plot_rains(d, (4,3))
     plot.savefig(prefix + 'rains.pdf', bbox_inches='tight')
 

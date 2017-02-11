@@ -1,4 +1,4 @@
-BENCHMARKS := bench-rains.pdf bench-allombert-lowaux.pdf bench-allombert-anyaux.pdf bench-all.pdf
+BENCHMARKS := bench-magma.pdf bench-rains.pdf bench-allombert-lowaux.pdf bench-allombert-anyaux.pdf bench-all.pdf
 BENCHMARKS := $(patsubst %, plots/%, $(BENCHMARKS))
 
 ffisom.pdf: ffisom.tex refs.bib $(BENCHMARKS) #plots/arith_prog.pdf
