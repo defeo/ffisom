@@ -26,56 +26,6 @@ def is_gen_prime(alpha, r, q, p):
 	# only for r and q prime
 	return alpha.polynomial().degree() >= 1
 
-def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True, subfield = False):
-	cnt = 0
-	d = K.degree()
-	e = [p**ZZ(d/i) for i in d.prime_divisors()]
-	p = K.characteristic()
-	a = GF(l).multiplicative_generator()
-	false = []
-	for j in K:
-		if subfield is False and d != 1 and not all(j**i == j for i in e):
-			continue
-		E = EllipticCurve(j=j)
-		L = [E, E.quadratic_twist()]
-		for E in L:
-			basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
-			if basis is None:
-				continue
-			cnt += 1
-			if verbose:
-				print E.j_invariant(), basis[1:]
-			if abort and not basis[2]:
-				raise CounterExampleException(K.order(), l, E, basis[1])
-			if not all(basis[2:]):
-				false.append([j])
-				false[-1].extend(basis)
-				if abort:
-					raise CounterExampleException(K.order(), l, E, basis[1])
-	return [cnt, len(false), false]
-
-def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
-	cnt = 0
-	K2 = K**2
-	false = []
-	for coeffs in K2:
-		try:
-			E = EllipticCurve(coeffs.list())
-		except ArithmeticError:
-			continue
-		basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
-		if basis is None:
-			continue
-		cnt += 1
-		if verbose:
-			print E.j_invariant(), basis[1:]
-		if not basis[2]:
-			raise CounterExampleException(K.order(), l, E, basis[1])
-		if not all(basis[2:]):
-			false.append([E.j_invariant()])
-			false[-1].extend(basis)
-	return [cnt, len(false), false]
-
 def periodify_trace(b, P, rl):
 		return sum(((b**i).lift()*P)[0] for i in xrange(0,rl))
 
@@ -256,6 +206,56 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 		basis.append(all(is_normal(period, r, q, p) for period in basis[0]))
 
 	return basis
+
+def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True, subfield = False):
+	cnt = 0
+	d = K.degree()
+	e = [p**ZZ(d/i) for i in d.prime_divisors()]
+	p = K.characteristic()
+	a = GF(l).multiplicative_generator()
+	false = []
+	for j in K:
+		if subfield is False and d != 1 and not all(j**i == j for i in e):
+			continue
+		E = EllipticCurve(j=j)
+		L = [E, E.quadratic_twist()]
+		for E in L:
+			basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
+			if basis is None:
+				continue
+			cnt += 1
+			if verbose:
+				print E.j_invariant(), basis[1:]
+			if abort and not basis[2]:
+				raise CounterExampleException(K.order(), l, E, basis[1])
+			if not all(basis[2:]):
+				false.append([j])
+				false[-1].extend(basis)
+				if abort:
+					raise CounterExampleException(K.order(), l, E, basis[1])
+	return [cnt, len(false), false]
+
+def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
+	cnt = 0
+	K2 = K**2
+	false = []
+	for coeffs in K2:
+		try:
+			E = EllipticCurve(coeffs.list())
+		except ArithmeticError:
+			continue
+		basis = check_ff_curve(E, l=l, rbound=rbound, sbound=sbound, powers=powers, prime=prime, normal=normal, verbose=verbose)
+		if basis is None:
+			continue
+		cnt += 1
+		if verbose:
+			print E.j_invariant(), basis[1:]
+		if not basis[2]:
+			raise CounterExampleException(K.order(), l, E, basis[1])
+		if not all(basis[2:]):
+			false.append([E.j_invariant()])
+			false[-1].extend(basis)
+	return [cnt, len(false), false]
 
 def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = False, sbound = False, powers = False, prime = True, normal = False, verbose = False):
 	if pbound is False:
