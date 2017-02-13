@@ -26,11 +26,11 @@ def is_gen_prime(alpha, r, q, p):
 	# only for r and q prime
 	return alpha.polynomial().degree() >= 1
 
-def periodify_trace(b, P, rl):
-		return sum(((b**i).lift()*P)[0] for i in xrange(0,rl))
+def periodify_trace(b, P, rl, coord = 0):
+		return sum(((b**i).lift()*P)[coord] for i in xrange(0,rl))
 
-def periodify_norm(b, P, rl):
-		return prod(((b**i).lift()*P)[0] for i in xrange(0,rl))
+def periodify_norm(b, P, rl, coord = 0):
+		return prod(((b**i).lift()*P)[coord] for i in xrange(0,rl))
 
 def periodify_all(xP, rl, s, e):
 	print rl, s, binomial(rl, s)
@@ -315,6 +315,116 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 		cnt += pcnt
 		print "pcnt =", pcnt, ", cnt =", cnt
 
+def check_extdeg_jinv(r, K, Kr, l, ldict = None, prime = False, verbose = False):
+	p = K.characteristic()
+	q = Kr.order()
+	jcnt, gcnt, ncnt = 0, 0, 0
+	if prime: 
+		is_gen = is_gen_prime
+	else:
+		is_gen = is_gen_all
+	xl, al, bl, rl = ldict[l]
+
+	for j in K:
+		# Exclude special curves
+		if j == 0 or j == 1728:
+			continue
+
+		E = EllipticCurve(j=K(j))
+		t = E.trace_of_frobenius()
+		fmod = xl**2-t*xl+p
+		froots = fmod.roots()
+		if len(froots) != 2:
+			continue
+		r0, r1 = [z.multiplicative_order() if z != 0 else Infinity for z, _ in froots]
+		if r in [r0, r1]:
+			pass
+		elif (r % 2 == 0 and ZZ(r/2) in [r0, r1]) or (2*r != l-1 and 2*r in [r0, r1]):
+			E = E.quadratic_twist()
+			fmod = xl**2+t*xl+p
+			froots = fmod.roots()
+			r0, r1 = [z.multiplicative_order() if z != 0 else Infinity for z, _ in froots]
+		else:
+			continue
+		try:
+			assert(r in [r0, r1])
+		except AssertionError:
+			print p, r, l, j, E
+			raise
+		s = r1 if r == r0 else r1
+		if s.divides(r):
+			continue
+
+		EKr = E.base_extend(Kr)
+		m = E.cardinality(extension_degree=r)
+		ml = ZZ(m/l)
+
+		P = EKr(0)
+		while P == 0:
+			P = ml*EKr.random_element()
+
+		period = periodify_trace(bl, P, rl, 1 if r % 2 == 0 else 0)
+		jcnt += 1
+		if not is_gen(period, r, q, p):
+			print p, r, l, j, E
+			raise Exception
+		else:
+			gcnt += 1
+		ncnt += is_normal(period, r, q, p)
+
+	return jcnt, gcnt, ncnt
+
+def check_extdeg(r = 3, pbound = False, verbose = False):
+	if pbound is False:
+		pbound = [5, Infinity]
+	pmin = pbound[0]
+	pmax = pbound[1]
+	prime = r.is_prime()
+	ldict = {}
+	llist = []
+	lmax = 3
+
+	cnt = 0
+	for p in Primes():
+		pcnt = 0
+		if p < pmin:
+			continue
+		if p > pmax:
+			break
+		linfty = p.n()**(r)+2*p.n()**(1/2*r)
+		K = GF(p)
+		Kr = K.extension(r, name='z')
+		print "p =", p, ", r =", r, ", p^-r =", p.n()**-r, ", linfty =", linfty
+		lpcnt = 0
+		for l in llist:
+			lpcnt += 1
+			if verbose and lpcnt % 10**4 == 0:
+				print "lpcnt =", lpcnt, ", l =", l
+			jcnt, gcnt, ncnt = check_extdeg_jinv(r, K, Kr, l, ldict, prime=prime, verbose=verbose)
+			if jcnt != 0:
+				print p, r, l, jcnt, gcnt, ncnt, ncnt.n()/gcnt.n()
+			if jcnt != gcnt:
+				raise Exception
+		for l in primes(lmax + 1, linfty.ceil(), proof=False):
+			if (l-1) % r != 0 or ZZ((l-1)/r).gcd(r) != 1:
+				continue
+			L = GF(l)
+			xl = polygen(L)
+			al = L.multiplicative_generator()
+			bl = al**(r if r % 2 == 0 else 2*r)
+			rl = ZZ((l-1)/(r if r % 2 == 0 else 2*r))
+			ldict[l] = (xl, al, bl, rl)
+			llist.append(l)
+			lmax = l
+			lpcnt += 1
+			if verbose and lpcnt % 10**4 == 0:
+				print "lpcnt =", lpcnt, ", l =", l
+			jcnt, gcnt, ncnt = check_extdeg_jinv(r, K, Kr, l, ldict, prime=prime, verbose=verbose)
+			if jcnt != 0:
+				print p, r, l, jcnt, gcnt, ncnt, ncnt.n()/gcnt.n()
+			if jcnt != gcnt:
+				raise Exception
+
 def check_ff_cyclo(K = GF(7), l = 5):
 	a = GF(l).multiplicative_generator()
 	x = polygen(ZZ)
@@ -402,7 +512,7 @@ def test_X0of13(T=QQ, period=None, abort=True):
 		period = lambda I: I + I.parent().gen()
 	for t in T:
 		if t != 0:
-	                E = EllipticCurve(j=j(t))    # this is the slowest computation
+			E = EllipticCurve(j=j(t))	# this is the slowest computation
 			I = period(E.multiplication_by_m(5, x_only=True))
 			for phi in E.isogenies_prime_degree(13):
 				f = phi.kernel_polynomial().factor()[0][0]
@@ -453,19 +563,19 @@ def test_X0ofPrime(E, ell, d, r, naive=False, print_height=True, early_stop=Fals
 # find curves with a rational $25$-isogeny
 # and $25$-torsion (or some abscissae) over a quintic number field
 def find_X1of25(T = QQ, verbose = False):
-    x = polygen(QQ)
-    j25 = (x^10+10*x^8+35*x^6-12*x^5+50*x^4-60*x^3+25*x^2-60*x+16)^3/(x^5+5*x^3+5*x-11)
-    for t in T:
-        try:
-            j = j25(t)
-        except ZeroDivisionError:
-            continue
-        E = EllipticCurve(j=j)
-        f = E.division_polynomial(25)
-        f = f/f.gcd(E.division_polynomial(5))
-        L = [g.degree() for g, _ in f.factor()]
-        if 5 in L or verbose:
-            print t, L
+	x = polygen(QQ)
+	j25 = (x^10+10*x^8+35*x^6-12*x^5+50*x^4-60*x^3+25*x^2-60*x+16)^3/(x^5+5*x^3+5*x-11)
+	for t in T:
+		try:
+			j = j25(t)
+		except ZeroDivisionError:
+			continue
+		E = EllipticCurve(j=j)
+		f = E.division_polynomial(25)
+		f = f/f.gcd(E.division_polynomial(5))
+		L = [g.degree() for g, _ in f.factor()]
+		if 5 in L or verbose:
+			print t, L
 
 C15 = ["50A1", "50A2", "50A3", "50A4"]
 C21 = ["162B1", "162B2", "162B3", "162B4"]
