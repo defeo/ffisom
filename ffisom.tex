@@ -1773,11 +1773,13 @@ periods.
 
 \begin{definition}
   \label{definition:ellperiod}
-  Let $E/\F_q$ be an elliptic curve.  Let $\ell > 3$ be an Elkies
-  prime for $E$, $\lambda$ an eigenvalue of $\pi$, and $P$ a point of
-  order $\ell$ in the eigenspace corresponding to $\lambda$ (i.e.,
-  such that $\pi(P)=\lambda P$).  Suppose that there is a subgroup $S$
-  of $(\Z/\ell\Z)^{\times}$ such that
+  Let $E/\F_q$ be an elliptic curve of $j$-invariant not $0$ or
+  $1728$. %
+  Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
+  of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
+  corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$).
+  Suppose that there is a subgroup $S$ of $(\Z/\ell\Z)^{\times}$ such
+  that
   \begin{equation}
     (\Z/\ell\Z)^{\times} = \langle{\lambda}\rangle \times S.
   \end{equation}
@@ -1792,6 +1794,9 @@ periods.
   \end{equation}
   where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
+
+For a generalization of this definition that also covers the cases
+$j=0,1728$, see Appendix~\ref{app:elliptic-curves}.
 
 \begin{lemma}
   \label{lemma:ellperiods-order}
@@ -1827,12 +1832,7 @@ periods.
 We remark that the previous lemma only states that the elliptic
 periods $\eta_{\lambda,S}([\lambda^i]P)$ uniquely define an orbit
 inside $\F_{q^r}$, but gives no guarantee that they generate the whole
-$\F_{q^r}$. Indeed, for the special curves of $j$-invariant $0$ and
-$1728$, it may systematically be the case that
-$\eta_{\lambda,S}(P)=0$.
-To handle these corner cases, we give more general definitions of elliptic
-periods in Appendix~\ref{app:elliptic-curves}.
-
+$\F_{q^r}$. %
 At this point, one would like to have an equivalent of
 Lemma~\ref{th:gaussian} for elliptic periods, i.e.\ that the elliptic
 period $\eta_{\lambda,S}(P)$ is a normal generator of $\F_q(x(P))$.
@@ -2081,8 +2081,8 @@ within those bounds.
       \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$, and $\gcd(rs,u/s)=1$, and $\gcd(ur,d)=1$}
       \STATE Add $\ell$ to $\mathcal{C}$.
       \ENDIF
-      \IF{\label{alg:selectell:ellorder}$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
-      \STATE Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
+      \IF{$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
+      \STATE\label{alg:selectell:ellorder} Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
       \REPEAT\label{alg:selectell:ellloop}
       \STATE\label{alg:selectell:ellcount} Take random $E/\F_q$ and compute its trace $t$;
       \UNTIL{$(t\bmod\ell)\in\mathcal{T}$}
@@ -2114,9 +2114,7 @@ within those bounds.
   of points of an elliptic curve over $\F_q$. This can be done in
   $O\left(\log^6(q)\right)$ binary operations using the
   Schoof--Elkies--Atkin algorithm with naive integer
-  arithmetic~\cite{schoof95,lercier+sirvent08}. Knowing the trace of a
-  curve $E$ we immediately know the traces of its twists (see
-  Appendix~\ref{app:elliptic-curves}).
+  arithmetic~\cite{schoof95,lercier+sirvent08}.
 
   All other operations have negligible cost compared to these ones. We
   finally need to account for the two loops in the algorithm. The
@@ -2957,166 +2955,225 @@ theoretical interest.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Elliptic curves}
+\section{Using $j=0,1728$ in the elliptic Rains' algorithm}
 \label{app:elliptic-curves}
 
+When we defined elliptic periods in Section~\ref{sec:ellperiods}, we
+explicitly ruled out the case where the elliptic curve has
+$j$-invariant $0$ and $1728$. %
+Indeed the definition of elliptic periods for these curves is
+complicated by the fact that they have additional automorphisms: had
+we applied Definition~\ref{definition:ellperiod} to them, we would
+have obtained periods that are always equal to $0$.
 
-% Another subtlety arises in comparison with multiplicative groups:
-% elliptic curves always come with non trivial automorphisms. We recall
-% that the size of the \emph{group of rational automorphisms} of a curve
-% $E/\F_q$ is one of the following:
-% \begin{itemize}
-% \item $\#\Aut_{\F_q}(E) = 12$ if $j(E)=0$ and $q=0\mod 9$ \todo{is this correct? useful?},
-% \item $\#\Aut_{\F_q}(E) = 6$ if $j(E)=0$ and $q=1\mod 3$,
-% \item $\#\Aut_{\F_q}(E) = 4$ if $j(E)=1728$ and $q=1\mod 4$,
-% \item $\#\Aut_{\F_q}(E) = 2$ otherwise.
-% \end{itemize}
+In this section we sketch how to extend the elliptic variant of Rains'
+algorithm to these curves. %
+Although this does not change the overall complexity of Rains'
+algorithm, it makes for a small practical improvement, and a nice
+\emph{recreational mathematics} read.
+
+Recall (see~\cite[III.10]{Sil}) that the order of the
+\emph{automorphisms group} $\Aut(E)$ of a curve $E$ defined over a
+field $\F_q$ of characteristic $p$ is one of the following:
+\begin{itemize}
+\item $2$ if $j(E)\ne0,1728$,
+\item $4$ if $j(E) = 1728$ and $p\ne2,3$,
+\item $6$ if $j(E) = 0$ and $p\ne2,3$,
+\item $12$ if $j(E) = 0 = 1728$ and $p=3$,
+\item $24$ if $j(E) = 0 = 1728$ and $p=2$.
+\end{itemize}
+We can now give a meaningful definition of elliptic periods that
+covers all elliptic curves.
+
+\begin{definition}
+  \label{definition:ellperiod-general}
+  Let $E/\F_q$ be an elliptic curve with automorphism group $\Aut(E)$
+  of order $2n$, and Frobenius endomorphism $\pi$. %
+  Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
+  of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
+  corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$). %
+  Suppose that there is a subgroup $S$ of $(\Z/\ell\Z)^{\times}$
+  containing $\Aut(E)$, and such that
+  \begin{equation*}
+    (\Z/\ell\Z)^{\times} = \langle{\lambda}\rangle \times S.
+  \end{equation*}
+  
+  Then we define an elliptic period as
+  \begin{equation*}
+    \eta_{\lambda,S}(P) =
+    \sum_{\sigma\in S/\Aut(E)} {x\left([\sigma] P \right)^n} 
+  \end{equation*}
+  where $x(P)$ denotes the abscissa of $P$.
+\end{definition}
+
+This definition is equivalent to Definition~\ref{definition:ellperiod}
+when $\Aut(E)=\{\pm1\}$. %
+When the automorphism group is larger, it avoids unnecessary
+cancellations by quotienting out $S$ by $\Aut(E)$, and at the same
+time it ensures unicity thanks the the $n$-th power in the sum. %
+We leave as an exercise the proof of the statement analogous to
+Lemma~\ref{lemma:ellperiods-order}. %
+Note that it would be possible to generalize this definition to the
+case where $\Aut(E)$ is (partially) contained in
+$\langle{\lambda}\rangle$, however we leave out this detail, as it is
+not necessary for Rains' algorithm.
 
 
-Recall that two elliptic curves $E$ and $E'$ over a field $k$ are said
-to be \emph{isomorphic} if there exists a linear change of variables
-with coefficients in $k$ sending one onto the other. If $E$ and $E'$
-are isomorphic over $\bar{k}$, but not over $k$, they are said to be
-\emph{twists} of each other. A twist is said to be quadratic
-(resp. cubic, quartic, sextic), if $E$ and $E'$ become isomorphic over
-a quadratic (resp. cubic, quartic, sextic) extension of $k$. Most
-elliptic curves only have quadratic twists; elliptic curves with
-$j=0,1728$ may have cubic, quartic and sextic twists. See~\cite{Sil}.
+\subsection{The ordinary case}
 
-We now give a proposition relating the number of points of an elliptic
-curve over a finite field with the number of points of its twists.  In
-the case of quadratic twists, this proposition simply states that $E$
-and $E'$ have opposite trace, a well known fact.
+The curves of $j$-invariant $0$ and $1728$ are ordinary if and only if
+all automorphisms are defined over $\F_p$. %
+For $j=0$, this is equivalent to $p\equiv 1 \bmod 3$; for $j=1728$,
+this is equivalent to $p\equiv 1 \bmod 4$. %
+
+The splitting of the Frobenius polynomial of $E$ is well known in this
+case, with early results dating back to Gauss. %
+The two statements below follow easily
+from~\cite[Th.~2.5,2.6]{silverberg2010group}.
 
 \begin{proposition}
-  \label{proposition:twisttrace}
-  Let $E$ be an ordinary elliptic curve defined over a finite field
-  $\F_q$ of characteristic $p\ne2$, and denote by $t$ the trace of its
-  Frobenius endomorphism.
-
-  Let $u\in\bar{\F}_q$, define a curve $E^u$ and an isomorphism
-  $\upsilon$ of elliptic curves by
+  Let $p$ be a prime congruent to $1$ modulo $3$, and let $q=p^d$. %
+  Let $p=\pi\bar\pi$ be the unique decomposition of $p$ in the
+  Eisenstein integers $\Z[\omega]$ with
+  $\pi\equiv\bar\pi\equiv1\bmod3$. %
+  Let $E$ be the curve defined by $y^2=x^3+b$, and let
+  $\left(\tfrac{4b}{\pi}\right)_6$ be the unique sixth root of unity
+  of $\Z[\omega]$ congruent to $(4b)^{(q-1)/6}\bmod \pi$. %
+  Then the minimal polynomial of the Frobenius endomorphism of $E$
+  splits in $\Z[\omega]$ as
   \begin{equation*}
-    \begin{aligned}
-      \upsilon : E &\to E^u,\\
-      (x,y) &\mapsto (u^2x,u^3y).
-    \end{aligned}
+    X^2 - tX + q =
+    \Bigl(X - \left(\tfrac{4b}{\pi}\right)_6^{-1}\pi^d\Bigr)
+    \Bigl(X - \left(\tfrac{4b}{\pi}\right)_6\bar\pi^d\Bigr).
   \end{equation*}
-  If $E^u$ is defined over $\F_q$, then $u^{q-1}$ is an element of
-  $\F_p$ of multiplicative order $n\in\{1,2,3,4,6\}$.
-
-  Let $t_u$ be the trace of the Frobenius endomorphism of $E^u$, then
-  $t_u^n=t^n \bmod q$, and $t_u=u^{q-1}t\bmod p$. This is enough to
-  uniquely determine $t_u$ given $t$.
 \end{proposition}
-\begin{proof}
-  Observe that if $E^u$ is a quadratic (resp. cubic, quartic, sextic)
-  twist of $E$, then $u^{q-1}$ has multiplicative order $2$
-  (resp. $3,4,6$). Furthermore, since $E$ is ordinary, $2$
-  (resp. $3,4,6$) divides $p-1$, hence $u^{q-1}$ is in the prime field
-  $\F_p$, and it defines a curve automorphism
+
+\begin{proposition}
+  Let $p$ be a prime congruent to $1$ modulo $4$, and let $q=p^d$. %
+  Let $p=\pi\bar\pi$ be the unique decomposition of $p$ in the
+  Gaussian integers $\Z[i]$ with
+  $\pi\equiv\bar\pi\equiv 1 \bmod (2+2i)$. %
+  Let $E$ be the curve defined by $y^2=x^3-ax$, and let
+  $\left(\tfrac{a}{\pi}\right)_4$ be the unique fourth root of unity
+  of $\Z[i]$ congruent to $a^{(q-1)/4}\bmod \pi$. %
+  Then the minimal polynomial of the Frobenius endomorphism of $E$
+  splits in $\Z[i]$ as
   \begin{equation*}
-    \upsilon^{q-1}:(x,y)\mapsto(u^{2q-2}x,u^{3q-3}y).
+    X^2 - tX + q =
+    \Bigl(X - \left(\tfrac{a}{\pi}\right)_4^{-1}\pi^d\Bigr)
+    \Bigl(X -  \left(\tfrac{a}{\pi}\right)_4\bar\pi^d\Bigr).
   \end{equation*}
-  Any twist arises this way (see~\cite{Sil}).
+\end{proposition}
 
-  Denote by $\pi$ and $\pi_u$ the frobenius endomorphisms of $E$
-  and $E^u$ respectively. They satisfy the equations
-  \begin{equation}
-    \label{eq:frob-char-twist}
-    \pi^2 - [t]\pi + [q] = 0, \qquad \pi_u^2 - [t_u]\pi_u + [q] = 0,
-  \end{equation}
-  where $[m]$ denotes multiplication by $m$ on the elliptic curves. By
-  straightforward calculation, we also verify that they satisfy the
-  commutative diagram
+From the above decomposition, it is immediately apparent that $\ell$
+is an Elkies prime for $y^2=x^3+b$ if and only if
+$\ell\equiv 1 \bmod 3$; and, similarly, it is an Elkies prime for
+$y^2=x^3-ax$ if and only if $\ell\equiv 1 \bmod 4$. %
+
+Algorithmically, we start by computing the splitting of $p$ in
+$\Z[\omega]$ or $\Z[i]$ using Cornacchia's
+algorithm~\cite{cornacchia1908di}; then, we deduce the image of the
+eigenvalues in $(\Z/\ell\Z)^\times$ directly from the splitting. %
+We give below more detailed step-by-step instructions for the case
+$j=1728$; the case $j=0$ is analogous and can be treated in a similar
+way.
+
+Our goal is to find a uniquely defined generator for $\F_{q^r}$, with
+$q=p^d$, given a prime $\ell$ such that $r|(\ell-1)$, assuming that
+$q^r\ne 1\bmod\ell$ and that $p\equiv\ell\equiv 1 \bmod 4$:
+\begin{enumerate}
+\item Use Cornacchia's algorithm to compute a splitting $p=x^2+4y^2$;
+\item Choose signs so that $p=\pi\bar\pi=(x-2iy)(x+2iy)$ and
+  $x - 2y \equiv 1 \bmod 4$;
+\item Find a primitive fourth root of unity $\hat\imath\in\F_p$ such that
+  $x=2\hat\imath y$;
+\item Find a primitive fourth root of unity $I\in\Z/\ell\Z$;
+\item Look for an element of $(\Z/\ell\Z)^\times$ of order $r$ among
+  the $I^{\pm c}(x\pm2Iy)^d$ for $0\le c \le 3$;
+\item If such an element is found return the curve $y^2=x^3-ax$, where
+  $a\in\F_q$ is such that $a^{(q-1)/4}=\hat\imath^c$.
+\end{enumerate}
+
+This procedure can be plugged inside
+Algorithm~\ref{algorithm:selectell} to help find candidates for Rains'
+algorithm. %
+The most computationally intensive step is Cornacchia's algorithm,
+which is negligible if compared to the point counting operations
+needed for general elliptic curves. %
+If an elliptic curve is found by this procedure, then it can be
+readily used inside the elliptic variant of Rains' algorithm, by
+replacing the earlier definition of elliptic period with
+Definition~\ref{definition:ellperiod-general} above.
+
+
+\subsection{The supersingular case}
+
+The supersingular case is of much lesser interest, however we treat it
+briefly for completeness. %
+To keep things simple, we will not consider the cases $p=2,3$. %
+The possibilities for the trace of $E$ are much more constrained in
+this case. %
+Indeed, the only possibilities are $t=0,\pm\sqrt{q},\pm2\sqrt{q}$
+(see~\cite{waterhouse69}). %
+Of these, only the case $\pm\sqrt{q}$ is interesting in the context of
+Rains' algorithm; indeed when $t=\pm2\sqrt{q}$ the two eigenvalues are
+equal, and Rains' algorithm does not apply; when $t=0$ the two
+eigenvalues are opposite, thus if one has odd order $r$ modulo $\ell$,
+$q$ must have order $2r$, but in this case the conic variant presented
+in Appendix~\ref{app:rains-vars} is simpler and more efficient. %
+The case $t=\pm\sqrt{q}$ is never realized by $j=1728$, however for
+$j=0$ it constitutes an interesting optimization whenever $q$ is a
+square and $\order_\ell(q)=3r$. %
+
+Assume that $q$ is an even power of $p$, and $p\equiv 2\mod 3$. %
+Let $j\in\F_q$ be a primitive cube root of unity, and let $E$ be the
+curve $y^2=x^3+j$. %
+Then $E$ has trace $\sqrt{q}$, and the minimal polynomial of the
+Frobenius endomorphism splits in $\Z[\omega]$ as
+\begin{equation*}
+  X^2 - X\sqrt{q} + q = (X+\omega\sqrt{q})(X+\omega^2\sqrt{q}).
+\end{equation*}
+
+Let $r$ be a prime power not divisible by $2$ or $3$, and let $\ell$
+be a prime such that $\ell=1\bmod 3$ and $\order_\ell(q)=3r$. %
+Let $\hat\omega\in\Z/\ell\Z$ such that $q^r=\hat\omega\bmod\ell$, then
+by direct calculation we see that
+$\order_\ell(-\hat\omega^r\sqrt{q})=r$ and
+$\order_\ell(-\hat\omega^{-r}\sqrt{q})=3r$. %
+Hence, there is only one cyclic rational subgroup of $\ell$-torsion in
+$\F_{q^r}$, and we are in the conditions to apply Rains' algorithm. %
+This computation also shows that the case $t=-\sqrt{q}$ is not useful
+in Rains' algorithm.
+
+\begin{example}
+  We illustrate the algorithm sketched above with a numerical
+  example. %
+  Let $p=5$, $q=25$, $r=5$ and $\ell=61$. %
+  In what follows, elements of $\F_q$ are represented as polynomials
+  in $j$ in the quotient ring $\F_5[j]/(j^2+j+1)$. %
+
+  The elliptic curve $y^2=x^3+j$ has trace $5$, and its two Frobenius
+  eigenvalues are $-\omega p$ and $-\omega^2 p$. %
+  We set $\hat\omega=q^r=13\bmod 61$, and we verify that
+  $\order(-\hat\omega^r p)=\order(-13^2\cdot 5)=r$, whereas
+  $\order(-\hat\omega^{-r} p)=\order(-13\cdot 5)=3r$. %
+  Indeed $\#E(\F_{q^r})= 3\cdot7\cdot61\cdot7621$, hence we can
+  construct an elliptic period from any point $P\in E[61]$ defined
+  over $\F_{q^r}$. %
+  To apply Definition~\ref{definition:ellperiod-general}, we need a
+  generator of the order $12$ subgroup of $\Z/61\Z$, e.g., $21$. %
+  Quotienting out the order $6$ subgroup, we obtain the period
   \begin{equation*}
-    \begin{tikzpicture}[node distance=3em]
-      \node(E){$E$};
-      \node[right of=E](E2){$E$};
-      \node[right of=E2](E3){$E$};
-      \node[below of=E](Eu){$E^u$};
-      \node[right of=Eu](Eu2){$E^u$};
-      \node[right of=Eu2](Eu3){$E^u$};
-
-      \draw[->,auto,font=\scriptsize]
-      (E) edge node[swap]{$\upsilon$} (Eu)
-          edge node{$\pi$} (E2)
-          edge[bend left=45] node{$[q]$} (E3)
-      (Eu) edge node[swap]{$\pi_u$} (Eu2)
-           edge[bend right=45] node[swap]{$[q]$} (Eu3)
-      (E2) edge node[swap]{$\upsilon^q$} (Eu2)
-           edge node{$\hat\pi$} (E3)
-      (Eu2) edge node[swap]{$\hat\pi_u$} (Eu3)
-      (E3) edge node{$\upsilon$} (Eu3);
-    \end{tikzpicture}
+    \eta = x(P)^3 + x([21]P)^3,
   \end{equation*}
-  where we denote by $\upsilon^q$ the isomorphism
-  $(x,y)\mapsto(u^{2q}x,u^{3q}y)$, and by $\hat\pi,\hat\pi_u$ the dual isogenies
-  to $\pi,\pi_u$.
-
-  Now we restrict the maps above to the $q$-torsion subgroups of $E$
-  and $E^u$. Since the curves are ordinary, these subgroups are cyclic
-  of order $q$, and the maps act as scalar multiplication on the
-  points. In particular, we deduce from Eq.~\eqref{eq:frob-char-twist} that 
+  and we verify that its minimal polynomial is
   \begin{equation*}
-    \pi = [t \bmod q], \qquad \pi_u = [t_u \bmod q].
+    x^5 + (3j-3)x^4 + (j+3)x^3 -jx^2 + (j+1)x + (2j-2)    
   \end{equation*}
-  Hence, from the diagram we obtain
-  \begin{equation*}
-    [t] = \upsilon^{-q}\circ[t_u]\circ\upsilon \mod q.
-  \end{equation*}
+  independently of the initial choice of $P$.
+\end{example}
 
-  Notice that $\upsilon^{-q}$ can be decomposed as
-  $\upsilon^{-1}\circ\upsilon^{1-q}$, where $\upsilon^{1-q}$ is an
-  automorphism of $E^u$ by hypothesis. $\upsilon^{1-q}$ also acts on
-  the $q$-torsion points as a scalar in $\Z/q\Z$, that we shall denote
-  by $U$. It is evident that the multiplicative order of $U$ in $\Z/q\Z$
-  is the same as that of $u^{1-q}$ in $\F_p$. Then
-  \begin{equation*}
-    [t] = \upsilon^{-1}\circ[Ut_u]\circ\upsilon\mod q.
-  \end{equation*}
-  But $\upsilon$ is an isomorphism, thus it commutes with scalar
-  multiplication, and we conclude that $t=Ut_u\bmod q$.
 
-  If $u^{1-q}=\pm1$, we are done. When the order of $u^{1-q}$ is $3,4$
-  or $6$, we still have to determine which of the cubic, fourth, sixth
-  roots of unity in $\Z/q\Z$ corresponds to $U$.
-
-  Using the diagram above, we decompose
-  Eq.~\eqref{eq:frob-char-twist} as
-  \begin{equation*}
-    \hat\pi\circ\pi = [t]\pi - \pi^2,
-  \end{equation*}
-  and similarly for $E^u$. Hence, from the diagram again,
-  \begin{equation}
-    \label{eq:twisttrace:modp}
-    [t] - \pi = \hat\pi = \upsilon^{-1}\circ\hat\pi_u\circ\upsilon^q 
-    =  \upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q.
-  \end{equation}
-  Let now $\omega$ be the invariant differential of $E$, we apply the
-  pullback of Eq.~\eqref{eq:twisttrace:modp} to $\omega$. On the
-  left-hand side we have
-  \begin{equation}
-    \label{eq:twisttrace:modp-lhs}
-    ([t]-\pi)^\ast\omega = t\omega\in\Omega_E
-  \end{equation}
-  because $\pi$ is inseparable (see \cite[\S~5]{Sil}). On the
-  right-hand side, if we let $\omega_u$ be the invariant differential
-  of $E^u$, we have $(\upsilon^{-1})^\ast\omega=u\omega_u$, and
-  $(\upsilon^q)^\ast\omega_u=\omega/u^q$, hence
-  \begin{equation}
-    \label{eq:twisttrace:modp-rhs}
-    (\upsilon^{-1}\circ([t_u] - \pi_u)\circ\upsilon^q)^\ast\omega =
-    u(([t_u] - \pi_u)\circ\upsilon^q)^\ast\omega_u =
-    ut_u(\upsilon^q)^\ast\omega_u = u^{1-q}t_u\omega.
-  \end{equation}
-  Comparing Eqs.~\eqref{eq:twisttrace:modp-lhs}
-  and~\eqref{eq:twisttrace:modp-rhs}, we conclude that $t = u^{1-q}t_u
-  \bmod p$. Given that $\lvert t_u\rvert\le2\sqrt{q}$, we have uniquely determined $t_u$, and proven the theorem.
-\end{proof}
-
-\todo{Give a similar proposition for supersingular curves (see, e.g.,
-  Menezes--Okamoto--Vanstone)}
 
 \section{Elliptic periods}
 \label{app:ellprdsdata}
