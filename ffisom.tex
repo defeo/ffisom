@@ -972,8 +972,7 @@ and compute $\theta_a = \hat{h'}(\tau_a)$ using Eq.~\eqref{eq:hprime}
 yielding a solution to Hilbert's theorem 90 as soon as $\tau_a \neq 0$.
 As before $O(1)$ trials are enough to get $\theta_a \neq 0$.
 
-\paragraph{Case 0: Allombert's algorithms}
-Before presenting subquadratic algorithms, we briefly describe
+Before presenting quasi-quadratic algorithms, we briefly describe
 Allombert's algorithms which both rely on linear algebra.%
 \footnote{
 Note that Allombert's algorithms can be directly be applied to any extension
@@ -983,7 +982,7 @@ In practice it is more efficient to perform computations
 for each primary factor independently
 and glue the results together in the end.
 }
-
+\paragraph{Allombert's algorithms}
 The first version of the algorithm~\cite{Allombert02}
 simply computes the matrix of the Frobenius of $k/\F_q$
 and then an eigenvalue of $\sigma$ for $\zeta$ over $\F_q(\zeta)$
@@ -1030,7 +1029,8 @@ using modular exponentiation
 (or $O(s r^2)$ operations in $\F_q$ using the matrix of $\sigma$).
 \end{proof}
 
-We now give three different algorithms to compute $\theta_a$ efficiently.
+We now give three variations on the above algorithm to compute $\theta_a$
+more efficiently.
 Which algorithm has the best asymptotic complexity depends on the
 value of $s$ with respect to $r$; we arrange them by increasing $s$.
 
