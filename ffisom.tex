@@ -247,12 +247,12 @@ algorithms for the embedding description problem. %
 Section~\ref{sec:kummer} describes the family of algorithms based
 (more or less loosely) on Lenstra's work; we call these
 \emph{Kummer-type} algorithms. %
-In doing so, we pay a particular attention to Allombert's algorithms:
+In doing so, we pay a particular attention to Allombert's algorithm:
 to our knowledge, this is the first detailed and complete complexity
-analysis of these algorithms and their variants. %
+analysis of this algorithm and its variants. %
 Thanks to our work on asymptotic complexity, we were able to devise
-improvements to the original algorithm that largely outperform it both
-in theory and practice. %
+improvements to the original variants of Allombert
+that largely outperform them both in theory and practice. %
 
 In Section~\ref{sec:rains-algorithm} we describe Rains' algorithm. %
 Rains' original preprint~\cite{rains2008} went unpublished, thus we
@@ -751,7 +751,7 @@ defined.
 \section{Kummer-type algorithms}
 \label{sec:kummer}
 
-In this section we review what we call \emph{Kummer-type} approaches to the embedding problem for prime power degree extensions. 
+In this section, we review what we call \emph{Kummer-type} approaches to the embedding problem for prime power degree extensions. 
 We briefly review the works of Lenstra~\cite{LenstraJr91},
 and Allombert~\cite{Allombert02,Allombert02-rev}, then 
 we give variants of these algorithms with a significantly lower complexities.
@@ -845,8 +845,9 @@ on $\theta_1$ and $\theta_2$, he obtains an embedding $k \hookrightarrow K$.%
 \subsection{Allombert's algorithm}
 \label{sec:fast-kummer}
 
-In this section, we present variants of Allombert's algorithms with the
-best known asymptotic complexities. The main difference with respect to the 
+In this section, we analyse the complexity of Allombert's original~\cite{Allombert02} and revised~\cite{Allombert02-rev} algorithms
+and present variants with the best known asymptotic complexities.
+The main difference with respect to the 
 versions presented in~\cite{Allombert02,Allombert02-rev} is in the way
 we compute $\theta_1, \theta_2$, which are solutions to Hilbert's theorem 90
 as will become clear below.
@@ -856,6 +857,7 @@ Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described
 a variant which is similar to the present one,
 in the specific case 1 with $s=1$ we describe below.
 
+\subsubsection{General strategy}
 Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
 Let $h(Z)$ be an 
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
@@ -972,65 +974,103 @@ and compute $\theta_a = \hat{h'}(\tau_a)$ using Eq.~\eqref{eq:hprime}
 yielding a solution to Hilbert's theorem 90 as soon as $\tau_a \neq 0$.
 As before $O(1)$ trials are enough to get $\theta_a \neq 0$.
 
-Before presenting quasi-quadratic algorithms, we briefly describe
-Allombert's algorithms which both rely on linear algebra.%
+We now focus on the complexity analysis
+of the computation of such a solution $\theta$
+to Hilbert's theorem 90.
+
+\subsubsection{Algorithms relying on linear algebra}
+Before presenting quasi-quadratic algorithms based on evaluation formulas,
+we briefly describe Allombert's original algorithm~\cite{Allombert02},
+its revision~\cite{Allombert02-rev},% and another variation,
+both of them relying on linear algebra.%
 \footnote{
-Note that Allombert's algorithms can be directly be applied to any extension
+Note that all these variants can be directly be applied to any extension
 degree $r$ as long as $p \nmid r$
 and do not require $r$ to be a prime power.
-In practice it is more efficient to perform computations
+Nevertheless, in practice, it is more efficient to perform computations
 for each primary factor independently
 and glue the results together in the end.
 }
-\paragraph{Allombert's algorithms}
-The first version of the algorithm~\cite{Allombert02}
-simply computes the matrix of the Frobenius of $k/\F_q$
-and then an eigenvalue of $\sigma$ for $\zeta$ over $\F_q(\zeta)$
-at a total cost of $O(\MM(r) \log q + r \MM(r) + \MMM(rs))$
-operations in $\F_q$.
+As some algorithmic details were omitted in Allombert's publications,
+and no precise complexity analysis was performed,
+we extracted the details from PARI/GP source code
+and perform the complexity analysis here.
+We also propose another variant relying on linear algebra.
 
+\paragraph{Allombert's original algorithm}
+The original version of Allombert's algorithm~\cite{Allombert02}
+computes the matrix of the Frobenius automorphism $\sigma$ of $k/\F_q$
+using $O(\MM(r) \log q + r \MM(r))$ operations in  $\F_q$
+and then an eigenvalue of $\sigma$ for $\zeta$ over $\F_q(\zeta)$
+using linear algebra at a cost of $O(\MMM(rs))$ operations in $\F_q$
+yielding the following complexity.
+
+\begin{proposition}
+Using Allombert's original algorithm,
+a solution $\theta$ to Hilbert's theorem 90 can be computed in
+$O(s \MM(r) \log(q) + r \MM(r) + \MMM(rs))$ operations in $\F_q$.
+\end{proposition}
+
+\paragraph{Allombert's revised algorithm}
 In his revised algorithm~\cite{Allombert02-rev}, Allombert uses
 Eq.~\eqref{eq:theta90bis} to get
 a solution to Hilbert's theorem 90
 by evaluating $h'(S)=h(S)/(S-\zeta)$
 on an element in the kernel of $\hat{h}$ over $k$
 linear algebra now taking place over $\F_q$ rather than $\F_q(\zeta)$.
+The details on the computation of $\hat{h}$ were extracted
+from PARI/GP source code and yield the following complexity.
 
 \begin{proposition}
 Using Allombert's revised algorithm,
 a solution $\theta$ to Hilbert's theorem 90 can be computed in
-$O(s \MM(r) \log(q) + r \MM(r) + \sqrt{s} \MMM(r))$ operations in $\F_q$.
+$O(\MM(r) \log(q) + r \MM(r) + s r^2 + \MMM(r))$ operations in $\F_q$.
 \end{proposition}
 
 \begin{proof}
-After computing the matrix of $\sigma$ over $k$ at a cost of
-$O(\MM(r) \log(q) + r \MM(r))$ operations in $\F_q$, one can compute
-the matrix of $\hat{h}$ in $O(\sqrt{s} \MMM(r))$ operations in $\F_q$
-using Paterson--Stockmeyer algorithm.%
-\footnote{
-Alternatively, as is implementated in PARI/GP,
-one can first compute the powers $x^{q^i}$ for $0 \leq i \leq s$
-at a cost of $O(s r^2)$ operations in $\F_q$ using the matrix of $\sigma$
-(or $O(s \MM(r) \log q)$ operations in $\F_q$ using modular exponentiation),
-and deduce the powers $x^{j q^i}$ for $2 \leq j \leq r$
-at a cost of $O(s r \MM(r))$ operations in $\F_q$,
-in order to iteratively compute the matrix of $\hat{h}$
-for an additional cost of $O(s r^2)$ operations in $\F_q$ for scalar
-multiplications by the coefficients of $h$.
-The total cost being $O(s r \MM(r))$ operations in $\F_q$.
-}
+As in Allombert's original algorithm, one first
+computes the matrix of $\sigma$ over $k$ at a cost of
+$O(\MM(r) \log(q) + r \MM(r))$ operations in $\F_q$.
 
-Computing an element in the kernel of $\hat{h}$
-over $k$ costs $O(\MMM(r))$ operations in $\F_q$.
+To get the matrix of $\hat{h}$ over $k$,
+one first computes the powers $x^{q^i}$ for $0 \leq i \leq s$
+at a cost of $O(s r^2)$ operations in $\F_q$ using the matrix of $\sigma$.
+%(or $O(s \MM(r) \log q)$ operations in $\F_q$ using modular exponentiation).
+From them and the matrix of $\sigma$, on can iteratively compute
+the powers $x^{j q^i}$ for $2 \leq j \leq r$
+for a total cost of $O(s r \MM(r))$ operations in $\F_q$,
+and iteratively compute the matrix of $\hat{h}$
+for an additional total cost of $O(s r^2)$ operations in $\F_q$,
+accounting for the scalar multiplications by the coefficients of $h$.
+The total cost is therefore dominated by $O(s r \MM(r))$ operations in $\F_q$.
 
-The final evaluation of $\hat{h'}$ can be done
-naively in $O(s \MM(r) \log(q))$ opreations in $\F_q$
-using modular exponentiation
-(or $O(s r^2)$ operations in $\F_q$ using the matrix of $\sigma$).
+Given the matrix of $\hat{h}$ over $k$,
+computing an element in its kernel
+costs $O(\MMM(r))$ operations in $\F_q$.
+
+The final evaluation of $\hat{h'}$ is done using Eq.~\eqref{eq:hprime}
+and the matrix of $\sigma$ of for Frobenii computation
+for a cost of $O(s r^2)$ operations in $\F_q$.
+%(or $O(s \MM(r) \log q)$ operations in $\F_q$ using modular exponentiation).
 \end{proof}
 
-We now give three variations on the above algorithm to compute $\theta_a$
-more efficiently.
+
+\paragraph{Using Paterson--Stockmeyer algorithm}
+The above way of evaluating $\hat{h}$ looks involved.
+One could simply use Paterson--Stockmeyer algorithm.
+%(or even Horner's rule).
+Evaluations of $\sigma$ can also be done directly using modular exponentiations.
+This yields the following complexity.
+
+\begin{proposition}
+Using Paterson--Stockmeyer algorithm and modular exponentiations,
+a solution $\theta$ to Hilbert's theorem 90 can be computed in
+$O(s \MM(r) \log(q) + r \MM(r) + \sqrt{s} \MMM(r))$ operations in $\F_q$.
+\end{proposition}
+
+\subsubsection{Algorithms relying on evaluation formulas}
+We now give three variations on the above algorithm to compute 
+a candidate solution $\theta_a$ more efficiently.
 Which algorithm has the best asymptotic complexity depends on the
 value of $s$ with respect to $r$; we arrange them by increasing $s$.
 
@@ -1133,6 +1173,7 @@ reduce modulo $h$ for each power $x^i$.
   which is negligible in front of the previous step.
 \end{proof}
 
+\subsubsection{Complexity analysis}
 We can now combine all the previous complexities, to analyze the
 overall cost of the best variations of Allombert's algorithm.
 
