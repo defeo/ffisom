@@ -1138,7 +1138,8 @@ overall cost of the best variations of Allombert's algorithm.
 
 \begin{proposition}
   \label{proposition:XiDelta-updated}
-  Algorithm~\ref{alog:allombert} is correct. Given $k,K$ of degree $r$
+  %Algorithm~\ref{alog:allombert} is correct.
+  Given $k,K$ of degree $r$
   over $\F_q$, assuming that $s$ is the order of $q$ in
   $(\Z/r\Z)^\times$, it computes its output using
   \begin{itemize}
@@ -1154,16 +1155,19 @@ overall cost of the best variations of Allombert's algorithm.
 \begin{proof}
   The cost of factoring the $r$-th cyclotomic polynomial is given in
   Proposition~\ref{prop:cyclo}, and is negligible compared with other
-  steps. %
+  steps.
+
   The solutions $\theta_1,\theta_2$ to Hilbert's theorem 90 are
-  computed as described above, according to the size of $s$. %
+  computed as described above, according to the size of $s$.
+
   The powers $\theta_1^r,\theta_2^r$ are computed using Kronecker
   substitution in $O(\MM(sr)\log(r))$ operations, which is also
-  negligible. %
-  Finally, the cost of computing an $r$-th root in $\F_q(\zeta)$ is
-  given in Proposition~\ref{prop:root-fpz}. %
+  negligible.
 
-  Combining the costs coming from the solution of Hilbert's theorem
+  Finally, the cost of computing an $r$-th root in $\F_q(\zeta)$ is
+  $O(\MM(sr)\log(s)\log(r))$ by Proposition~\ref{prop:root-fpz}.
+
+  Combining the costs coming from the solution to Hilbert's theorem 90
   and the $r$-th root extraction, we obtain the following complexities
   according to $s$.
   \begin{itemize}
@@ -1177,7 +1181,7 @@ overall cost of the best variations of Allombert's algorithm.
     case of Proposition~\ref{prop:root-fpz}, we obtain an estimate of
     $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q)+r\CC(s)\log(s)+\MM(rs)\log(s)\log(r))$
     operations.
-  \item Otherwise, we use the algorithm described in Case~2. Combining
+  \item Otherwise, we use the algorithm described in Case~3. Combining
     Proposition~\ref{prop:iter-frob-theta} with the second case of
     Proposition~\ref{prop:root-fpz}, and replacing $s$ with $r$
     everywhere, we obtain an estimate of
