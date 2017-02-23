@@ -1056,7 +1056,7 @@ Then $\theta_a=\theta_{a,r}$.
 
 \begin{proposition}
   \label{prop:xitheta}
-  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:thetaa} can
   be computed using $O(s\CC(r)\log(r)+\MM(r)\log(q))$ operations in
   $\F_q$.
 \end{proposition}
@@ -1065,7 +1065,7 @@ Then $\theta_a=\theta_{a,r}$.
   $O(\MM(r)\log(q))$ operations, while the value $\theta_{a,1}$ is
   deduced from the polynomial $h$ using $O(rs)$ operations.
   
-  To compute the recursive formulas in Eq.\eqref{eq:theta-recursive}
+  To compute the recursive formulas in Eq.~\eqref{eq:theta-recursive}
   we use the same technique as in Proposition~\ref{prop:trace-like}:
   given $b \in k[\zeta]$, the value $\sigma^j(b)$ is computed as the
   modular composition of the polynomial $b(x,z)$ with the polynomial
@@ -1081,11 +1081,12 @@ Then $\theta_a=\theta_{a,r}$.
 \end{proof}
 
 \paragraph{Case 2: $s\in O(\todo{})$.}
-We use Eq.~\eqref{eq:theta90bis} and compute $\theta_a$ as
+We use Eq.~\eqref{eq:theta90bis} and Eq.~\eqref{hprime}
+to compute $\theta_a$ as
 $\theta_a = \hat{h'}\circ \hat{g} (a)$.
 \begin{proposition}
   \label{prop:ks-theta}
-  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:thetaa} can
   be computed using
   \[
   O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q))
@@ -1115,7 +1116,7 @@ reduce modulo $h$ for each power $x^i$.
 
 \begin{proposition}
   \label{prop:iter-frob-theta}
-  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:theta90} can
+  Given $a\in k$, the value $\theta_a$ in Eq.~\eqref{eq:thetaa} can
   be computed using $O(\MM(r^2)\log(r) + \MM(r)\log(q))$ operations in
   $\F_q$.
 \end{proposition}
