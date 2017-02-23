@@ -717,15 +717,14 @@ or
 \end{equation*}
 
 Moreover, to treat the general embedding description problem,
-it is sufficient to treat it in the case where $[k:\F_q]=[K:\F_q]=r$,
-that is the computation of an isomorphism.
+it is sufficient to treat the case where $[k:\F_q]=[K:\F_q]=r$.
 Indeed, we can reduce to this situation by applying
 Proposition~\ref{prop:subfield}, at an additional cost of
 $O(\CC(n)\log(n) + \MM(n)\log(q))$ for each primary factor $r$.
 
 Therefore, to simplify the exposition, we focus on algorithms
 solving the following problem.
-\begin{problem}{Prime power degree extensions isomorphism}
+\begin{problem}
 \label{prob:embedding}
 Let $r$ be a prime power and $k, K$ a couple of extensions of $\F_q$
 of degree $r$.
