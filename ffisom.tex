@@ -1335,11 +1335,11 @@ efficiently $v$-th roots in $k(\zeta)$ and is addressed below.
 We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} to compute a $v$-th 
 root in $k(\zeta)$.
 
-First note that if $v$ is coprime with $q-1$ (that is $t$ defined above is $0$)  then a modular exponentiation by $v^{-1}$ in $k(\zeta)$ trivially yields a solution.
-
-Let's now suppose that $v$ divides $q-1$.
-Then one reduces the root extraction in $k(\zeta)$ to a root extraction
-in a smaller extension of $\F_q$ using~\cite[Algorithm~3]{doliskanischost2011}.%
+First note that $v$ divides $q^{rs}-1$ where $rs$ is the degree of the extension
+$k(\zeta)$ over $\F_q$.
+Following~\cite[Algorithm~3]{doliskanischost2011},
+one reduces the root extraction in $k(\zeta)$ to a root extraction
+in a smaller extension of $\F_q$.%
 \footnote{Note that \cite[Algorithm~3]{doliskanischost2011} reduces the
 root extraction into the smallest possible extension of $\F_p$.
 Here we restrict to the smallest possible extension of $\F_q$
