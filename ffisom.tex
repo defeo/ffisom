@@ -1094,12 +1094,14 @@ $\theta_a = \hat{h'}\circ \hat{g} (a)$.
   operations in $\F_q$ for any $0\le\beta\le1$.
 \end{proposition}
 \begin{proof}
-  We proceed in two steps. We first compute $\hat{g}(a)$ using the
+  We proceed in two steps.
+  
+  We first compute $\hat{g}(a)$ using the
   \emph{automorphism evaluation} algorithm of Kaltofen and
   Shoup~\cite[Algorithm~AE]{kaltofen+shoup98}, at a cost of
   $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+r^\beta\MM(r)\log(q))$.
   
-  We now use Eq.~\eqref{eq:hprime} to compute
+  We then use Eq.~\eqref{eq:hprime} to compute
   $\theta_a=\sum_{i=0}^{s-1}a_i\otimes\zeta^i$, where
   $a_{s-1}=\hat{g}(a)$, and $a_{i-1}=\sigma(a_i)+h_i\hat{g}(a)$. %
   The cost of this computation is dominated by the evaluations
