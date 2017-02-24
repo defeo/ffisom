@@ -172,7 +172,7 @@
 Let $q$ be a prime power and let $\F_q$ be a field with $q$
 elements. Let $f$ and $g$ be irreducible polynomials over $\F_q$, with
 $\deg f$ dividing $\deg g$. Define $k=\F_q[X]/f(X)$ and
-$K=\F_q[Y]/g(Y)$, then there is an embedding $\phi:k\hookrightarrow
+$K=\F_q[Y]/g(Y)$; then, there is an embedding $\phi:k\hookrightarrow
 K$, unique up to $\F_q$-automorphisms of $k$. The goal of this paper
 is to describe algorithms to efficiently represent and evaluate one
 such embedding.
@@ -237,6 +237,7 @@ Rains' algorithm in Magma v2.14.%
   the only publicly available source for it is in Magma's source code
   (file \texttt{package/Ring/FldFin/embed.m}, since v2.14).}
 
+\todo{Say a word about~\cite{narayanan2016fast}}
 
 \paragraph{Our contribution}
 This work aims to be, chiefly, a complete review of all known
@@ -258,7 +259,7 @@ In Section~\ref{sec:rains-algorithm} we describe Rains' algorithm. %
 Rains' original preprint~\cite{rains2008} went unpublished, thus we
 give here a complete description and analysis of his algorithm, for
 reference. %
-We also give some original variants of Rains' algorithm of lesser
+We also give new variants of Rains' algorithm of lesser
 interest in Appendix~\ref{app:rains-vars}.
 
 Then, in Section~\ref{sec:rains-elliptic} we present a generalization
@@ -317,7 +318,7 @@ explicitly stated otherwise. Most of the algorithms we present are
 randomized; we use the \emph{big-Oh} notation $O()$ to express average
 asymptotic complexity, and we will make it clear when this complexity
 depends on heuristics. We also occasionally use the notation
-$\tildO()$ to neglect logarithmic factors in the parameters.
+$\tildO(\,)$ to neglect logarithmic factors in the parameters.
 
 We let $\MM(m)$ be a function such that polynomials in $\F_q[X]$ of
 degree less than $m$ can be multiplied in $\MM(m)$ operations in
@@ -327,7 +328,8 @@ multiplication, one can take $\MM(m)\in O(m\log (m) \loglog (m))$.
 We denote by $\omega$ the \emph{exponent of linear algebra}, i.e.\ a
 constant such that $m\times m$ matrices with coefficients in any field
 $k$ can be multiplied using $O(m^\omega)$ additions and
-multiplications in $k$.
+multiplications in $k$. One can take $\omega < 2.38$, the best result
+to date being in~\cite{LeGall14}.
 
 The algorithms presented in the next sections perform computations in
 ring extensions of finite fields. Some of these extensions also happen
@@ -348,33 +350,35 @@ Multiplying and dividing polynomials of degree at most $s$ in $k[Z]$
 is done in $O(\MM(sm))$ operations in $\F_q$, using Kronecker's
 substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}.
 Multiplication in $k[Z]/h(Z)$ is also done in $O(\MM(sm))$ using the
-technique in~\cite{pascal+schost06}. By the same techniques, gcds in
-$k[Z]$ and inverses in $k[Z]/h(Z)$ are computed in $O(\MM(sm)\log(sm))$.
+technique in~\cite{pascal+schost06}. By the same techniques, gcds of
+degree $m$ polynomials in $k[Z]$ and inverses in $k[Z]/h(Z)$ are
+computed in $O(\MM(sm)\log(sm))$.
 
 Given polynomials $e,g,h \in k[Z]$ of degree at most $s$, modular
 composition is the problem of computing $e(g) \bmod h$. An upper bound
 on the algebraic complexity of modular composition is obtained by the
-Brent--Kung algorithm~\cite{brent+kung}, which takes
-$O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ operations in $\F_q$.  In
-the binary RAM complexity model, the Kedlaya--Umans
-algorithm~\cite{KeUm11} and its extension in~\cite{PoSc13a} yield an
-algorithm with essentially linear complexity in $s$, $m$ and
-$\log(q)$. Unfortunately, making these algorithms competitive in
-practice is challenging; we are not aware of any implementation of
-them. Hence, we will restrict to an algebraic complexity model, denote
-by $\CC(s,m)$ the complexity of modular composition in $k[Z]$, and use
-$O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ as an upper bound.  We
-will use $\CC(s)$ as a shorthand notation for $\CC(s,1)$.
+Brent--Kung algorithm~\cite{brent+kung}, which takes $O(s^{1/2}\MM(sm)
++ s^{(\omega+1)/2}\MM(m))$ operations in $\F_q$.  In the binary RAM
+complexity model, the Kedlaya--Umans algorithm~\cite{KeUm11} and its
+extension in~\cite{PoSc13a} yield an algorithm with essentially linear
+complexity in $s$, $m$ and $\log(q)$. Unfortunately, making these
+algorithms competitive in practice is challenging; we are not aware of
+any implementation of them that would outperform Brent and Kung's
+algorithm. Hence, we will restrict to an algebraic complexity model,
+denote by $\CC(s,m)$ the complexity of modular composition in $k[Z]$,
+and use $O(s^{1/2}\MM(sm) + s^{(\omega+1)/2}\MM(m))$ as an upper
+bound.  We will use $\CC(s)$ as a shorthand notation for $\CC(s,1)$.
 
 \paragraph{Evaluating Frobenius and trace-like maps}
 
 We will make a heavy use of a technique originating
-in~\cite{von1992computing}. Let $\alpha\in k$, we are interested in
-computing the values $\alpha^{q^d}$ and $\sum_{i=0}^d \alpha^{q^i}$
-for some integer $d$. A simple binary powering approach would yield a
-complexity of $O(d\MM(m)\log(q))$ operations over $\F_q$; however,
-using fast modular composition, it is possible to obtain a better
-complexity bound in some cases.
+in~\cite{von1992computing}. Given $\alpha\in k$, for an extension
+$\F_q\subset k$ of degree $m$, we are interested in computing the
+values $\alpha^{q^d}$ and $\sum_{i=0}^d \alpha^{q^i}$ for some integer
+$d$. A simple binary powering approach would yield a complexity of
+$O(d\MM(m)\log(q))$ operations over $\F_q$; however, using fast
+modular composition, it is possible to obtain a better complexity
+bound in some cases.
 
 \begin{proposition}
   \label{prop:trace-like}
@@ -424,35 +428,37 @@ variant of~\cite[Lemma~14]{shoup94} that will be useful later.
   operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-  For $u \ge 1$, define integers $A_u, B_u$ as follows
+  For $i \ge 1$, define integers $A_i, B_i$ as follows
   \begin{equation*}
-    q^u = A_ut + B_u, \quad 0\le B_u < t.
+    q^i = A_it + B_i, \quad 0\le B_i < t,
   \end{equation*}
-  We have $(q^d-1)/t = \lfloor q^d / t \rfloor$, hence our goal is to
-  compute $\alpha^{A_d}$. We start by computing
-  $\alpha^{A_1} = \alpha^{\lfloor q / t\rfloor}$ by a simple binary
-  powering, at a cost of $O(\MM(m)\log(q)))$ operations.
+  together with $\mu_i=\alpha^{A_i}$. We have $(q^d-1)/t = \lfloor q^d
+  / t \rfloor$, hence our goal is to compute $\mu_d$.
 
-  Now, assuming that $\alpha^{A_u}, \alpha^{A_v}$ are known, direct
+  We proceed as in Proposition~\ref{prop:trace-like}, maintaining
+  simultaneously the quantity $\xi_i=x^{q^i}$.  We start by computing
+  $\mu_1=\alpha^{A_1} = \alpha^{\lfloor q / t\rfloor}$ and $\xi_1 =
+  x^q$ by a simple binary powering, at a cost of $O(\MM(m)\log(q)))$
+  operations.
+  Assuming that $\mu_i, \mu_j$ and $\xi_i,\xi_j$ are known, a direct
   calculation shows that
-  \[ \alpha^{A_{u + v}} = 
-    \left(\alpha^{A_v}\right)^{q^u}\left(\alpha^{A_u}\right)^{B_v}\alpha^{\lfloor B_uB_v / t \rfloor}. 
+  \[ \mu_{i+j} = 
+    \mu_j^{q^i} \mu_i^{B_j}\alpha^{\lfloor B_iB_j / t \rfloor},\quad
+    \xi_{i+j} = \xi_j^{q^i}.
   \]
-  Hence we can compute $\alpha^{A_d}$ by a binary scheme using
-  $O(\log(d))$ such steps. %
-  At each step, the powers $B_v$ and $\lfloor B_uB_v / t \rfloor$ are
-  $<t$, and computing them naively costs $O(\MM(m)\log(t))$
-  operations. %
-  To compute $\left(\alpha^{A_v}\right)^{q^u}$ we apply
-  Proposition~\ref{prop:trace-like}, for a cost of
-  $O(\CC(m)\log(u) + \MM(m)\log(q))$ operations. %
-  Noticing that the values computed by Proposition~\ref{prop:trace-like} can
-  be shared among the various calls, we end up with the claimed
-  complexity.
+  We compute $\mu_j^{q^i}$ and $\xi_j^{q^i}$ by means of modular
+  compositions with $\xi_i$, as in Proposition~\ref{prop:trace-like},
+  for a cost $O(\CC(m))$. The exponents $B_j$ and $\lfloor B_iB_j / t
+  \rfloor$ are less than $t$, so computing the corresponding powers
+  naively costs $O(\MM(m)\log(t))$ operations.
+
+  We can compute $\mu_d$ by a binary scheme using $O(\log(d))$ such
+  steps, so the overall cost is $O(\MM(m)\log(t)\log(d) +
+  \CC(m)\log(d) + \MM(m)\log(q))$.
 \end{proof}
 
 
-\paragraph{Computing subfields.}
+\paragraph{Computing subfields}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
 divisor $r$ of $m$, and we want to construct an intermediate extension
 $\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely,
@@ -461,7 +467,7 @@ degree $r$, and a polynomial $h \in \F_q[X]$ such that
 $x \mapsto h(x)\bmod f$ defines an embedding
 $L = \F_q[X] / g(X) \hookrightarrow k$. We proceed as follows.
 
-Let $\alpha\in k$ be a random element not in $\F_q$. Then $\alpha$ has a minimal polynomial of degree $m$ 
+Let $\alpha\in k$ be a random element. Then $\alpha$ has a minimal polynomial of degree $m$ 
 over $\F_q$ with high probability. In other words, one needs $O(1)$ such random elements to find 
 one with degree $m$ minimal polynomial. Now, the trace
 \begin{equation}
@@ -471,7 +477,8 @@ one with degree $m$ minimal polynomial. Now, the trace
 has a minimal polynomial of degree $r$ over $\F_q$ with high
 probability as well. This means we can compute, after $O(1)$ random
 trials, the desired polynomials $\beta = \trace_{k/L}(\alpha)$,
-$g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta$.
+its minimal polynomial
+$g$, and $h$ the polynomial of degree less than $m$ representing $\beta$.
 
 \begin{proposition}
 	\label{prop:subfield}
@@ -480,18 +487,19 @@ $g = \minpoly(\beta)$, and $h$ the polynomial of degree $<m$ representing $\beta
         $\F_q \subset L \subset k$ with $[L:\F_q]=r$ takes
         $O(\CC(m)\log(m) + \MM(m)\log(q))$ operations in $\F_q$.  Once
         $L$ is computed, any element $\gamma\in L$ can be lifted to
-        its image in $k$ using $C(m)$ operations.
+        its image in $k$ using $\CC(m)$ operations.
 \end{proposition}
 \begin{proof}
-	Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
-	see~\cite{shoup93}. %
-        The trace in Eq.~\eqref{equ:trace-simple} is computed using Proposition~\ref{equ:trace-simple}
-        at a cost of $O(\CC(m)\log(m)+\MM(m)\log(q))$ operations in $\F_q$.
-
-        Finally, given an element $\gamma\in L$, its image in $k$ is
-        computed by evaluating $h(\gamma)$, where $h$ is the
-        polynomial representation of $\trace_{k/L}(\alpha)$. This can
-        be done by a modular composition at cost $\CC(m)$.
+  Computing the minimal polynomial of an element in $k$ takes $O(\CC(m))$ operations in $\F_q$, 
+  see~\cite{shoup93}. %
+  The trace in Eq.~\eqref{equ:trace-simple} is computed using Proposition~\ref{equ:trace-simple}
+  (with $c=1$)
+  at a cost of $O(\CC(m)\log(m)+\MM(m)\log(q))$ operations in $\F_q$.
+  
+  Finally, given an element $\gamma\in L$, its image in $k$ is
+  computed by evaluating $h(\gamma)$, where $h$ is the
+  polynomial representation of $\trace_{k/L}(\alpha)$. This can
+  be done by a modular composition at cost $\CC(m)$.
 \end{proof}
 
 
@@ -519,7 +527,7 @@ give an efficient algorithm which is as follows.
 		\STATE If $\deg h = d$ return $h$.
 		\STATE Take a random polynomial $a_0\in k[Z]$ of degree less than $s$,
 		\STATE\label{alg:ks-pseudotrace} Compute $\displaystyle a_1 
-		\leftarrow \sum_{i=0}^{[k:\F_q]d-1} a_0^{q^i} \mod h$,
+		\leftarrow \sum_{i=0}^{md-1} a_0^{q^i} \mod h$,
 		\IF{$q$ is an even power $q=2^e$}
 		\STATE\label{alg:ks:even} Compute $\displaystyle a_2 \leftarrow 
 		\sum_{i=0}^{e-1} a_1^{2^i}\mod h$
@@ -533,30 +541,32 @@ give an efficient algorithm which is as follows.
 	\end{algorithmic}
 \end{algorithm}
 
-We address the reader to the original paper~\cite{kaltofen+shoup97}
+We refer the reader to the original paper~\cite{kaltofen+shoup97}
 for the correctness of the Kaltofen--Shoup algorithm. We redo the
 complexity analysis below, to adapt to our framework.
 
+\todo{We should say somewhere that (some) runtimes are Las Vegas}
+
+\todo{$\log n$ or $\log(n)$? I'd vote for the second one}
 \begin{proposition}
   Given $h$ and $f$ of degrees $s$ and $m$ respectively, the
   Kaltofen--Shoup algorithm finds a factor of $h$ of degree $d$ in
   $k=\F_q[X]/f(X)$ using
-  $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log q)\log(dm)\bigr)$
+  $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log(q))\log(dm)\bigr)$
   operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-	It is evident that the dominating step in the Kaltofen--Shoup
-	algorithm is the computation of the trace-like function at
+	The dominating step  is the computation of the trace-like function at
 	Step~\ref{alg:ks-pseudotrace}. By using a divide-and-conquer
-	strategy, they show in~\cite{kaltofen+shoup97} how to compute it in
+	strategy, Kaltofen and Shoup show in~\cite{kaltofen+shoup97} how to compute it in
 	$\log (dm)$ steps, using at each step
 	\begin{itemize}
-		\item $O(s)$ modular compositions in $\F_q[X]$,
-		\item $O(1)$ modular compositions in $k[Z]$,
-		\item $\log q$ multiplications in $k[Z]/h(Z)$,
+		\item $O(s)$ modular compositions in degree $m$ in $\F_q[X]$,
+		\item $O(1)$ modular compositions in degree $s$ in $k[Z]$,
+		\item $\log(q)$ multiplications in $k[Z]/h(Z)$,
 	\end{itemize}
 	for a total of
-        $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log q)\log(dm)\bigr)$
+        $O\bigl((s\CC(m) + \CC(s,m) + \MM(sm)\log(q))\log(dm)\bigr)$
         operations in $\F_q$.  All other steps are easily seen to be
         within this complexity.
 	
@@ -565,7 +575,7 @@ complexity analysis below, to adapt to our framework.
 	non-constant is at least $1/2^{s/d-1}$, thus we expect that after
 	$O(1)$ attempts the algorithm calls itself on a polynomial of
 	smaller degree. When the degree decreases, it decreases by at least
-	a half, thus the overall complexity is dominated by the first call.
+	a half, thus the overall complexity is dominated by that of the first call.
 \end{proof}
 
 Now, we use Algorithm \ref{alg:ks} as our base algorithm to derive some
@@ -580,9 +590,9 @@ As the first special case, we consider factoring cyclotomic polynomials.
   \MM(sm)\log(q))$ operations in $\F_q$.
 \end{proposition}
 \begin{proof}
-  We use Algorithm~\ref{alg:ks} and the optimization techniques given
-  in~\cite{shoup94}. We start by analyzing the complexity of a single
-  recursive call, using the same notation as in
+  We use Algorithm~\ref{alg:ks} with $h=\Phi_s$, and the optimization
+  techniques given in~\cite{shoup94}. We start by analyzing the
+  complexity of a single recursive call, using the same notation as in
   Algorithm~\ref{alg:ks}.
 
   Since we have $Z^s = 1\bmod h(Z)$, the trace-like function in
@@ -604,82 +614,114 @@ As the first special case, we consider factoring cyclotomic polynomials.
   $O(\log(s))$, and at each recursive step the degree of $h$ is halved
   with probability at least $1/2$. Hence, we shall multiply the
   complexity of Step~\ref{alg:ks-pseudotrace} by
-  $\log s$, while the first calls to Steps~\ref{alg:ks:even},~\ref{alg:ks:odd}
+  $\log(s)$, while the first calls to Steps~\ref{alg:ks:even},~\ref{alg:ks:odd}
   and~\ref{alg:ks:gcd} dominate all others. Thus the total cost of the algorithm is
   $O(sm(\log(d)+\log(m))\log(s) + \MM(sm)\log(sm) + \MM(sm)\log(q))$.
 \end{proof}
 
-As the next special case of Algorithm \ref{alg:ks}, we consider taking roots in cyclotomic
-extensions. Let $r$ be a prime power and let $h$ be an irreducible factor of the $r$-th
-cyclotomic polynomial $\Phi_r$, with $s = \deg h$. Denote $\F_q[Z] / h(Z)$ by $\F_q(\zeta)$, where 
-$\zeta$ is the image of $Z$ in the quotient. Given an $r$-th power $\alpha \in \F_q(\zeta)$ we want 
-to compute an $r$-th root $\alpha^{1 / r}$, or equivalently a linear factor of $X^r - \alpha$ over 
+As the next special case of Algorithm \ref{alg:ks}, we consider taking
+roots in cyclotomic extensions. Let $r$ be a prime power and let $f$
+be an irreducible factor of the $r$-th cyclotomic polynomial $\Phi_r$,
+with $s = \deg h$. Denote $\F_q[Z] / f(Z)$ by $\F_q(\zeta)$, where
+$\zeta$ is the image of $Z$ in the quotient. Given an $r$-th power
+$\alpha \in \F_q(\zeta)$ we want to compute an $r$-th root $\alpha^{1
+  / r}$, or equivalently a linear factor of $X^r - \alpha$ over
 $\F_q(\zeta)$.
 \begin{proposition}
-	\label{prop:root-fpz}
-	Let $r$ be a prime power and let $\zeta$ be a primitive $r$-th root of unity. Also let $s = 
-	[\F_q(\zeta): \F_q]$. If $s \in O(r^{(3 - \omega) / 2})$ one can take $r$-th roots in 
-	$\F_q(\zeta)$ using $O(\MM(s)\log(q)\log(r) + r\CC(s)\log(s) + \MM(rs)\log(s)\log(r))$ 
-	operations in $\F_q$. Otherwise, taking $r$-th roots in $\F_q(\zeta)$ can be done in 
-	$O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(rs)\log(s)\log(r))$ operations in $\F_q$. 
+  \label{prop:root-fpz}
+  Let $r$ be a prime power and let $\zeta$ be a primitive $r$-th root of unity. Also let $s = 
+  [\F_q(\zeta): \F_q]$. One can take $r$-th roots in 
+  $\F_q(\zeta)$ using either 
+  $$O(\MM(s)\log(q)\log(r) + r\CC(s)\log(s) + \MM(rs)\log(s)\log(r))$$
+  or
+  $$O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(rs)\log(s)\log(r))$$ operations in $\F_q$. 
+  %% Let $r$ be a prime power and let $\zeta$ be a primitive $r$-th root of unity. Also let $s = 
+  %% [\F_q(\zeta): \F_q]$. If $s \in O(r^{(3 - \omega) / 2})$ one can take $r$-th roots in 
+  %% $\F_q(\zeta)$ using $O(\MM(s)\log(q)\log(r) + r\CC(s)\log(s) + \MM(rs)\log(s)\log(r))$ 
+  %% operations in $\F_q$. Otherwise, taking $r$-th roots in $\F_q(\zeta)$ can be done in 
+  %% $O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(rs)\log(s)\log(r))$ operations in $\F_q$. 
 \end{proposition}
-\begin{remark}
-	\label{terms-l-s}
-	Considering $\CC(r) \in O(r^{(\omega + 1) / 2})$, the condition $s \in O(r^{(3 - \omega) / 
-	2})$ is proposed to keep the term $s\CC(r)$, which appears in complexity estimations of 
-	subsequent sections, at most quadratic in $r$. This also forces the term $r\CC(s)$ in 
-	Proposition \ref{prop:root-fpz} to be subquadratic, hence keeping the complexity in both cases 
-	at most quadratic. 
-\end{remark}
+%% \begin{remark}
+%%   \label{terms-l-s}
+%%   Considering $\CC(r) \in O(r^{(\omega + 1) / 2})$, the condition $s \in O(r^{(3 - \omega) / 
+%%     2})$ is proposed to keep the term $s\CC(r)$, which appears in complexity estimations of 
+%%   subsequent sections, at most quadratic in $r$. This also forces the term $r\CC(s)$ in 
+%%   Proposition \ref{prop:root-fpz} to be subquadratic, hence keeping the complexity in both cases 
+%%   at most quadratic. 
+%% \end{remark}
 \begin{proof}
-We adapt Algorithm~\ref{alg:ks} to get a linear factor of the polynomial $X^r-\alpha$. 
-Again, we discuss Step~\ref{alg:ks-pseudotrace}, which is the dominant 
-step. Let $h$ be a factor of $X^r-\alpha$ of degree $n$, and let $x$ be the image of $X$ modulo 
-$h$. For clarity, we rewrite the recursion relations in \cite{kaltofen+shoup97}. Let
-\[ \beta_i = a_0^q + a_0^{q^2} + \cdots + a_0^{q^i}, \quad \xi_i = x^{q^i}, \quad \zeta_i = \zeta^{q^i}. \]
-Then we have $\beta_1 = h^q$, $\xi_1 = x^q$, $\zeta_1 = \zeta^q$, and
+We adapt Algorithm~\ref{alg:ks} to get a linear factor of the
+polynomial $X^r-\alpha$.  Again, we discuss
+Step~\ref{alg:ks-pseudotrace}, which is the dominant step. Let $f \in
+\F_q[Z]$ be the defining polynomial of $\F_q(\zeta)$, let $h$ be a
+factor of $X^r-\alpha$ of degree $n$, and let $x$ be the image of $X$
+modulo $h$. For clarity, we rewrite the recursion relations in
+\cite{kaltofen+shoup97}. Let
+\[ 
+\beta_i = a_0^q + a_0^{q^2} + \cdots + a_0^{q^i};%% , \quad \xi_i = x^{q^i}, \quad \zeta_i = \zeta^{q^i}
+\]
+Then we have $\beta_1 = a_0^q$ and
 \[
-\beta_j = 
+\beta_i = 
 \begin{cases}
-\beta_{j / 2} + \beta_{j / 2}^{q^{j / 2}} & j \text{ even} \\
-\beta_1 + \beta_{j - 1}^q & j \text{ odd}
-\end{cases}, \quad
-\xi_j = 
-\begin{cases}
-\xi_{j / 2}^{q^{j / 2}} & j \text{ even} \\
-\xi_{j - 1}^q & j \text{ odd}
-\end{cases}, \quad
-\zeta_j = 
-\begin{cases}
-\zeta_{j / 2}^{q^{j / 2}} & j \text{ even} \\
-\zeta_{j - 1}^q & j \text{ odd}
+\beta_{i / 2} + \beta_{i / 2}^{q^{i / 2}} & i \text{ even} \\
+\beta_1 + \beta_{i - 1}^q & i \text{ odd};
 \end{cases}
 \]
-For a positive integer $j$ we have
+We also define $\alpha_i=a^{\lfloor q^i / r\rfloor} \in \F_q(\zeta)$,
+so that $\alpha_1 = a^{\lfloor q / r\rfloor}$ and, as in Proposition~\ref{prop:large-power},
+\[
+\alpha_i=
+\begin{cases}
+\alpha_{i / 2}^{q^{i/2}} \alpha_{i/2}^{B_{i/2}} a^{\lfloor B_{i/2}^2/r \rfloor} & i \text{ even} \\[1mm]
+\alpha_{i-1}^q \alpha_1^{B_{i-1}} a^{\lfloor B_1 B_{i-1}/r \rfloor} & i \text{ odd,}
+\end{cases} \quad
+\text{with } B_i=q^i \bmod r \text{~for all $i$.}
+\]
+Computing $\alpha_1$ takes $O(\MM(s)\log(q))$ operations in $\F_q$.
+In the first case above, assuming $\alpha_{i/2}$ is known, we can
+deduce $\alpha_i$ for the cost of one exponentiation with power
+$q^{i/2}$, and $2$ exponentiations with powers less than $r$. The
+former is done as in Proposition~\ref{prop:cyclo}, in time
+$O(\MM(r))$; the latter by a binary method, in time
+$O(\MM(s)\log(r))$, for a total of $O(\MM(r)+\MM(s)\log(r))$. The cost
+for the second case is similar.
+
+For a positive integer $i$ and $\beta$ in $\F_q(\zeta)[x]$, writing
+$\beta = \sum_{i=0}^{n-1} c_\ell(\zeta) x^\ell$, we have
 \begin{equation}
 \label{equation:betaj}
-\beta_j^{q^j} = \left( \sum_{\ell = 0}^{n - 1}c_\ell(\zeta)x^\ell \right)^{q^j} = \sum_{\ell = 0}^{n - 
-	1}c_\ell(\zeta^{q^j})(x^{q^j})^\ell = \sum_{\ell = 0}^{n - 1}c_\ell(\zeta_j)\xi_j^\ell.
+\beta^{q^i} = \left( \sum_{\ell = 0}^{n - 1}c_\ell(\zeta)x^\ell \right)^{q^i} = \sum_{\ell = 0}^{n - 
+	1}c_\ell(\zeta^{q^i})(x^{q^i})^\ell.
 \end{equation}
-Now we analyze the running of computing $a_1 = a_0 + \beta_{s - 1}$. First note that we always 
-have $\zeta^r = 1, x^r = a$. This makes it possible to keep the identities simple and do the reductions 
-at the end of each step. For example $x^q = a^{\lfloor q / r\rfloor}x^{q \bmod r}$ which can be 
-computed using $O(\MM(s)\log(q))$ operations in $\F_q$. At step $j$ of the recursion we have the 
-following costs in $\F_q$:
+Assuming that $\alpha_i$ is known, we analyze the cost of this computation.
+The bulk of the calculation is done modulo $X^r-a$.
 \begin{itemize}
-	\item $O(\MM(r) + \MM(s)\log(r))$ for computing $x^{q^j}$.
-	\item If $s \in O(r^{(3 - \omega) / 2})$ we can first compute $\zeta^{q^j \bmod r}$ modulo $h$, 
-	and then do $n$ modular compositions at a total cost of $O(\MM(r) + n\CC(s))$. Otherwise, we  
-	reduce $c_\ell(Z^{q^j \bmod r})$ modulo $g(Z)$ for all $0 \le \ell < n$ at a total cost of 
-	$O(n\MM(r))$.
-	\item $O(n\MM(s))$ for evaluating $\beta_j$ at $x^{q^j}$ using Horner's method.
-	\item $O(\MM(rs))$ for reducing Eq.~\eqref{equation:betaj} modulo $f$.
+\item We first compute $\xi_i=X^{q^i} \bmod X^r-a$ as $\alpha_i X^{q \bmod r}$
+  (this is free since $\alpha_i$ is known).
+\item To compute $c_0(\zeta_i),\dots,c_{n-1}(\zeta_i)$, we can first
+  compute $Z^{q^i \bmod r}$ modulo $f(Z)$, and then do $n$ modular
+  compositions at a total cost of $O(\MM(r) + n\CC(s))$, or compute
+  $c_\ell(Z^{q^i \bmod r}) \bmod (Z^r-1)$
+  and reduce it
+ modulo $f(Z)$, for all $0 \le \ell < n$, at
+  a total cost of $O(n\MM(r))$.
+\item $O(n\MM(s))$ for evaluating $\sum_{\ell = 0}^{n -
+  1}c_\ell(\zeta^{q^i}) X^\ell$ at $\xi_i$ using Horner's method, with
+  all calculations done modulo $X^r-a$.
+\item $O(\MM(rs))$ for reducing the result modulo $h(X)$; this is the
+  cost of a Euclidean division in degree $r$ in $\F_q(\zeta)[X]$.
 \end{itemize}
-The depth of the recursion is $\log(s)$, hence $a_1$ can be computed in $O(\MM(s)\log(q) + 
-n\CC(s)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ if $s \in O(r^{(3 - \omega) / 2})$, or
-$O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$ operations in $\F_q$ otherwise. Finally, since 
-the depth of the recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and the coefficient $n$ is 
-halved each time, we have the desired result.
+With $i=1$, this allows us to compute $\beta_1$; for higher values
+of $i$, we can compute $\beta_i$ (together with all
+required $\alpha_i$) in $O(\log(s))$ such steps. 
+As a result, $a_1$ can be computed in either
+$$O(\MM(s)\log(q) + n\CC(s)\log(s) + \MM(rs)\log(s))$$
+or
+$$O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$$ operations in
+$\F_q$. Since the depth of the recursion in Algorithm~\ref{alg:ks} is
+$\log(r)$, and the degree $n$ is halved each time, we deduce the
+desired result.
 \end{proof}
 
 \subsection{Embedding description problem reduction}
@@ -695,14 +737,15 @@ The most obvious way to solve this problem is to take the class of $X$
 in $k=\F_q[X]/f(X)$ for $\alpha$, and a root of $f$ in $K$ for
 $\beta$. Since $f$ splits completely in $K$, we can apply Algorithm
 \ref{alg:ks} for the special case $d = 1$, which gives an upper bound
-of $O\bigl((n\CC(m) + \CC(n,m) + \MM(nm)\log q)\log(m)\bigr)$ for the
+of $O\bigl((n\CC(m) + \CC(n,m) + \MM(nm)\log(q))\log(m)\bigr)$ for the
 problem. We remark that this complexity is strictly larger than
 $\tildO(m^2)$.
 
 For a more specialized approach, we note that it is enough to solve
 the following problem: let $r$ be a prime power such that $r|m$ and
 $\gcd(r,m/r)=1$, find $\alpha_r\in k$ and $\beta_r\in K$ such that
-$\minpoly(\alpha_r)=\minpoly(\beta_r)$ and $\deg\minpoly(\alpha_r)=r$.
+$\alpha_r$ and $\beta_r$ have the same minimal polynomial, of degree $r$.
+%% $\minpoly(\alpha_r)=\minpoly(\beta_r)$ and $\deg\minpoly(\alpha_r)=r$.
 
 Indeed, once such $\alpha_r$ and $\beta_r$ are known for every primary
 factor $r$ of $m$, possible solutions to the embedding problem are
@@ -720,8 +763,7 @@ Moreover, to treat the general embedding description problem,
 it is sufficient to treat the case where $[k:\F_q]=[K:\F_q]=r$.
 Indeed, we can reduce to this situation by applying
 Proposition~\ref{prop:subfield}, at an additional cost of
-$O(\CC(n)\log(n) + \MM(n)\log(q))$ for each primary factor $r$.
-
+$O(\CC(n)\log(n) + \MM(n)\log(q))$ for each primary factor~$r$.
 Therefore, to simplify the exposition, we focus on algorithms
 solving the following problem.
 \begin{problem}
@@ -768,7 +810,7 @@ In~\cite{LenstraJr91}, Lenstra proves that
 given two finite fields of the same size, there exists a deterministic polynomial time algorithm 
 that finds an isomorphism between them.
 The focus of the paper is on theoretical computational complexity;
-n particular, it avoids using randomized subroutines, such as polynomial
+In particular, it avoids using randomized subroutines, such as polynomial
 factorization. 
 In~\cite{Allombert02,Allombert02-rev}, Allombert gives a similar approach with more focus on practical efficiency.
 In contrast to Lenstra's, his algorithms rely on polynomial factorization, thus it is
@@ -1000,7 +1042,7 @@ We also propose another variant relying on linear algebra.
 \paragraph{Allombert's original algorithm}
 The original version of Allombert's algorithm~\cite{Allombert02}
 computes the matrix of the Frobenius automorphism $\sigma$ of $k/\F_q$
-using $O(\MM(r) \log q + r \MM(r))$ operations in  $\F_q$
+using $O(\MM(r) \log(q) + r \MM(r))$ operations in  $\F_q$
 and then an eigenvalue of $\sigma$ for $\zeta$ over $\F_q(\zeta)$
 using linear algebra at a cost of $O(\MMM(rs))$ operations in $\F_q$
 yielding the following complexity.
@@ -1035,7 +1077,7 @@ $O(\MM(r) \log(q) + r \MM(r))$ operations in $\F_q$.
 To get the matrix of $\hat{h}$ over $k$,
 one first computes the powers $x^{q^i}$ for $0 \leq i \leq s$
 at a cost of $O(s r^2)$ operations in $\F_q$ using the matrix of $\sigma$.
-%(or $O(s \MM(r) \log q)$ operations in $\F_q$ using modular exponentiation).
+%(or $O(s \MM(r) \log(q))$ operations in $\F_q$ using modular exponentiation).
 From them and the matrix of $\sigma$, on can iteratively compute
 the powers $x^{j q^i}$ for $2 \leq j \leq r$
 for a total cost of $O(s r \MM(r))$ operations in $\F_q$,
@@ -1051,7 +1093,7 @@ costs $O(\MMM(r))$ operations in $\F_q$.
 The final evaluation of $\hat{h'}$ is done using Eq.~\eqref{eq:hprime}
 and the matrix of $\sigma$ of for Frobenii computation
 for a cost of $O(s r^2)$ operations in $\F_q$.
-%(or $O(s \MM(r) \log q)$ operations in $\F_q$ using modular exponentiation).
+%(or $O(s \MM(r) \log(q))$ operations in $\F_q$ using modular exponentiation).
 \end{proof}
 
 
@@ -1631,7 +1673,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O(\CC(sr)\log(sr) + \MM(sr)(\log q + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
+  $O(\CC(sr)\log(sr) + \MM(sr)(\log(q) + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1641,7 +1683,7 @@ the field $k$, the procedure for the field $K$ being identical.
 
   By Proposition~\ref{prop:large-power}, computing $\zeta$
   in Step~\ref{algorithm:rains-cyclo:power}
-  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log q)$,
+  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log(q))$,
   and the loop is executed $O(1)$ times on average. 
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
@@ -1961,7 +2003,7 @@ identical.
   with probability $\le 1/q^r$.  On input
   $r,q,E,t,\ell,\lambda$ it computes its output using
   $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$ on average, or
-  $\tildO(r^2\log q)$ assuming $\ell\in o(r^2)$.
+  $\tildO(r^2\log(q))$ assuming $\ell\in o(r^2)$.
 \end{proposition}
 \begin{proof}
   Correctness follows immediately from
@@ -1975,11 +2017,11 @@ identical.
 
   To select the random point $Q\in E(k)$ we take a random
   element $x\in k$, then we verify that it is the abscissa of a
-  point using a squareness test, at a costs of $O(r\MM(r)\log q)$
+  point using a squareness test, at a costs of $O(r\MM(r)\log(q))$
   operations. Then, using Montgomery's formulas for scalar
   multiplication~\cite{montgomery}, we can compute the points $P$ and
   $[\ell]P$ without the knowledge of the ordinate of $Q$, at a cost of
-  $O(r\MM(r)\log q)$ operations. A valid point is obtained after
+  $O(r\MM(r)\log(q))$ operations. A valid point is obtained after
   $O(1)$ tries on average.
 
   The computation of the elliptic period $\alpha$ requires $O(\ell/r)$ scalar
@@ -2189,13 +2231,13 @@ Summarizing, if we take $\bar{u},\bar{s}\in O(\log r)$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
 the cyclotomic algorithm, leading to expected parameters $\ell\in
 O(r\log r)$, and to an expected running time of $\tildO(\sqrt{r})$
-binary operations and $\tildO(\CC(r)+\MM(r)\log q)$ operations in
+binary operations and $\tildO(\CC(r)+\MM(r)\log(q))$ operations in
 $\F_q$.  Similarly, if we also take $\bar{e}\in O(r\log r)$,
 assuming that $r\log r\in o(\sqrt[4]{q})$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
 the elliptic algorithm, leading to an expected running time of
-$\tildO(\sqrt{r}+(\log r)^2(\log q)^6)$ binary operations and
-$\tildO(r^2\log q)$ operations in $\F_q$.
+$\tildO(\sqrt{r}+(\log r)^2(\log(q))^6)$ binary operations and
+$\tildO(r^2\log(q))$ operations in $\F_q$.
 
 Although the complexity of the cyclotomic algorithm looks better, it
 must not be neglected that the $\tildO$ notation
@@ -2843,8 +2885,8 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
   Algorithm~\ref{algorithm:rains-conic} is correct: on input
   $q,r,\ell,s$ it returns an element in the same Galois orbit as
   Algorithm~\ref{algorithm:rains-cyclo} on input $q,r,\ell,2s$. %
-  It computes its output using $O(\MM(sr)(sr\log q+(\ell/r)\log\ell))$
-  operations in $\F_q$ on average, or $\tildO((sr)^2\log q)$ assuming
+  It computes its output using $O(\MM(sr)(sr\log(q)+(\ell/r)\log\ell))$
+  operations in $\F_q$ on average, or $\tildO((sr)^2\log(q))$ assuming
   $\ell\in o(sr^2)$.
 \end{proposition}
 \begin{proof}
@@ -2861,8 +2903,8 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
   The non-residuosity test in Step~\ref{algorithm:rains-conic:sqtest}
   is done by verifying that the $(\#k'-1)/2$-th power of $\theta$ is
   equal to $-1$. %
-  We do this in $O(sr\log q)$ operations in $k'$, or
-  $O(sr\MM(sr)\log q)$ operations in $\F_q$.
+  We do this in $O(sr\log(q))$ operations in $k'$, or
+  $O(sr\MM(sr)\log(q))$ operations in $\F_q$.
 
   To implement the other steps, we need to evaluate the map $[n]$
   efficiently. %
