@@ -641,14 +641,14 @@ $\F_q(\zeta)$.
   %% operations in $\F_q$. Otherwise, taking $r$-th roots in $\F_q(\zeta)$ can be done in 
   %% $O(\MM(s)\log(q)\log(r) + r\MM(r)\log(s) + \MM(rs)\log(s)\log(r))$ operations in $\F_q$. 
 \end{proposition}
-%% \begin{remark}
+%% \begin{note}
 %%   \label{terms-l-s}
 %%   Considering $\CC(r) \in O(r^{(\omega + 1) / 2})$, the condition $s \in O(r^{(3 - \omega) / 
 %%     2})$ is proposed to keep the term $s\CC(r)$, which appears in complexity estimations of 
 %%   subsequent sections, at most quadratic in $r$. This also forces the term $r\CC(s)$ in 
 %%   Proposition \ref{prop:root-fpz} to be subquadratic, hence keeping the complexity in both cases 
 %%   at most quadratic. 
-%% \end{remark}
+%% \end{note}
 \begin{proof}
 We adapt Algorithm~\ref{alg:ks} to get a linear factor of the
 polynomial $X^r-\alpha$.  Again, we discuss
@@ -2076,13 +2076,13 @@ Given the above constraints, we can rewrite the conditions as:
 \item $\gcd(rsv,d)=1$.
 \end{enumerate}
 
-\begin{remark}
+\begin{note}
   Rains remarked that, when $q=2$ and $r$ is a power of $2$ greater
   than $4$, no $\ell$ can satisfy these constraints because $2$ is a
   quadratic residue modulo any prime of the form $8u+1$. This case,
   however, is covered by the Artin--Schreier technique in
   Section~\ref{sec:fast-artin-schreier}, we thus ignore it.
-\end{remark}
+\end{note}
 
 In the elliptic algorithm we look for an integer $\ell$ and a curve
 $E/\F_q$ that satisfy the preconditions of
@@ -2281,7 +2281,7 @@ vary depending on the implementation and the target platform, thus it
 is the implementer responsibility to determine them at the moment of
 configuring the system.
 
-\begin{remark}
+\begin{note}
   Although our exposition focused on the case where $r$ is a prime
   power and $k\simeq K$, most of the algorithms presented here can be
   easily adapted to work more generally.
@@ -2306,7 +2306,7 @@ configuring the system.
   can be significant.  Similar techniques also apply to Allombert's
   algorithm. On the other hand, it seems much more unlikely to apply
   them to the elliptic Rains' algorithm.
-\end{remark}
+\end{note}
 
 
 
