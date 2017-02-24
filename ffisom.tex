@@ -1830,6 +1830,7 @@ periods.
   Suppose that there is a subgroup $S$ of $(\Z/\ell\Z)^{\times}$ such
   that
   \begin{equation}
+    \label{eq:zell_split}
     (\Z/\ell\Z)^{\times} = \langle{\lambda}\rangle \times S.
   \end{equation}
   
@@ -1858,9 +1859,19 @@ $j=0,1728$, see Appendix~\ref{app:elliptic-curves}.
       2r & \text{otherwise.}
     \end{cases}
   \end{equation*}
-  Then, for any point $P$ in the eigenspace of $\lambda$, the period
+  Then, 
+  for any point $P$ in the eigenspace of $\lambda$, the period
   $\eta_{\lambda,S}(P)$ is in $\F_{q^r}$, and its minimal polynomial
-  does not depend on the choice of $P$.
+  does not depend on the choice of $P$.%
+  \footnote{
+  With our construction, $r$ divides $(\ell-1)/2$,
+  so that its $2$-adic valuation is at most one less than the $2$-adic
+  valuation of $(\ell - 1)$.
+  It is still possible to generate an extension with degree having the same
+  $2$-adic valuation as $(\ell-1)$ if $-1 \in \langle\lambda\rangle$.
+  To do so, Definition~\ref{definition:ellperiod} be modified
+  to use ordinates rather than abscissas.
+  }
 \end{lemma}
 \begin{proof}
   By construction, the Frobenius endomorphism $\pi$ acts on
@@ -1952,7 +1963,15 @@ to work with smaller fields.
 The algorithm is very similar to
 Algorithm~\ref{algorithm:rains-cyclo}, and follows immediately from
 the previous section. For simplicity, we are going to state it only
-for $r$ odd. Given $k$, $K$ and $r$,
+for $r$ odd.%
+\footnote{
+If $r$ is even, % and divides $(\ell-1)/2$,
+it might be needed to go a quadratic extension of $\F_{q^r}$
+or use a quadratic twist for torsion points to be defined.
+%If $r$ has the same $2$-adic valuation as $(\ell-1)$, abscissas
+%should be replaced by ordinates when computing elliptic periods.
+}
+Given $k$, $K$ and $r$,
 \begin{enumerate}
 \item find a prime $\ell$, an elliptic curve $E$, and an eigenvalue
   $\lambda$ of the Frobenius endomorphism, satisfying the conditions
