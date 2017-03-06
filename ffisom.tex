@@ -2480,16 +2480,19 @@ the auxiliary degree $s$. %
 
 The first striking observation is the extremely poor performance of
 PARI, especially as $s$ grows. %
-To provide a fairer comparison, we re-implemented Allombert's original
-algorithm, as faithfully as possible, based
-on~\cite{Allombert02,Allombert02-rev} and on PARI's source code; this
-is the curve labeled \emph{``Original''} in the graphs. %
-Although our re-implementation is considerably faster than PARI, it is
-apparent that the original algorithm does not behave as well as our
-variants.
+To provide a fairer comparison, we re-implemented Allombert's revised
+algorithm~\cite{Allombert02-rev}, as faithfully as possible, as
+described in Section~\ref{sec:algor-rely-line}; this is the curve
+labeled \emph{``Original''} in the graphs. %
+For completeness we also implemented the Paterson-Stockmeyer variant
+described previously; we do not plot it here, because it overlaps
+almost perfectly with our \emph{``Case 1''} curve. %
+Although our re-implementations are considerably faster than PARI, it
+is apparent that Allombert's original algorithm does not behave as
+well as our new variants.
 
 Focusing now on the three variants presented in
-Section~\ref{sec:fast-kummer}, one can't fail to notice that the one
+Section~\ref{sec:algor-rely-eval}, one can't fail to notice that the one
 we dubbed \emph{``Case 2''} beats the other two by a great margin,
 both for small and large auxiliary degree. %
 Although the iterated Frobenius approach of \emph{``Case 3''} is
