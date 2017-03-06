@@ -237,7 +237,17 @@ Rains' algorithm in Magma v2.14.%
   the only publicly available source for it is in Magma's source code
   (file \texttt{package/Ring/FldFin/embed.m}, since v2.14).}
 
-\todo{Say a word about~\cite{narayanan2016fast}}
+With the exception of Lenstra's work, the aforementioned papers were
+mostly concerned with the practical aspects of the embedding
+problem. %
+While it was generally understood that computing embeddings is an
+easier problem than general polynomial factoring, no results on its
+complexity more precise than Lenstra's had appeared until recently. %
+A few months before the present paper was finalized, Narayanan
+published a novel generalization of Allombert's
+algorithm~\cite{narayanan2016fast}, based on elliptic curve
+computations, and showed that its (randomized) complexity is at most
+quadratic.
 
 \paragraph{Our contribution}
 This work aims to be, chiefly, a complete review of all known
@@ -252,8 +262,13 @@ In doing so, we pay a particular attention to Allombert's algorithm:
 to our knowledge, this is the first detailed and complete complexity
 analysis of this algorithm and its variants. %
 Thanks to our work on asymptotic complexity, we were able to devise
-improvements to the original variants of Allombert
-that largely outperform them both in theory and practice. %
+improvements to the original variants of Allombert that largely
+outperform them both in theory and practice. %
+One notable omission in this section is Narayanan's algorithm, which
+is, in our opinion, mostly of theoretical rather than practical
+interest. %
+We present instead in Subsection~\ref{sec:fast-algor-large} a simpler
+algorithm with essentially the same complexity.
 
 In Section~\ref{sec:rains-algorithm} we describe Rains' algorithm. %
 Rains' original preprint~\cite{rains2008} went unpublished, thus we
