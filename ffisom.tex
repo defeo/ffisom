@@ -1173,14 +1173,16 @@ $\theta_a = \hat{b}\circ \hat{g} (a)$.
   \[
   O(r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q))
   \]
-  operations in $\F_q$ for any $0\le\beta\le1$.
+  operations in $\F_q$.
 \end{proposition}
 \begin{proof}
   We proceed in two steps. We first compute $\hat{g}(a)$ using the
   \emph{automorphism evaluation} algorithm of Kaltofen and
   Shoup~\cite[Algorithm~AE]{kaltofen+shoup98}, at a cost of
   $O(r^{(\omega+1)/2 + (3-\omega)\lvert\beta-1/2\rvert}+
-r^{(\omega+1)/2 + (1-\beta)(\omega-1)/2}+r^\beta\MM(r)\log(q))$.
+  r^{(\omega+1)/2 + (1-\beta)(\omega-1)/2}+r^\beta\MM(r)\log(q))$, for
+  any $0\le\beta\le1$. Choosing $\beta=2/(5-\omega)$ minimizes the
+  overall runtime, giving the exponents reported above.
   
   We then use Eq.~\eqref{eq:hprime} to compute
   $\theta_a=\sum_{i=0}^{s-1}a_i\otimes\zeta^i$, where
@@ -1221,20 +1223,29 @@ O(\MM(r^2)\log(r) + \MM(r)\log(q))
 %% We can now combine all the previous complexities, to analyze the
 %% overall cost of the best variations of Allombert's algorithm.
 
+The following proposition summarizes our analysis. To clarify the
+order of magnitude of the exponents, let us assume $q=O(1)$ and
+neglect polylogarithmic factors; then, if $\omega=2.38$ (best bound to
+date), the runtimes are $O(s^{0.69}r^{1.69})$ for $s \in O(r^{0.23})$,
+$O(r^{1.85}+s^{1.38}r)$ for $s \in \Omega(r^{0.23})$ and $s\in
+O(r^{0.72})$ and $\tildO(r^2)$ otherwise.
+For $\omega=3$, all costs are at best quadratic.
+
 \begin{proposition}
   \label{proposition:XiDelta-updated}
   Given $k,K$ of degree $r$ over $\F_q$, assuming that $s$ is the
   order of $q$ in $(\Z/r\Z)^\times$,   Algorithm~\ref{alog:allombert} 
- computes its output using
+ computes its output using 
   \begin{itemize}
   \item $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)+\MM(r)\log(q))$
-    operations in $\F_q$ if $s \in O(??)$, or
+    expected operations in $\F_q$ if $s \in O(r^{(\omega-3)/(\omega-5)})$, or
   \item
     $O(
  r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q)
-+rs^{(\omega+1)/2}\log(s))$
-    operations in $\F_q$ if $s \in O(??)$, or
-  \item $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q))$ operations in
++s^{\omega-1}r\log(r)\log(s))$
+    expected operations in $\F_q$ if if $s \in O(r^{(\omega-3)/(\omega-5)})$
+    and $s \in O(r^{1/(w-1)})$, or
+  \item $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q))$ expected operations in
     $\F_q$ otherwise.
   \end{itemize}
 \end{proposition}
@@ -1254,23 +1265,30 @@ O(\MM(r^2)\log(r) + \MM(r)\log(q))
   and the $r$-th root extraction, we obtain the following complexities
   according to $s$.
   \begin{itemize}
-  \item If $s\in O(\todo{})$, we use the algorithm described in
-    Case~1. Combining Proposition~\ref{prop:xitheta} with the first
+  \item If we use the algorithm described in
+    our first solution, combining Proposition~\ref{prop:xitheta} with the first
     case of Proposition~\ref{prop:root-fpz}, we obtain an estimate of
-    $O(s\CC(r)\log(r)+\MM(r)\log(q)+\MM(sr)\log(s)\log(r))$
+    $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)+\MM(r)\log(q))$
     operations.
-  \item If $s\in O(\todo{})$, we use the algorithm described in
-    Case~2. Combining Proposition~\ref{prop:ks-theta} with the first
+%% $\MM(sr)\log(s)\log(r)$ is $o(s^{(\omega-1)/2}r^{(\omega+1)/2})$
+  \item If we use the algorithm described in
+    our second solution, combining Proposition~\ref{prop:ks-theta} with the first
     case of Proposition~\ref{prop:root-fpz}, we obtain an estimate of
-    $O(\CC(r)r^{(3-\omega)\lvert\beta-1/2\rvert+1-\beta}+(s+r^\beta)\MM(r)\log(q)+r\CC(s)\log(s)+\MM(rs)\log(s)\log(r))$
+    $O( r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q)
++s^{\omega-1}r\log(r)\log(s)+\MM(rs)\log(r)\log(s))$
     operations.
-  \item Otherwise, we use the algorithm described in Case~3. Combining
+  \item Otherwise, we use the algorithm described in our third solution. Combining
     Proposition~\ref{prop:iter-frob-theta} with the second case of
     Proposition~\ref{prop:root-fpz}, and replacing $s$ with $r$
     everywhere, we obtain an estimate of
-    $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q)) $ operations.
-    \qedhere
+    $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q)) $ expected operations.
   \end{itemize}
+  For $s\in O(r^{(\omega-3)/(\omega-5)})$, the first solution has the
+  better runtime. Assuming $s\in \Omega(r^{(\omega-3)/(\omega-5)})$,
+  the runtime in the second case can be written as $O(
+  r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q)
+  +s^{\omega-1}r\log(r)\log(s))$. If in addition $s$ is in $O(r^{1/(w-1)})$,
+  this runtime is subquadratic, that is, better than that in our third solution.
 \end{proof}
 
 
