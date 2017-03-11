@@ -338,7 +338,7 @@ $\tildO(\,)$ to neglect logarithmic factors in the parameters.
 We let $\MM(m)$ be a function such that polynomials in $\F_q[X]$ of
 degree less than $m$ can be multiplied in $\MM(m)$ operations in
 $\F_q$, under the assumptions of~\cite[Ch.~8.3]{vzGG}, together with
-the slightly stronger one, that $\MM(mn)$ is $O(m^{1+\varepsilon}
+the slightly stronger one, that $\MM(mn)$ is in $O(m^{1+\varepsilon}
 \MM(n))$ for all $\varepsilon > 0$. Using FFT multiplication, one can
 take $\MM(m)\in O(m\log (m) \loglog (m))$~\cite{cantor+kaltofen91}.
 
@@ -392,7 +392,7 @@ h,\dots,e_t(g) \bmod h$ to compute, we can slightly improve the obvious
 bound $O(ts^{(\omega+1)/2})$ (we discuss here $k=\F_q$, so $m=1$). If
 $t=O(s)$, using~\cite[Lemma~4]{kaltofen+shoup98}, this can be done in
 time $O(t^{(\omega-1)/2}s^{(\omega+1)/2})$. If $t=\Omega(s)$, this can
-be done in time $O(t s^{\omega-1})$, by computing $1,g,\dots,g^{s-1}$
+be done in $O(t s^{\omega-1})$ operations, by computing $1,g,\dots,g^{s-1}$
 modulo $f$, and doing a matrix product in size $s \times s$ by
 $s \times t$.
 \end{note}
@@ -435,8 +435,8 @@ above.
   $\F_q$.
 
   For $i \ge 0$, given $\xi_i = x^{q^i}$ and $\beta$ in $Q$, we can
-  compute $\beta^{q^i}$ as $\beta^{q^i}=\beta(\xi_i)$, in time
-  $T_Q=O(m^{(\omega+1)/2})$; in particular, this allows us to
+  compute $\beta^{q^i}$ as $\beta^{q^i}=\beta(\xi_i)$, using
+  $T_Q=O(m^{(\omega+1)/2})$ operations; in particular, this allows us to
   compute $\xi_{i+j}$ from the knowledge of $\xi_i$ and $\xi_j$. Given
   an addition chain for $d$, we thus compute all corresponding
   $\xi_i$'s, and we deduce the $\sigma_i$'s similarly, since
@@ -444,13 +444,13 @@ above.
   $\xi_1=x^q$, this gives us $\sigma_d$ for $O(T_Q\log(d))$
   further operations in $\F_q$.
 
-  The same holds for $\tau_d$, with this time a cost $O(T_Q\log(cd))$,
+  The same holds for $\tau_d$, with this time a cost in $O(T_Q\log(cd))$,
   since we have to compute $\xi_c$ first. For $\mu_d$, the formula for
   $\mu_{i+j}$ shows that we can obtain it by means of a modular
   composition (to compute $\mu_j^{q^i}=\mu_j(\xi_i)$), together with
   two exponentiations of indices less than $c$, which are done using
   $O(\log(c))$ multiplications. The cost is thus $O((T_Q +
-  \MM(m)\log(c))\log(d))$.
+  \MM(m)\log(c))\log(d))$ operations.
 
 \item Case 2. As a particular case of the above, $f$ is a factor of
   degree $m$ of the $r$th cyclotomic polynomial, for some prime $r$.
@@ -467,7 +467,7 @@ above.
 
   We let $x$ and $z$ be the respective images of $X$ and $Z$ in $Q$,
   and as a first step, we compute $z^q$ (and $x^q$, unless $f$ is as
-  in Case 2 above), in time $O(\MM(mn)\log(q))$. In order to compute
+  in Case 2 above), in $O(\MM(mn)\log(q))$ operations. In order to compute
   the quantities $\sigma_d,\tau_d,\mu_d$, we apply the same strategy
   as above; the key factor for complexity is thus the cost of
   computing $\beta^{q^i}$, for $\beta$ in $Q$, given $\zeta_i =
@@ -489,19 +489,19 @@ above.
   $\zeta_i$; this latter step takes $T_S=O(n^{(\omega+1)/2} \MM(m))$
   operations in~$\F_q$.
 
-  We can then compute $\sigma_d,\alpha_d,\mu_d$ in respective times 
+  We can then compute $\sigma_d,\alpha_d,\mu_d$ using respectively
   $O((T_{Q,n}+T_S)\log(d))$,
   $O((T_{Q,n}+T_S)\log(cd))$,
-  and $O((T_{Q,n}+T_S)\log(d) + \MM(nm)\log(c)\log(d)),$
+  and $O((T_{Q,n}+T_S)\log(d) + \MM(nm)\log(c)\log(d))$ operations,
   where $O(\MM(mn))$ is the cost of one multiplication in $S$.
 
 \item Case 4. As a particular case of the previous item, suppose that
   $g$ is in $\F_q[Z]$. Then, the cost for computing $z^q$ is
-  $O(\MM(n)\log(q))$; the last step, the cost $T_S$ of modular
+  $O(\MM(n)\log(q))$; in the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
   $n$ (with the same argument), as detailed in
   Note~\ref{note:multimc}. Similarly, the cost of multiplication in
-  $S$ can be reduced to $O(n\MM(m) + m\MM(n))$.  Up to these
+  $S$ can be reduced to $O(n\MM(m) + m\MM(n))$ operations.  Up to these
   modifications, the runtimes for computing $\sigma_d,\alpha_d,\mu_d$
   remain the same.
 
@@ -510,7 +510,7 @@ above.
   for some $a$ in $Q$.  
 
   For $\beta$ as above, suppose that we have already computed all
-  coefficients $d_j(x)=c_j(x)^{q^i}$ in time $O(T_{Q,n})$; we now have to
+  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations; we now have to
   compute $\sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
 
   We first do the calculation modulo $Z^r-a$ rather than modulo $g$;
@@ -525,8 +525,8 @@ above.
 
   In order to continue the calculation for all indices in our addition
   chain, we must thus compute the corresponding $\alpha_i$'s as well;
-  this takes time $T_{Q}+O(\MM(m)\log(r))$; since the first stage of the
-  algorithm took time $O( T_{Q,n})$, we can take $T_S=O(\MM(mr))$.  To
+  this takes $T_{Q}+O(\MM(m)\log(r))$ operations; since the first stage of the
+  algorithm took $O( T_{Q,n})$ operations, we can take $T_S=O(\MM(mr))$.  To
   initiate the procedure, the algorithm also needs to compute
   $\alpha_1=q^{\lfloor q/r\rfloor}$, using $O(\log(q))$
   multiplications in $Q$.
@@ -784,9 +784,9 @@ Therefore, to simplify the exposition, we focus on algorithms
 solving the following problem.
 \begin{problem}
 \label{prob:embedding}
-Let $r$ be a prime power and $k, K$ a couple of extensions of $\F_q$
+Let $r$ be a prime power and $k, K$ a pair of extensions of $\F_q$
 of degree $r$.
-How to efficiently compute an isomorphism between $k$ and $K$?
+Describe an isomorphism between $k$ and $K$.
 \end{problem}
 Note that although some algorithms are restricted to this situation,
 especially those presented in Section~\ref{sec:kummer},
