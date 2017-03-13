@@ -669,9 +669,9 @@ desired result.
 
 \paragraph{Root finding in some extensions of cyclotomic extensions}
 Let $r = v^d$, where $v \ne p$ is a prime and $d$ is a positive
-integer and let $s$ be the order of $q$ in $\Z / v\Z$.  We actually
-assume that $d \ge 2$, since this will be the case in all cases where
-we want to apply the following.
+integer and let $s$ be the order of $q$ in $\Z / v\Z$.  We 
+assume that $d \ge 2$, since this will be the case whenever we want to
+apply the following.
 
 Consider an extension $\F_q \subset k=\F_q[X]/f(X)$ of degree $r$, and
 let $\F_q(\zeta)$ and $k(\zeta)$ be extensions of degree $s$ over
@@ -734,10 +734,17 @@ way, with a cost of $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + \MM(r)\log(q))$
 
 The root extraction in $\F_q(\zeta)$ is done as in the previous
 paragraph, and have a negligible cost, since we assumed that $s \le v
-\le \sqrt{r}$. Therefore, the complexity of the present variation
-of~\cite[Algorithm~3]{doliskanischost2011} will be
-$O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + s\MM(r)\log(q))$ operations in $\F_q$.
-\todo{make this a proposition}
+\le \sqrt{r}$. Therefore, we arrive at the following result.
+
+\begin{proposition}\label{prop:root_high_degree_extension}
+With $k$, $\zeta$ and $v$ as above, one can extract $v$-th roots in
+$k(\zeta)$ using an expected
+$O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + s\MM(r)\log(q))$
+operations in $\F_q$.
+\end{proposition}
+
+
+
 
 \subsection{Embedding description problem reduction}
 
@@ -1400,19 +1407,19 @@ complexity depends linearly on the order $s$ of $q$ modulo $r$. If $r=v^d$ for s
 it is natural to seek an algorithm which depends on the order of $q$ modulo $v$ instead.
 The idea we present is a variation on Lenstra's algorithm, using successive $v$-th root
 extractions.
-We are not aware of this algorithm appearing anywhere in the literature, however we
-do not claim it to be fully original. %
+We are not aware of this algorithm appearing anywhere in the literature. %
 We also note that Narayanan~\cite[Sec.~5]{narayanan2016fast} recently
-published a radically different generalization\footnote{Narayanan's
+published a radically different generalization
+of Allombert's algorithm with a very similar complexity in $r$ (his
+algorithm has much worse complexity in $q$, though).
+Narayanan's
   generalization relies on the fact that Artin--Schreier and Kummer
-  theories are special cases of a more general situation. %
-  As already emphasized by Couveignes and Lercier~\cite{CL08}, whereas
+  theories are special cases of a more general situation:
+  as already emphasized by Couveignes and Lercier~\cite{CL08}, whereas
   the former theory acts on the additive group of a finite field, and
   the latter on its multiplicative group, they can be extended to more
   general commutative algebraic groups, in particular to elliptic
-  curves.} %
-of Allombert's algorithm with a very similar complexity in $r$ (his
-algorithm has much worse complexity in $q$, though).
+  curves.
 
 An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
@@ -1429,76 +1436,25 @@ $k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of $\theta$ i
 Doing the same in $K$ yields an element $\beta\in K$ such that
 the map $\alpha\mapsto\beta$ defines an isomorphism. %
 The main difficulty in applying such an algorithm resides in computing
-efficiently $v$-th roots in $k(\zeta)$ and is addressed below.
-
-
-%% \paragraph{Computing $v$-th roots in $k(\zeta)$}
-%% We can easily adapt the root extraction algorithm in~\cite{doliskanischost2011} to compute a $v$-th 
-%% root in $k(\zeta)$.
-
-%% First note that $v$ divides $q^{rs}-1$ where $rs$ is the degree of the extension
-%% $k(\zeta)$ over $\F_q$.
-%% Following~\cite[Algorithm~3]{doliskanischost2011},
-%% one reduces the root extraction in $k(\zeta)$ to a root extraction
-%% in a smaller extension of $\F_q$.%
-%% \footnote{Note that \cite[Algorithm~3]{doliskanischost2011} reduces the
-%% root extraction into the smallest possible extension of $\F_p$.
-%% Here we restrict to the smallest possible extension of $\F_q$
-%% to ensure that $\zeta^{q^s} = \zeta$.
-%% The original algorithm would use powering to $p^{s'}$
-%% where $s'$ is the order of $p$ modulo $v$ and $s'$ divides $s$
-%% whereas ours will use powerings by $q^s$.}
-%% The critical computation in this algorithm is the trace-like computation performing the reduction.
-
-%% The initial exponentiation corresponding to Step 6 of~\cite[Algorithm~3]{doliskanischost2011}
-%% computes $\lambda = a^{(q^s - 1)/v}$
-%% and can be done using the technique
-%% in~\cite[Lemma~14]{shoup94}.
-%% A simple analysis shows that this can be done in $O(\MM(rs)\log(v)\log(s) + 
-%% s\CC(r)\log(s) + \MM(rs)\log(q))$ operations in $\F_q$.
-
-%% The trace-like computation of
-%% $1 + \lambda + \lambda^{1+q^{s}} + \cdots + \lambda^{1+q^{s}+\cdots+q^{v-2s}}$
-%% corresponding to Step 7 of~\cite[Algorithm~3]{doliskanischost2011}
-%% (and \cite[Algorithm~2]{doliskanischost2011}) can be adapted as follows.
-%% Let $x$ be the image of $X$ in $k=\F_q[X]/f(X)$.
-%% To compute $x^{q^s}$ we first compute $x^q$ using $O(\MM(r)\log(q))$
-%% operations in $\F_q$, and then do $\log(s)$ modular compositions in  $k$.
-%% To compute $\lambda^{q^s}$,
-%% note that an element $\lambda \in k(\zeta)$ can be written as
-%% $\lambda = \lambda_0(x) + \lambda_1(x) \zeta + \cdots + \lambda_{s - 1}(x) \zeta^{s - 1}$
-%% and the $\zeta^{q^s} = \zeta$.
-%% Therefore for any $i$,
-%% \[
-%% \lambda^{q^{i s}} = \sum_{j = 0}^{s - 1} \lambda_j(x^{q^{i s}}) \left(\zeta^{q^{i s}}\right)^j = \sum_{j = 0}^{s - 1} \lambda_j(x^{q^{i s}}) \zeta^j = \lambda\left(x^{q^{i s}}\right).
-%% \]
-%% In particular, $\lambda^{q^s}$ can be computed using $O(s\CC(r))$ operations in $\F_q$
-%% and~\cite[Algorithm~2]{doliskanischost2011} can be applied in a straightforward
-%% way with a complexity of $O(s\CC(r)\log(i) + \MM(r)\log(q))$ operations in $\F_q$.
-
-%% The minimal polynomial, root extraction in the subfield
-%% and embedding computation corresponding to Steps 9, 10 and 11
-%% of~\cite[Algorithm~3]{doliskanischost2011}, have a negligible cost.
-%% Therefore, the complexity of the present variation
-%% of~\cite[Algorithm~3]{doliskanischost2011} will be
-%% $O(s\CC(r)\log(r) + \MM(rs)\log(v)\log(s) + \MM(rs)\log(q))$
-%% operations in $\F_q$.
-
-
-We can finally state the main result of this section.
+efficiently $v$-th roots in $k(\zeta)$, for which we use Proposition~\ref{prop:root_high_degree_extension};
+this yields the main result of this section.
 \begin{theorem}
 	\label{theorem:isom-root}
 	Let $r = v^d$ where $v \ne p$ is a prime and $d$ is a positive integer. Also let $s$ be the 
 	order of $q$ in $\Z / v\Z$. Given extensions $k/\F_q$, $K/\F_q$ of degree $r$, an
         embedding $k\hookrightarrow K$ can be constructed at the cost of 
-	$O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+an expected $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)^2 + s\MM(r)\log(r)\log(q)$
+operations in $\F_q$.
+	%% $O(s\CC(r)\log^2(r) + \MM(rs)\log(r)\log(qs))$
 \end{theorem}
 
 \begin{proof}
-We can construct the embedding of Theorem~\ref{theorem:isom-root} as follows. We first build the 
-extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in $\F_q(\zeta)$. 
-Then $\eta$ is an $r$-power in $k(\zeta)$ and $K(\zeta)$. To obtain $r$-th roots $\theta_1\in k$, $\theta_2\in K$ of $\eta$ we take $d$ 
-successive $v$-th roots using the algorithm sketched above. 
+We can construct the embedding of Theorem~\ref{theorem:isom-root} as
+follows. We first build the extensions $k(\zeta) / \F_q(\zeta)$ and
+$K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in
+$\F_q(\zeta)$.  Then $\eta$ is an $r$-power in $k(\zeta)$ and
+$K(\zeta)$. To obtain $r$-th roots $\theta_1\in k$, $\theta_2\in K$ of
+$\eta$ we take $d$ successive $v$-th roots.
 
 \begin{algorithm}
 	[Kummer-type algorithm for extension towers]
@@ -1506,7 +1462,7 @@ successive $v$-th roots using the algorithm sketched above.
 	\begin{algorithmic}[1]
 		\REQUIRE Extensions $k / \F_q$ $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
 		\ENSURE The description of a field embedding $k\hookrightarrow K$.
-		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial $\F_q$ to 
+		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial over $\F_q$ to 
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
 		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
 		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
@@ -1515,11 +1471,21 @@ successive $v$-th roots using the algorithm sketched above.
 	\end{algorithmic}
 \end{algorithm}
 
-Step~\ref{step:factor-cyclo} is done using by Algorithm~\ref{alg:ks} which, by Proposition~\ref{prop:cyclo}, takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$ until a non-$v$-adic residue is found; by Proposition~\ref{prop:large-power},
-we can do this using $O(\CC(s)\log(s) + \MM(s)\log(v)\log(s) + \MM(s)\log(q))$ operations in 
-$\F_q$. Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root 
-extractions. Therefore Algorithm~\ref{algorithm:alpha-root} runs in $O(s\CC(r)\log^2(r) + 
-\MM(rs)\log(r)\log(qs))$ operations in $\F_q$.
+Step~\ref{step:factor-cyclo} is done using~\cite[Theorem~9]{shoup94},
+which takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do
+Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$
+until a non-$v$-adic residue is found. Testing $v$-adic residuosity of
+$\eta$ amounts to computing $\eta^{(q^s-1)/v}$ in $\F_q(\zeta)$, which
+can be done in $O(s^{(\omega-1)/2}\log(s) + \MM(s)\log(v)\log(s) +
+\MM(s)\log(q))$ operations in $\F_q$, in view of our discussion in
+Section~\ref{sec:preliminaries}.
+
+Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$
+successive root extractions, each of which takes an expected
+$O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + s\MM(r)\log(q))$
+operations in $\F_q$. Therefore Algorithm~\ref{algorithm:alpha-root}
+runs in an expected $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)^2 + s\MM(r)\log(r)\log(q)$ operations in
+$\F_q$.
 \end{proof}
 
 
