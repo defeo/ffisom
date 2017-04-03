@@ -457,14 +457,20 @@ above.
   $\xi_1=x^q$, this gives us $\sigma_d$ for $O(T_Q\log(d))$
   further operations in $\F_q$.
 
-  The same holds for $\tau_d$, with this time a cost in $O(T_Q\log(cd))$,
-  since we have to compute $\xi_c$ first.
-  For $\mu_d$, the formula for
-  $\mu_{i+j}$ shows that we can obtain it by means of a modular
-  composition (to compute $\mu_j^{q^i}=\mu_j(\xi_i)$), together with
-  two exponentiations of indices less than $c$, which are done using
-  $O(\log(c))$ multiplications. The cost is thus $O((T_Q +
-  \MM(m)\log(c))\log(d))$ operations.
+  The same holds for $\tau_d$, with a cost in $O(T_Q\log(cd))$,
+  since we have to compute $\xi_c$ first;
+  and for $\mu_d$, with a cost in
+  $O((T_Q + \MM(m)\log(c))\log(d))$ operations,
+  as the formula for $\mu_{i+j}$ shows that
+  we can obtain it by means of a modular composition
+  (to compute $\mu_j^{q^i}=\mu_j(\xi_i)$), together with
+  two exponentiations of indices less than $c$.
+
+  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
+  $O(\MM(m) \log(q) + T_Q \log(d))$,
+  $O(\MM(m) \log(q) + T_Q \log(d c))$,
+  and $O(\MM(m) \log(q) + (T_Q + \MM(m)\log(c))\log(d))$.
+  
 
 \subparagraph{Case 2.}
   As a particular case of the above, $f$ is a factor of
@@ -472,9 +478,14 @@ above.
 
   An alternative solution to obtain $\beta^{q^i}$, for some $\beta \in
   Q$, computes $\beta(X^{q^i \bmod r}) \bmod (X^r-1)$ and reduces it
-  modulo $f(X)$; thus, we can take $T_Q=O(\MM(r))$. Up to this
-  modification, the costs of computing $\sigma_d,\alpha_d,\mu_d$ are
-  the same as above. 
+  modulo $f(X)$; thus, we can take $T_Q=O(\MM(r))$.
+  
+  %Up to this modification,
+  %the costs of computing $\sigma_d, \tau_d, \mu_d$ are the same as above. 
+  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
+  $O(\MM(m) \log(q) + \MM(r) \log(d))$,
+  $O(\MM(m) \log(q) + \MM(r) \log(d c))$,
+  and $O(\MM(m) \log(q) + (\MM(r) + \MM(m)\log(c))\log(d))$.
 
 \subparagraph{Case 3.}
   We take $f$ of degree $m$ in $\F_q[X]$, and
@@ -488,7 +499,7 @@ above.
   In order to compute
   the quantities $\sigma_d,\tau_d,\mu_d$, we apply the same strategy
   as above; the key factor for complexity is thus the cost of
-  computing $\beta^{q^i}$, for $\beta$ in $Q$, given $\zeta_i =
+  computing $\beta^{q^i}$, for $\beta$ in $S$, given $\zeta_i =
   z^{q^i}$ and $\xi_i=x^{q^i}$ (as we did in Case 1, we apply this
   procedure to our input element $\alpha$, as well as to $\zeta_i$
   itself, and $\xi_i$, in order to be able to continue the
@@ -502,37 +513,42 @@ above.
   $nT_Q$, but as pointed out in Note~\ref{note:multimc}, improvements 
   are possible if we base our algorithm on modular composition;
   we thus denote the cost $T_{Q,n}$.
+
   Then, we do a modular composition in $S$ to evaluate the result at
   $\zeta_i$; this latter step takes $T_S=O(n^{(\omega+1)/2} \MM(m))$
   operations in~$\F_q$.
 
-  We can then compute $\sigma_d,\alpha_d,\mu_d$ using respectively
-  $O((T_{Q,n}+T_S)\log(d))$,
-  $O((T_{Q,n}+T_S)\log(cd))$,
-  and $O((T_{Q,n}+T_S)\log(d) + \MM(nm)\log(c)\log(d))$ operations,
-  where $O(\MM(mn))$ is the cost of one multiplication in $S$.
+  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
+  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d))$,
+  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(cd))$,
+  and $O(\MM(mn)\log(q) + (T_{Q,n}+T_S+ \MM(nm)\log(c))\log(d))$ operations.
 
 \subparagraph{Case 4.}
   As a particular case of Case~3, suppose that
-  $g$ is in $\F_q[Z]$.
-  
+  $g$ is in $\F_q[Z]$, where we write $Q' = \F_q[Z]/g(Z)$.
+
   Then, the cost for computing $z^q$ is
-  $O(\MM(n)\log(q))$; in the last step, the cost $T_S$ of modular
+  $O(\MM(n)\log(q))$ and that for computing $x^q$ is $O(\MM(m)\log(q))$.
+  In the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
   $n$ (with the same argument), as detailed in
-  Note~\ref{note:multimc}. Similarly, the cost of multiplication in
-  $S$ can be reduced to $O(n\MM(m) + m\MM(n))$ operations.  Up to these
-  modifications, the runtimes for computing $\sigma_d,\alpha_d,\mu_d$
-  remain the same.
+  Note~\ref{note:multimc}, that we denote $T_{Q',m}$.
+  Similarly, the cost of multiplication in $S$ can be reduced
+  from $O(\MM(mn))$ to $O(n\MM(m) + m\MM(n))$ operations.
 
+  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
+  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d))$,
+  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(cd))$,
+  and $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m}+ (m\MM(n)+n\MM(m))\log(c))\log(d))$ operations.
+  
 \subparagraph{Case 5.}
   As another particular case of Case 3, suppose that $g$
   is a monic factor of degree $n$ of a polynomial of the form $Z^r-a$,
   for some $a$ in $Q$, e.g. a factor of a cyclotomic polynomial.
 
   For $\beta$ as above, suppose that we have already computed all
-  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations; we now have to
-  compute $\sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
+  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(\MM(m)\log(q)+T_{Q,n})$ operations;
+  we now have to compute $\sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
 
   We first do the calculation modulo $Z^r-a$ rather than modulo $g$;
   that is, we compute $\sum_{j=0}^{n-1} d_j(x) \gamma_i^j$ where
@@ -547,10 +563,16 @@ above.
   In order to continue the calculation for all indices in our addition
   chain, we must thus compute the corresponding $\alpha_i$'s as well;
   this takes $T_{Q}+O(\MM(m)\log(r))$ operations; since the first stage of the
-  algorithm took $O( T_{Q,n})$ operations, we can take $T_S=O(\MM(mr))$.  To
-  initiate the procedure, the algorithm also needs to compute
-  $\alpha_1=q^{\lfloor q/r\rfloor}$, using $O(\log(q))$
+  algorithm took $O( T_{Q,n})$ operations, we can take $T_S=O(\MM(mr))$.
+  
+  To initiate the procedure, the algorithm also needs to compute
+  $\alpha_1=\alpha^{\lfloor q/r\rfloor}$, using $O(\log(q))$
   multiplications in $Q$.
+
+%\begin{proposition}
+%\label{prop:trace-like}
+%
+%\end{proposition}
 
 \paragraph{Computing subfields}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
