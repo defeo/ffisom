@@ -441,7 +441,9 @@ above.
 
 \subparagraph{Case 1.}
   We take $f$ of degree $m$ in $\F_q[x]$ and we define
-  $Q=\F_q[X]/f(X)$. We let $x$ be the image of $X$ in $Q$, and we
+  $Q=\F_q[X]/f(X)$.
+  
+  We let $x$ be the image of $X$ in $Q$, and we
   start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
   $\F_q$.
 
@@ -456,7 +458,8 @@ above.
   further operations in $\F_q$.
 
   The same holds for $\tau_d$, with this time a cost in $O(T_Q\log(cd))$,
-  since we have to compute $\xi_c$ first. For $\mu_d$, the formula for
+  since we have to compute $\xi_c$ first.
+  For $\mu_d$, the formula for
   $\mu_{i+j}$ shows that we can obtain it by means of a modular
   composition (to compute $\mu_j^{q^i}=\mu_j(\xi_i)$), together with
   two exponentiations of indices less than $c$, which are done using
@@ -478,9 +481,11 @@ above.
   $g$ monic of degree $n$ in $Q[Z]$, where we write $Q=\F_q[X]/f(X)$;
   we now define $S=Q[Z]/g(Z)$.
 
-  We let $x$ and $z$ be the respective images of $X$ and $Z$ in $Q$,
+  We let $x$ and $z$ be the respective images of $X$ in $Q$ and $Z$ in $S$,
   and as a first step, we compute $z^q$ (and $x^q$, unless $f$ is as
-  in Case 2 above), in $O(\MM(mn)\log(q))$ operations. In order to compute
+  in Case 2 above), in $O(\MM(mn)\log(q))$ operations.
+  
+  In order to compute
   the quantities $\sigma_d,\tau_d,\mu_d$, we apply the same strategy
   as above; the key factor for complexity is thus the cost of
   computing $\beta^{q^i}$, for $\beta$ in $Q$, given $\zeta_i =
@@ -489,7 +494,7 @@ above.
   itself, and $\xi_i$, in order to be able to continue the
   calculation).
 
-  We use an algorithm by Kaltofen and Shoup~\cite{kaltofen+shoup97},
+  To do so, we use an algorithm by Kaltofen and Shoup~\cite{kaltofen+shoup97},
   which boils down to writing $\beta=\sum_{j=0}^{n-1} c_j(x) z^j$, so
   that $\beta^{q^i} = \sum_{j=0}^{n-1} c_j(x)^{q^i} \zeta_i^j.$ The
   $n$ coefficients $c_j(x)^{q^i}$ are computed by applying the
@@ -497,7 +502,6 @@ above.
   $nT_Q$, but as pointed out in Note~\ref{note:multimc}, improvements 
   are possible if we base our algorithm on modular composition;
   we thus denote the cost $T_{Q,n}$.
-
   Then, we do a modular composition in $S$ to evaluate the result at
   $\zeta_i$; this latter step takes $T_S=O(n^{(\omega+1)/2} \MM(m))$
   operations in~$\F_q$.
@@ -509,8 +513,10 @@ above.
   where $O(\MM(mn))$ is the cost of one multiplication in $S$.
 
 \subparagraph{Case 4.}
-  As a particular case of the previous item, suppose that
-  $g$ is in $\F_q[Z]$. Then, the cost for computing $z^q$ is
+  As a particular case of Case~3, suppose that
+  $g$ is in $\F_q[Z]$.
+  
+  Then, the cost for computing $z^q$ is
   $O(\MM(n)\log(q))$; in the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
   $n$ (with the same argument), as detailed in
@@ -522,7 +528,7 @@ above.
 \subparagraph{Case 5.}
   As another particular case of Case 3, suppose that $g$
   is a monic factor of degree $n$ of a polynomial of the form $Z^r-a$,
-  for some $a$ in $Q$.  
+  for some $a$ in $Q$, e.g. a factor of a cyclotomic polynomial.
 
   For $\beta$ as above, suppose that we have already computed all
   coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations; we now have to
