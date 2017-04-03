@@ -546,29 +546,40 @@ above.
   is a monic factor of degree $n$ of a polynomial of the form $Z^r-a$,
   for some $a$ in $Q$, e.g. a factor of a cyclotomic polynomial.
 
+  We start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
+  $\F_q$.
+
   For $\beta$ as above, suppose that we have already computed all
-  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(\MM(m)\log(q)+T_{Q,n})$ operations;
+  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations;
   we now have to compute $\sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
 
   We first do the calculation modulo $Z^r-a$ rather than modulo $g$;
-  that is, we compute $\sum_{j=0}^{n-1} d_j(x) \gamma_i^j$ where
-  $\gamma_i=\gamma^{q^i}$ and $\gamma^r = a$. Because $\gamma^r=a$, we
-  have $\gamma_i = \alpha_i \gamma^{q^i \bmod r}$, with $\alpha_i =
-  \alpha^{\lfloor q^i/r\rfloor}$. If we assume that $\alpha_i$ is
-  known, we can compute $\sum_{j=0}^{n-1} d_j(x) \gamma_i^j$ using
-  Horner's method, in time $O(n \MM(m))$ and we reduce this result
+  that is, we compute $\sum_{j=0}^{n-1} d_j(x) z_i^j$ where
+  $z_i=z^{q^i}$.
+  Because $z^r=a$, we
+  have $z_i = a_i z^{q^i \bmod r}$, with $a_i =
+  a^{\lfloor q^i/r\rfloor}$. If we assume that $a_i$ is
+  known, we can compute $\sum_{j=0}^{n-1} d_j(x) z_i^j$ using
+  Horner's method, in time $O(n \MM(m))$, and we reduce this result
   modulo $g$, for the cost $O(\MM(mr))$ of a Euclidean division in
   degree $r$ in $Q[Z]$. 
 
   In order to continue the calculation for all indices in our addition
-  chain, we must thus compute the corresponding $\alpha_i$'s as well;
-  this takes $T_{Q}+O(\MM(m)\log(r))$ operations; since the first stage of the
-  algorithm took $O( T_{Q,n})$ operations, we can take $T_S=O(\MM(mr))$.
+  chain, we must thus compute the corresponding $a_i$'s as well,
+  just like the $\mu_i$'s;
+  this takes $O(T_{Q}+\MM(m)\log(r))$ operations.
+  Since the first stage of the algorithm took $O(T_{Q,n})$ operations,
+  we can take $T_Q=O(\MM(mr))$
   
   To initiate the procedure, the algorithm also needs to compute
-  $\alpha_1=\alpha^{\lfloor q/r\rfloor}$, using $O(\log(q))$
-  multiplications in $Q$.
+  $a_1=a^{\lfloor q/r\rfloor}$, using $O(\log(q))$
+  multiplications in $Q$ for a cost $O(\MM(m)\log(q))$.
 
+  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
+  $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$,
+  $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$,
+  and $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$ operations.
+  
 %\begin{proposition}
 %\label{prop:trace-like}
 %
