@@ -334,6 +334,7 @@ embeddings of finite fields in a computer algebra system.
 \label{sec:preliminaries}
 
 \subsection{Fundamental algorithms and complexity}
+\label{sec:fundamentalgo}
 We review the fundamental building blocks that constitute the
 algorithms presented next.  We are going to measure all complexities
 in number of operations $+$, $\times$, $\div$ in $\F_q$, unless
@@ -431,13 +432,15 @@ originating in~\cite{von1992computing}. In its simplest form, it
 amounts to the following: if $Q=\F_q[X]/f(X)$, for some polynomial $f$
 in $\F_q[X]$, and $\beta$ is in $Q$, we can compute $\beta^{q}$ by
 means of the modular composition $\beta(\xi)$, where $\xi = x^{q}$ and
-$x$ is the image of $X$ modulo $f$. In the following items, we discuss
+$x$ is the image of $X$ modulo $f$.
+
+In the following items, we discuss
 versions of this idea for various kinds of algebras $Q$, and how they
 allow us to compute the expressions $\sigma_d,\tau_d,\mu_d$ defined
 above.
 
-\begin{itemize}
-\item Case 1. We take $f$ of degree $m$ in $\F_q[x]$ and we define
+\subparagraph{Case 1.}
+  We take $f$ of degree $m$ in $\F_q[x]$ and we define
   $Q=\F_q[X]/f(X)$. We let $x$ be the image of $X$ in $Q$, and we
   start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
   $\F_q$.
@@ -460,7 +463,8 @@ above.
   $O(\log(c))$ multiplications. The cost is thus $O((T_Q +
   \MM(m)\log(c))\log(d))$ operations.
 
-\item Case 2. As a particular case of the above, $f$ is a factor of
+\subparagraph{Case 2.}
+  As a particular case of the above, $f$ is a factor of
   degree $m$ of the $r$th cyclotomic polynomial, for some prime $r$.
 
   An alternative solution to obtain $\beta^{q^i}$, for some $\beta \in
@@ -469,7 +473,8 @@ above.
   modification, the costs of computing $\sigma_d,\alpha_d,\mu_d$ are
   the same as above. 
 
-\item\label{frob2} Case 3. We take $f$ of degree $m$ in $\F_q[X]$, and
+\subparagraph{Case 3.}
+  We take $f$ of degree $m$ in $\F_q[X]$, and
   $g$ monic of degree $n$ in $Q[Z]$, where we write $Q=\F_q[X]/f(X)$;
   we now define $S=Q[Z]/g(Z)$.
 
@@ -503,7 +508,8 @@ above.
   and $O((T_{Q,n}+T_S)\log(d) + \MM(nm)\log(c)\log(d))$ operations,
   where $O(\MM(mn))$ is the cost of one multiplication in $S$.
 
-\item Case 4. As a particular case of the previous item, suppose that
+\subparagraph{Case 4.}
+  As a particular case of the previous item, suppose that
   $g$ is in $\F_q[Z]$. Then, the cost for computing $z^q$ is
   $O(\MM(n)\log(q))$; in the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
@@ -513,7 +519,8 @@ above.
   modifications, the runtimes for computing $\sigma_d,\alpha_d,\mu_d$
   remain the same.
 
-\item Case 5. As another particular case of Case 3, suppose that $g$
+\subparagraph{Case 5.}
+  As another particular case of Case 3, suppose that $g$
   is a monic factor of degree $n$ of a polynomial of the form $Z^r-a$,
   for some $a$ in $Q$.  
 
@@ -538,7 +545,6 @@ above.
   initiate the procedure, the algorithm also needs to compute
   $\alpha_1=q^{\lfloor q/r\rfloor}$, using $O(\log(q))$
   multiplications in $Q$.
-\end{itemize}
 
 \paragraph{Computing subfields}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
@@ -1690,13 +1696,22 @@ polynomials. For larger values, the
 constructions~\cite{couveignes+lercier11,DeDoSc13,DeDoSc2014}
 are reasonably efficient, and yield an irreducible polynomial in time
 less than quadratic in $s$.
-
 However negligible from an asymptotic point of view, the construction
 of the polynomial $h$ and of the field $k'$ take a serious toll on the
-practical performances of Rains' algorithm. That is why in
-Appendix~\ref{app:rains-vars} we introduce to variants of the
-algorithm that avoid altogether the use of the irreducible polynomial
-$h$.
+practical performances of Rains' algorithm.%
+\footnote{
+A straightforward way to avoid these constructions consists in computing
+a factor $h$ of the cyclotomic polynomial $\Phi_\ell$
+over the extension $k$ following case~$5$ from Section~\ref{sec:fundamentalgo}.
+By Newton's identities, we have the equality of power series
+\begin{equation*}
+  -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
+\end{equation*}
+Hence, summing the $\sigma$-th coefficients in the above series for
+$\sigma\in S$ gives the sought period.
+Nevertheless, algorithms from Section~\ref{sec:kummer} perform better when this variation
+could be useful.
+}
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
@@ -2796,18 +2811,17 @@ Proposition~\ref{prop:trace-like}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{More variants of Rains' algorithm}
+\section{Rain's conic algorithm}
 \label{app:rains-vars}
 
 We have seen that Rains' cyclotomic algorithm suffers in practice from
 the need to build a field extension $k'$ of $k$. %
-In this section we present two variants of Rains' algorithm that help
-reduce the cost associated to the field extension. %
-None of the two variants has an impact on the overall complexity of
+In this section we present a variant of Rains' algorithm that help
+reduce the cost associated to the field extension when it is even %
+although it has no impact on the overall complexity of
 Rains' algorithm.
 
-\paragraph{Rains' conic algorithm}
-The first variant reduces the degree of the field extension from
+The conic variant reduces the degree of the field extension from
 $s=[k':k]$ to $s/2$ whenever $s$ is even. %
 This is especially useful when $s=2$, as highlighted in
 Section~\ref{sec:experimental-results}. %
@@ -2920,68 +2934,6 @@ Step~\ref{algorithm:rains-conic:power} can be modified so as to avoid
 the premature projection on the $x$-axis, so that the algorithm of
 Proposition~\ref{prop:large-power} applies. %
 We leave the details of this variant to the reader.
-
-
-\paragraph{Rains' cyclotomic algorithm without auxiliary polynomials}
-Our second variant avoids the construction of the field extension $k'$
-altogether by factoring the cyclotomic polynomial $\Phi_\ell$, thus
-eliminating the need for a precomputed list of irreducible
-polynomials. In the algorithm below we denote by $[\bar{h}]_i$ the
-degree $i$ coefficient of the polynomial $\bar{h}$.
-
-\begin{algorithm}[Rains' cyclotomic algorithm variant]
-  \label{algorithm:rains-cyclo-2}
-  \begin{algorithmic}[1]
-    \REQUIRE A field extension $k/\F_q$ of degree $r$, a prime $\ell$ such that
-    \begin{itemize}
-    \item $(\Z/\ell\Z)^\times = \langle q\rangle \times S$ for some $S$,
-    \item $\#\langle q\rangle = rs$ for some integer $s$.
-    \end{itemize}
-    \ENSURE A normal generator of $k$ over $\F_q$,
-    with a uniquely defined Galois orbit.
-    
-    \STATE Compute a factor $h$ of the $\ell$-th cyclotomic polynomial $\Phi_\ell$ in $k[Z]$; 
-    \STATE Compute $\bar{h} \leftarrow -\frac{h'(1/Z)}{Zh(1/Z)} \bmod Z^\ell$;
-    \RETURN $\alpha \leftarrow \sum_{\sigma\in S}[\bar{h}]_\sigma$.
-  \end{algorithmic}
-\end{algorithm}
-
-
-\begin{proposition}
-  Algorithm~\ref{algorithm:rains-cyclo-2} is correct. %
-  On input $q,r,\ell,s$ it computes its output using
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations in $\F_q$ on average, or
-  $\tildO(\ell r\log (q))$.
-\end{proposition}
-\begin{proof}
-  Let $\zeta$ be the image of $Z$ in $k[Z]/h(Z)$. Obviously $\zeta$ is
-  an $\ell$-th root of unity. By Newton's identities, we have the
-  equality of power series
-  \begin{equation*}
-    -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
-  \end{equation*}
-  Hence, summing the $\sigma$-th coefficients in the above series for
-  $\sigma\in S$ gives the sought period.
-
-  The complexity is dominated by the cost of factoring $\Phi_\ell$,
-  that is
-  $O(\ell r(\log(s)+\log(r))\log(\ell) + \MM(\ell r)\log(\ell r) +
-  \MM(\ell r)\log(q))$ operations according to
-  Proposition~\ref{prop:cyclo}. Indeed, the computation of $\bar{h}$
-  costs only $O(\MM(\ell r))$ operations, and the final sum
-  $O(\ell r)$ operations.
-\end{proof}
-
-By comparing the latter algorithm with Rains' original one, we see
-that this variant performs better when $s$ is larger than $r$. %
-Although we were unable to prove that this cannot be the case, we saw
-in Section~\ref{sec:selection} that $s$ is typically in
-$O(\log(r))$. %
-Furthermore, the algorithms of Section~\ref{sec:kummer} always have
-better complexity than this one. %
-Thus this latter variant of Rains' algorithms seems to be of purely
-theoretical interest.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
