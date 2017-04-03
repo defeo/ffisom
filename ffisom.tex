@@ -1671,7 +1671,7 @@ the field $k$, the procedure for the field $K$ being identical.
   and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a
   normal generator of $k$. This proves correctness.
 
-  By Proposition~\ref{prop:large-power}, computing $\zeta$
+  According to Section\ref{sec:fundamentalgo}, computing $\zeta$
   in Step~\ref{algorithm:rains-cyclo:power}
   costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log(q))$,
   and the loop is executed $O(1)$ times on average. 
@@ -2794,7 +2794,7 @@ element; otherwise we take elements at random until a suitable one is
 found: only $O(1)$ trials are expected on average. %
 In any case, computing one trace can be done using
 $O(\CC(n)\log(n)+\MM(n)\log(q))$ operations, thanks to
-Proposition~\ref{prop:trace-like}.
+Section~\ref{sec:fundamentalgo}.
 
 \begin{corollary}
   After a precomputation costing $O(\CC(n)\log(n)+\MM(n)\log(q))$
@@ -2927,12 +2927,12 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
 \end{proof}
 
 Although this variant does not exploit the asymptotic improvement
-offered by Proposition~\ref{prop:large-power}, the fact that its
+offered in Section~\ref{sec:fundamentalgo}, the fact that its
 auxiliary degree $s$ is half the one of the original algorithm usually
 gives an interesting practical improvement. %
 Step~\ref{algorithm:rains-conic:power} can be modified so as to avoid
 the premature projection on the $x$-axis, so that the algorithm of
-Proposition~\ref{prop:large-power} applies. %
+Section~\ref{sec:fundamentalgo} applies. %
 We leave the details of this variant to the reader.
 
 
