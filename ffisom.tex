@@ -551,7 +551,7 @@ above.
 
   For $\beta$ as above, suppose that we have already computed all
   coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations;
-  we now have to compute $\sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
+  we now have to compute $\beta^{q^i} = \sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
 
   We first do the calculation modulo $Z^r-a$ rather than modulo $g$;
   that is, we compute $\sum_{j=0}^{n-1} d_j(x) z_i^j$ where
@@ -568,17 +568,19 @@ above.
   chain, we must thus compute the corresponding $a_i$'s as well,
   just like the $\mu_i$'s;
   this takes $O(T_{Q}+\MM(m)\log(r))$ operations.
+
   Since the first stage of the algorithm took $O(T_{Q,n})$ operations,
-  we can take $T_Q=O(\MM(mr))$
+  we can take $T_S = O(\MM(mr))$
+  for computing $\beta^{q^i}$.
   
   To initiate the procedure, the algorithm also needs to compute
   $a_1=a^{\lfloor q/r\rfloor}$, using $O(\log(q))$
   multiplications in $Q$ for a cost $O(\MM(m)\log(q))$.
 
   We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$,
-  $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$,
-  and $O(\MM(m)\log(q) + (T_{Q,n}+n\MM(m)+\MM(mr))\log(d))$ operations.
+  $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d))$,
+  $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d c))$,
+  and $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr) + \MM(m)\log(c))\log(d))$ operations.
   
 %\begin{proposition}
 %\label{prop:trace-like}
