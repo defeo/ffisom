@@ -18,6 +18,7 @@
 \usepackage{afterpage}
 \usepackage{pdflscape}
 \usepackage{subcaption}
+\usepackage{enumitem}
 
 \hypersetup{
 	unicode=true,
@@ -442,10 +443,74 @@ versions of this idea for various kinds of algebras $Q$, and how they
 allow us to compute the expressions $\sigma_d, \tau_d, \mu_d$ defined
 above.
 
-\subparagraph{Case 1.}
-  We take $f$ of degree $m$ in $\F_q[x]$ and we define
-  $Q=\F_q[X]/f(X)$.
-  
+\begin{proposition}
+\label{prop:trace-like}
+Given an $\F_q$-algebra $Q = \F_q[X]/(f(X))$
+with $f \in \F_q[X]$ a polynomial of degree $m$,
+a $Q$-algebra $S =  Q[Z]/(g(Z))$
+with $g \in Q[Z]$ a polynomial of degree $n$,
+and the $\F_q$-algebra $Q' = \F_q[Z]/(g(Z))$ when $g \in \F_q[Z]$,
+the expressions
+\[
+\sigma_d= \alpha^{q^d}, \quad \tau_d = \sum_{i=0}^{d-1} \alpha^{q^{ci}}, \quad
+\mu_d=\alpha^{\lfloor q^d/c\rfloor}
+\]
+can be computed in time:
+\begin{enumerate}[label=\textbf{Case~\theenumi.},leftmargin=*, align=left]
+\item $\alpha \in Q$:
+\begin{itemize}
+\item
+$\sigma_d$: $O(\MM(m) \log(q) + T_Q \log(d))$,
+\item
+$\tau_d$: $O(\MM(m) \log(q) + T_Q \log(d c))$,
+\item
+$\mu_d$: $O(\MM(m) \log(q) + (T_Q + \MM(m)\log(c))\log(d))$;
+\end{itemize}
+\item $\alpha \in Q$ with $f | X^r - 1$:
+\begin{itemize}
+\item
+$\sigma_d$: $O(\MM(m) \log(q) + \MM(r) \log(d))$,
+\item
+$\tau_d$: $O(\MM(m) \log(q) + \MM(r) \log(d c))$,
+\item
+$\mu_d$: $O(\MM(m) \log(q) + (\MM(r) + \MM(m)\log(c))\log(d))$;
+\end{itemize}
+\item $\alpha \in S$:
+\begin{itemize}
+\item
+$\sigma_d$: $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d))$,
+\item
+$\tau_d$: $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d c))$,
+\item
+$\mu_d$: $ O(\MM(mn)\log(q) + (T_{Q,n}+T_S + \MM(nm)\log(c))\log(d))$;
+\end{itemize}
+\item $\alpha \in S$ with $g \in \F_q[Z]$:
+\begin{itemize}
+\item
+$\sigma_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d)$,
+\item
+$\tau_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d c))$,
+\item
+$\mu_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m} + (m\MM(n)+n\MM(m))\log(c))\log(d))$;
+\end{itemize}
+\item $\alpha \in S$ with $g | X^r - a$ for $a \in Q$:
+\begin{itemize}
+\item
+$\sigma_d$: $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d))$,
+\item
+$\tau_d$: $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d c))$,
+\item
+$\mu_d$: $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr) + \MM(m)\log(c))\log(d))$;
+\end{itemize}
+\end{enumerate}
+where $T_Q, T_{Q,n}, T_{Q',m}, T_S$ denote the cost of modular compositions
+as discussed above.
+\end{proposition}
+
+\begin{proof}
+The complexity estimates mostly rely on the complexity of modular composition.
+\begin{enumerate}[label=\textbf{Case~\theenumi.},leftmargin=*, align=left]
+\item
   We let $x$ be the image of $X$ in $Q$, and we
   start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
   $\F_q$.
@@ -474,10 +539,7 @@ above.
   $O(\MM(m) \log(q) + T_Q \log(d c))$,
   and $O(\MM(m) \log(q) + (T_Q + \MM(m)\log(c))\log(d))$ operations.
 
-\subparagraph{Case 2.}
-  As a particular case of the above, $f$ is a factor of
-  degree $m$ of the $r$th cyclotomic polynomial, for some prime $r$.
-
+\item
   An alternative solution to obtain $\beta^{q^i}$, for some $\beta \in
   Q$, computes $\beta(X^{q^i \bmod r}) \bmod (X^r-1)$ and reduces it
   modulo $f(X)$; thus, we can take $T_Q=O(\MM(r))$.
@@ -489,11 +551,7 @@ above.
   $O(\MM(m) \log(q) + \MM(r) \log(d c))$,
   and $O(\MM(m) \log(q) + (\MM(r) + \MM(m)\log(c))\log(d))$ operations.
 
-\subparagraph{Case 3.}
-  We take $f$ of degree $m$ in $\F_q[X]$, and
-  $g$ monic of degree $n$ in $Q[Z]$, where we write $Q=\F_q[X]/f(X)$;
-  we now define $S=Q[Z]/g(Z)$.
-
+\item
   We let $x$ and $z$ be the respective images of $X$ in $Q$ and $Z$ in $S$,
   and as a first step, we compute $z^q$ (and $x^q$, unless $f$ is as
   in Case 2 above), in $O(\MM(mn)\log(q))$ operations.
@@ -525,11 +583,8 @@ above.
   $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d c))$,
   and $O(\MM(mn)\log(q) + (T_{Q,n}+T_S + \MM(nm)\log(c))\log(d))$ operations.
 
-\subparagraph{Case 4.}
-  As a particular case of Case~3, suppose that
-  $g$ is in $\F_q[Z]$, where we write $Q' = \F_q[Z]/g(Z)$.
-
-  Then, the cost for computing $z^q$ is
+\item
+  The cost for computing $z^q$ is
   $O(\MM(n)\log(q))$ and that for computing $x^q$ is $O(\MM(m)\log(q))$.
   In the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
@@ -542,12 +597,8 @@ above.
   $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d))$,
   $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d c))$,
   and $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m} + (m\MM(n)+n\MM(m))\log(c))\log(d))$ operations.
-  
-\subparagraph{Case 5.}
-  As another particular case of Case 3, suppose that $g$
-  is a monic factor of degree $n$ of a polynomial of the form $Z^r-a$,
-  for some $a$ in $Q$, e.g. a factor of a cyclotomic polynomial.
 
+\item
   We start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
   $\F_q$.
 
@@ -583,6 +634,9 @@ above.
   $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d))$,
   $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d c))$,
   and $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr) + \MM(m)\log(c))\log(d))$ operations.
+  \qedhere
+\end{enumerate}
+\end{proof}
 
 \paragraph{Computing subfields}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
