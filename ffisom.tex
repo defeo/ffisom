@@ -409,8 +409,11 @@ $s \times t$.
 \paragraph{Frobenius evaluation} Consider an $\F_q$-algebra $Q$,
 and an element $\alpha$ in $Q$. Given integers $c,d$, we will have to
 compute expressions of the form
-$$\sigma_d= \alpha^{q^d}, \quad \tau_d = \sum_{i=0}^{d-1} \alpha^{q^{ci}}, \quad
-\mu_d=\alpha^{\lfloor q^d/c\rfloor}.$$ A direct binary powering approach
+\[
+\sigma_d= \alpha^{q^d}, \quad \tau_d = \sum_{i=0}^{d-1} \alpha^{q^{ci}}, \quad
+\mu_d=\alpha^{\lfloor q^d/c\rfloor} \enspace .
+\]
+A direct binary powering approach
 would yield a complexity of e.g. $O(d\log(q))$ multiplications in $Q$
 for the first expression.
 
@@ -436,7 +439,7 @@ $x$ is the image of $X$ modulo $f$.
 
 In the following items, we discuss
 versions of this idea for various kinds of algebras $Q$, and how they
-allow us to compute the expressions $\sigma_d,\tau_d,\mu_d$ defined
+allow us to compute the expressions $\sigma_d, \tau_d, \mu_d$ defined
 above.
 
 \subparagraph{Case 1.}
@@ -470,7 +473,6 @@ above.
   $O(\MM(m) \log(q) + T_Q \log(d))$,
   $O(\MM(m) \log(q) + T_Q \log(d c))$,
   and $O(\MM(m) \log(q) + (T_Q + \MM(m)\log(c))\log(d))$ operations.
-  
 
 \subparagraph{Case 2.}
   As a particular case of the above, $f$ is a factor of
@@ -520,8 +522,8 @@ above.
 
   We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
   $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d))$,
-  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(cd))$,
-  and $O(\MM(mn)\log(q) + (T_{Q,n}+T_S+ \MM(nm)\log(c))\log(d))$ operations.
+  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d c))$,
+  and $O(\MM(mn)\log(q) + (T_{Q,n}+T_S + \MM(nm)\log(c))\log(d))$ operations.
 
 \subparagraph{Case 4.}
   As a particular case of Case~3, suppose that
@@ -538,8 +540,8 @@ above.
 
   We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
   $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d))$,
-  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(cd))$,
-  and $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m}+ (m\MM(n)+n\MM(m))\log(c))\log(d))$ operations.
+  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d c))$,
+  and $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m} + (m\MM(n)+n\MM(m))\log(c))\log(d))$ operations.
   
 \subparagraph{Case 5.}
   As another particular case of Case 3, suppose that $g$
@@ -578,14 +580,9 @@ above.
   multiplications in $Q$ for a cost $O(\MM(m)\log(q))$.
 
   We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d))$,
-  $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d c))$,
-  and $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr) + \MM(m)\log(c))\log(d))$ operations.
-  
-%\begin{proposition}
-%\label{prop:trace-like}
-%
-%\end{proposition}
+  $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d))$,
+  $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d c))$,
+  and $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr) + \MM(m)\log(c))\log(d))$ operations.
 
 \paragraph{Computing subfields}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
