@@ -554,13 +554,13 @@ The complexity estimates mostly rely on the complexity of modular composition.
 \item
   We let $x$ and $z$ be the respective images of $X$ in $Q$ and $Z$ in $S$,
   and as a first step, we compute $z^q$ (and $x^q$, unless $f$ is as
-  in Case 2 above), in $O(\MM(mn)\log(q))$ operations.
+  in Case~2 above), in $O(\MM(mn)\log(q))$ operations.
   
   In order to compute
   the quantities $\sigma_d,\tau_d,\mu_d$, we apply the same strategy
   as above; the key factor for complexity is thus the cost of
   computing $\beta^{q^i}$, for $\beta$ in $S$, given $\zeta_i =
-  z^{q^i}$ and $\xi_i=x^{q^i}$ (as we did in Case 1, we apply this
+  z^{q^i}$ and $\xi_i=x^{q^i}$ (as we did in Case~1, we apply this
   procedure to our input element $\alpha$, as well as to $\zeta_i$
   itself, and $\xi_i$, in order to be able to continue the
   calculation).
@@ -753,7 +753,7 @@ Step~\ref{alg:ks-pseudotrace}, which is the dominant step. Let $f \in
 \F_q[X]$ be the defining polynomial of $\F_q(\zeta)$ and let $h$ be a
 factor of $Z^r-\alpha$ of degree $n$. 
 
-We are in Case 5 of our discussion on Frobenius evaluation, and we
+We are in Case~5 of our discussion on Frobenius evaluation, and we
 want to compute a trace-like expression of the form $\tau_s$. As per
 that discussion, two algorithms are available to do Frobenius
 evaluation in $k$ (one of them uses modular composition, the other the
@@ -812,7 +812,7 @@ modulo a degree $s$ factor of $\Phi_v$, and $s$ multiplications modulo
 $f$; since $s \le r$, this takes $O(s \MM(r))$ operations in $\F_q$.
 The computation of $\lambda = {a'}^{(q^s - 1)/v}= {a'}^{\lfloor
   q^s/v\rfloor}$ can then be done as explained in our discussion on
-Frobenius evaluation (Case 4). The cost of each modular composition
+Frobenius evaluation (Case~4). The cost of each modular composition
  is $O(s^{(\omega-1)/2} r^{(\omega+1)/2})$, for a 
 total of $O(s^{(\omega-1)/2} r^{(\omega+1)/2}\log(s) +
 s\MM(r)\log(q))$ operations in $\F_q$.
@@ -861,7 +861,7 @@ The most obvious way to solve this problem is to take the class of $X$
 in $k=\F_q[X]/f(X)$ for $\alpha$, and a root of $f$ in $K$ for
 $\beta$. Since $f$ splits completely in $K$, we can apply Algorithm
 \ref{alg:ks} for the special case $d = 1$. Using our discussion on the
-cost of Frobenius evaluation (precisely, Case 4), we obtain an upper
+cost of Frobenius evaluation (precisely, Case~4), we obtain an upper
 bound of $O\bigl((nm^{(\omega+1)/2} + \MM(m)n^{(\omega+1)/2} +
 m\MM(n)\log(q))\log(m)\bigr)$ expected operations in $\F_q$ for the
 problem. We remark that this complexity is strictly larger than
