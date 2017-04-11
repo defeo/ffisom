@@ -90,7 +90,7 @@
 % \def\PC{\ensuremath{\mathsf{PC}}}
 % \def\II{\ensuremath{\mathsf{I}}}
 % \def\QQ{\ensuremath{\mathsf{Q}}}
-\def\CC{\ensuremath{\mathsf{C}}}
+%%\def\CC{\ensuremath{\mathsf{C}}}
 % \def\RR{\ensuremath{\mathsf{R}}}
 % \def\AA{\ensuremath{\mathsf{A}}}
 % \def\va{\ensuremath{\mathsf{a}}}
@@ -1469,9 +1469,9 @@ Therefore, the values $\trace(\theta) = \beta_{rt}(\theta)$, and $\alpha =
 \beta_{rt}(\theta)^{-1}\alpha_{rt}(\theta)$ can be computed recursively, in $O(\log(rt))$ steps. At 
 step $j$ of the recursive algorithm, $\xi_j, \beta_j(a), \beta_j(\theta), \alpha_j(\theta)$ are 
 computed. As before, the action of $\sigma^j$ is the same as composing with $\xi_j$. So each step 
-of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(\CC(r))$ 
+of the recursion is dominated by $O(1)$ modular compositions over $\F_q$ at the cost of $O(r^{(\omega+1)/2})$ 
 operations in $\F_q$. The initial value of $\xi_1 = x^q$ is computed using $O(\MM(r)\log(q))$ 
-operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(\CC(r)\log(rt) + 
+operations in $\F_q$. Therefore, the cost of computing a root of $f$ is $O(r^{(\omega+1)/2}\log(rt) + 
 \MM(r)\log(q))$ operations in $\F_q$.
 
 Now, to compute $\alpha_d$ in Eq.~\eqref{equ:art-sch-tower} we 
@@ -1480,7 +1480,7 @@ need to take $d$ roots where $d \in O(\log(r) / \log(p))$ which leads to the fol
 \begin{proposition}
 	Let $r = p^d$ for a positive integer $d$, and let $t = [\F_q : \F_p]$. An isomorphism of two 
 	extensions $k / \F_q$, $K / \F_q$ of degree $r$ can be constructed using 
-	$O(\CC(r)\log(rt)\log(r) + \MM(r)\log(q))$ operations in $\F_q$.
+	$O(r^{(\omega+1)/2}\log(rt)\log(r) + \MM(r)\log(q))$ operations in $\F_q$.
 \end{proposition}
 
 
@@ -1736,7 +1736,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O(\CC(sr)\log(sr) + \MM(sr)(\log(q) + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
+  $O((sr)^{(\omega+1)/2}\log(sr) + \MM(sr)(\log(q) + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1746,7 +1746,7 @@ the field $k$, the procedure for the field $K$ being identical.
 
   According to Section\ref{sec:fundamentalgo}, computing $\zeta$
   in Step~\ref{algorithm:rains-cyclo:power}
-  costs $O(\CC(sr)\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log(q))$,
+  costs $O((sr)^{(\omega+1)/2}\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log(q))$,
   and the loop is executed $O(1)$ times on average. 
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
@@ -2101,7 +2101,7 @@ identical.
   $O((\MM(r)\ell\log\ell)/r)$.
 
   Finally, testing that $\alpha$ generates $k$ is done by computing
-  its minimal polynomial, at a cost of $O(\CC(r))$ operations in
+  its minimal polynomial, at a cost of $O(r^{(\omega+1)/2})$ operations in
   $\F_q$ using~\cite{shoup93}.
 \end{proof}
 
@@ -2303,7 +2303,7 @@ Summarizing, if we take $\bar{u},\bar{s}\in O(\log(r))$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
 the cyclotomic algorithm, leading to expected parameters $\ell\in
 O(r\log(r))$, and to an expected running time of $\tildO(\sqrt{r})$
-binary operations and $\tildO(\CC(r)+\MM(r)\log(q))$ operations in
+binary operations and $\tildO(r^{(\omega+1)/2}+\MM(r)\log(q))$ operations in
 $\F_q$.  Similarly, if we also take $\bar{e}\in O(r\log(r))$,
 assuming that $r\log(r)\in o(\sqrt[4]{q})$, we can expect
 Algorithm~\ref{algorithm:selectell} to find suitable parameters for
@@ -2839,7 +2839,7 @@ computed by Algorithm~\ref{alg:inv-mod-comp}.
   Algorithm~\ref{alg:inv-mod-comp} is correct. %
   When the input $\delta$ is in the image of $k$, it returns $\delta$
   itself written on the basis $(1,\beta,\dots,\beta^{m-1})$. %
-  It computes its output using $O(\CC(n))$ operations in $\F_q$.
+  It computes its output using $O(n^{(\omega+1)/2})$ operations in $\F_q$.
 \end{theorem}
 \begin{proof}
   Correctness follows from the discussion above, and the obvious fact
@@ -2853,7 +2853,7 @@ computed by Algorithm~\ref{alg:inv-mod-comp}.
     algorithm, as it does not change the total complexity.} %
   Conversions between monomial and dual bases are also done in
   $O(\MM(n)\log(n))$ as shown in~\cite[\S~3]{DeDoSc2014}. %
-  Finally, the power projection costs $O(\CC(n))$ operations, using
+  Finally, the power projection costs $O(n^{(\omega+1)/2})$ operations, using
   any of the algorithms in~\cite{shoup95,kedlaya+umans08}.
 \end{proof}
 
@@ -2866,14 +2866,14 @@ If the $(n-1)$-th coefficient of $g$ is not $0$, then $Y$ is one such
 element; otherwise we take elements at random until a suitable one is
 found: only $O(1)$ trials are expected on average. %
 In any case, computing one trace can be done using
-$O(\CC(n)\log(n)+\MM(n)\log(q))$ operations, thanks to
+$O(n^{(\omega+1)/2}\log(n)+\MM(n)\log(q))$ operations, thanks to
 Section~\ref{sec:fundamentalgo}.
 
 \begin{corollary}
-  After a precomputation costing $O(\CC(n)\log(n)+\MM(n)\log(q))$
+  After a precomputation costing $O(n^{(\omega+1)/2}\log(n)+\MM(n)\log(q))$
   operations in $\F_q$ on average, all sub-questions of the
   \emph{embedding evaluation problem} can be answered using
-  $O(\CC(n))$ operations in $\F_q$.
+  $O(n^{(\omega+1)/2})$ operations in $\F_q$.
 \end{corollary}
 
 
