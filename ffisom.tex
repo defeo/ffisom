@@ -435,24 +435,32 @@ in $\F_q[X]$, and $\beta$ is in $Q$, we can compute $\beta^{q}$ by
 means of the modular composition $\beta(\xi)$, where $\xi = x^{q}$ and
 $x$ is the image of $X$ modulo $f$.
 
-In the following items, we discuss
+In the following propostion, we discuss
 versions of this idea for various kinds of algebras $Q$, and how they
 allow us to compute the expressions $\sigma_d, \tau_d, \mu_d$ defined
 above.
 
 \begin{proposition}
 \label{prop:trace-like}
-Given an $\F_q$-algebra $Q = \F_q[X]/(f(X))$
-with $f \in \F_q[X]$ a polynomial of degree $m$,
-a $Q$-algebra $S =  Q[Z]/(g(Z))$
-with $g \in Q[Z]$ a polynomial of degree $n$,
-and the $\F_q$-algebra $Q' = \F_q[Z]/(g(Z))$ when $g \in \F_q[Z]$,
-the expressions
+Let $f \in \F_q[X]$ be a polynomial of degree $m$,
+and define the $\F_q$-algebra $Q = \F_q[X]/f(X)$.
+Let $h \in Q[Z]$ be a polynomial of degree $s$,
+and define the $Q$-algebra $S =  Q[Z]/h(Z)$.
+Finally, whenever $h \in \F_q[Z]$, define
+the $\F_q$-algebra $Q' = \F_q[Z]/h(Z)$.
+
+Denote by $T_Q, T_S, T_{Q'}$ the cost, in terms of $\F_q$-operations,
+of one modular composition in $Q, S, Q'$ respectively. %
+Also denote by $T_{Q,t}\le tT_Q$ (resp. $T_{S,t}, T_{Q',t}$) the cost of $t$
+modular compositions sharing the same polynomial (see
+Note~\ref{note:multimc}).
+
+Then the expressions
 \[
 \sigma_d= \alpha^{q^d}, \quad \tau_d = \sum_{i=0}^{d-1} \alpha^{q^{ci}}, \quad
 \mu_d=\alpha^{\lfloor q^d/c\rfloor}
 \]
-can be computed in time:
+can be computed using the following number of operations:
 \begin{enumerate}[label=\textbf{Case~\theenumi.},leftmargin=*, align=left]
 \item $\alpha \in Q$:
 \begin{itemize}
@@ -475,33 +483,31 @@ $\mu_d$: $O(\MM(m) \log(q) + (\MM(r) + \MM(m)\log(c))\log(d))$;
 \item $\alpha \in S$:
 \begin{itemize}
 \item
-$\sigma_d$: $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d))$,
+$\sigma_d$: $O(\MM(ms)\log(q) + (T_{Q,s}+T_S)\log(d))$,
 \item
-$\tau_d$: $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d c))$,
+$\tau_d$: $O(\MM(ms)\log(q) + (T_{Q,s}+T_S)\log(d c))$,
 \item
-$\mu_d$: $ O(\MM(mn)\log(q) + (T_{Q,n}+T_S + \MM(nm)\log(c))\log(d))$;
+$\mu_d$: $ O(\MM(ms)\log(q) + (T_{Q,s}+T_S + \MM(ms)\log(c))\log(d))$;
 \end{itemize}
-\item $\alpha \in S$ with $g \in \F_q[Z]$:
+\item $\alpha \in S$ with $h \in \F_q[Z]$:
 \begin{itemize}
 \item
-$\sigma_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d)$,
+$\sigma_d$: $O((\MM(m)+\MM(s))\log(q) + (T_{Q,s}+T_{Q',m})\log(d)$,
 \item
-$\tau_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d c))$,
+$\tau_d$: $O((\MM(m)+\MM(s))\log(q) + (T_{Q,s}+T_{Q',m})\log(d c))$,
 \item
-$\mu_d$: $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m} + (m\MM(n)+n\MM(m))\log(c))\log(d))$;
+$\mu_d$: $O((\MM(m)+\MM(s))\log(q) + (T_{Q,s}+T_{Q',m} + (m\MM(s)+s\MM(m))\log(c))\log(d))$;
 \end{itemize}
-\item $\alpha \in S$ with $g | X^r - a$ for $a \in Q$:
+\item $\alpha \in S$ with $h | X^r - a$ for $a \in Q$:
 \begin{itemize}
 \item
-$\sigma_d$: $O(\MM(m)\log(q) + (T_{Q,n}+ \MM(mr))\log(d))$,
+$\sigma_d$: $O(\MM(m)\log(q) + (T_{Q,s}+ \MM(mr))\log(d))$,
 \item
-$\tau_d$: $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d c))$,
+$\tau_d$: $O(\MM(m)\log(q) + (T_{Q,s} + \MM(mr))\log(d c))$,
 \item
-$\mu_d$: $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr) + \MM(m)\log(c))\log(d))$;
+$\mu_d$: $O(\MM(m)\log(q) + (T_{Q,s} + \MM(mr) + \MM(m)\log(c))\log(d))$.
 \end{itemize}
 \end{enumerate}
-where $T_Q, T_{Q,n}, T_{Q',m}, T_S$ denote the cost of modular compositions
-as discussed above.
 \end{proposition}
 
 \begin{proof}
@@ -531,27 +537,20 @@ The complexity estimates mostly rely on the complexity of modular composition.
   (to compute $\mu_j^{q^i}=\mu_j(\xi_i)$), together with
   two exponentiations of indices less than $c$.
 
-  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(m) \log(q) + T_Q \log(d))$,
-  $O(\MM(m) \log(q) + T_Q \log(d c))$,
-  and $O(\MM(m) \log(q) + (T_Q + \MM(m)\log(c))\log(d))$ operations.
+  The costs for computing $\sigma_d, \tau_d, \mu_d$ follow immediately.
 
 \item
-  An alternative solution to obtain $\beta^{q^i}$, for some $\beta \in
-  Q$, computes $\beta(X^{q^i \bmod r}) \bmod (X^r-1)$ and reduces it
-  modulo $f(X)$; thus, we can take $T_Q=O(\MM(r))$.
-  
-  %Up to this modification,
-  %the costs of computing $\sigma_d, \tau_d, \mu_d$ are the same as above. 
-  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(m) \log(q) + \MM(r) \log(d))$,
-  $O(\MM(m) \log(q) + \MM(r) \log(d c))$,
-  and $O(\MM(m) \log(q) + (\MM(r) + \MM(m)\log(c))\log(d))$ operations.
+  When $f$ divides $X^r-1$, we obtain $\beta(\xi_i)$ by computing
+  $\beta(X^{q^i \bmod r}) \bmod (X^r-1)$ first, and then reducing
+  modulo $f(X)$.  %
+  Thus, the cost of one modular composition is $T_Q=O(\MM(r))$, and
+  the total cost is obtained by replacing this value in the estimates
+  for the previous case.
 
 \item
   We let $x$ and $z$ be the respective images of $X$ in $Q$ and $Z$ in $S$,
   and as a first step, we compute $z^q$ (and $x^q$, unless $f$ is as
-  in Case~2 above), in $O(\MM(mn)\log(q))$ operations.
+  in Case~2 above), in $O(\MM(ms)\log(q))$ operations.
   
   In order to compute
   the quantities $\sigma_d,\tau_d,\mu_d$, we apply the same strategy
@@ -563,55 +562,45 @@ The complexity estimates mostly rely on the complexity of modular composition.
   calculation).
 
   To do so, we use an algorithm by Kaltofen and Shoup~\cite{kaltofen+shoup97},
-  which boils down to writing $\beta=\sum_{j=0}^{n-1} c_j(x) z^j$, so
-  that $\beta^{q^i} = \sum_{j=0}^{n-1} c_j(x)^{q^i} \zeta_i^j.$ The
-  $n$ coefficients $c_j(x)^{q^i}$ are computed by applying the
-  previous algorithms in $Q$ to $n$ inputs. This takes time at most
-  $nT_Q$, but as pointed out in Note~\ref{note:multimc}, improvements 
+  which boils down to writing $\beta=\sum_{j=0}^{s-1} c_j(x) z^j$, so
+  that $\beta^{q^i} = \sum_{j=0}^{s-1} c_j(x)^{q^i} \zeta_i^j.$ The
+  $s$ coefficients $c_j(x)^{q^i}$ are computed by applying the
+  previous algorithms in $Q$ to $s$ inputs. This takes time at most
+  $sT_Q$, but as pointed out in Note~\ref{note:multimc}, improvements 
   are possible if we base our algorithm on modular composition;
-  we thus denote the cost $T_{Q,n}$.
+  we thus denote the cost $T_{Q,s}$.
 
   Then, we do a modular composition in $S$ to evaluate the result at
-  $\zeta_i$; this latter step takes $T_S=O(n^{(\omega+1)/2} \MM(m))$
+  $\zeta_i$; this latter step takes $T_S=O(s^{(\omega+1)/2} \MM(m))$
   operations in~$\F_q$.
-
-  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d))$,
-  $O(\MM(mn)\log(q) + (T_{Q,n}+T_S)\log(d c))$,
-  and $O(\MM(mn)\log(q) + (T_{Q,n}+T_S + \MM(nm)\log(c))\log(d))$ operations.
 
 \item
   The cost for computing $z^q$ is
-  $O(\MM(n)\log(q))$ and that for computing $x^q$ is $O(\MM(m)\log(q))$.
+  $O(\MM(s)\log(q))$ and that for computing $x^q$ is $O(\MM(m)\log(q))$.
   In the last step, the cost $T_S$ of modular
   composition in $S$ is now that of $m$ modular compositions in degree
-  $n$ (with the same argument), as detailed in
+  $s$ (with the same argument), as detailed in
   Note~\ref{note:multimc}, that we denote $T_{Q',m}$.
   Similarly, the cost of multiplication in $S$ can be reduced
-  from $O(\MM(mn))$ to $O(n\MM(m) + m\MM(n))$ operations.
-
-  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d))$,
-  $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m})\log(d c))$,
-  and $O((\MM(m)+\MM(n))\log(q) + (T_{Q,n}+T_{Q',m} + (m\MM(n)+n\MM(m))\log(c))\log(d))$ operations.
+  from $O(\MM(ms))$ to $O(s\MM(m) + m\MM(s))$ operations.
 
 \item
   We start by computing $x^q$, using $O(\MM(m)\log(q))$ operations in
   $\F_q$.
 
   For $\beta$ as above, suppose that we have already computed all
-  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,n})$ operations;
-  we now have to compute $\beta^{q^i} = \sum_{j=0}^{n-1} d_j(x) \zeta_i^j$.
+  coefficients $d_j(x)=c_j(x)^{q^i}$ in $O(T_{Q,s})$ operations;
+  we now have to compute $\beta^{q^i} = \sum_{j=0}^{s-1} d_j(x) \zeta_i^j$.
 
-  We first do the calculation modulo $Z^r-a$ rather than modulo $g$;
-  that is, we compute $\sum_{j=0}^{n-1} d_j(x) z_i^j$ where
+  We first do the calculation modulo $Z^r-a$ rather than modulo $h$;
+  that is, we compute $\sum_{j=0}^{s-1} d_j(x) z_i^j$ where
   $z_i=z^{q^i}$.
   Because $z^r=a$, we
   have $z_i = a_i z^{q^i \bmod r}$, with $a_i =
   a^{\lfloor q^i/r\rfloor}$. If we assume that $a_i$ is
-  known, we can compute $\sum_{j=0}^{n-1} d_j(x) z_i^j$ using
-  Horner's method, in time $O(n \MM(m))$, and we reduce this result
-  modulo $g$, for the cost $O(\MM(mr))$ of a Euclidean division in
+  known, we can compute $\sum_{j=0}^{s-1} d_j(x) z_i^j$ using
+  Horner's method, in time $O(s \MM(m))$, and we reduce this result
+  modulo $h$, for the cost $O(\MM(mr))$ of a Euclidean division in
   degree $r$ in $Q[Z]$. 
 
   In order to continue the calculation for all indices in our addition
@@ -619,7 +608,7 @@ The complexity estimates mostly rely on the complexity of modular composition.
   just like the $\mu_i$'s;
   this takes $O(T_{Q}+\MM(m)\log(r))$ operations.
 
-  Since the first stage of the algorithm took $O(T_{Q,n})$ operations,
+  Since the first stage of the algorithm took $O(T_{Q,s})$ operations,
   we can take $T_S = O(\MM(mr))$
   for computing $\beta^{q^i}$.
   
@@ -627,10 +616,6 @@ The complexity estimates mostly rely on the complexity of modular composition.
   $a_1=a^{\lfloor q/r\rfloor}$, using $O(\log(q))$
   multiplications in $Q$ for a cost $O(\MM(m)\log(q))$.
 
-  We can therefore compute $\sigma_d, \tau_d, \mu_d$ using respectively
-  $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d))$,
-  $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr))\log(d c))$,
-  and $O(\MM(m)\log(q) + (T_{Q,n} + \MM(mr) + \MM(m)\log(c))\log(d))$ operations.
   \qedhere
 \end{enumerate}
 \end{proof}
