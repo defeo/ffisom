@@ -412,7 +412,7 @@ compute expressions of the form
 \mu_d=\alpha^{\lfloor q^d/c\rfloor} \enspace .
 \]
 A direct binary powering approach
-would yield a complexity of e.g. $O(d\log(q))$ multiplications in $Q$
+would yield a complexity of, e.g., $O(d\log(q))$ multiplications in $Q$
 for the first expression.
 
 To do better, we use a recursive approach that goes back
@@ -709,12 +709,12 @@ the correctness of the Kaltofen--Shoup algorithm. We are mainly
 interested here in its application to root extraction in cyclotomic
 extensions. Let $r$ be a prime power and let $f$ be an irreducible
 factor of the $r$-th cyclotomic polynomial $\Phi_r$, with $s = \deg
-h$. Denote $\F_q[X] / f(X)$ by $\F_q(\zeta)$, where $\zeta$ is the
+f$. Denote $\F_q[X] / f(X)$ by $\F_q(\zeta)$, where $\zeta$ is the
 image of $X$ in the quotient. Given an $r$-th power $\alpha \in
 \F_q(\zeta)$ we want to compute an $r$-th root $\alpha^{1 / r}$, or
 equivalently a linear factor of $Z^r - \alpha$ over $\F_q(\zeta)$.
 
-We propose two different results; one of them is quadratic in $r$,
+We propose two different algorithms; one of them is quadratic in $r$,
 whereas the other one has a runtime that depends on $r$ and $s$,
 and will perform better for small values of $s$.
 
@@ -830,7 +830,7 @@ operations in $\F_q$.
 
 
 
-\subsection{Embedding description problem reduction}
+\subsection{The Embedding Description problem}
 
 We are finally ready to address the problem of describing the embedding of
 $k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; throughout the paper we let $m=\deg f$ and
@@ -885,8 +885,7 @@ some of them could still be readily applied to a more general situation,
 especially those from Sections~\ref{sec:rains-algorithm}
 and~\ref{sec:rains-elliptic}.
 
-Finally, note that
-all algorithms presented next are going to rely on one common
+All algorithms presented next are going to rely on one common
 principle: construct an element in $k$ (and in $K$) such that its
 minimal polynomial (or, equivalently, its orbit under the absolute
 Galois group of $\F_q$) is uniquely (or \emph{almost} uniquely)
@@ -898,7 +897,7 @@ defined.
 In this section, we review what we call \emph{Kummer-type} approaches to the embedding problem for prime power degree extensions. 
 We briefly review the works of Lenstra~\cite{LenstraJr91},
 and Allombert~\cite{Allombert02,Allombert02-rev}, then 
-we give variants of these algorithms with a significantly lower complexities.
+we give variants of these algorithms with significantly lower complexities.
 As stated above, we let $k, K$ be degree $r$ extensions of $\F_q$,
 where $r$ is a prime power,
 and we let $p$ be their characteristic.
@@ -915,7 +914,7 @@ The focus of the paper is on theoretical computational complexity;
 in particular, it avoids using randomized subroutines, such as polynomial
 factorization. 
 In~\cite{Allombert02,Allombert02-rev}, Allombert gives a similar approach with more focus on practical efficiency.
-In contrast to Lenstra's, his algorithms rely on polynomial factorization, thus it is
+In contrast to Lenstra's, his algorithm relies on polynomial factorization, thus it is
 polynomial time Las Vegas.
 Even though neither of the two algorithms is given a detailed complexity analysis, both rely
 on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
@@ -970,9 +969,9 @@ Then he defines $k[\zeta]=k[Z]/h(Z)$ and $K[\zeta]=K[Z]/h(Z)$
 (note that these are not fields if $r$ is not prime), and constructs
 $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$ in a way equivalent
 to Lenstra's using linear algebra. 
-A solution to Hilbert's theorem 90 in $k[\zeta]$ is directly
-computed using linear algebra over either $\F_q(\zeta)$ or $\F_q$,
-depending on the version of Allombert's algorithm.
+%A solution to Hilbert's theorem 90 in $k[\zeta]$ is directly
+%computed using linear algebra over either $\F_q(\zeta)$ or $\F_q$,
+%depending on the version of Allombert's algorithm.
 At this point, rather than computing a discrete
 logarithm, Allombert points out that there exists a $c\in\F_q(\zeta)$
 such that $\theta_1\mapsto c\theta_2$ defines an isomorphism,
@@ -985,8 +984,9 @@ on $\theta_1$ and $\theta_2$, he obtains an embedding $k \hookrightarrow K$.%
 \subsection{Allombert's algorithm}
 \label{sec:fast-kummer}
 
-In this section, we analyse the complexity of Allombert's original~\cite{Allombert02} and revised~\cite{Allombert02-rev} algorithms
-and present variants with the best known asymptotic complexities.
+In this section, we analyze the complexity of Allombert's original
+algorithm~\cite{Allombert02}, that of its revised version~\cite{Allombert02-rev},
+and we present new variants with the best known asymptotic complexities.
 The main difference with respect to the 
 versions presented in~\cite{Allombert02,Allombert02-rev} is in the way
 we compute $\theta_1, \theta_2$, which are solutions to Hilbert's theorem 90
@@ -994,11 +994,11 @@ as will become clear below.
 Whereas Allombert resorts to linear algebra, we rely instead on evaluation
 formulas that have a high probability of yielding a solution.
 Recently, Narayanan~\cite[Sec.~3]{narayanan2016fast} independently described 
-a variant which is similar to the present one,
-in the specific case 1 with $s=1$ we describe below.
+a variant which is similar to our Proposition~\ref{prop:xitheta}
+in the special case $s=1$.
 
 \subsubsection{General strategy}
-Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$ a prime power, and let $x$ be the image of $X$ in $k$.
+Let $k=\F_q[X]/f(X)$ where $f$ has degree $r$, a prime power, and let $x$ be the image of $X$ in $k$.
 Let $h(Z)$ be an 
 irreducible factor of the $r$-th cyclotomic polynomial over $\F_q$. Then $h$ has degree $s$ where 
 $s$ is the order of $q$ in the multiplicative group $(\Z/r\Z)^\times$. We form the field extension
@@ -1048,8 +1048,8 @@ We now show how to do it in the extension $k[\zeta]/\F_q(\zeta)$, the
 case of $K[\zeta]$ being analogous. We review approaches due to
 Allombert, that rely on linear algebra, and propose new algorithms
 that rely on evaluation formulas and ultimately polynomial
-arithmetic. Note that all these variants can be directly be applied to
-any extension degree $r$ as long as $p \nmid r$ and do not require $r$
+arithmetic. Note that all these variants can be directly applied to
+any extension degree $r$ as long as $p \nmid r$, and do not require $r$
 to be a prime power.  Nevertheless, in practice, it is more efficient
 to perform computations for each primary factor independently and glue
 the results together in the end.
@@ -1063,7 +1063,7 @@ holds: $\widehat{AB} = \hat{A}\circ\hat{B}$.
 
 As some algorithmic details were omitted in Allombert's publications,
 and no precise complexity analysis was performed, we extracted the
-details from PARI/GP source code and perform the complexity analysis
+details from PARI/GP source code~\cite{Pari} and perform the complexity analysis
 here.  We also propose another variant, using an algorithm by Paterson
 and Stockmeyer.
 
@@ -1082,7 +1082,10 @@ operations in $\F_q$. This gives a total cost of $O(s \MM(r) \log(q) +
 \paragraph{Allombert's revised algorithm}
 Allombert's revision of his own algorithm~\cite{Allombert02-rev} uses
 the factorization
-$$h(S)=(S-\zeta) b(S).$$
+\begin{equation}
+  \label{eq:allomb-b}
+  h(S)=(S-\zeta) b(S).
+\end{equation}
 If we set $h(S)=S^s+\sum_{i=0}^{s-1}h_iS^i$, we can
 explicitly write $b$ as
 \begin{equation}
@@ -1128,7 +1131,7 @@ $O(s r \MM(r))$ operations in $\F_q$.
 Given the matrix of $\hat{h}$ over $k$, computing an element in its
 kernel costs $O(r^\omega)$ operations in $\F_q$.  The final evaluation
 of $\hat{b}$ is done using Eq.~\eqref{eq:hprime} and the matrix of
-$\sigma$ for Frobenii computation, for a cost of $O(s r^2)$ operations
+$\sigma$ for Frobenius computations, for a cost of $O(s r^2)$ operations
 in $\F_q$.
 \end{proof}
 %(or $O(s \MM(r) \log(q))$ operations in $\F_q$ using modular exponentiation).
@@ -1182,7 +1185,7 @@ $\F_q$-linear and non-zero, it has rank at least 1, thus a
 random $\theta_a$ is zero with probability less than $1 / q$. Therefore, we only 
 need $O(1)$ trials to find $\theta_1$ (and $\theta_2$).
 
-Using the polynomial $b(S)$ introduced in the previous subsection,
+Using the polynomial $b(S)$ introduced in Eq.~\eqref{eq:allomb-b},
 and defining
 $g(S)=(S^r-1)/h(S)$, we can rewrite Eq.~\eqref{eq:theta90} as
 \begin{equation}
@@ -1207,7 +1210,7 @@ value of $s$ with respect to $r$; we arrange them by increasing $s$.
 
 \paragraph{First solution: divide-and-conquer recursion.}
 We use a recursive algorithm similar to the computation of trace-like
-functions in the previous section, to directly evaluate $\theta_a$
+functions in Proposition~\ref{prop:trace-like}, to directly evaluate $\theta_a$
 using Eq.~\eqref{eq:thetaa}.  Let $\xi_1=x^q$ and
 $\theta_{a,1}=a\zeta^{-1}$, and set the following recursive relations:
 \begin{equation}
@@ -1239,7 +1242,7 @@ O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)+\MM(r)\log(q))
   deduced from the polynomial $h$ using $O(rs)$ operations.
   
   To compute the recursive formulas in Eq.~\eqref{eq:theta-recursive}
-  we use the same technique as in the previous section:
+  we use the same technique as in Proposition~\ref{prop:trace-like}:
   given $b \in k[\zeta]$, the value $\sigma^j(b)$ is computed as the
   modular composition of the polynomial $b(x,z)$ with the polynomial
   $\xi_j(x)$ in the first argument. %
@@ -1319,7 +1322,7 @@ order of magnitude of the exponents, let us assume $q=O(1)$ and
 neglect polylogarithmic factors; then, if $\omega=2.38$ (best bound to
 date), the runtimes are $O(s^{0.69}r^{1.69})$ for $s \in O(r^{0.23})$,
 $O(r^{1.85}+s^{1.38}r)$ for $s \in \Omega(r^{0.23})$ and $s\in
-O(r^{0.72})$ and $\tildO(r^2)$ otherwise.
+O(r^{0.72})$, and $\tildO(r^2)$ otherwise.
 For $\omega=3$, all costs are at best quadratic.
 
 \begin{proposition}
@@ -1390,7 +1393,7 @@ This section is devoted to the case $r = p^d$ for some positive integer $d$.
 The technique we present here originates in Adleman and Lenstra's work~\cite[Lemma 5]{Adleman-Lenstra},
 and appears again in Lenstra's~\cite{LenstraJr91}
 and Allombert's~\cite{Allombert02}.
-The chief difference with previous work onc again consists
+The chief difference with previous work once again consists
 in replacing linear algebra
 with a technique to solve the additive version of Hilbert's theorem 90
 similar to the one in the previous section.
@@ -2549,7 +2552,7 @@ slightly different cross-points for the algorithms.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Embedding evaluation}
+\section{The Embedding Evaluation problem}
 \label{sec:eval}
 
 We end this work with a review of the known methods for
