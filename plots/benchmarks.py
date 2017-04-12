@@ -110,12 +110,12 @@ def plot_allombert_lowaux(d, size=(10,10)):
 
     # Plot this columns, with legend and z-order
     cols = [
-        ('Case 1', 't_kummer_modcomp', 4),
-        ('Case 2', 't_kummer_cofactor', 5),
-        ('Case 3', 't_kummer_mpe', 0),
-        ('Case 3 (var)', 't_kummer_iterfrob', 2),
+        ('Divide \& conquer', 't_kummer_modcomp', 4),
+        ('Automorphism eval.', 't_kummer_cofactor', 5),
+        ('Multipoint eval.', 't_kummer_mpe', 0),
+        ('Multipoint eval. (var)', 't_kummer_iterfrob', 2),
         ('PARI/GP', 't_pari', 1),
-        ('Original', 't_kummer_linalg_only', 3),
+        ('Allombert (rev)', 't_kummer_linalg_only', 3),
 #        ('cyclo linalg', 't_kummer_cyclo_linalg', 6),
 #        ('linalg', 't_kummer_linalg', 7),
     ]
@@ -165,12 +165,12 @@ def plot_allombert_anyaux(d, size=(10,10)):
                     color=scat.get_color(), label=label, **kwds)
 
     # Plot the algorithms
-    plot_algo('t_kummer_modcomp', label="Case 1", zorder=2)
-    plot_algo('t_kummer_cofactor', label="Case 2", zorder=0)
-    plot_algo('t_kummer_mpe', label="Case 3", zorder=4)
-    plot_algo('t_kummer_iterfrob', label="Case 3 (var)", zorder=1)
+    plot_algo('t_kummer_modcomp', label="Divide \& conquer", zorder=2)
+    plot_algo('t_kummer_cofactor', label="Automorphism eval.", zorder=0)
+    plot_algo('t_kummer_mpe', label="Multipoint eval.", zorder=4)
+    plot_algo('t_kummer_iterfrob', label="Multipoint eval. (var)", zorder=1)
     plot_algo('t_pari', label="PARI/GP", zorder=5)
-    plot_algo('t_kummer_linalg_only', label="Original", zorder=3)
+    plot_algo('t_kummer_linalg_only', label="Allombert (rev)", zorder=3)
 #    plot_algo('t_kummer_cyclo_linalg', label="cyclo linalg", zorder=6)
 #    plot_algo('t_kummer_linalg', label="linalg", zorder=7)
 
@@ -207,7 +207,7 @@ def plot_all(d, size=(10,10)):
         # plot median time as a line
         median = df.median()
         pl, = ax.plot(median.index, median, alpha=0.3,
-                          label=r"Allombert (2) $s\in[%d,%d]$" % (l, h-1))
+                          label=r"Allombert (AE) $s\in[%d,%d]$" % (l, h-1))
         # and min/max as an area
         ax.fill_between(median.index, df.min(), df.max(), alpha=0.1,
                             facecolor=pl.get_color(), edgecolor='none')

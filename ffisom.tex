@@ -1060,6 +1060,7 @@ $k[\zeta]$; note that the usual property of \emph{$q$-polynomials}
 holds: $\widehat{AB} = \hat{A}\circ\hat{B}$.
 
 \subsubsection{Algorithms relying on linear algebra}
+\label{sec:algor-rely-line}
 
 As some algorithmic details were omitted in Allombert's publications,
 and no precise complexity analysis was performed, we extracted the
@@ -1153,6 +1154,7 @@ $O(s \MM(r) \log(q) + \sqrt{s} r^\omega)$ operations in~$\F_q$.
 \end{proposition}
 
 \subsubsection{Algorithms relying on polynomial arithmetic}
+\label{sec:algor-rely-polyn}
 
 It is immediate to see that the minimal polynomial of $\sigma$ over $k[\zeta]$ is
 $S^r-1$; by direct calculation, we verify that it
@@ -2436,15 +2438,17 @@ code and the full datasets can be downloaded at
     \includegraphics[width=\mywidth]{plots/bench-rains}
     \caption{Cyclotomic, conic and elliptic variants of Rains'
       algorithm.  Auxiliary extension degrees $s$ for cyclotomic
-      Rains' range between $1$ and $9$.}
+      Rains' range between $1$ and $9$. Lines represent median times.}
     \label{fig:bench:rains}
   \end{subfigure}
   \hfill
   \begin{subfigure}{.48\textwidth}
     \noindent
     \includegraphics[width=\mywidth]{plots/bench-all}
-    \caption{Comparison of Allombert's and Rains' algorithms at some
-      fixed auxiliary extension degrees $s$.}
+    \caption{Comparison of Allombert's (Automorphism evaluation
+      variant) and Rains' algorithms at some fixed auxiliary extension
+      degrees $s$. Lines represent median times, shaded areas minimum
+      and maximum times.}
     \label{fig:bench:all}
   \end{subfigure}
 
@@ -2466,7 +2470,8 @@ code and the full datasets can be downloaded at
 \end{figure}
 
 We start by comparing our implementation of the three variants of
-Allombert's algorithm with the original one in PARI. %
+Allombert's algorithm presented in Section~\ref{sec:algor-rely-polyn}
+with the original one in PARI. %
 In Figure~\ref{fig:bench:allombert-lowaux} we plot running times
 against the extension degree $r$, only for cases where the auxiliary
 degree $s=\order_q(r)$ is at most $10$: dots represent individual
@@ -2483,25 +2488,25 @@ PARI, especially as $s$ grows. %
 To provide a fairer comparison, we re-implemented Allombert's revised
 algorithm~\cite{Allombert02-rev}, as faithfully as possible, as
 described in Section~\ref{sec:algor-rely-line}; this is the curve
-labeled \emph{``Original''} in the graphs. %
+labeled \emph{``Allombert (rev)''} in the graphs. %
 For completeness we also implemented the Paterson-Stockmeyer variant
 described previously; we do not plot it here, because it overlaps
-almost perfectly with our \emph{``Case 1''} curve. %
+almost perfectly with our \emph{``Divide \& conquer''} curve. %
 Although our re-implementations are considerably faster than PARI, it
 is apparent that Allombert's original algorithm does not behave as
 well as our new variants.
 
-Focusing now on the three variants presented in
-Section~\ref{sec:algor-rely-eval}, one can't fail to notice that the one
-we dubbed \emph{``Case 2''} beats the other two by a great margin,
-both for small and large auxiliary degree. %
-Although the iterated Frobenius approach of \emph{``Case 3''} is
-expected to eventually beat the other variants as $s$ grows, the cross
-point seems to be extremely far from the parameters we explored. %
-However we notice that the naive variant of \emph{``Case 3''} not
-using the iterated Frobenius technique (labeled \emph{``Case 3
-  (var)''} in the graphs), starts poorly, but quickly catches
-\emph{``Case 2''} as $s$ grows.
+Focusing now on our three new variants presented in
+Section~\ref{sec:algor-rely-polyn}, one can't fail to notice that the
+second one, named \emph{``Automorphism evaluation''}, beats the other
+two by a great margin, both for small and large auxiliary degree. %
+Although the \emph{``Multipoint evaluation''} approach is expected to
+eventually beat the other variants as $s$ grows, the cross point seems
+to be extremely far from the parameters we explored. %
+However, we notice that the naive variant of \emph{``Multipoint
+  evaluation''} not using the iterated Frobenius technique (labeled
+\emph{``Multipoint evaluation (var)''} in the graphs), starts poorly,
+then quickly catches \emph{``Automorphism evaluation''} as $s$ grows.
 
 Now we shift to Rains' algorithm and its variants. %
 In comparing our implementation with Magma's, discarding outliers, we
@@ -2515,7 +2520,7 @@ shown in the figure. %
 We observe a very large gap between $s=1$ and larger $s$
 ($s=2$ is $8-16$ times slower). This is partly due to the fact that we
 use generic Python code to construct auxiliary extensions, rather than
-dedicated C; however a large gap is unavoidable, due to the added cost
+dedicated C; however, a large gap is unavoidable, due to the added cost
 of computing in extension fields. %
 We also plot median times for the elliptic variant and for the conic
 variant (see Appendix~\ref{algorithm:rains-conic}). %
@@ -2527,9 +2532,9 @@ algorithm with auxiliary extensions seems of limited interest.
 
 Finally, in Figure~\ref{fig:bench:all} we compare Rains' algorithms
 against Allombert's. %
-In light of the excellent performances of \emph{``Case 2''} of
-Allombert's algorithm, we only plot the performances for this
-variant. %
+In light of the excellent performances of the \emph{``Automorphism
+  evaluation''} variant of Allombert's algorithm, we only plot the
+performances for this variant. %
 We plot against the degree $r$ runs of Allombert's algorithm grouped
 by ranges of the auxiliary degree $\order_r(q)$: we shade the area
 between minimum and maximum running times, and trace the median
@@ -2546,10 +2551,11 @@ We also observe that Allombert's algorithm has a better asymptotic
 behavior as the degree $r$ grows.
 
 In light of these comparisons, it seems that the absolute winner is
-the second variant of Allombert's algorithm, with Rains' cyclotomic
-algorithm being only occasionally more interesting. %
-Obviously, the comparisons are only relevant to our own code and
-test conditions. Other implementations and benchmarks will likely find
+our \emph{Automorphism evaluation} variant of Allombert's algorithm,
+with Rains' cyclotomic algorithm being only occasionally more
+interesting. %
+Obviously, the comparisons are only relevant to our own code and test
+conditions. Other implementations and benchmarks will likely find
 slightly different cross-points for the algorithms.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
