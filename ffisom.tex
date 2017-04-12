@@ -2898,13 +2898,8 @@ Section~\ref{sec:fundamentalgo}.
 
 We have seen that Rains' cyclotomic algorithm suffers in practice from
 the need to build a field extension $k'$ of $k$. %
-In this section we present a variant of Rains' algorithm that help
-reduce the cost associated to the field extension when it is even %
-although it has no impact on the overall complexity of
-Rains' algorithm.
-
-The conic variant reduces the degree of the field extension from
-$s=[k':k]$ to $s/2$ whenever $s$ is even. %
+The conic variant we are going to present reduces the degree of the
+field extension from $s=[k':k]$ to $s/2$ whenever $s$ is even. %
 This is especially useful when $s=2$, as highlighted in
 Section~\ref{sec:experimental-results}. %
 The algorithm is similar in spirit to Williams' $p+1$ factoring
@@ -3009,12 +3004,12 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
 \end{proof}
 
 Although this variant does not exploit the asymptotic improvement
-offered in Section~\ref{sec:fundamentalgo}, the fact that its
+offered by Proposition~\ref{prop:trace-like}, the fact that its
 auxiliary degree $s$ is half the one of the original algorithm usually
 gives an interesting practical improvement. %
 Step~\ref{algorithm:rains-conic:power} can be modified so as to avoid
-the premature projection on the $x$-axis, so that the algorithm of
-Section~\ref{sec:fundamentalgo} applies. %
+the premature projection on the $x$-axis, so that the algorithms of
+Proposition~\ref{prop:trace-like} apply. %
 We leave the details of this variant to the reader.
 
 
