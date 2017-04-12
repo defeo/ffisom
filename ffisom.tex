@@ -1740,7 +1740,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O((sr)^{(\omega+1)/2}\log(sr) + \MM(sr)(\log(q) + (\ell\log\ell)/r))$ operations in $\F_q$ on average.
+  $O((sr)^{(\omega+1)/2}\log(sr) + \MM(sr)(\log(q) + (\ell/r)\log(\ell)))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1759,7 +1759,7 @@ the field $k$, the procedure for the field $K$ being identical.
   By reducing $q^{ri}\sigma$ modulo $\ell$, we can compute this sum at
   the cost of $\euler(\ell)/r$ exponentiations of degree at most
   $\ell$ in $k'$, for a total cost of
-  $O((\MM(sr)\ell\log\ell)/r)$,
+  $O((\MM(sr)(\ell/r)\log(\ell))$,
   using the techniques of Section~\ref{sec:preliminaries}.
   The final result is obtained as an element of $k$.
 \end{proof}
@@ -2078,7 +2078,7 @@ identical.
   heuristics developed in Appendix~\ref{app:ellprdsdata}, it fails
   with probability $\le 1/q^r$.  On input
   $r,q,E,t,\ell,\lambda$ it computes its output using
-  $O(\MM(r)(r\log{q} + (\ell/r)\log{\ell})$ operations in $\F_q$ on average, or
+  $O(\MM(r)(r\log(q) + (\ell/r)\log(\ell))$ operations in $\F_q$ on average, or
   $\tildO(r^2\log(q))$ assuming $\ell\in o(r^2)$.
 \end{proposition}
 \begin{proof}
@@ -2102,7 +2102,7 @@ identical.
 
   The computation of the elliptic period $\alpha$ requires $O(\ell/r)$ scalar
   multiplications by an integer less than $\ell$, for a total cost of
-  $O((\MM(r)\ell\log\ell)/r)$.
+  $O((\MM(r)(\ell/r)\log(\ell))$.
 
   Finally, testing that $\alpha$ generates $k$ is done by computing
   its minimal polynomial, at a cost of $O(r^{(\omega+1)/2})$ operations in
@@ -2220,7 +2220,7 @@ within those bounds.
 \begin{proposition}
   On input $q$, $r$, $\bar{u}$ and $\bar{e}$,
   Algorithm~\ref{algorithm:selectell} computes its output using
-  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6{q}\right)$ binary
+  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6(q)\right)$ binary
   operations, assuming $\bar{e}\in o(\sqrt[4]{q})$.
 \end{proposition}
 \begin{proof}
@@ -2256,7 +2256,7 @@ within those bounds.
 
   The outer loop multiplies the whole complexity by $\bar{u}$, we
   conclude that the overall complexity is in
-  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6{q}\right)$.
+  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6(q)\right)$.
 \end{proof}
 
 
@@ -2962,7 +2962,7 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
   Algorithm~\ref{algorithm:rains-conic} is correct: on input
   $q,r,\ell,s$ it returns an element in the same Galois orbit as
   Algorithm~\ref{algorithm:rains-cyclo} on input $q,r,\ell,2s$. %
-  It computes its output using $O(\MM(sr)(sr\log(q)+(\ell/r)\log\ell))$
+  It computes its output using $O(\MM(sr)(sr\log(q)+(\ell/r)\log(\ell)))$
   operations in $\F_q$ on average, or $\tildO((sr)^2\log(q))$ assuming
   $\ell\in o(sr^2)$.
 \end{proposition}
@@ -3002,7 +3002,7 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
   $O(sr\MM(sr)\log(q))$ operations in $\F_q$, while
   Steps~\ref{algorithm:rains-conic:period}
   and~\ref{algorithm:rains-conic:trace} together cost
-  $O((\MM(sr)\ell\log\ell)/r)$.
+  $O((\MM(sr)(\ell/r)\log(\ell))$.
 \end{proof}
 
 Although this variant does not exploit the asymptotic improvement
