@@ -395,10 +395,10 @@ in the complexity estimates.
 Multiplying and dividing polynomials of degree at most $s$ in $k[Z]$
 is done in $O(\MM(sm))$ operations in $\F_q$, using Kronecker's
 substitution~\cite{moenck76,kaltofen87,vzGG,vzgathen+shoup92,harvey09}.
-Multiplication in $k[Z]/h(Z)$ is also done in $O(\MM(sm))$ using the
+Multiplication in $k[Z]/h(Z)$ is also done in $O(\MM(sm))$ operations using the
 technique in~\cite{pascal+schost06}. By the same techniques, gcds of
 degree $m$ polynomials in $k[Z]$ and inverses in $k[Z]/h(Z)$ are
-computed in time $O(\MM(sm)\log(sm))$.
+computed in $O(\MM(sm)\log(sm))$ operations.
 
 Given polynomials $e,g,h \in k[Z]$ of degree at most $s$, modular
 composition is the problem of computing $e(g) \bmod h$. An upper bound
@@ -1267,8 +1267,8 @@ O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)+\MM(r)\log(q))
   given $b \in k[\zeta]$, the value $\sigma^j(b)$ is computed as the
   modular composition of the polynomial $b(x,z)$ with the polynomial
   $\xi_j(x)$ in the first argument. %
-  Each modular composition in $k[\zeta]$ is done using $s$ independent
-  modular compositions in $k$, at a cost of $O(s^{(\omega-1)/2}r^{(\omega+1)/2})$ operations (Note~\ref{note:multimc}). %
+  Each modular composition in $k[\zeta]$ is done using $s$ 
+  modular compositions in $k$, at a cost of $O(s^{(\omega-1)/2}r^{(\omega+1)/2})$ operations (see Note~\ref{note:multimc}). %
   Multiplications by $\zeta^{-j}$ are done by seeing the elements of
   $k[\zeta]$ as polynomials in $x$ over $\F_q(\zeta)$, thus performing
   $r$ multiplications modulo $h$, at a cost of $O(r\MM(s))$
