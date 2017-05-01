@@ -145,16 +145,27 @@
 
 \maketitle
 \begin{abstract}
-  Let $\F_q$ be a finite field.  The finite field embedding problem
-  asks, given two irreducible polynomials $f,g$ over $\F_q$ with $\deg
-  f$ dividing $\deg g$, to compute an explicit description of a field
-  embedding of $\F_q[X]/f(X)$ into $\F_q[Y]/g(Y)$. When $\deg f = \deg
-  g$, this is also known as the isomorphism problem.
-  
-  We review classical algorithms for the two problems, and compare
-  their asymptotic complexities. We also propose new improvements and
-  generalizations to the algorithms, implement them, and compare them
-  with the state of the art.
+  Let $\F_q$ be a finite field. %
+  Given two irreducible polynomials $f,g$ over $\F_q$, with $\deg f$
+  dividing $\deg g$, the finite field embedding problem asks to
+  compute an explicit description of a field embedding of
+  $\F_q[X]/f(X)$ into $\F_q[Y]/g(Y)$. %
+  When $\deg f = \deg g$, this is also known as the isomorphism
+  problem.
+
+  This problem, a special instance of polynomial factorization, plays
+  a central role in computer algebra software. %
+  We review previous algorithms, due to Lenstra, Allombert, Rains, and
+  Narayanan, and propose improvements and generalizations. %
+  Our detailed complexity analysis shows that our newly proposed
+  variants are at least as efficient as previously known algorithms,
+  and in many cases are significantly better.
+
+  We also implement most of the presented algorithms, compare them
+  with the state of the art computer algebra software, and make the
+  code available as open source. %
+  Our experiments show that our new variants consistently outperform
+  available software.
 \end{abstract}
 
 {
