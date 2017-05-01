@@ -2615,7 +2615,10 @@ The second one improves the complexity by avoiding matrix inversion;
 however it is still based on linear algebra, thus it has the same
 storage requirements as the previous method. %
 The last one replaces linear algebra with modular composition, thus
-providing the best space and time complexities overall. 
+providing the best space and time complexities overall. %
+Unlike the algorithms of the previous sections, all algorithms
+presented in this section are deterministic, unless a randomized
+algorithm is used for modular composition.
 
 All the methods presented in this section are classic and well
 understood, thus we will keep the presentation short, and will not
@@ -2843,7 +2846,7 @@ an element $\gamma^*$ in the dual space of $\F_q[X]$ (i.e., the linear
 forms on $\F_q[X]$); its output is the list of elements
 $\gamma^*(\beta^0),\dots,\gamma^*(\beta^{n-1})$. %
 Thanks to the transposition principle, the power projection problem
-can be solved in the same complexity as modular
+can be solved within the same complexity bound as modular
 composition~\cite{shoup95,kedlaya+umans08}.
 
 Summarizing, the inverse map to $V_\beta\hookrightarrow V_Y$, is
@@ -2870,7 +2873,8 @@ computed by Algorithm~\ref{alg:inv-mod-comp}.
   Algorithm~\ref{alg:inv-mod-comp} is correct. %
   When the input $\delta$ is in the image of $k$, it returns $\delta$
   itself written on the basis $(1,\beta,\dots,\beta^{m-1})$. %
-  It computes its output using $O(n^{(\omega+1)/2})$ operations in $\F_q$.
+  It computes its output using $O(n^{(\omega+1)/2})$ operations in $\F_q$
+  in the worst case.
 \end{theorem}
 \begin{proof}
   Correctness follows from the discussion above, and the obvious fact
