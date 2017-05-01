@@ -1157,20 +1157,23 @@ in $\F_q$.
 %(or $O(s \MM(r) \log(q))$ operations in $\F_q$ using modular exponentiation).
 
 \paragraph{Using the Paterson--Stockmeyer algorithm}
-Given the matrix $M_\sigma$ of $\sigma$, the above way of evaluating
-$\hat{h}$ can be simplified, using Paterson--Stockmeyer
-algorithm~\cite{paterson_stockmeyer} to compute the matrix of $\hat h$
+Given the matrix $M_\sigma$ of $\sigma$, there is a natural way of evaluating
+$\hat{h}$ at a reduced cost: the Paterson--Stockmeyer
+algorithm~\cite{paterson_stockmeyer} computes the matrix of $\hat h$
 and $h(M_\sigma)$, using $O(\sqrt{s} r^\omega)$ operations in
 $\F_q$. The evaluations of $\sigma$ that take a total of $O(s r^2)$
 operations in $\F_q$ can be done directly using modular
-exponentiations, for a total of $O(s \MM(r) \log(q))$; 
-this yields the following complexity.
+exponentiations, for a total of $O(s \MM(r) \log(q))$.
 
 \begin{proposition}
-Using Paterson--Stockmeyer algorithm and modular exponentiations,
+Using the Paterson--Stockmeyer algorithm and modular exponentiations,
 a solution $\theta$ to Hilbert's theorem 90 can be computed in
 $O(s \MM(r) \log(q) + \sqrt{s} r^\omega)$ operations in~$\F_q$.
 \end{proposition}
+
+Although this complexity is not as good as the ones we will obtain
+next, this variant performs reasonably well in practice, as discussed
+in Section~\ref{sec:experimental-results}.
 
 \subsubsection{Algorithms relying on polynomial arithmetic}
 \label{sec:algor-rely-polyn}
