@@ -1760,7 +1760,7 @@ the field $k$, the procedure for the field $K$ being identical.
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-cyclo} is correct. On input
   $q,r,\ell,s$ it computes its output using
-  $O((sr)^{(\omega+1)/2}\log(sr) + \MM(sr)(\log(q) + (\ell/r)\log(\ell)))$ operations in $\F_q$ on average.
+  $O(sr^{(\omega+1)/2}\log(sr) + \MM(sr)(\log(q) + (\ell/r)\log(\ell)))$ operations in $\F_q$ on average.
 \end{proposition}
 \begin{proof}
   By construction $k'$ is isomorphic to $\F_q(\mu_\ell)$. By
@@ -1768,10 +1768,16 @@ the field $k$, the procedure for the field $K$ being identical.
   and by~\cite[Prop.~5.2.3.1]{mullen2013handbook} $\alpha$ is a
   normal generator of $k$. This proves correctness.
 
-  According to Section\ref{sec:fundamentalgo}, computing $\zeta$
+  According to Proposition~\ref{prop:trace-like}, computing $\zeta$
   in Step~\ref{algorithm:rains-cyclo:power}
-  costs $O((sr)^{(\omega+1)/2}\log(sr)+\MM(sr)\log(\ell)\log(sr)+\MM(sr)\log(q))$,
-  and the loop is executed $O(1)$ times on average. 
+  costs
+  $$O\bigl(\bigl(s^{(\omega+1)/2}\MM(r) + sr^{(\omega+1)/2}
+  +\MM(sr)\log(\ell)\bigr)\log(sr)+\MM(sr)\log(q)\bigr),
+  $$
+  and the loop is executed $O(1)$ times on average. %
+  By observing that $s^{(\omega-1)/2}\in O(\ell/r)$, this fits into
+  the stated bound.
+  
   Steps~\ref{algorithm:rains-cyclo:period}
   and~\ref{algorithm:rains-cyclo:trace} can be performed at once by
   observing that
@@ -1800,15 +1806,10 @@ practical performances of Rains' algorithm.%
 A straightforward way to avoid these constructions consists in computing
 a factor $h$ of the cyclotomic polynomial $\Phi_\ell$
 over the extension $k$ following case~$5$ from Section~\ref{sec:fundamentalgo}.
-By Newton's identities, we have the equality of power series
-\begin{equation*}
-  -\frac{h'(1/Z)}{Zh(1/Z)} = \sum_{i>0}\sum_{j=0}^{s-1}(\zeta^i)^{q^{rj}} Z^i.
-\end{equation*}
-Hence, summing the $\sigma$-th coefficients in the above series for
-$\sigma\in S$ gives the sought period.
-Nevertheless, algorithms from Section~\ref{sec:kummer} perform better when this variation
-could be useful.
-}
+Then, using Newton's identities, the period can be recovered from the
+logarithmic derivative of the reciprocal of $h$. %
+Nevertheless, the cost of factoring $\Phi_\ell$ renders this approach
+unpractical.}
 
 This concludes the presentation of Rains' algorithm. However, we are
 still left with a problem: how to find $\ell$ satisfying the
