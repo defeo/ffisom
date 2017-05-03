@@ -2068,7 +2068,7 @@ If we write $\mu = q/\lambda$ for the other eigenvalue of $\pi$, this
 is easily ensured by further asking that $\order_\ell(\mu) \nmid r$.
 
 We defer the discussion on the search for the elliptic curve $E$ to
-Section~\ref{sec:selection}. Here we suppose we are already given
+Section~\ref{sec:selection}. Here we suppose that we are already given
 suitable parameters $\ell$, $E$ and $\lambda$, and analyze the last
 two steps of the algorithm, summarized below.  We only give the
 procedure for $k$, the procedure for the field $K$ being
@@ -2361,7 +2361,7 @@ the following approach:
 \item If $r$ is a power of a small prime $v$, run the algorithm of
   Section~\ref{sec:fast-algor-large}.
 \item Determine the order $s$ of $q$ in $(\Z/r\Z)^\times$. If it is
-  small enough, run one of the two variants of Allombert's algorithm
+  small enough, run one of the variants of Allombert's algorithm
   presented in Section~\ref{sec:kummer}.
 \item Run Algorithm~\ref{algorithm:selectell} with bounds $\bar{u}$,
   $\bar{s}$ and $\bar{e}$ determined according to $s$. Depending on
@@ -2546,7 +2546,7 @@ use generic Python code to construct auxiliary extensions, rather than
 dedicated C; however, a large gap is unavoidable, due to the added cost
 of computing in extension fields. %
 We also plot median times for the elliptic variant and for the conic
-variant (see Algorithm~\ref{algorithm:rains-conic}). %
+variant (see Appendix~\ref{app:rains-vars}). %
 It is apparent that the elliptic algorithm outperforms the cyclotomic
 one as soon as $s\ge 3$, and that the conic algorithm conveniently
 replaces the case $s=2$. %
@@ -3531,7 +3531,7 @@ Indeed, Daniels et al.~\cite{daniels_torsion_2015} showed that
 all rational elliptic curves with $13$-torsion defined over a cubic extension
 of $\Q$ belong to the parametrized family with $j$-invariant:
 \[
-j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)}
+j(t)=\frac{\left(t^4-t^3+5 t^2 + t + 1\right) \left(t^8 - 5 t^7 + 7 t^6 - 5 t^5 + 5 t^3 + 7 t^2 + 5 t + 1\right)^3}{t^{13} \left(t^2 -3 t - 1\right)}.
 \]
 %Among them is is curve~\texttt{147b1} in Cremona's table~\cite{cremona_tables}.
 In practice, the limiting step when using this family is computing
