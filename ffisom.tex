@@ -1927,6 +1927,9 @@ periods.
   \label{definition:ellperiod}
   Let $E/\F_q$ be an elliptic curve of $j$-invariant not $0$ or
   $1728$. %
+  \footnote{The definition is easily extended to deal with these two cases:
+  one must quotient $S$ by $\Aut(E)$ or part of it depending on wheter
+  it is (partially) contained in $\langle{\lambda}\rangle$ or not.}
   Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
   of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
   corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$).
@@ -1946,9 +1949,6 @@ periods.
   \end{equation}
   where $x(P)$ denotes the abscissa of $P$.
 \end{definition}
-
-For a generalization of this definition that also covers the cases
-$j=0,1728$, see Appendix~\ref{app:elliptic-curves}.
 
 \begin{lemma}
   \label{lemma:ellperiods-order}
@@ -2145,6 +2145,13 @@ identical.
   its minimal polynomial, at a cost of $O(r^{(\omega+1)/2})$ operations in
   $\F_q$ using~\cite{shoup93}.
 \end{proof}
+
+\begin{remark}
+Using a generalized definiton of elliptic periods, it is possible to include for elliptic
+curves with $j=0,1728$,
+but it is straightforward to generalize this definition to correctly
+deal with these cases.
+\end{remark}
 
 
 \section{Algorithm selection}
@@ -3058,225 +3065,6 @@ We leave the details of this variant to the reader.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Using $j=0,1728$ in the elliptic Rains' algorithm}
-\label{app:elliptic-curves}
-
-When we defined elliptic periods in Section~\ref{sec:ellperiods}, we
-explicitly ruled out the case where the elliptic curve has
-$j$-invariant $0$ and $1728$. %
-Indeed the definition of elliptic periods for these curves is
-complicated by the fact that they have additional automorphisms: had
-we applied Definition~\ref{definition:ellperiod} to them, we would
-have obtained periods that are always equal to $0$.
-
-In this section we sketch how to extend the elliptic variant of Rains'
-algorithm to these curves. %
-Although this does not change the overall complexity of Rains'
-algorithm, it makes for a small practical improvement, and a nice
-\emph{recreational mathematics} read.
-
-Recall (see~\cite[III.10]{Sil}) that the order of the
-\emph{automorphisms group} $\Aut(E)$ of a curve $E$ defined over a
-field $\F_q$ of characteristic $p$ is one of the following:
-\begin{itemize}
-\item $2$ if $j(E)\ne0,1728$,
-\item $4$ if $j(E) = 1728$ and $p\ne2,3$,
-\item $6$ if $j(E) = 0$ and $p\ne2,3$,
-\item $12$ if $j(E) = 0 = 1728$ and $p=3$,
-\item $24$ if $j(E) = 0 = 1728$ and $p=2$.
-\end{itemize}
-We can now give a meaningful definition of elliptic periods that
-covers all elliptic curves.
-
-\begin{definition}
-  \label{definition:ellperiod-general}
-  Let $E/\F_q$ be an elliptic curve with automorphism group $\Aut(E)$
-  of order $2n$, and Frobenius endomorphism $\pi$. %
-  Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
-  of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
-  corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$). %
-  Suppose that there is a subgroup $S$ of $(\Z/\ell\Z)^{\times}$
-  containing $\Aut(E)$, and such that
-  \begin{equation*}
-    (\Z/\ell\Z)^{\times} = \langle{\lambda}\rangle \times S.
-  \end{equation*}
-  
-  Then we define an elliptic period as
-  \begin{equation*}
-    \eta_{\lambda,S}(P) =
-    \sum_{\sigma\in S/\Aut(E)} {x\left([\sigma] P \right)^n} 
-  \end{equation*}
-  where $x(P)$ denotes the abscissa of $P$.
-\end{definition}
-
-This definition is equivalent to Definition~\ref{definition:ellperiod}
-when $\Aut(E)=\{\pm1\}$. %
-When the automorphism group is larger, it avoids unnecessary
-cancellations by quotienting out $S$ by $\Aut(E)$, and at the same
-time it ensures unicity thanks the the $n$-th power in the sum. %
-We leave as an exercise the proof of the statement analogous to
-Lemma~\ref{lemma:ellperiods-order}. %
-Note that it would be possible to generalize this definition to the
-case where $\Aut(E)$ is (partially) contained in
-$\langle{\lambda}\rangle$, however we leave out this detail, as it is
-not necessary for Rains' algorithm.
-
-
-\subsection{The ordinary case}
-
-The curves of $j$-invariant $0$ and $1728$ are ordinary if and only if
-all automorphisms are defined over $\F_p$. %
-For $j=0$, this is equivalent to $p\equiv 1 \bmod 3$; for $j=1728$,
-this is equivalent to $p\equiv 1 \bmod 4$. %
-
-The splitting of the Frobenius polynomial of $E$ is well known in this
-case, with early results dating back to Gauss. %
-The two statements below follow easily
-from~\cite[Th.~2.5,2.6]{silverberg2010group}.
-
-\begin{proposition}
-  Let $p$ be a prime congruent to $1$ modulo $3$, and let $q=p^d$. %
-  Let $p=\pi\bar\pi$ be the unique decomposition of $p$ in the
-  Eisenstein integers $\Z[\omega]$ with
-  $\pi\equiv\bar\pi\equiv1\bmod3$. %
-  Let $E$ be the curve defined by $y^2=x^3+b$, and let
-  $\left(\tfrac{4b}{\pi}\right)_6$ be the unique sixth root of unity
-  of $\Z[\omega]$ congruent to $(4b)^{(q-1)/6}\bmod \pi$. %
-  Then the minimal polynomial of the Frobenius endomorphism of $E$
-  splits in $\Z[\omega]$ as
-  \begin{equation*}
-    X^2 - tX + q =
-    \Bigl(X - \left(\tfrac{4b}{\pi}\right)_6^{-1}\pi^d\Bigr)
-    \Bigl(X - \left(\tfrac{4b}{\pi}\right)_6\bar\pi^d\Bigr).
-  \end{equation*}
-\end{proposition}
-
-\begin{proposition}
-  Let $p$ be a prime congruent to $1$ modulo $4$, and let $q=p^d$. %
-  Let $p=\pi\bar\pi$ be the unique decomposition of $p$ in the
-  Gaussian integers $\Z[i]$ with
-  $\pi\equiv\bar\pi\equiv 1 \bmod (2+2i)$. %
-  Let $E$ be the curve defined by $y^2=x^3-ax$, and let
-  $\left(\tfrac{a}{\pi}\right)_4$ be the unique fourth root of unity
-  of $\Z[i]$ congruent to $a^{(q-1)/4}\bmod \pi$. %
-  Then the minimal polynomial of the Frobenius endomorphism of $E$
-  splits in $\Z[i]$ as
-  \begin{equation*}
-    X^2 - tX + q =
-    \Bigl(X - \left(\tfrac{a}{\pi}\right)_4^{-1}\pi^d\Bigr)
-    \Bigl(X -  \left(\tfrac{a}{\pi}\right)_4\bar\pi^d\Bigr).
-  \end{equation*}
-\end{proposition}
-
-From the above decomposition, it is immediately apparent that $\ell$
-is an Elkies prime for $y^2=x^3+b$ if and only if
-$\ell\equiv 1 \bmod 3$; and, similarly, it is an Elkies prime for
-$y^2=x^3-ax$ if and only if $\ell\equiv 1 \bmod 4$. %
-
-Algorithmically, we start by computing the splitting of $p$ in
-$\Z[\omega]$ or $\Z[i]$ using Cornacchia's
-algorithm~\cite{cornacchia1908di}; then, we deduce the image of the
-eigenvalues in $(\Z/\ell\Z)^\times$ directly from the splitting. %
-We give below more detailed step-by-step instructions for the case
-$j=1728$; the case $j=0$ is analogous and can be treated in a similar
-way.
-
-Our goal is to find a uniquely defined generator for $\F_{q^r}$, with
-$q=p^d$, given a prime $\ell$ such that $r|(\ell-1)$, assuming that
-$q^r\ne 1\bmod\ell$ and that $p\equiv\ell\equiv 1 \bmod 4$:
-\begin{enumerate}
-\item Use Cornacchia's algorithm to compute a splitting $p=x^2+4y^2$;
-\item Choose signs so that $p=\pi\bar\pi=(x-2iy)(x+2iy)$ and
-  $x - 2y \equiv 1 \bmod 4$;
-\item Find a primitive fourth root of unity $\hat\imath\in\F_p$ such that
-  $x=2\hat\imath y$;
-\item Find a primitive fourth root of unity $I\in\Z/\ell\Z$;
-\item Look for an element of $(\Z/\ell\Z)^\times$ of order $r$ among
-  the $I^{\pm c}(x\pm2Iy)^d$ for $0\le c \le 3$;
-\item If such an element is found return the curve $y^2=x^3-ax$, where
-  $a\in\F_q$ is such that $a^{(q-1)/4}=\hat\imath^c$.
-\end{enumerate}
-
-This procedure can be plugged inside
-Algorithm~\ref{algorithm:selectell} to help find candidates for Rains'
-algorithm. %
-The most computationally intensive step is Cornacchia's algorithm,
-which is negligible if compared to the point counting operations
-needed for general elliptic curves. %
-If an elliptic curve is found by this procedure, then it can be
-readily used inside the elliptic variant of Rains' algorithm, by
-replacing the earlier definition of elliptic period with
-Definition~\ref{definition:ellperiod-general} above.
-
-
-\subsection{The supersingular case}
-
-The supersingular case is of much lesser interest, however we treat it
-briefly for completeness. %
-To keep things simple, we will not consider the cases $p=2,3$. %
-The possibilities for the trace of $E$ are much more constrained in
-this case. %
-Indeed, the only possibilities are $t=0,\pm\sqrt{q},\pm2\sqrt{q}$
-(see~\cite{waterhouse69}). %
-Of these, only the case $\pm\sqrt{q}$ is interesting in the context of
-Rains' algorithm; indeed when $t=\pm2\sqrt{q}$ the two eigenvalues are
-equal, and Rains' algorithm does not apply; when $t=0$ the two
-eigenvalues are opposite, thus if one has odd order $r$ modulo $\ell$,
-$q$ must have order $2r$, but in this case the conic variant presented
-in Appendix~\ref{app:rains-vars} is simpler and more efficient. %
-The case $t=\pm\sqrt{q}$ is never realized by $j=1728$, however for
-$j=0$ it constitutes an interesting optimization whenever $q$ is a
-square and $\order_\ell(q)=3r$. %
-
-Assume that $q$ is an even power of $p$, and $p\equiv 2\mod 3$. %
-Let $j\in\F_q$ be a primitive cube root of unity, and let $E$ be the
-curve $y^2=x^3+j$. %
-Then $E$ has trace $\sqrt{q}$, and the minimal polynomial of the
-Frobenius endomorphism splits in $\Z[\omega]$ as
-\begin{equation*}
-  X^2 - X\sqrt{q} + q = (X+\omega\sqrt{q})(X+\omega^2\sqrt{q}).
-\end{equation*}
-
-Let $r$ be a prime power not divisible by $2$ or $3$, and let $\ell$
-be a prime such that $\ell=1\bmod 3$ and $\order_\ell(q)=3r$. %
-Let $\hat\omega\in\Z/\ell\Z$ such that $q^r=\hat\omega\bmod\ell$, then
-by direct calculation we see that
-$\order_\ell(-\hat\omega^r\sqrt{q})=r$ and
-$\order_\ell(-\hat\omega^{-r}\sqrt{q})=3r$. %
-Hence, there is only one cyclic rational subgroup of $\ell$-torsion in
-$\F_{q^r}$, and we are in the conditions to apply Rains' algorithm. %
-This computation also shows that the case $t=-\sqrt{q}$ is not useful
-in Rains' algorithm.
-
-\begin{example}
-  We illustrate the algorithm sketched above with a numerical
-  example. %
-  Let $p=5$, $q=25$, $r=5$ and $\ell=61$. %
-  In what follows, elements of $\F_q$ are represented as polynomials
-  in $j$ in the quotient ring $\F_5[j]/(j^2+j+1)$. %
-
-  The elliptic curve $y^2=x^3+j$ has trace $5$, and its two Frobenius
-  eigenvalues are $-\omega p$ and $-\omega^2 p$. %
-  We set $\hat\omega=q^r=13\bmod 61$, and we verify that
-  $\order(-\hat\omega^r p)=\order(-13^2\cdot 5)=r$, whereas
-  $\order(-\hat\omega^{-r} p)=\order(-13\cdot 5)=3r$. %
-  Indeed $\#E(\F_{q^r})= 3\cdot7\cdot61\cdot7621$, hence we can
-  construct an elliptic period from any point $P\in E[61]$ defined
-  over $\F_{q^r}$. %
-  To apply Definition~\ref{definition:ellperiod-general}, we need a
-  generator of the order $12$ subgroup of $\Z/61\Z$, e.g., $21$. %
-  Quotienting out the order $6$ subgroup, we obtain the period
-  \begin{equation*}
-    \eta = x(P)^3 + x([21]P)^3,
-  \end{equation*}
-  and we verify that its minimal polynomial is
-  \begin{equation*}
-    x^5 + (3j-3)x^4 + (j+3)x^3 -jx^2 + (j+1)x + (2j-2)    
-  \end{equation*}
-  independently of the initial choice of $P$.
-\end{example}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
