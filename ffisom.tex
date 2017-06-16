@@ -1,10 +1,6 @@
-\documentclass[12pt]{article}
+\documentclass{mcom-l}
 
-\usepackage[margin = 1in]{geometry}
 \usepackage{graphicx}              
-\usepackage{amsmath}               
-\usepackage{amsfonts}              
-\usepackage{amsthm}                
 \usepackage{amssymb}
 \usepackage{mathrsfs}
 \usepackage{url}
@@ -12,11 +8,8 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,calc,arrows}
 \usepackage{algorithmic}
-%\usepackage{afterpage}
-%\usepackage{pdflscape}
 \usepackage{subcaption}
 \usepackage{enumitem}
-\usepackage{authblk}
 
 \hypersetup{
 	unicode=true,
@@ -75,43 +68,13 @@
 \DeclareMathOperator{\loglog}{loglog}
 \DeclareMathOperator{\rev}{rev}
 
-\def\Q{\ensuremath{\mathbb{Q}}}
-\def\N{\ensuremath{\mathbb{N}}}
-\def\R{\ensuremath{\mathbb{R}}}
-\def\Z{\ensuremath{\mathbb{Z}}}
-\def\F{\ensuremath{\mathbb{F}}}
-% \def\H{\ensuremath{\mathbb{H}}}
-% \def\K{\ensuremath{\mathbb{K}}}
-% \def\L{\ensuremath{\mathbb{L}}}
-% \def\A{\ensuremath{\mathbb{A}}}
-% \def\B{\ensuremath{\mathbb{B}}}
-\def\MM{\ensuremath{\mathsf{M}}}
-%\def\MMM{\ensuremath{\mathsf{MM}}}
-% \def\MC{\ensuremath{\mathsf{C}}}
-% \def\PC{\ensuremath{\mathsf{PC}}}
-% \def\II{\ensuremath{\mathsf{I}}}
-% \def\QQ{\ensuremath{\mathsf{Q}}}
-%%\def\CC{\ensuremath{\mathsf{C}}}
-% \def\RR{\ensuremath{\mathsf{R}}}
-% \def\AA{\ensuremath{\mathsf{A}}}
-% \def\va{\ensuremath{\mathsf{a}}}
-% \def\vy{\ensuremath{\mathsf{y}}}
-% \def\vu{\ensuremath{\mathsf{u}}}
-% \def\vb{\ensuremath{\mathsf{b}}}
-% \def\vc{\ensuremath{\mathsf{c}}}
-% \def\mul{\ensuremath{\mathsf{mul}}}
-% \def\rem{\ensuremath{\mathsf{rem}}}
-% \def\cat{\ensuremath{\mathsf{cat}}}
-% \def\coeff{\ensuremath{\mathsf{coefficient}}}
-% \def\mulmod{\ensuremath{\mathsf{mulmod}}}
-% \def\x{\ensuremath{\mathbf{x}}}
-% \def\uu{\ensuremath{\mathbf{U}}}
-% \def\bb{\ensuremath{\mathbf{B}}}
-% \def\bxi{\boldsymbol{\xi}}
-% \def\bupsilon{\boldsymbol{\upsilon}}
-% \def\bzeta{\boldsymbol{\zeta}}
-% \def\blambda{\boldsymbol{\lambda}}
-\def\euler{\ensuremath{\varphi}}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}}
+\newcommand{\N}{\ensuremath{\mathbb{N}}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}}
+\newcommand{\F}{\ensuremath{\mathbb{F}}}
+\newcommand{\MM}{\ensuremath{\mathsf{M}}}
+\newcommand{\euler}{\ensuremath{\varphi}}
 
 % allow algorithms to split over multiple pages
 \makeatletter
@@ -136,22 +99,34 @@
 \def\endalgorithm{\hfil\vskip-1em\hrule\endtrivlist}
 \makeatother
 
-
-\title{Computing isomorphisms and embeddings of finite fields}
-\author[1]{Ludovic Brieulle}
-\author[1,2]{Luca De Feo\footnote{Corresponding author: \texttt{luca.de-feo@uvsq.fr}}}
-\author[3]{Javad Doliskani}
-\author[4]{Jean-Pierre Flori}
-\author[3]{\'Eric Schost}
-\affil[1]{Laboratoire de Math\'ematiques de Versailles,
-  UVSQ, CNRS, Universit\'e Paris-Saclay}
-\affil[2]{Inria, Universit\'e Paris-Saclay}
-\affil[3]{University of Waterloo}
-\affil[4]{Agence Nationale de S\'ecurit\'e des Syst\`emes d'Information}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
 
-\maketitle
+\title{Computing isomorphisms and embeddings of finite fields}
+
+\author[L. Brieulle]{Ludovic Brieulle}
+\address{Laboratoire de Math\'ematiques de Versailles,
+  UVSQ, CNRS, Universit\'e Paris-Saclay}
+
+\author[L. De Feo]{Luca De Feo}
+\address{Laboratoire de Math\'ematiques de Versailles,
+  UVSQ, CNRS
+  \& Inria, Universit\'e Paris-Saclay}
+\email{luca.de-feo@uvsq.fr}
+\email{http://orcid.org/0000-0002-9321-0773}
+
+\author[J. Doliskani]{Javad Doliskani}
+\address{University of Waterloo}
+
+\author[J.-P. Flori]{Jean-Pierre Flori}
+\address{Agence Nationale de S\'ecurit\'e des Syst\`emes d'Information}
+
+\author[\'E. Schost]{\'Eric Schost}
+\address{University of Waterloo}
+
+\subjclass[2010]{Primary }
+
 \begin{abstract}
   Let $\F_q$ be a finite field. %
   Given two irreducible polynomials $f,g$ over $\F_q$, with $\deg f$
@@ -176,11 +151,8 @@
   available software.
 \end{abstract}
 
-{
-  \hypersetup{linkcolor=black}
-  \setcounter{tocdepth}{2}
-  \tableofcontents
-}
+\maketitle
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
