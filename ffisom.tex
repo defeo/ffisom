@@ -1898,10 +1898,10 @@ periods.
 \begin{definition}
   \label{definition:ellperiod}
   Let $E/\F_q$ be an elliptic curve of $j$-invariant not $0$ or
-  $1728$. %
-  \footnote{The definition is easily extended to deal with these two cases:
-  one must quotient $S$ by $\Aut(E)$ or part of it depending on whether
-  it is (partially) contained in $\langle{\lambda}\rangle$ or not.}
+  $1728$.%
+  \footnote{The definition is easily extended to include $j=0,1728$:
+    one must quotient $S$ by $\Aut(E)\cap S$ and raise summands to an
+    appropriate power.} %
   Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
   of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
   corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$).
@@ -2014,8 +2014,8 @@ but no counterexample was found.
 Secondly, based on the polynomially cyclic algebras setting
 of~\cite{Mihailescu2010825}, one can give a sufficient
 condition for the period to be a normal generator of
-$\F_q(x(P))$, that is a weak counterpart to Lemma~\ref{th:gaussian},
-Heuristically, it suggests that the
+$\F_q(x(P))$, that is a weak counterpart to Lemma~\ref{th:gaussian}.
+Heuristically, this suggests that the
 chance of the period not being normal is approximately $1/q$.
 
 We are now ready to present the generalization of Rains' algorithm,
@@ -2117,13 +2117,6 @@ identical.
   its minimal polynomial, at a cost of $O(r^{(\omega+1)/2})$ operations in
   $\F_q$ using~\cite{shoup93}.
 \end{proof}
-
-\begin{remark}
-Using a generalized definiton of elliptic periods, it is possible to include for elliptic
-curves with $j=0,1728$,
-but it is straightforward to generalize this definition to correctly
-deal with these cases.
-\end{remark}
 
 
 \section{Algorithm selection}
@@ -2812,8 +2805,6 @@ Section~\ref{sec:fundamentalgo}.
 
 
 \appendix
-\part*{Appendices}
-\addcontentsline{toc}{part}{Appendices}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
