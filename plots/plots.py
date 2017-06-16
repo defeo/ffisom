@@ -23,7 +23,7 @@ def primes_arith_prog(bound=10**4, out='arith_prog.pdf', d=3):
     # Figure settings
     plt.rc('text', usetex=True)
     plt.rc('font', family='serif', serif='Computer Modern')
-    plt.figure(figsize=(8,4))
+    plt.figure(figsize=(8,3))
 
     # Plot a 2D histogram of the data, with abscissa in log scale
     plt.hist2d(np.log10(x), y, bins=(1.5*max(y),max(y)/2),

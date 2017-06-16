@@ -2130,19 +2130,15 @@ deal with these cases.
 \label{sec:selection}
 
 The algorithms presented in the previous sections have very similar
-complexities, and no one stands out as absolute winner. The complexity
-of all algorithms, besides the naive one, depends in a non-trivial way
-on the parameters $q$ and $r$, and, for Rains' algorithms, on the
-search for a parameter $\ell$ and an associated elliptic curve.
+complexities, and no one stands out as absolute winner. %
+The complexity of all algorithms depends in a non-trivial way on the
+parameters $q$ and $r$, and, for Rains' algorithms, on the search for
+a parameter $\ell$ and an associated elliptic curve.
 
 This section studies the complexity of the embedding description
-problem from a global perspective. We give procedures to find
-parameters for Rains' algorithms, criteria to choose the best among
-the embedding algorithms, and asymptotic bounds on the embedding
-description problem.
-
-
-\subsection{Finding parameters for Rains' algorithms}
+problem from a global perspective: we explain how to find parameters
+for Rains' algorithms and criteria to choose the best among the
+embedding algorithms.
 
 Given parameters $q=p^d$ and $r$, Rains' cyclotomic algorithm asks for
 a \emph{small} parameter $\ell$ such that:
@@ -2181,7 +2177,7 @@ $E/\F_q$ that satisfy the preconditions of
 Algorithm~\ref{algorithm:compell}, i.e., such that 
 \begin{enumerate}
 \item the Frobenius endomorphism $\pi$ satisfies a characteristic
-  equation $(\pi-\lambda)(\pi-\mu) = 0 \mod \ell$,
+  equation \[(\pi-\lambda)(\pi-\mu) = 0 \mod \ell,\]
 \item $(\Z/\ell\Z)^\times = \langle\lambda\rangle\times S$ for some $S$,
 \item $\#\langle\lambda\rangle=r$, and
 \item $\mu^r\ne1\mod\ell$.
@@ -2194,98 +2190,35 @@ $q^r\ne1\bmod\ell$. Hence, we can restate the conditions on $\ell$ as
 \item $\ell = ru+1$ for some $u$ such that $\gcd(r,u)=1$,
 \item $q^r\ne1\mod\ell$.
 \end{enumerate}
-Once $\ell$ is found, we compile a list of all integers of order $r$
-in $(\Z/\ell\Z)^\times$, and look for a curve of trace
-$t=\lambda+q/\lambda\bmod\ell$ for any $\lambda$ in the list. Note,
-however, that for there to be such a curve, $t$ must have a
-representative in the interval $[-2\sqrt{q},2\sqrt{q}]$. In order to
-have a good chance of finding such curves, we are going to set an even
-more stringent bound $\ell\in o(\sqrt[4]{q})$.
+Once $\ell$ is found, we compile a list of acceptable traces
+\[\mathcal{T} = \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\},\] %
+and look for a random curve with trace in $\mathcal{T}$. %
+Note, however, that for there to be such a curve, $t$ must have a
+representative in the interval $[-2\sqrt{q},2\sqrt{q}]$. %
+In order to have a good chance of finding such curves, we are going to
+set an even more stringent bound $\ell\in o(\sqrt[4]{q})$. %
+Indeed, although it is well known that traces are not evenly
+distributed modulo prime numbers~\cite{lenstra87}, it is shown
+in~\cite[Th.~1]{castryck+hubrechts13} that the probability that the
+trace of a random curve is in $\mathcal{T}$ approaches
+$\abs{\mathcal{T}}/\ell\sim r/\ell$, as $\ell$ and $q$ go to infinity,
+subject to $\ell\in o(\sqrt[4]{q})$.  %
 
-We propose a procedure to simultaneously find parameters for the
-cyclotomic and the elliptic case in
-Algorithm~\ref{algorithm:selectell}. The procedure is given bounds on
-the size of the parameters sought, and outputs all suitable parameters
-within those bounds.
+We thus have a procedure to produce parameters for Rains' algorithms:
+test integers of the form $\ell=ur+1$ for increasing $u$, until a
+suitable one is found. %
+The procedure is relatively efficient: the cost in $r$ is negligible
+compared to that of actually computing the isomorphism. %
+On the other hand, the cost in $q$ is relatively high, because of the
+need to count points of many random curves defined over $\F_q$, thus
+the elliptic variant may only be useful for not too large $q$.
 
-\begin{algorithm}
-    [Parameter selection for Rains' algorithms]
-    \label{algorithm:selectell}
-    \begin{algorithmic}[1]
-      \REQUIRE Integers $q=p^d$ and $r$, bounds $\bar{u}$, $\bar{s}$, and $\bar{e}$;
-      \ENSURE $\mathcal{C}$ and $\mathcal{E}$, lists of parameters for the cyclotomic and elliptic algorithm resp.
-      \STATE $\mathcal{C}\leftarrow\{\}$, $\mathcal{E}\leftarrow\{\}$;
-      \FOR{$u=1$ to $\bar{u}$}
-      \IF{\label{alg:selectell:prime}$\ell=ur+1$ is prime}
-      \IF{\label{alg:selectell:order}$\order_\ell(q)=rs$ with $s\le\bar{s}$, and $\gcd(rs,u/s)=1$, and $\gcd(ur,d)=1$}
-      \STATE Add $\ell$ to $\mathcal{C}$.
-      \ENDIF
-      \IF{$\ell\le\bar{e}$ and $\gcd(u,r)=1$ and $q^r\ne1\bmod\ell$}
-      \STATE\label{alg:selectell:ellorder} Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
-      \REPEAT\label{alg:selectell:ellloop}
-      \STATE\label{alg:selectell:ellcount} Take random $E/\F_q$ and compute its trace $t$;
-      \UNTIL{$(t\bmod\ell)\in\mathcal{T}$}
-      \STATE Add $(\ell,E,t)$ to $\mathcal{E}$.
-      \ENDIF
-      \ENDIF
-      \ENDFOR
-      \RETURN $\mathcal{C}$ and $\mathcal{E}$.
-    \end{algorithmic}
-\end{algorithm}
-
-\begin{proposition}
-  On input $q$, $r$, $\bar{u}$ and $\bar{e}$,
-  Algorithm~\ref{algorithm:selectell} computes its output using
-  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6(q)\right)$ binary
-  operations, assuming $\bar{e}\in o(\sqrt[4]{q})$.
-\end{proposition}
-\begin{proof}
-  We only consider naive integer arithmetic, since it is unrealistic
-  to apply embedding algorithms to very large sizes.
-
-  In Step~\ref{alg:selectell:prime} we need to test for the primality
-  of $\ell$, while Steps~\ref{alg:selectell:order}
-  and~\ref{alg:selectell:ellorder} require the factorization of
-  $\ell-1$. Both operations can be performed in
-  $\tildO(\sqrt{r\bar{u}})$ operations using naive algorithms.
-
-  In Step~\ref{alg:selectell:ellcount} we need to count the number
-  of points of an elliptic curve over $\F_q$. This can be done in
-  $O\left(\log^6(q)\right)$ binary operations using the
-  Schoof--Elkies--Atkin algorithm with naive integer
-  arithmetic~\cite{schoof95,lercier+sirvent08}.
-
-  All other operations have negligible cost compared to these ones. We
-  finally need to account for the two loops in the algorithm. The
-  inner loop at Step~\ref{alg:selectell:ellloop} stops when a curve
-  with $t\bmod\ell$ in $\mathcal{T}$ is found. The set $\mathcal{T}$
-  has size $\euler(r)$, hence, assuming that traces are evenly
-  distributed modulo $\ell$, we expect to find a suitable curve after
-  $O(\ell/r)\subset O(\bar{u})$ tries. Although it is well known that
-  traces are not evenly distributed modulo prime
-  numbers~\cite{lenstra87}, it is shown
-  in~\cite[Th.~1]{castryck+hubrechts13} that the probability that a
-  random curve has trace congruent to a fixed $t\bmod\ell$ approaches
-  $1/\ell$, as $\ell$ and $q$ go to infinity, subject to $\ell\in
-  o(\sqrt[4]{q})$. Hence, we shall assume that $\bar{e}\in
-  o(\sqrt[4]{q})$ for the complexity analysis to hold.
-
-  The outer loop multiplies the whole complexity by $\bar{u}$, we
-  conclude that the overall complexity is in
-  $\tildO\left(\sqrt{r\bar{u}^3} + \bar{u}^2\log^6(q)\right)$.
-\end{proof}
-
-
-\subsection{Selecting the best algorithm}
-
-A natural question arises: what bounds $\bar{u},\bar{s},\bar{e}$ must
-be taken to ensure that the lists $\mathcal{C}$, $\mathcal{E}$ in
-Algorithm~\ref{algorithm:selectell} are non-empty?
-
+Nevertheless, we are left with a question: when does the procedure
+stop? %
 It is not easy to give a precise answer: already the condition that
-$\ell=ur+1$, in Step~\ref{alg:selectell:prime}, poses some
+$\ell=ur+1$ is prime poses some
 difficulties. Heuristically, we expect that about
-$\bar{u}/\log(\bar{u}r)$ of those numbers are prime. However the best
+$u/\log(u)$ of those numbers are prime. However the best
 lower bound on primes of the form $\ell=ur+1$, even under GRH, is
 $\ell\in O(r^{2.4+\epsilon})$~\cite{heath1992zero}. Empirical data
 show that the reality is much closer to the heuristic bound: in
@@ -2296,7 +2229,7 @@ $u$ is effectively bounded by $O(\log(r))$ for any practical purpose.
 
 \begin{figure}
   \centering
-  \includegraphics[width=\textwidth]{plots/arith_prog}
+  \includegraphics[width=0.85\textwidth]{plots/arith_prog}
   \caption{Prime powers $r$ (abscissa) versus smallest integer $u$
     (ordinate) such that $ur+1$ is prime. Abscissa in logarithmic
     scale, density normalized by $\log(x)/x$ and colored in
@@ -2320,17 +2253,14 @@ this possibility only discards one in
 $O(q^r)$ curves, and is thus negligible.
 
 
-Summarizing, if we take $\bar{u},\bar{s}\in O(\log(r))$, we can expect
-Algorithm~\ref{algorithm:selectell} to find suitable parameters for
-the cyclotomic algorithm, leading to expected parameters $\ell\in
-O(r\log(r))$, and to an expected running time of $\tildO(\sqrt{r})$
-binary operations and $\tildO(r^{(\omega+1)/2}+\MM(r)\log(q))$ operations in
-$\F_q$.  Similarly, if we also take $\bar{e}\in O(r\log(r))$,
-assuming that $r\log(r)\in o(\sqrt[4]{q})$, we can expect
-Algorithm~\ref{algorithm:selectell} to find suitable parameters for
-the elliptic algorithm, leading to an expected running time of
-$\tildO(\sqrt{r}+(\log(r))^2(\log(q))^6)$ binary operations and
-$\tildO(r^2\log(q))$ operations in $\F_q$.
+Summarizing, we can expect heuristically to find a
+$\ell\in O(r\log(r))$ that satisfies all the constraints for the
+cyclotomic algorithm, leading to an expected running time of
+$\tildO(r^{(\omega+1)/2}+\MM(r)\log(q))$ operations in $\F_q$.  %
+Similarly, if we assume that $r\log(r)\in o(\sqrt[4]{q})$, we can
+expect to find suitable parameters for the elliptic algorithm, leading
+to an expected running time of $\tildO(r^2\log(q))$ operations in
+$\F_q$.
 
 Although the complexity of the cyclotomic algorithm looks better, it
 must not be neglected that the $\tildO$ notation
@@ -2359,11 +2289,10 @@ the following approach:
 \item Determine the order $s$ of $q$ in $(\Z/r\Z)^\times$. If it is
   small enough, run one of the variants of Allombert's algorithm
   presented in Section~\ref{sec:kummer}.
-\item Run Algorithm~\ref{algorithm:selectell} with bounds $\bar{u}$,
-  $\bar{s}$ and $\bar{e}$ determined according to $s$. Depending on
-  the best parameters found by Algorithm~\ref{algorithm:selectell},
-  run the best option among Rains' cyclotomic algorithm, Rains'
-  elliptic algorithm, and Allombert's algorithm.
+\item Search for suitable parameters for Rains' algorithms. %
+  Depending on the best parameters found, run the best option among
+  Rains' cyclotomic algorithm, Rains' elliptic algorithm, and
+  Allombert's algorithm.
 \end{enumerate}
 
 In the next section we shall focus on the last two steps, by comparing
@@ -2373,34 +2302,6 @@ between them.  However we stress that these thresholds are bound to
 vary depending on the implementation and the target platform, thus it
 is the implementer responsibility to determine them at the moment of
 configuring the system.
-
-\begin{remark}
-  Although our exposition focused on the case where $r$ is a prime
-  power and $k\simeq K$, most of the algorithms presented here can be
-  easily adapted to work more generally.
-
-  In particular, it is a non-negligible practical improvement to work
-  with composite $r$ by ``gluing'' together many prime powers. For
-  example, let $r$ and $r'$ be two prime powers, and let $\ell$ and
-  $\ell'$ be two primes selected for use in Rains' cyclotomic
-  algorithm. If $\ell=\ell'$, then $\#\langle q\rangle=rr's$ for some
-  $s$, and Rains' algorithm can be run only once for both $r$ and $r'$
-  at the same time, with the added benefit of requiring a smaller
-  auxiliary extension. Similarly, if $\ell\ne\ell'$, then we can run
-  only once a straightforward generalization of Rains' algorithm using
-  $(\ell\ell')$-th roots of unity; this is especially advantageous
-  when $\order_\ell(q) = rs$ and $\order_{\ell'}(q) = r's$, so that
-  the degree of the auxiliary extension is unchanged.
-
-  In general, given the output of Algorithm~\ref{algorithm:selectell} for
-  many prime powers, combining the results to obtain the best
-  ``gluing'' requires solving an integer linear program (ILP). Given
-  the availability of very fast ILP solvers, the practical speed-up
-  can be significant.  Similar techniques also apply to Allombert's
-  algorithm. On the other hand, it seems much more unlikely to apply
-  them to the elliptic Rains' algorithm.
-\end{remark}
-
 
 
 \section{Experimental Results}
