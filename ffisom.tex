@@ -190,7 +190,7 @@ sub-problems:
 \end{enumerate}
 
 
-\paragraph{Motivation, previous work}
+\paragraph{\bf Motivation, previous work.}
 The first to get interested in this problem was H.~Lenstra: in his
 seminal paper~\cite{LenstraJr91} he shows that it can be solved in
 deterministic polynomial time, by using a representation for finite
@@ -249,7 +249,7 @@ Narayanan's
   general commutative algebraic groups, in particular to elliptic
   curves.
 
-\paragraph{Our contribution}
+\paragraph{\bf Our contribution.}
 This work aims to be, in large part, a complete review of all known
 algorithms for the embedding problem; we analyze in detail the cost of 
 existing algorithms and introduce several new variants. %
@@ -321,7 +321,7 @@ In conclusion, we hope that our review will constitute a reference
 guide for researchers and engineers interested in implementing
 embeddings of finite fields in a computer algebra system.
 
-\paragraph{Acknowledgments}
+\paragraph{\bf Acknowledgments.}
 We would like to thank Eric M. Rains for sharing his preprint with
 us. %
 We also thank Bill Allombert, Christian Berghoff, Jean-Marc
@@ -396,7 +396,7 @@ algorithm.
 
 \begin{note}\label{note:multimc}
 If we have several modular compositions of the form $e_1(g) \bmod
-h,\dots,e_t(g) \bmod h$ to compute, we can slightly improve the obvious
+h,\dots,$ $e_t(g) \bmod h$ to compute, we can slightly improve the obvious
 bound $O(ts^{(\omega+1)/2})$ (we discuss here $k=\F_q$, so $m=1$). If
 $t=O(s)$, using~\cite[Lemma~4]{kaltofen+shoup98}, this can be done in
 time $O(t^{(\omega-1)/2}s^{(\omega+1)/2})$. If $t=\Omega(s)$, this can
@@ -405,7 +405,7 @@ modulo $f$, and doing a matrix product in size $s \times s$ by
 $s \times t$.
 \end{note}
 
-\paragraph{Frobenius evaluation} Consider an $\F_q$-algebra $Q$,
+\paragraph{\bf Frobenius evaluation.} Consider an $\F_q$-algebra $Q$,
 and an element $\alpha$ in $Q$. Given integers $c,d$, we will have to
 compute expressions of the form
 \[
@@ -619,7 +619,7 @@ The complexity estimates mostly rely on the complexity of modular composition.
 \end{enumerate}
 \end{proof}
 
-\paragraph{Computing subfields}
+\paragraph{\bf Computing subfields.}
 With $k = \F_q[X]/f(X)$ and $\deg f=m$ as above, we are given a
 divisor $r$ of $m$, and we want to construct an intermediate extension
 $\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely,
@@ -664,7 +664,7 @@ $g$, and $h$ the polynomial of degree less than $m$ representing $\beta$.
   modular composition at cost $O(m^{(\omega+1)/2})$.
 \end{proof}
 
-\paragraph{Root finding in cyclotomic extensions}
+\paragraph{\bf Root finding in cyclotomic extensions.}
 Given a field $k = \F_q[X]/f(X)$ of degree $m$ as above, we will need
 to factor some special polynomials in $k[Z]$: we are interested in
 finding one factor of a polynomial that splits into factors of the
@@ -750,7 +750,7 @@ is halved each time, so we obtain the
 desired result.
 \end{proof}
 
-\paragraph{Root finding in some extensions of cyclotomic extensions}
+\paragraph{\bf Root finding in some extensions of cyclotomic extensions.}
 Let $r = v^d$, where $v \ne p$ is a prime and $d$ is a positive
 integer and let $s$ be the order of $q$ in $\Z / v\Z$.  We 
 assume that $d \ge 2$, since this will be the case whenever we want to
@@ -1067,7 +1067,7 @@ details from PARI/GP source code~\cite{Pari} and perform the complexity analysis
 here.  We also propose another variant, using an algorithm by Paterson
 and Stockmeyer.
 
-\paragraph{Allombert's original algorithm}
+\paragraph{\bf Allombert's original algorithm.}
 A direct solution to Hilbert's theorem 90 is to find a non-zero
 $\theta\in k[\zeta]$ such that $\widehat{(S-\zeta)}(\theta)=0$.
 
@@ -1079,7 +1079,7 @@ $\F_q(\zeta)$ using linear algebra, at a cost of $O((rs)^\omega)$
 operations in $\F_q$. This gives a total cost of $O(s \MM(r) \log(q) +
 (rs)^{\omega})$ operations in~$\F_q$.
 
-\paragraph{Allombert's revised algorithm}
+\paragraph{\bf Allombert's revised algorithm.}
 Allombert's revision of his own algorithm~\cite{Allombert02-rev} uses
 the factorization
 \begin{equation}
@@ -1136,7 +1136,7 @@ in $\F_q$.
 \end{proof}
 %(or $O(s \MM(r) \log(q))$ operations in $\F_q$ using modular exponentiation).
 
-\paragraph{Using the Paterson--Stockmeyer algorithm}
+\paragraph{\bf Using the Paterson--Stockmeyer algorithm.}
 Given the matrix $M_\sigma$ of $\sigma$, there is a natural way of evaluating
 $\hat{h}$ at a reduced cost: the Paterson--Stockmeyer
 algorithm~\cite{paterson_stockmeyer} computes the matrix of $\hat h$
@@ -1212,7 +1212,7 @@ value of $s$ with respect to $r$; we arrange them by increasing $s$.
 
 
 
-\paragraph{First solution: divide-and-conquer recursion.}
+\paragraph{\bf First solution: divide-and-conquer recursion.}
 We use a recursive algorithm similar to the computation of trace-like
 functions in Proposition~\ref{prop:trace-like}, to directly evaluate $\theta_a$
 using Eq.~\eqref{eq:thetaa}.  Let $\xi_1=x^q$ and
@@ -1260,7 +1260,7 @@ O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)+\MM(r)\log(q))
   obtain the stated bound.
 \end{proof}
 
-\paragraph{Second solution: automorphism evaluation.}
+\paragraph{\bf Second solution: automorphism evaluation.}
 We use Eq.~\eqref{eq:theta90bis} and Eq.~\eqref{eq:hprime}
 to compute $\theta_a$ as
 $\theta_a = \hat{b}\circ \hat{g} (a)$.
@@ -1291,7 +1291,7 @@ $\theta_a = \hat{b}\circ \hat{g} (a)$.
 \end{proof}
 
 
-\paragraph{Third solution: multipoint evaluation.}
+\paragraph{\bf Third solution: multipoint evaluation.}
 Finally, we can compute all the values
 $\sigma(a),\dots,\sigma^{r-1}(a)$ directly, write $\theta_a$ as a
 polynomial in $x$ and $\zeta$ of degree $r-1$ in both variables, and
@@ -1349,7 +1349,7 @@ For $\omega=3$, all costs are at best quadratic.
 \end{proposition}
 \begin{proof}
   The cost of factoring the $r$-th cyclotomic polynomial is an
-  expected $O(\MM(r)\log(rq))$ operations in $\F_q$,
+  expected \sloppy $O(\MM(r)\log(rq))$ operations in $\F_q$,
   using~\cite[Theorem~9]{shoup94}. This is negligible compared with
   other steps. The solutions $\theta_1,\theta_2$ to Hilbert's theorem
   90 are computed as described above, according to the size of $s$.
@@ -1469,7 +1469,7 @@ From these we can extract the following recursive relations:
 	\end{cases}
 \end{aligned}
 \]
-Therefore, the values $\trace(\theta) = \beta_{rt}(\theta)$, and $\alpha = 
+Thus, the values $\trace(\theta) = \beta_{rt}(\theta)$, and $\alpha = 
 \beta_{rt}(\theta)^{-1}\alpha_{rt}(\theta)$ can be computed recursively, in $O(\log(rt))$ steps. At 
 step $j$ of the recursive algorithm, $\xi_j, \beta_j(a), \beta_j(\theta), \alpha_j(\theta)$ are 
 computed. As before, the action of $\sigma^j$ is the same as composing with $\xi_j$. So each step 
