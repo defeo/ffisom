@@ -1,6 +1,6 @@
-\documentclass{article}
+\documentclass[12pt]{article}
 
-\usepackage{bm, bbm, amsmath}
+\usepackage{sigsam, bm, bbm, amsmath}
 \usepackage{amssymb,stmaryrd}
 \usepackage{color}
 \usepackage{hyperref}
@@ -27,9 +27,37 @@
 \newtheorem{Prop}{Proposition}
 \newtheorem{Lemma}{Lemma}
 
-\title{Computing isomorphisms and embeddings of finite fields}
-\author{Ludovic Brieulle, Luca De Feo, Javad Doliskani,\\ Jean Pierre
+\issue{TBA}
+\articlehead{TBA}
+\titlehead{Computing isomorphisms and embeddings of finite fields}
+\authorhead{Ludovic Brieulle, Luca De Feo, Javad Doliskani, Jean Pierre
   Flori and Éric Schost}
+\setcounter{page}{1}
+
+
+
+\title{Computing isomorphisms and embeddings of finite fields}
+\author{Ludovic Brieulle\footnote{
+    Université d'Aix-Marseille,
+    \url{l.brieulle@gmail.com}
+  },
+  Luca De Feo\footnote{
+    Université de Versailles and Inria, Paris Saclay
+    \url{luca.de-feo@uvsq.fr}
+  },
+  Javad Doliskani\footnote{
+    University of Waterloo,
+    \url{javad.doliskani@uwaterloo.ca}
+  },
+  \\ Jean Pierre\footnote{
+    Agence Nationale de la Sécurité des Systèmes d'Information,
+    \url{jean-pierre.flori@ssi.gouv.fr}
+  }
+  Flori and Éric Schost\footnote{
+    University of Waterloo,
+    \url{eschost@uwaterloo.ca}
+  }
+}
 
 
 \begin{document}
@@ -51,10 +79,10 @@ extensions. Consequently, they are widely applied in cryptography and
 coding theory. In particular, they are useful for representing the
 algebraic closure $\bar{\F}_q$, as described
 in~\cite{bosma+cannon+steel97}. They are fundamental building blocks
-of most computer algebra systems, including Magma\cite{MAGMA},
-Pari\cite{Pari}, Sage\cite{Sage}, ...
+of most computer algebra systems, including Magma~\cite{MAGMA},
+Pari~\cite{Pari} and Sage~\cite{Sage}.
 
-All the algorithms we are aware of, split the embedding problem in two
+All the algorithms we are aware of split the embedding problem in two
 sub-problems:
 \begin{enumerate}
 \item Determine elements $\alpha\in k$ and $\beta\in K$ such that
@@ -75,14 +103,14 @@ sub-problems:
 
 Arguably, the hardest problem among the two is the embedding
 description. %
-The first to get interested in this problem was H.~Lenstra: in his
-seminal paper~\cite{LenstraJr91} he shows that it can be solved in
+In his
+seminal paper~\cite{LenstraJr91}, H. Lenstra shows that it can be solved in
 deterministic polynomial time, by using a representation for finite
 fields that he calls \emph{explicit data}.\footnote{Technically,
   Lenstra only proved his theorem in the case where $k$ and $K$ are
   isomorphic; however, the generalization to the embedding problem
   poses no difficulties.} %
-The first computer algebra system system to implement a general
+The first computer algebra system to implement a general
 embedding algorithm was Magma~\cite{MAGMA}. %
 As detailed by its developers~\cite{bosma+cannon+steel97}, it used a
 much simpler approach than Lenstra's algorithm, entirely based on
@@ -130,7 +158,7 @@ We divide the algorithms in two families:
   exploit the properties of some algebraic group $G/\F_q$.
 \end{itemize}
 
-We pay a particular attention to Allombert's algorithm:
+We pay particular attention to Allombert's algorithm:
 to our knowledge, this is the first detailed and complete complexity
 analysis of this algorithm and its variants. %
 Thanks to our work on asymptotic complexity, we were able to devise
@@ -153,8 +181,7 @@ Heuristically, the failure probability of the elliptic variant is
 extremely small, however we are not able to prove it formally. %
 Our experimental searches even seem to suggest that the failure
 probability might be, surprisingly, zero. %
-We state this as a conjecture on elliptic periods; our give some
-supporting evidence.
+We state this as a conjecture on elliptic periods.
 
 Finally, we review to the known strategies for embedding
 evaluation. Besides the obvious approach based on linear algebra, we
