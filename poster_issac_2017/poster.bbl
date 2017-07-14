@@ -1,0 +1,65 @@
+\begin{thebibliography}{10}
+
+\bibitem{Allombert02}
+B. Allombert.
+\newblock Explicit computation of isomorphisms between finite fields.
+\newblock {\em Finite Fields Appl.}, 8(3):332 -- 342, 2002.
+
+\bibitem{Allombert02-rev}
+B. Allombert.
+\newblock Explicit computation of isomorphisms between finite fields.
+\newblock Revised version.
+  \url{https://www.math.u-bordeaux.fr/~ballombe/fpisom.ps}, 2002.
+
+\bibitem{bosma+cannon+steel97}
+W. Bosma, J. Cannon, and A. Steel.
+\newblock Lattices of compatibly embedded finite fields.
+\newblock {\em Journal of Symbolic Computation}, 24(3-4):351--369, 1997.
+
+\bibitem{ffisom-long}
+L. Brieulle, L. De~Feo, J. Doliskani, J.-P. Flori, and {\'E}.
+  Schost.
+\newblock Computing isomorphisms and embeddings of finite fields.
+\newblock {\em arXiv:1705.01221}, 2017.
+
+\bibitem{kaltofen+shoup98}
+E. Kaltofen and V. Shoup.
+\newblock Subquadratic-time factoring of polynomials over finite fields.
+\newblock {\em Math. Comp.}, 67(223):1179--1197, 1998.
+
+\bibitem{LenstraJr91}
+H.~W. Lenstra.
+\newblock Finding isomorphisms between finite fields.
+\newblock {\em Mathematics of Computation}, 56(193):329--347, 1991.
+
+\bibitem{mihailescu+morain+schost07}
+P. Mihailescu, F. Morain, and \'{E}. Schost.
+\newblock Computing the eigenvalue in the {S}choof-{E}lkies-{A}tkin algorithm
+  using abelian lifts.
+\newblock In {\em ISSAC '07}, pages 285--292, New York, NY, USA, 2007.
+  ACM.
+
+\bibitem{narayanan2016fast}
+A.~K. Narayanan.
+\newblock Fast computation of isomorphisms between finite fields using elliptic
+  curves.
+\newblock arXiv preprint arXiv:1604.03072, 2016.
+
+\bibitem{Pinch}
+R.~G.~E. Pinch.
+\newblock Recognising elements of finite fields.
+\newblock In {\em Cryptography and Coding II}, pages 193--197. Oxford
+  University Press, 1992.
+
+\bibitem{rains2008}
+E.~M. Rains.
+\newblock Efficient computation of isomorphisms between finite fields.
+\newblock personal communication, 1996.
+
+\bibitem{vzgathen+shoup92}
+J. von~zur Gathen and V. Shoup.
+\newblock Computing {F}robenius maps and factoring polynomials.
+\newblock In {\em STOC '92}, pages 97--105, New York, NY, USA, 1992.
+  ACM.
+
+\end{thebibliography}
