@@ -34,13 +34,13 @@
 \newcommand{\secblock}[1]{\block[]{}{\huge\sc #1}}
 
 \title{Computing isomorphisms and embeddings of finite fields}
-\author{Ludovic Brieulle\footnotemark[1], Luca De Feo\footnotemark[1],
-  Javad Doliskani\footnotemark[2], Jean-Pierre Flori\footnotemark[3],
-  Éric Schost\footnotemark[2]} \institute{\footnotemark[1]Université
-  de Versailles -- Saint-Quentin-en-Yvelines,
-  \footnotemark[2]University of Western Ontario,
-  \footnotemark[3]Agence Nationale de Sécurité des Systèmes
-  d'Information}
+\author{Ludovic Brieulle\footnotemark[1], Luca De Feo\footnotemark[2],
+  Javad Doliskani\footnotemark[3], Jean-Pierre Flori\footnotemark[4],
+  Éric Schost\footnotemark[3]}
+\institute{\footnotemark[1]Université d'Aix-Marseille,
+  \footnotemark[2]Université de Versailles -- Saint-Quentin-en-Yvelines,\\
+  \footnotemark[3]University of Waterloo,
+  \footnotemark[4]Agence Nationale de Sécurité des Systèmes d'Information}
 
 \usetheme{Desert}
 
@@ -60,14 +60,14 @@
    \draw[draw=none, bottom color=titlebgcolor, top color=framecolor,opacity=0.9]%
    (\titleposleft,\titleposbottom) rectangle (\titleposright,\titlepostop); %
    \draw
-   (\titleposleft,0.75*\titlepostop+0.25*\titleposbottom)
-   node[anchor=west]{\includegraphics[width=15em]{uvsq-logo-cmjn}}
-   (\titleposright,0.75\titlepostop+0.25*\titleposbottom)
-   node[anchor=east]{\includegraphics[width=18em]{uwaterloo}}
-   (\titleposleft+1em,\titleposbottom+1em)
-   node[anchor=south west]{\includegraphics[height=5em]{Anssi}}
-   (\titleposright-1em,\titleposbottom+1em)
-   node[anchor=south east]{\includegraphics[height=5em]{Anssi}};
+   (\titleposleft+2em,0.75*\titlepostop+0.25*\titleposbottom)
+   node[anchor=west]{\includegraphics[width=15em]{amu}}
+   (\titleposright-1em,0.75\titlepostop+0.25*\titleposbottom)
+   node[anchor=east]{\includegraphics[width=15em]{uvsq-logo-cmjn}}
+   (\titleposleft,\titleposbottom+4.5em)
+   node[anchor=west]{\includegraphics[width=20em]{uwaterloo}}
+   (\titleposright-5em,\titleposbottom+1.5em)
+   node[anchor=south east]{\includegraphics[height=6em]{Anssi}};
 }
 \usetitlestyle{WLogos}
 
