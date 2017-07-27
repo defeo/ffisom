@@ -259,14 +259,14 @@
         \node(kz)[above=of k]{$k\otimes\F_q(\zeta)$};
         \node(K)[above right=of Fq]{$K$};
         \node(Kz)[above=of K]{$K\otimes\F_q(\zeta)$};
-        \draw[font=\small,auto]
-        (Fq) edge node{$\sigma$} (Fqz)
-        (Fq) edge (k)
-        (Fqz) edge (kz)
-        (k) edge node{$\sigma$} (kz)
-        (Fq) edge (K)
-        (Fqz) edge (Kz)
-        (K) edge node{$\sigma$} (Kz);
+        \draw[font=\small,above]
+        (Fq) edge (Fqz)
+        (Fq) edge node{$\sigma$} (k)
+        (Fqz) edge node{$\sigma$} (kz)
+        (k) edge (kz)
+        (Fq) edge node{$\sigma$} (K)
+        (Fqz) edge node{$\sigma$} (Kz)
+        (K) edge (Kz);
       \end{tikzpicture}
     \end{wrapfigure}
 
