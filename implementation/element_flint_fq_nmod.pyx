@@ -16,10 +16,12 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-include "sage/ext/stdsage.pxi"
-include "cysignals/signals.pxi"
+from cysignals.signals cimport sig_on, sig_off
 
-from sage.libs.cypari2.paridecl cimport *
+from cypari2.paridecl cimport *
+from cypari2.pari_instance cimport Pari as pari
+from cypari2.stack cimport new_gen
+from cypari2.gen cimport Gen as pari_gen
 
 from sage.libs.gmp.all cimport *
 from sage.libs.flint.types cimport *
@@ -34,10 +36,6 @@ import sage.rings.integer
 from sage.rings.integer cimport Integer
 from sage.rings.integer_ring import ZZ
 from sage.rings.finite_rings.element_pari_ffelt cimport FiniteFieldElement_pari_ffelt
-from sage.libs.cypari2.pari_instance cimport PariInstance
-cdef PariInstance pari = sage.libs.cypari2.pari_instance.pari
-from sage.libs.cypari2.stack cimport new_gen
-from sage.libs.cypari2.gen cimport gen as pari_gen
 from sage.interfaces.gap import is_GapElement
 from sage.modules.free_module_element import FreeModuleElement
 from sage.rings.polynomial.polynomial_element import Polynomial
@@ -358,7 +356,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                 return r
             return cmp(self.polynomial(), other.polynomial())
 
-    cpdef ModuleElement _add_(self, right):
+    cpdef _add_(self, right):
         """
         Addition.
 
@@ -374,7 +372,7 @@ cdef class FiniteFieldElement_flint_fq_nmod(FinitePolyExtElement):
                       self._cparent)
         return x
 
-    cpdef ModuleElement _sub_(self, right):
+    cpdef _sub_(self, right):
         """
         Subtraction.
 

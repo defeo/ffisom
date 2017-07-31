@@ -17,6 +17,8 @@ AUTHORS:
 #*****************************************************************************
 
 include "sage/ext/stdsage.pxi"
+#from sage.ext.stdsage cimport sage_malloc, sage_free
+
 from sage.libs.gmp.mpz cimport *
 from sage.libs.flint.types cimport *
 from sage.libs.flint.fmpz cimport *
@@ -146,7 +148,6 @@ cdef class FiniteField_flint_fq_nmod(FiniteField):
 
         self._modulus = modulus
         self._degree = n
-        self._kwargs = {}
 
         self.__hash = hash((pint**n, name, modulus))
 
