@@ -1342,7 +1342,7 @@ For $\omega=3$, all costs are at best quadratic.
  r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q)
 +s^{\omega-1}r\log(r)\log(s))$
     expected operations in $\F_q$ if if $s \in \Omega(r^{(\omega-3)/(\omega-5)})$
-    and $s \in O(r^{1/(w-1)})$, or
+    and $s \in O(r^{1/(\omega-1)})$, or
   \item $O(\MM(r^2)\log^2(r) + \MM(r)\log(r)\log(q))$ expected operations in
     $\F_q$ otherwise.
   \end{itemize}
@@ -1385,7 +1385,7 @@ For $\omega=3$, all costs are at best quadratic.
   better runtime. Assuming $s\in \Omega(r^{(\omega-3)/(\omega-5)})$,
   the runtime in the second case can be written as $O(
   r^{(\omega^2-4\omega-1)/(\omega-5)}+(s+r^{2/(5-\omega)})\MM(r)\log(q)
-  +s^{\omega-1}r\log(r)\log(s))$. If in addition $s$ is in $O(r^{1/(w-1)})$,
+  +s^{\omega-1}r\log(r)\log(s))$. If in addition $s$ is in $O(r^{1/(\omega-1)})$,
   this runtime is subquadratic, that is, better than that in our third solution.
 \end{proof}
 
@@ -1543,7 +1543,7 @@ $\eta$ we take $d$ successive $v$-th roots.
 	[Kummer-type algorithm for extension towers]
 	\label{algorithm:alpha-root}
 	\begin{algorithmic}[1]
-		\REQUIRE Extensions $k / \F_q$ $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
+		\REQUIRE Extensions $k / \F_q$, $K/\F_q$ of degree prime-power $r = v^d$, with $v\ne p$.
 		\ENSURE The description of a field embedding $k\hookrightarrow K$.
 		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial over $\F_q$ to 
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
