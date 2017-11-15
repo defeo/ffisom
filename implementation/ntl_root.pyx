@@ -1,5 +1,5 @@
 # distutils: language = c++
-include "cysignals/signals.pxi"
+from cysignals.signals cimport sig_on, sig_off
 
 def find_root(poly, k):
     cdef zz_pEPush pEPushed

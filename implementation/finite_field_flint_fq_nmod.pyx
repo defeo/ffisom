@@ -16,8 +16,7 @@ AUTHORS:
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-include "sage/ext/stdsage.pxi"
-#from sage.ext.stdsage cimport sage_malloc, sage_free
+from cysignals.memory cimport sig_malloc, sig_free
 
 from sage.libs.gmp.mpz cimport *
 from sage.libs.flint.types cimport *
@@ -177,13 +176,13 @@ cdef class FiniteField_flint_fq_nmod(FiniteField):
         self._gen = gen
 
     def __cinit__(FiniteField_flint_fq_nmod self):
-        self._ctx = <fq_nmod_ctx_struct *>sage_malloc(sizeof(fq_nmod_ctx_t))
+        self._ctx = <fq_nmod_ctx_struct *>sig_malloc(sizeof(fq_nmod_ctx_t))
 
     def __dealloc__(FiniteField_flint_fq_nmod self):
         if self._ctx_initialized:
             fq_nmod_ctx_clear(self._ctx)
         if self._ctx:
-            sage_free(self._ctx)
+            sig_free(self._ctx)
 
     Element = FiniteFieldElement_flint_fq_nmod
 

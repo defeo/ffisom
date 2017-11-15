@@ -1,4 +1,4 @@
-include "cysignals/signals.pxi"
+from cysignals.signals cimport sig_on, sig_off
 
 from sage.libs.flint.fmpz cimport *
 from sage.libs.flint.fq_nmod cimport *
