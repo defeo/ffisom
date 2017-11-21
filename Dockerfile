@@ -1,4 +1,4 @@
-FROM sagemath/sagemath:8.0
+FROM sagemath/sagemath-devel:8.1.rc2
 
 # Inspired from https://mybinder.readthedocs.io/en/latest/dockerfile.html#preparing-your-dockerfile
 
@@ -21,7 +21,7 @@ ENV PYTHONPATH      "${HOME}/ffisom/implementation:$PYTHONPATH"
 
 USER root
 # This will eventually be lifted upstream to sagemath/sagemath
-COPY jupyter jupyter-notebook /usr/bin/
+#COPY jupyter jupyter-notebook /usr/bin/
 
 # Make sure the contents of our repo are in ${HOME}
 COPY . ${HOME}
