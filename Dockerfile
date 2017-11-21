@@ -8,17 +8,19 @@ ENV HOME /home/sage
 # Upgrade to jupyter 5.* as required by mybinder
 RUN sage -pip install "notebook>=5" "ipykernel>=4.6"
 # Install ffisom and its dependencies
-RUN pwd
-RUN ls
-RUN cd implementation
+# Clone the repo
+RUN git clone https://github.com/defeo/ffisom.git
+RUN cd ffisom
 # Make sure ellmul sources are pulled
 RUN git submodule init
 RUN git submodule update
 # Build the library
+RUN cd implementation
 RUN sage -sh -c make
 # Make it available system-wide
-ENV LD_LIBRARY_PATH "${HOME}/implementation:$LD_LIBRARY_PATH"
-ENV PYTHONPATH      "${HOME}/implementation:$PYTHONPATH"
+ENV LD_LIBRARY_PATH "${HOME}/ffisom/implementation:$LD_LIBRARY_PATH"
+ENV PYTHONPATH      "${HOME}/ffisom/implementation:$PYTHONPATH"
+RUN cd ../..
 
 USER root
 # This will eventually be lifted upstream to sagemath/sagemath
