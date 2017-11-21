@@ -8,6 +8,8 @@ ENV HOME /home/sage
 # Upgrade to jupyter 5.* as required by mybinder
 RUN sage -pip install "notebook>=5" "ipykernel>=4.6"
 # Install ffisom and its dependencies
+RUN pwd
+RUN ls
 RUN cd implementation
 # Make sure ellmul sources are pulled
 RUN git submodule init
