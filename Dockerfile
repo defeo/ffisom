@@ -8,9 +8,9 @@ ENV HOME /home/sage
 # Upgrade to jupyter 5.* as required by mybinder
 RUN sage -pip install "notebook>=5" "ipykernel>=4.6"
 # Install ffisom and its dependencies
-RUN git clone https://github.com/defeo/ffisom.git && \ # Clone the repo
+RUN git clone https://github.com/defeo/ffisom.git && \
   cd ffisom && \
-  git submodule init && \ # Make sure ellmul sources are pulled
+  git submodule init && \
   git submodule update && \
   cd implementation && \
   sage -sh -c make # Build the library
