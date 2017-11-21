@@ -12,6 +12,7 @@ RUN sage -pip install "notebook>=5" "ipykernel>=4.6"
 RUN git clone https://github.com/defeo/ffisom.git
 RUN cd ffisom
 # Make sure ellmul sources are pulled
+RUN ls -alh
 RUN git submodule init
 RUN git submodule update
 # Build the library
