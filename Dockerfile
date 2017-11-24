@@ -1,12 +1,10 @@
-FROM sagemath/sagemath:8.0
+FROM sagemath/sagemath:8.0-2
 
 # Inspired from https://mybinder.readthedocs.io/en/latest/dockerfile.html#preparing-your-dockerfile
 
 ENV NB_USER=sage
 ENV HOME /home/sage
 
-# Upgrade to jupyter 5.* as required by mybinder
-RUN sage -pip install "notebook>=5" "ipykernel>=4.6"
 # Install ffisom and its dependencies
 RUN git clone https://github.com/defeo/ffisom.git && \
   cd ffisom && \
@@ -27,3 +25,6 @@ COPY .bin/* /usr/bin/
 COPY . ${HOME}
 RUN chown -R ${NB_USER}:${NB_USER} ${HOME}
 USER ${NB_USER}
+
+EXPOSE 8888
+CMD ["jupyter", "notebook", "--notebook-dir=notebooks", "--ip", "'*'", "--port", "8888"]

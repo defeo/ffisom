@@ -66,9 +66,13 @@ Import the image
 
 	docker pull defeo/ffisom
 
-Run SageMath within the container
+Run the SageMath Jupyter server within the container
 
-	docker run -it --rm jupyter notebook --notebook-dir=notebooks
+	docker run --rm -itp 127.0.0.1:8888:8888 defeo/ffisom
 
-After starting up, it will display a URL in the terminal. Copy it in
-your browser and you're ready to go!
+After starting up, it will display a URL. Copy it in your browser and
+you're ready to go!
+
+Alternatively, if you prefer a command-line interface, run 
+
+	docker run --rm -it defeo/ffisom sage
