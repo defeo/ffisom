@@ -21,7 +21,7 @@ ENV PYTHONPATH      "${HOME}/ffisom/implementation:$PYTHONPATH"
 
 USER root
 # This will eventually be lifted upstream to sagemath/sagemath
-COPY jupyter jupyter-notebook /usr/bin/
+COPY .bin/* /usr/bin/
 
 # Make sure the contents of our repo are in ${HOME}
 COPY . ${HOME}
