@@ -1506,18 +1506,28 @@ algorithm has much worse complexity in $q$, though).
 
 An overview of our construction is as follows. Let $r = v^d$ where $v \ne p$ is a 
 prime and $d$ is a positive integer. Suppose the extension $k/\F_q$ is of degree $r$. Let $s$ be 
-the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. We first move to 
-cyclotomic field extensions $\F_q(\zeta), k(\zeta), K(\zeta)$ of degree $s$ over $\F_q, k, K$ respectively, by 
-obtaining an irreducible factor of the $v$-th cyclotomic polynomial over $\F_q$. Then we obtain a  
-random non-$v$-adic residue $\eta \in \F_q(\zeta)$.
+the order of $q$ in $\Z / v\Z$, and write $q^s - 1 = uv^t$ where $\gcd(v, u) = 1$. Since $q^r = 
+q^{v^d} = q \bmod v$, we see that $q^r$ has the same order $s$ in $\Z / v\Z$. So the cyclotomic 
+field extensions $\F_q(\zeta) / \F_q, k(\zeta) / k, K(\zeta) / K$ are all of degree $s$. We move to 
+these extensions by obtaining an irreducible factor of the $v$-th cyclotomic polynomial over 
+$\F_q$. Next, we obtain a random generator $\eta$ of the unique subgroup of order $v^t$ in 
+$\F_q(\zeta)^*$ by finding a non $v$-th power and raising it to the power of $u$.
 
-We have $[k(\zeta): \F_q(\zeta)] = r$, so we can 
-compute an $r$-th root $\theta$ of $\eta$ in $k(\zeta)$ using $d$ successive $v$-th 
-root extractions in $k(\zeta)$. Therefore, $\theta$ is a generator for the unique subgroup of 
-$k(\zeta)^*$ of order $v^{d + t}$. Then the constant term $\alpha$ of $\theta$ is such that $k = 
-\F_q(\alpha)$. %
-Doing the same in $K$ yields an element $\beta\in K$ such that
-the map $\alpha\mapsto\beta$ defines an isomorphism. %
+It follows from $q^s = 1 \bmod v^t$ that $q^{rs} - 1 = \tilde{u}v^{t + d}$ where $\gcd(\tilde{u}, 
+v) = 1$. So we can compute an $r$-th root $\theta_1$ of $\eta$ in $k(\zeta)$ using $d$ successive 
+$v$-th root extractions in $k(\zeta)$. Then $\theta_1$ is a generator for the unique subgroup of 
+order $v^{d + t}$ in $k(\zeta)^*$. Since $\eta$ is a non-$v$-th power, the polynomial $Y^r - \eta$ 
+is irreducible over $\F_q(\zeta)$ and there is an $\F_q(\zeta)$-isomorphism 
+\[ \F_q(\zeta)(\theta_1) \xrightarrow{\sim} \F_q(\zeta)[Y] / (Y^r - \eta) \]
+that sends $\theta_1$ to $Y$. From this we see that $\F_q(\theta)$ and $k(\zeta)$ have the same 
+degree over $\F_q$, and hence $\F_q(\theta) = k(\zeta)$. Similarly, we find $\theta_2 \in 
+K(\zeta)$. So we have an $\F_q(\zeta)$-embedding
+\[ \phi: k(\zeta) \xrightarrow{\sim} \F_q(\zeta)[Y] / (Y^r - \eta) \xrightarrow{\sim} K(\zeta) \]
+that sends $\theta_1$ to $\theta_2$. Let $\alpha = \trace_{k(\zeta) / k}(\theta_1)$ and $\beta = 
+\trace_{K(\zeta) / K}(\theta_2)$. Then $k = \F_q(\alpha)$ and $K = F_q(\beta)$, see the proof of 
+\cite[Theorem 2.1]{Shoup90}. Since $\phi$ commutes with traces, the map $\alpha\mapsto\beta$ 
+defines an isomorphism.
+
 The main difficulty in applying such an algorithm resides in computing
 efficiently $v$-th roots in $k(\zeta)$, for which we use Proposition~\ref{prop:root_high_degree_extension};
 this yields the main result of this section.
@@ -1549,7 +1559,9 @@ $\eta$ we take $d$ successive $v$-th roots.
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
 		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
 		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
-		\STATE Let $\alpha, \beta$ be the constant terms of $\theta_1, \theta_2$ respectively;
+		\STATE\label{step:trace} Compute $\alpha = \trace_{k(\zeta) / k}(\theta_1)$ and $\beta = 
+		\trace_{K(\zeta) / 
+		K}(\theta_2)$;
 		\RETURN The field embedding defined by $\alpha\mapsto\beta$.
 	\end{algorithmic}
 \end{algorithm}
@@ -1563,11 +1575,13 @@ can be done in $O(s^{(\omega-1)/2}\log(s) + \MM(s)\log(v)\log(s) +
 \MM(s)\log(q))$ operations in $\F_q$, in view of our discussion in
 Section~\ref{sec:preliminaries}.
 
-Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$
-successive root extractions, each of which takes an expected
-$O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + s\MM(r)\log(q))$
-operations in $\F_q$. Therefore Algorithm~\ref{algorithm:alpha-root}
-runs in an expected $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)^2 + s\MM(r)\log(r)\log(q)$ operations in
+Step~\ref{step:rep-root1} is done using $d = O(\log(r) / \log(v))$ successive root extractions, 
+each of which takes an expected $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r) + s\MM(r)\log(q))$
+operations in $\F_q$. Writing $\theta_1$ and $\theta_2$ as polynomials in $\zeta$ with coefficients 
+in $k$ and $K$, reps., we see that computing the traces of Step \ref{step:trace} boils down to 
+computing the traces $\trace_{\F_q(\zeta) / \F_q}(\zeta^i)$ for $0 \le i < s$. The cost of this is 
+dominated by those of the previous steps. Therefore, Algorithm~\ref{algorithm:alpha-root} runs in 
+an expected $O(s^{(\omega-1)/2}r^{(\omega+1)/2}\log(r)^2 + s\MM(r)\log(r)\log(q)$ operations in 
 $\F_q$.
 \end{proof}
 
