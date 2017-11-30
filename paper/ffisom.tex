@@ -922,7 +922,7 @@ in $\F_q$ in both cases.
 The idea of Lenstra's algorithm is as follows.  Assume that $r$ is
 prime, and let $\F_q[\zeta]$ denote the ring extension $\F_q[Z] /
 \Phi_r(Z)$ where $\Phi_r$ is the $r$-th cyclotomic polynomial.  Let
-$\tau$ be a non $r$-adic residue of $\F_q[\zeta]$, and let
+$\tau$ be a non $r$-th power of $\F_q[\zeta]$, and let
 $\F_q[\zeta][\theta]$ denote the quotient $\F_q[\zeta][Y]/(Y^r -
 \tau)$ such that $\theta=\tau^{1/r}$ is the residue class of $Y$.
 Lenstra shows that $\F_q[\zeta][\theta]$ is isomorphic to $k[\zeta]$
@@ -1544,7 +1544,7 @@ operations in $\F_q$.
 \begin{proof}
 We can construct the embedding of Theorem~\ref{theorem:isom-root} as
 follows. We first build the extensions $k(\zeta) / \F_q(\zeta)$ and
-$K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non-$v$-adic residue in
+$K(\zeta)/\F_q(\zeta)$. Let $\eta$ be a non $v$-th power in
 $\F_q(\zeta)$.  Then $\eta$ is an $r$-power in $k(\zeta)$ and
 $K(\zeta)$. To obtain $r$-th roots $\theta_1\in k$, $\theta_2\in K$ of
 $\eta$ we take $d$ successive $v$-th roots.
@@ -1557,7 +1557,7 @@ $\eta$ we take $d$ successive $v$-th roots.
 		\ENSURE The description of a field embedding $k\hookrightarrow K$.
 		\STATE\label{step:factor-cyclo} Factor the $v$-th cyclotomic polynomial over $\F_q$ to 
 		build the extensions $k(\zeta) / \F_q(\zeta)$ and $K(\zeta)/\F_q(\zeta)$;
-		\STATE\label{step:non-v-res} Find a random non-$v$-adic residue $\eta \in \F_q(\zeta)$;
+		\STATE\label{step:non-v-res} Find a random non $v$-th power $\eta \in \F_q(\zeta)$;
 		\STATE\label{step:rep-root1} Compute $r$-th roots $\theta_1,\theta_2$ of $\eta$ in $k(\zeta),K(\zeta)$;
 		\STATE\label{step:trace} Compute $\alpha = \trace_{k(\zeta) / k}(\theta_1)$ and $\beta = 
 		\trace_{K(\zeta) / 
@@ -1569,7 +1569,7 @@ $\eta$ we take $d$ successive $v$-th roots.
 Step~\ref{step:factor-cyclo} is done using~\cite[Theorem~9]{shoup94},
 which takes $O(\MM(v)\log(vq))$ operations in $\F_q$. We do
 Step~\ref{step:non-v-res} by taking random elements in $\F_q(\zeta)$
-until a non-$v$-adic residue is found. Testing $v$-adic residuosity of
+until a non $v$-th power is found. Testing $v$-th power for
 $\eta$ amounts to computing $\eta^{(q^s-1)/v}$ in $\F_q(\zeta)$, which
 can be done in $O(s^{(\omega-1)/2}\log(s) + \MM(s)\log(v)\log(s) +
 \MM(s)\log(q))$ operations in $\F_q$, in view of our discussion in
