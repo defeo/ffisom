@@ -3,7 +3,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+if not matplotlib.get_backend():
+    matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import re, math
@@ -46,6 +47,27 @@ def parse_timings(datasets=['12/{:0>2}'.format(i) for i in filter(lambda x: x !=
     d = pd.concat([read_file('benchdata/%s.dat' % run) for run in datasets])
     return d
 
+def plot_char(d, size=(10,10)):
+    '''
+    Plot something as p grows
+    '''
+    
+    # Figure settings
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(111)
+    ax.loglog(basex=2, basey=2)
+    ax.set_xlabel('Characteristic')
+    ax.set_ylabel('seconds')
+
+    df = d[(d.degree <= 200) & (d.kummer_aux != 0)]
+    data = df.t_pari / df.kummer_aux
+    ax.plot(df.prime, data, '.')
+    data = df.t_kummer_cofactor / df.kummer_aux
+    ax.plot(df.prime, data, '.')
+
+    return fig
+    
+
 def plot_magma(d, size=(10,10)):
     '''
     Plot our implementation of cyclotomic Rains' vs Magma
@@ -59,7 +81,7 @@ def plot_magma(d, size=(10,10)):
     ax.set_ylabel('Magma (ratio)')
 
     df = d[~d.t_magma.isnull() & ~d.t_cyclo_rains.isnull()]
-    data = df.t_magma / df.t_cyclo_rains
+    data = df.t_cyclo_rains
     ax.plot(df.t_cyclo_rains, data, '.', ms=1, alpha=0.5)
 
     return fig
