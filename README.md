@@ -44,7 +44,7 @@ folder.  They are subject to the copying restriction enforced by the
 editor.
 
 
-## Software [![launch binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/defeo/ffisom/master?filepath=notebooks%2Fexample.ipynb)
+## Software [![launch binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/defeo/ffisom/master?filepath=notebooks)
 
 The [`implementation`](implementation) folder contains source code for
 the algorithms implemented by the project. See the folder `README.md`
@@ -54,7 +54,7 @@ machine.
 The [`notebooks`](notebooks) folder contains Jupyter notebooks showing
 sample usage of the software and benchmarks. Notebooks can be
 statically viewed on GitHub, or **executed** in
-[Binder](https://mybinder.org/v2/gh/defeo/ffisom/master?filepath=notebooks%2Fexample.ipynb),
+[Binder](https://mybinder.org/v2/gh/defeo/ffisom/master?filepath=notebooks),
 thus saving you the time to compile and install the software.
 
 All source code is distributed under the MIT license.
