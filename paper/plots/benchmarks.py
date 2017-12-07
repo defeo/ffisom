@@ -3,7 +3,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')
+if not matplotlib.get_backend():
+    matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import re, math
@@ -45,6 +46,7 @@ def parse_timings(datasets=['12/{:0>2}'.format(i) for i in filter(lambda x: x !=
         return d
     d = pd.concat([read_file('benchdata/%s.dat' % run) for run in datasets])
     return d
+    
 
 def plot_magma(d, size=(10,10)):
     '''
@@ -66,7 +68,8 @@ def plot_magma(d, size=(10,10)):
 
 def plot_rains(d, size=(10,10)):
     '''
-    Plot cyclotomic Rains' vs conic Rains' vs elliptic Rains' algorithm.
+    Plot cyclotomic Rains' vs conic Rains' vs elliptic Rains' algorithm,
+    increasing degree.
     '''
     
     # Figure settings
@@ -96,6 +99,39 @@ def plot_rains(d, size=(10,10)):
     conic = mlines.Line2D([], [], color='y', label="Conic Rains'")
     ell = mlines.Line2D([], [], color='k', label="Elliptic Rains'")
     ax.legend(handles=[cyclo, conic, ell], loc=2)
+
+    return fig
+
+def plot_rains_p(d, size=(10,10)):
+    '''
+    Plot cyclotomic Rains' vs conic Rains' vs elliptic Rains' algorithm,
+    increasing prime.
+    '''
+    
+    # Figure settings
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(111)
+    ax.loglog(basex=2, basey=2)
+    ax.set_xlabel('prime $q$')
+    ax.set_ylabel('seconds')
+
+    # Plot cyclotomic Rains', one color per auxiliary extension degree up to 9
+    df = d.groupby([d.rains_aux, d.prime]).median().loc[:9]
+    for key, g in df.groupby(level=0):
+        primes = g.index.get_level_values('prime')
+        ax.plot(primes, g.t_cyclo_rains, '.', label="$s=%d$" % key,
+                    color=[1 - key*0.07, 0, 1 - key*0.07])
+    # Plot conic Rains'
+    df = d[~d.t_conic_rains.isnull()]
+    df = df.groupby(df.prime).t_conic_rains.median()
+    ax.plot(df.index, df, '.', color='y', label="Conic")
+    # Plot elliptic Rains'
+    df = d[~d.t_elliptic_rains.isnull()]
+    df = df.groupby(df.prime).t_elliptic_rains.median()
+    ax.plot(df.index, df, '.', color='k', label="Elliptic")
+
+    # Legend
+    ax.legend()
 
     return fig
 
@@ -186,6 +222,42 @@ def plot_allombert_anyaux(d, size=(10,10)):
     ax.legend(loc=1)
     
     return fig
+
+def plot_allombert_p(d, size=(10,10)):
+    '''
+    Plot variants of Allombert's algorithm as p grows
+    '''
+    
+    # Figure settings
+    fig = plt.figure(figsize=size)
+    ax = fig.add_subplot(111)
+    ax.loglog(basex=2, basey=2)
+    ax.set_xscale('log')
+    ax.set_xlabel('prime $q$')
+    ax.set_ylabel('seconds / auxiliary degree $s$')
+
+    cols = [
+        ('Divide \& conquer', 't_kummer_modcomp', 4),
+        ('Automorphism eval.', 't_kummer_cofactor', 5),
+        ('Multipoint eval.', 't_kummer_mpe', 0),
+        ('Multipoint eval. (var)', 't_kummer_iterfrob', 2),
+        ('PARI/GP', 't_pari', 1),
+        ('Allombert (rev)', 't_kummer_linalg_only', 3),
+    ]
+
+    df = d.groupby(d.prime).max()
+    for l, c, z in cols:
+        data = df[c] / df.kummer_aux
+        scat, = ax.plot(df.index, data, '.', alpha=0.4, zorder=z)
+        # degree 2 linear regression
+        linreg = np.polyfit(np.log2(df.index), data, 2)
+        x = np.linspace(1, df.index.max(), 100)
+        ax.plot(x, np.polyval(linreg, np.log2(x)), lw=1, color=scat.get_color(), label=l)
+
+    ax.legend()
+    
+    return fig
+
 
 def plot_all(d, size=(10,10)):
     '''
