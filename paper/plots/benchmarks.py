@@ -48,7 +48,7 @@ def parse_timings(datasets=['12/{:0>2}'.format(i) for i in filter(lambda x: x !=
     return d
     
 
-def plot_magma(d, size=(10,10)):
+def plot_magma(d, size=(10,10), rasterized=None):
     '''
     Plot our implementation of cyclotomic Rains' vs Magma
     '''
@@ -62,7 +62,7 @@ def plot_magma(d, size=(10,10)):
 
     df = d[~d.t_magma.isnull() & ~d.t_cyclo_rains.isnull()]
     data = df.t_magma / df.t_cyclo_rains
-    ax.plot(df.t_cyclo_rains, data, '.', ms=1, alpha=0.5)
+    ax.plot(df.t_cyclo_rains, data, '.', ms=1, alpha=0.5, rasterized=rasterized)
 
     return fig
 
@@ -102,7 +102,7 @@ def plot_rains(d, size=(10,10)):
 
     return fig
 
-def plot_rains_p(d, size=(10,10)):
+def plot_rains_p(d, size=(10,10), rasterized=None):
     '''
     Plot cyclotomic Rains' vs conic Rains' vs elliptic Rains' algorithm,
     increasing prime.
@@ -120,22 +120,22 @@ def plot_rains_p(d, size=(10,10)):
     for key, g in df.groupby(level=0):
         primes = g.index.get_level_values('prime')
         ax.plot(primes, g.t_cyclo_rains, '.', label="$s=%d$" % key,
-                    color=[1 - key*0.07, 0, 1 - key*0.07])
+                    color=[1 - key*0.07, 0, 1 - key*0.07], rasterized=rasterized)
     # Plot conic Rains'
     df = d[~d.t_conic_rains.isnull()]
     df = df.groupby(df.prime).t_conic_rains.median()
-    ax.plot(df.index, df, '.', color='y', label="Conic")
+    ax.plot(df.index, df, '.', color='y', label="Conic", rasterized=rasterized)
     # Plot elliptic Rains'
     df = d[~d.t_elliptic_rains.isnull()]
     df = df.groupby(df.prime).t_elliptic_rains.median()
-    ax.plot(df.index, df, '.', color='k', label="Elliptic")
+    ax.plot(df.index, df, '.', color='k', label="Elliptic", rasterized=rasterized)
 
     # Legend
     ax.legend()
 
     return fig
 
-def plot_allombert_lowaux(d, size=(10,10)):
+def plot_allombert_lowaux(d, size=(10,10), rasterized=None):
     '''
     Plot various implementations of Allombert's algorithm for small auxiliary degree.
     '''
@@ -145,7 +145,7 @@ def plot_allombert_lowaux(d, size=(10,10)):
     ax = fig.add_subplot(111)
     ax.set_xlabel('degree $r$')
     ax.set_ylabel('seconds')
-
+    
     # Plot this columns, with legend and z-order
     cols = [
         ('Divide \& conquer', 't_kummer_modcomp', 4),
@@ -166,7 +166,7 @@ def plot_allombert_lowaux(d, size=(10,10)):
     for name, c, z in cols:
         data = df[c].values
         # scatter plot
-        scat, = ax.plot(df.degree, data, '.', alpha=0.4, zorder=z)
+        scat, = ax.plot(df.degree, data, '.', alpha=0.4, zorder=z, rasterized=rasterized)
         # degree 2 linear regression
         linreg = np.polyfit(df.degree, data, 2)
         x = np.linspace(100, df.degree.max(), 100)
@@ -176,7 +176,7 @@ def plot_allombert_lowaux(d, size=(10,10)):
 
     return fig
 
-def plot_allombert_anyaux(d, size=(10,10)):
+def plot_allombert_anyaux(d, size=(10,10), rasterized=None):
     '''
     Plot various implementations of Allombert's algorithm with respect to auxiliary degree.
     '''
@@ -194,7 +194,7 @@ def plot_allombert_anyaux(d, size=(10,10)):
         dd = df[~df[col].isnull()]
         data = dd[col] / dd.deg_sq
         # scatter plot
-        scat,  = ax.plot(dd.kummer_aux, data, *args, ls='none',
+        scat,  = ax.plot(dd.kummer_aux, data, *args, ls='none', rasterized=rasterized,
                              marker=marker, alpha=0.4, ms=2, **kwds)
         # degree 2 linear regression
         linreg = np.polyfit(dd.kummer_aux, data, 2)
@@ -223,7 +223,7 @@ def plot_allombert_anyaux(d, size=(10,10)):
     
     return fig
 
-def plot_allombert_p(d, size=(10,10)):
+def plot_allombert_p(d, size=(10,10), rasterized=None):
     '''
     Plot variants of Allombert's algorithm as p grows
     '''
@@ -248,7 +248,7 @@ def plot_allombert_p(d, size=(10,10)):
     df = d.groupby(d.prime).max()
     for l, c, z in cols:
         data = df[c] / df.kummer_aux
-        scat, = ax.plot(df.index, data, '.', alpha=0.4, zorder=z)
+        scat, = ax.plot(df.index, data, '.', alpha=0.4, zorder=z, rasterized=rasterized)
         # degree 2 linear regression
         linreg = np.polyfit(np.log2(df.index), data, 2)
         x = np.linspace(1, df.index.max(), 100)
@@ -320,16 +320,16 @@ def pdf_plots(prefix='bench-'):
     plt.rc('legend', fontsize=10)
 
     # Save pdf plots
-    plot = plot_magma(d, (5,4))
+    plot = plot_magma(d, (5,4), rasterized=True)
     plot.savefig(prefix + 'magma.pdf', bbox_inches='tight')
     
     plot = plot_rains(d, (4,3))
     plot.savefig(prefix + 'rains.pdf', bbox_inches='tight')
 
-    plot = plot_allombert_lowaux(d, (5,4))
+    plot = plot_allombert_lowaux(d, (5,4), rasterized=True)
     plot.savefig(prefix + 'allombert-lowaux.pdf', bbox_inches='tight')
     
-    plot = plot_allombert_anyaux(d, (5,4))
+    plot = plot_allombert_anyaux(d, (5,4), rasterized=True)
     plot.savefig(prefix + 'allombert-anyaux.pdf', bbox_inches='tight')
 
     allombert = plot_all(d[d.degree < 2**10], (6,5))
