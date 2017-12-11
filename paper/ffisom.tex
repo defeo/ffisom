@@ -2309,23 +2309,36 @@ configuring the system.
 
 To validate our results, we implemented the algorithms described in
 the previous sections, and compared them to the implementation of
-Allombert's algorithm available in PARI/GP~\cite{Pari}, and to that of
-Rains' algorithm available in Magma~\cite{MAGMA}. %
+Allombert's algorithm available in PARI/GP 2.8.0~\cite{Pari}, and to
+that of Rains' algorithm available in Magma 2.22-7~\cite{MAGMA}. %
 The variants of Allombert's algorithm described in
 Section~\ref{sec:fast-kummer} were implemented in C on top of the
-Flint library~\cite{hart2010flint}. Rains' cyclotomic and elliptic
-algorithms were implemented in Sage~\cite{Sage} (which itself uses
-PARI and Flint to implement finite fields), with critical code
-rewritten in C/Cython.  Our code only handles $q$ prime and $m,n$ odd.
+Flint library, version 2.5.2~\cite{hart2010flint}. %
+Rains' cyclotomic and elliptic algorithms were implemented in
+SageMath, version 7.5.rc0~\cite{Sage} (which itself uses PARI and
+Flint to implement finite fields), with critical code rewritten in
+C/Cython. %
+Our code is limited to $q$ a prime fitting in a machine-word, and
+$m,n$ odd.
+
+We make our code freely available under the open source MIT license,
+at \url{https://github.com/defeo/ffisom}. %
+Instructions for compiling and running it are available online, as
+well as a ready-made cloud environment for testing it, hosted by the
+\href{https://mybinder.org/}{Binder} service. %
+We stress the fact that our code is experimental and only meant for
+research purposes; a subset of the authors is currently working on
+integrating part of it in a future release of Flint.
 
 We ran tests for a wide range of primes $q$ between $3$ and
-$2^{60}+253$, and prime powers $r$ between $3$ and $2069$. All tests
-were run on an
+$2^{60}+253$, and prime powers $r$ between $3$ and $2069$. %
 % data available at the top of 0x.dat, change it if you change dataset
-Intel(R) Xeon(R) CPU E5-4650 v2 clocked at 2.40GHz.
-We report in Figure~\ref{fig:bench} statistics only on the runs for
-$100<q<2^{20}$; other ranges show very similar trends. The source
-code and the full datasets can be downloaded at
+All tests were run on an Intel(R) Xeon(R) CPU E5-4650 v2 clocked at
+2.40GHz. %
+We report in Figure~\ref{fig:bench} some statistics, exclusively on
+the runs for $100<q<2^{20}$; other ranges show very similar trends. %
+The complete datasets, together with more plots and interactive
+visualizations are also hosted at
 \url{https://github.com/defeo/ffisom}.
 
 \begin{figure}
@@ -2428,6 +2441,14 @@ However, we notice that the naive variant of \emph{``Multipoint
 \emph{``Multipoint evaluation (var)''} in the graphs), starts poorly,
 then quickly catches \emph{``Automorphism evaluation''} as $s$ grows.
 
+Finally, comparing the variants as $q$ grows shows\footnote{For lack
+  of space we do not show these graphs here, but see
+  \url{https://github.com/defeo/ffisom/blob/master/notebooks/benchmarks.ipynb}.}
+that the hierarchy between them is essentially unchanged as $q$
+approaches $2^{64}$. %
+We could not test larger values of $q$, as our code is limited to
+machine-word size.
+
 Now we shift to Rains' algorithm and its variants. %
 In comparing our implementation with Magma's, discarding outliers, we
 obtain a fairly consistent speed-up of about 30\% (see
@@ -2437,18 +2458,24 @@ In Figure~\ref{fig:bench:rains} we group runs of the cyclotomic
 algorithm by the degree $s$ of the auxiliary extension, and we plot
 median times against the degree $r$; only the graphs for $s<10$ are
 shown in the figure. %
-We observe a very large gap between $s=1$ and larger $s$
-($s=2$ is $8-16$ times slower). This is partly due to the fact that we
-use generic Python code to construct auxiliary extensions, rather than
-dedicated C; however, a large gap is unavoidable, due to the added cost
-of computing in extension fields. %
+We observe a very large gap between $s=1$ and larger $s$ ($s=2$ is
+$8-16$ times slower). This is partly due to the fact that we use
+generic Python code to construct auxiliary extensions, rather than
+dedicated C; however, a large gap is unavoidable, due to the added
+cost of computing in extension fields. %
 We also plot median times for the elliptic variant and for the conic
 variant (see Appendix~\ref{app:rains-vars}). %
 It is apparent that the elliptic algorithm outperforms the cyclotomic
 one as soon as $s\ge 3$, and that the conic algorithm conveniently
 replaces the case $s=2$. %
 Thus, at least for the parameter ranges we have tested, the cyclotomic
-algorithm with auxiliary extensions seems of limited interest.
+algorithm with auxiliary extensions seems of limited interest. %
+Plotting against the prime $q$ instead of the degree $r$ shows
+essentially the same behavior\footnote{Again, see
+  \url{https://github.com/defeo/ffisom/blob/master/notebooks/benchmarks.ipynb}
+  for a plot.}, however it should be reminded that the elliptic
+variant becomes very poor when $q$ grows larger than a machine-word,
+because of the cost of point counting.
 
 Finally, in Figure~\ref{fig:bench:all} we compare Rains' algorithms
 against Allombert's. %
