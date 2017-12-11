@@ -915,45 +915,38 @@ Even though neither of the two algorithms is given a detailed complexity analysi
 on solving linear systems, thus a rough analysis yields an estimate of $O(r^{\omega})$ operations
 in $\F_q$ in both cases.
 
-The idea of Lenstra's algorithm is as follows.  Assume that $r$ is
-prime, and let $\F_q[\zeta]$ denote the ring extension $\F_q[Z] /
-\Phi_r(Z)$ where $\Phi_r$ is the $r$-th cyclotomic polynomial.  Let
-$\tau$ be a non $r$-th power of $\F_q[\zeta]$, and let
-$\F_q[\zeta][\theta]$ denote the quotient $\F_q[\zeta][Y]/(Y^r -
-\tau)$ such that $\theta=\tau^{1/r}$ is the residue class of $Y$.
-Lenstra shows that $\F_q[\zeta][\theta]$ is isomorphic to $k[\zeta]$
-as a ring (Lenstra actually goes the other way around and constructs
-$\tau$ from $\theta$ as $\tau = \theta^r$ whereas $\theta$ itself
-comes from a normal basis of $k$ computed using linear algebra.  In
-Lenstra's terminology, $\theta$ and $\tau=\theta^r$ are generators of
-the Teichm\"uller subgroups of $k[\zeta]$ and $\F_q[\zeta]$ and
-solutions to Hilbert's theorem 90).
-
-Furthermore, the algorithm constructs $\theta_1, \theta_2$, and
-$\tau_1, \tau_2$ in such a way that an integer $j > 0$ can be found
-such that
+The idea of Lenstra's algorithm is as follows.  Assume that $r$ is prime, and let $\F_q[\zeta], 
+k[\zeta]$ denote the ring extensions $\F_q[Z] / \Phi_r(Z), k[Z] / \Phi_r(Z)$ where $\Phi_r$ is the 
+$r$-th cyclotomic polynomial. From a normal basis of $k$, computed using linear algebra, Lenstra 
+construct an element $\theta_1 \in k[\zeta]$ such that $\theta_1$ and $\tau_1 = \theta_1^r$ are 
+generators of the \textit{Teichm\"uller subgroups} of $k[\zeta]$ and $\F_q[\zeta]$, respectively. 
+He then proves that there is an $\F_q[\zeta]$-isomorphism of rings
+\[ k[\zeta] \xrightarrow{\sim} \F_q[\zeta][Y]/(Y^r - \tau_1) = \F_q[\zeta][\theta_1] \]
+sending $\theta_1$ to $Y$. Here, $\F_q[\zeta][\theta_1]$ is represented by the quotient 
+$\F_q[\zeta][Y]/(Y^r - \tau_1)$ in which $\theta_1$ denotes the image of $Y$. Doing the same for 
+$K[\zeta]$, elements $\theta_2 \in K[\zeta]$ and $\tau_2 \in \F_q[\zeta]$ and an 
+$\F_q[\zeta]$-isomorphism
+\[ \F_q[\zeta][\theta_2] = \F_q[\zeta][Y]/(Y^r - \tau_2) \xrightarrow{\sim} K[\zeta], \]
+that sends $Y$ to $\theta_2$, is obtained. The algorithm constructs $\theta_1, \theta_2$ in such a 
+way that an integer $j > 0$ can be found such that
 \[
 \begin{array}{lrll}
-\psi: & \F_q[\zeta][\theta_1] & \rightarrow & \F_q[\zeta][\theta_2] \\
-& \theta_1 & \mapsto & \theta_2^j
+	\psi: & \F_q[\zeta][\theta_1] & \rightarrow & \F_q[\zeta][\theta_2] \\
+	& \theta_1 & \mapsto & \theta_2^j
 \end{array}
 \]
-is an isomorphism of rings.
-Finally, denoting by $\Delta$ the automorphism group of $k[\zeta]$
-over $k$, an embedding $k \hookrightarrow K$ is obtained by
-restricting the above isomorphism $\psi$ to the fixed field
-$k[\zeta]^\Delta$.
-To summarize, the algorithm is made of three steps:
+is an isomorphism of rings. Finally, denoting by $\Delta$ the automorphism group of $k[\zeta]$
+over $k$, an embedding $k \hookrightarrow K$ is obtained by restricting the above isomorphism 
+$\psi$ to the fixed field $k[\zeta]^\Delta$. To summarize, the algorithm is made of three steps:
 \begin{itemize}
-\item Construct elements $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$;
-\item Letting $\tau_i=\theta_i^r$, find the integer $j$ such that
-  $\tau_1=\tau_2^j$ by a discrete logarithm computation in
-  $\F_q[\zeta]$;
-\item Compute $\alpha\in k$ and $\beta\in K$ as some functions of
-  $\theta_1,\theta_2^j$ invariant under $\Delta$.
+	\item Construct elements $\theta_1\in k[\zeta]$ and $\theta_2\in K[\zeta]$;
+	\item Letting $\tau_i=\theta_i^r$, find the integer $j$ such that
+	  $\tau_1=\tau_2^j$ by a discrete logarithm computation in
+	  $\F_q[\zeta]$;
+	\item Compute $\alpha\in k$ and $\beta\in K$ as some functions of
+	  $\theta_1,\theta_2^j$ invariant under $\Delta$.
 \end{itemize}
-The algorithm is readily generalized to prime powers $r$ by iterating
-this procedure.
+The algorithm is readily generalized to prime powers $r$ by iterating this procedure.
 
 Allombert's algorithms differ from Lenstra's in two key steps, both
 resorting to polynomial factorization.
