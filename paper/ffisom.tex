@@ -871,19 +871,15 @@ Indeed, we can reduce to this situation by applying
 Proposition~\ref{prop:subfield}, at an additional cost of
 $O(n^{(\omega+1)/2}\log(n) + \MM(n)\log(q))$ for each primary factor~$r$.
 Therefore, to simplify the exposition, we focus on algorithms
-solving the following problem.
+solving the following problem\footnote{Although some of the algorithms, specially
+those presented in Sections \ref{sec:rains-algorithm} and \ref{sec:rains-elliptic},
+could still be readily applied to a more general problem.}.
 \begin{problem}
 \label{prob:embedding}
 Let $r$ be a prime power and $k, K$ a pair of extensions of $\F_q$
 of degree $r$.
 Describe an isomorphism between $k$ and $K$.
 \end{problem}
-Note that although some algorithms are restricted to this situation,
-especially those presented in Section~\ref{sec:kummer},
-some of them could still be readily applied to a more general situation,
-especially those from Sections~\ref{sec:rains-algorithm}
-and~\ref{sec:rains-elliptic}.
-
 All algorithms presented next are going to rely on one common
 principle: construct an element in $k$ (and in $K$) such that its
 minimal polynomial (or, equivalently, its orbit under the absolute
@@ -1512,11 +1508,10 @@ field extensions $\F_q(\zeta) / \F_q, k(\zeta) / k, K(\zeta) / K$ are all of deg
 these extensions by obtaining an irreducible factor of the $v$-th cyclotomic polynomial over 
 $\F_q$. Next, we obtain a random non-$v$-th power $\eta$ in $\F_q(\zeta)^*$.
 
-It follows from $q^s = 1 \bmod v^t$ that $q^{rs} - 1 = \tilde{u}v^{t + d}$ where $\gcd(\tilde{u}, 
-v) = 1$. So we can compute an $r$-th root $\theta_1$ of $\eta$ in $k(\zeta)$ using $d$ successive 
-$v$-th root extractions in $k(\zeta)$. Then $\theta_1$ is a non-$v$-th power in $k(\zeta)^*$. Since 
-$\eta$ is a non-$v$-th power, the polynomial $Y^r - \eta$ is irreducible over $\F_q(\zeta)$ and 
-there is an $\F_q(\zeta)$-isomorphism 
+It follows from $v^t \mid q^s - 1$ that $v^{t + d} \mid q^{rs} - 1$. So we can compute an $r$-th 
+root $\theta_1$ of $\eta$ in $k(\zeta)$ using $d$ successive $v$-th root extractions in $k(\zeta)$. 
+Since $\eta$ is a non-$v$-th power, the polynomial $Y^r - \eta$ is irreducible over $\F_q(\zeta)$ 
+and there is an $\F_q(\zeta)$-isomorphism 
 \[ \F_q(\zeta)(\theta_1) \xrightarrow{\sim} \F_q(\zeta)[Y] / (Y^r - \eta) \]
 that sends $\theta_1$ to $Y$. From this we see that $\F_q(\theta)$ and $k(\zeta)$ have the same 
 degree over $\F_q$, and hence $\F_q(\theta_1) = k(\zeta)$. Similarly, we find $\theta_2 \in 
