@@ -174,10 +174,10 @@ sub-problems:
 \begin{enumerate}
 \item Determine elements $\alpha\in k$ and $\beta\in K$ such that
   $k=\F_q(\alpha)$, and such that there exists an
-  embedding $\phi$ mapping $\alpha\mapsto\beta$. We refer to this
+  embedding $\phi$ mapping $\alpha$ to $\beta$. We refer to this
   problem as the \emph{embedding description problem}.
-  It is easily seen that $\alpha$ and $\beta$ describe an embedding
-  if and only if they share the same minimal polynomial.
+  It is easily seen that $(\alpha,\beta)$ describes an embedding
+  if and only if $\alpha$ and $\beta$ share the same minimal polynomial.
 \item Given elements $\alpha$ and $\beta$ as above, given $\gamma\in
   k$ and $\delta\in K$, solve the following problems:
   \begin{itemize}
@@ -843,8 +843,8 @@ We are finally ready to address the problem of describing the embedding of
 $k=\F_q[X]/f(X)$ in $K=\F_q[Y]/g(Y)$; throughout the paper we let $m=\deg f$ and
 $n=\deg g$, so that $m|n$. The \emph{embedding description problem}
 asks to find two elements $\alpha\in k$ and $\beta\in K$ such that
-$\alpha\mapsto\beta$ for some field embedding $\phi:k\to K$. This is
-equivalent to $\alpha$ and $\beta$ having the same minimal polynomial.
+$\phi(\alpha)=\beta$ for some field embedding $\phi:k\to K$. This is
+equivalent to saying that $\alpha$ and $\beta$ have the same minimal polynomial.
 
 The most obvious way to solve this problem is to take the class of $X$
 in $k=\F_q[X]/f(X)$ for $\alpha$, and a root of $f$ in $K$ for
@@ -882,7 +882,7 @@ Therefore, to simplify the exposition, we focus on algorithms
 solving the following problem.
 \begin{problem}
 \label{prob:embedding}
-Let $r$ be a prime power and $k, K$ a pair of extensions of $\F_q$
+Let $r$ be a prime power and $k, K$ two extensions of $\F_q$
 of degree $r$.
 Describe an isomorphism between $k$ and $K$.
 \end{problem}
@@ -1986,7 +1986,7 @@ following example shows.
   \end{itemize}
 \end{example}
 
-All well known proofs of Lemma~\ref{th:gaussian} rely on the fact that
+All known proofs of Lemma~\ref{th:gaussian} rely on the fact that
 the $\ell$-th cyclotomic polynomial is irreducible over $\Q$, and its
 roots form a normal basis of $\Q(\zeta_\ell)$. %
 This fails in the elliptic case: there is indeed no guarantee that the
