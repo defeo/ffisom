@@ -626,9 +626,17 @@ $\F_q \subset L \subset k$ of degree $r$ over $\F_q$. More precisely,
 we want to compute a monic irreducible polynomial $g \in \F_q[X]$ of
 degree $r$, and a polynomial $h \in \F_q[X]$ such that
 $x \mapsto h(x)\bmod f$ defines an embedding
-$L = \F_q[X] / g(X) \hookrightarrow k$. We proceed as follows.
+$L = \F_q[X] / g(X) \hookrightarrow k$.
 
-Let $\alpha\in k$ be a random element. Then $\alpha$ has a minimal polynomial of degree $m$ 
+An algorithm for this will be used to reduce the embedding problem to
+an isomorphism problem; although this is not strictly necessary for
+most of our algorithms to work, it will greatly simplify the
+expostion. We proceed as follows.
+
+Let $\alpha\in k$ be a random element\footnote{For efficiency reasons,
+  it may be preferable to choose $\alpha$ pseudo-randomly, such as a
+  low-degree polynomial in the generator of $k$}. %
+Then $\alpha$ has a minimal polynomial of degree $m$ 
 over $\F_q$ with high probability. In other words, one needs $O(1)$ such random elements to find 
 one with degree $m$ minimal polynomial. Now, the trace
 \begin{equation}
@@ -652,7 +660,7 @@ $g$, and $h$ the polynomial of degree less than $m$ representing $\beta$.
 \end{proposition}
 \begin{proof}
   Computing the minimal polynomial of an element in $k$ takes
-  $O(m^{(\omega+1)/2})$ operations in $\F_q$, see~\cite{shoup93}. %
+  $O(m^{(\omega+1)/2})$ operations in $\F_q$, see~\cite{shoup99}. %
   The trace in Eq.~\eqref{equ:trace-simple} is computed as the
   expression $\tau_m$ of the previous paragraph (with $c=r$ and
   $d=m/r$), at a cost of $O(m^{(\omega+1)/2}\log(m)+\MM(m)\log(q))$
@@ -871,9 +879,7 @@ Indeed, we can reduce to this situation by applying
 Proposition~\ref{prop:subfield}, at an additional cost of
 $O(n^{(\omega+1)/2}\log(n) + \MM(n)\log(q))$ for each primary factor~$r$.
 Therefore, to simplify the exposition, we focus on algorithms
-solving the following problem\footnote{Although some of the algorithms, specially
-those presented in Sections \ref{sec:rains-algorithm} and \ref{sec:rains-elliptic},
-could still be readily applied to a more general problem.}.
+solving the following problem.
 \begin{problem}
 \label{prob:embedding}
 Let $r$ be a prime power and $k, K$ a pair of extensions of $\F_q$
