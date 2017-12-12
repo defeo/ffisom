@@ -2152,7 +2152,7 @@ better complexity. Hence we shall take $\ell$ prime.
 
 Given the above constraints, we can rewrite the conditions as:
 \begin{enumerate}
-\item $\ell = rsv + 1$ for some $s,u$ such that $\gcd(rs,v)=1$,
+\item $\ell = rsv + 1$ for some $s,v$ such that $\gcd(rs,v)=1$,
 \item $\order_\ell(q) = rs$,
 \item $\gcd(rsv,d)=1$.
 \end{enumerate}
@@ -2183,42 +2183,47 @@ $q^r\ne1\bmod\ell$. Hence, we can restate the conditions on $\ell$ as
 \item $\ell = ru+1$ for some $u$ such that $\gcd(r,u)=1$,
 \item $q^r\ne1\mod\ell$.
 \end{enumerate}
-Once $\ell$ is found, we compile a list of acceptable traces
-\[\mathcal{T} = \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\},\] %
-and look for a random curve with trace in $\mathcal{T}$. %
+Once $\ell$ is found, we compile a list of all integers of order $r$
+in $(\Z/\ell\Z)^\times$, and look for a curve of trace
+$t=\lambda+q/\lambda\bmod\ell$ for any $\lambda$ in the list. %
 Note, however, that for there to be such a curve, $t$ must have a
-representative in the interval $[-2\sqrt{q},2\sqrt{q}]$. %
-In order to have a good chance of finding such curves, we are going to
-set an even more stringent bound $\ell\in o(\sqrt[4]{q})$. %
-Indeed, although it is well known that traces are not evenly
-distributed modulo prime numbers~\cite{lenstra87}, it is shown
-in~\cite[Th.~1]{castryck+hubrechts13} that the probability that the
-trace of a random curve is in $\mathcal{T}$ approaches
-$\abs{\mathcal{T}}/\ell\sim r/\ell$, as $\ell$ and $q$ go to infinity,
-subject to $\ell\in o(\sqrt[4]{q})$.  %
+representative in the interval $[-2\sqrt{q},2\sqrt{q}]$.
 
 We thus have a procedure to produce parameters for Rains' algorithms:
 test integers of the form $\ell=ur+1$ for increasing $u$, until a
 suitable one is found. %
-The procedure is relatively efficient: the cost in $r$ is negligible
-compared to that of actually computing the isomorphism. %
-On the other hand, the cost in $q$ is relatively high, because of the
-need to count points of many random curves defined over $\F_q$, thus
-the elliptic variant may only be useful for not too large $q$.
+We summarize the elliptic case in Algorithm~\ref{algorithm:selectell}.
 
-Nevertheless, we are left with a question: when does the procedure
-stop? %
+\begin{algorithm}
+  [Parameter selection for Rains' elliptic algorithm]
+  \label{algorithm:selectell}
+  \begin{algorithmic}[1]
+    \REQUIRE Prime powers $q=p^d$ and $r$, a bound $\bar{u}\in o(\sqrt[4]{q}/r)$;
+    \ENSURE An elliptic curve suitable for Rains' elliptic algorithm, or FAIL.
+    \FOR{$u=1$ to $\bar{u}$}
+    \IF{\label{alg:selectell:prime} $\gcd(u,r)=1$, and $\ell=ur+1$ is prime, and $q^r\ne1\bmod\ell$}
+    \STATE\label{alg:selectell:ellorder} Compute $\mathcal{T} \leftarrow \{\lambda + q/\lambda \bmod\ell \;|\; \order_\ell(\lambda)=r\}$;
+    \FOR{each curve $E$ defined over $\F_q$}
+    \STATE\label{alg:selectell:pointcount} Compute $t = \#E - q + 1$;
+    \STATE {\bf if} $(t\bmod\ell)\in\mathcal{T}$ {\bf return} $(E, t)$;
+    \ENDFOR
+    \ENDIF
+    \ENDFOR
+    \RETURN FAIL.
+  \end{algorithmic}
+\end{algorithm}
+  
+Nevertheless, we are left with a question: when does the search for a
+suitable prime $\ell$ stop? %
 It is not easy to give a precise answer: already the condition that
-$\ell=ur+1$ is prime poses some
-difficulties. Heuristically, we expect that about
-$u/\log(u)$ of those numbers are prime. However the best
+$\ell=ur+1$ is prime poses some difficulties. Heuristically, we expect
+that about $u/\log(u)$ of those numbers are prime. However the best
 lower bound on primes of the form $\ell=ur+1$, even under GRH, is
 $\ell\in O(r^{2.4+\epsilon})$~\cite{heath1992zero}. Empirical data
 show that the reality is much closer to the heuristic bound: in
 Figure~\ref{fig:primes-arith-prog} we plot for all prime powers
 $r<10^8$ the smallest $u$ such that $ur+1$ is prime. It appears that
 $u$ is effectively bounded by $O(\log(r))$ for any practical purpose.
-
 
 \begin{figure}
   \centering
@@ -2231,20 +2236,44 @@ $u$ is effectively bounded by $O(\log(r))$ for any practical purpose.
 \end{figure}
 
 For the cyclotomic algorithm we also require that $\order_\ell(q)$ is
-a multiple of $r$. Assuming that $q$ is uniformly
-distributed\footnote{This assumption is obviously false for any fixed
-  $q$, but it is a good enough approximation in practice.} in
-$(\Z/\ell\Z)^\times$, its order is exactly $\ell-1$ with probability
-$(\ell-1)/\ell$, hence we can assume that asymptotically
-$\order_\ell(q)\in O(\ell)=O(r\log(r))$. Similar considerations can be
-made for the elliptic algorithm, assuming that $\ell\in
-o(\sqrt[4]{q})$.
-Finally, we must also take into account the possibility that the
-elliptic algorithm fails. Under the heuristics about
-the random distribution of elliptic periods,
-this possibility only discards one in
-$O(q^r)$ curves, and is thus negligible.
+a multiple of $r$. %
+Assuming that $q$ is uniformly distributed in $(\Z/\ell\Z)^\times$,
+this happens with probability at least $\euler(r)/r\ge 1/2$, hence we
+can assume that asymptotically $\ell\in O(r\log(r))$. %
 
+The elliptic algorithm has a similar condition on $\ell$, however it
+also requires that the set of curves with trace in $\mathcal{T}$ is
+not empty. %
+In principle, it is enough to ask that $\ell<4\sqrt{q}$; however, in
+order to have a good chance of finding such curves, we set an even
+more stringent bound $\ell\in o(\sqrt[4]{q})$. %
+Indeed, although it is well known that traces are not evenly
+distributed modulo prime numbers~\cite{lenstra87}, it is shown
+in~\cite[Th.~1]{castryck+hubrechts13} that the probability that the
+trace of a random curve is in $\mathcal{T}$ approaches
+$\abs{\mathcal{T}}/\ell\sim r/\ell$, as $\ell$ and $q$ go to infinity,
+subject to $\ell\in o(\sqrt[4]{q})$.  %
+Thus, also in the elliptic case, we can assume that
+$\ell\in O(r\log(r))$.
+
+Finally, we must also take into account the possibility that the
+elliptic algorithm fails on the curve output by
+Algorithm~\ref{algorithm:selectell}. %
+Under the heuristics about the random distribution of elliptic
+periods, this possibility only discards one in $O(q^r)$ curves, and is
+thus negligible.
+
+The cost of the search for $\ell$ is negligible compared to the cost
+of computing the embedding: for each candidate $\ell=ur+1$ we need to
+test its primality, and do some computations modulo $\ell$. %
+All this is well within $O(\sqrt{r})$ binary operations, using naive
+algorithms. %
+In the elliptic case we also need to count the number of points of
+$O(\log(r))$ elliptic curves defined over $\F_q$, which can be done in
+$\tildO\left(\log^5(q)\right)$ binary operations using the
+Schoof--Elkies--Atkin algorithm~\cite{schoof95,lercier+sirvent08}. %
+This highlights the fact that the elliptic algorithm is only practical
+for relatively small $q$.
 
 Summarizing, we can expect heuristically to find a
 $\ell\in O(r\log(r))$ that satisfies all the constraints for the
@@ -2253,7 +2282,7 @@ $\tildO(r^{(\omega+1)/2}+\MM(r)\log(q))$ operations in $\F_q$.  %
 Similarly, if we assume that $r\log(r)\in o(\sqrt[4]{q})$, we can
 expect to find suitable parameters for the elliptic algorithm, leading
 to an expected running time of $\tildO(r^2\log(q))$ operations in
-$\F_q$.
+$\F_q$, plus $\tildO(\log^5(q))$ binary operations.
 
 Although the complexity of the cyclotomic algorithm looks better, it
 must not be neglected that the $\tildO$ notation
