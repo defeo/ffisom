@@ -1901,7 +1901,7 @@ periods.
   $1728$.%
   \footnote{The definition is easily extended to include $j=0,1728$:
     one must quotient $S$ by $\Aut(E)\cap S$ and raise summands to an
-    appropriate power.} %
+    appropriate power. See~\cite{ffisom-long} for more details.} %
   Let $\ell > 3$ be an Elkies prime for $E$, $\lambda$ an eigenvalue
   of $\pi$, and $P$ a point of order $\ell$ in the eigenspace
   corresponding to $\lambda$ (i.e., such that $\pi(P)=\lambda P$).
@@ -2006,15 +2006,21 @@ First and most simply, we can assume that the
 elliptic period behaves like a random element of $\F_q(x(P))$. In this
 case the chance of it not being a generator is approximately
 $1/q^r$. %
-Based on this observation, numerous experiments
-were conducted for small values of $q$ and $r$
-either by sampling random curves over $\F_q$
-or through more involved methods using modular curves,
-but no counterexample was found.
+Based on this observation, numerous experiments were conducted for
+small values of $q$ and $r$: we tested all primes $\ell$ up to $1000$,
+all odd prime divisors $r$ of $\ell-1$, all primes $q$ up to a bound
+depending on $\ell$, and all curves defined over $\F_q$. %
+Overall, more than 43 million curves were tested, and no
+counterexample was found. %
+We also tested the conjecture through more involved methods using
+modular curves, more details are given
+in~\cite[Appendix~C.2]{ffisom-long}. %
+
 Secondly, based on the polynomially cyclic algebras setting
 of~\cite{Mihailescu2010825}, one can give a sufficient
 condition for the period to be a normal generator of
-$\F_q(x(P))$, that is a weak counterpart to Lemma~\ref{th:gaussian}.
+$\F_q(x(P))$, that is a weak counterpart to Lemma~\ref{th:gaussian}
+(see~\cite[Appendix~C.1]{ffisom-long}). %
 Heuristically, this suggests that the
 chance of the period not being normal is approximately $1/q$.
 
