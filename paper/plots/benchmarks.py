@@ -289,7 +289,7 @@ def plot_all(d, size=(10,10)):
     # Plot cyclotomic Rains', auxiliary degree 1
     df = d[d.rains_aux==1]
     df = df.groupby(df.degree).median()
-    ax.plot(df.index, df.t_cyclo_rains, lw=2,  label="Cyclotmic Rains' $s=1$")
+    ax.plot(df.index, df.t_cyclo_rains, lw=2,  label="Cyclotomic Rains' $s=1$")
     # Plot conic Rains'
     df = d[~d.t_conic_rains.isnull()]
     df = df.groupby(df.degree).median()
