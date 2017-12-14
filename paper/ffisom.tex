@@ -751,10 +751,12 @@ $$O(\MM(s)\log(q) + rs^{\omega-1}\log(s) + \MM(rs)\log(s))$$
 or
 $$O(\MM(s)\log(q) + n\MM(r)\log(s) + \MM(rs)\log(s))$$ operations in
 $\F_q$, where the first term accounts for computing $\alpha^{\lfloor
-  q/r \rfloor}$ (so we need only compute it once). The depth of the
-recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and the degree $n$
-is halved each time, so we obtain the
-desired result.
+  q/r \rfloor}$ (so we need only compute it once).
+
+Steps~\ref{alg:ks:odd} and~\ref{alg:ks:even} are again an instance of
+Case~5, and their cost is subsumed by Step~\ref{alg:ks-pseudotrace}.
+The depth of the recursion in Algorithm~\ref{alg:ks} is $\log(r)$, and
+the degree $n$ is halved each time, so we obtain the desired result.
 \end{proof}
 
 \paragraph{\bf Root finding in some extensions of cyclotomic extensions.}
