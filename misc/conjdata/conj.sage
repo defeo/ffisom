@@ -1,7 +1,13 @@
 import sys
 
-# check all curves for l in a given range
+##############################################################################
+# Functions to check all curves for l in a given range
+# and some elliptic trace, norm or symmetric function in between
+##############################################################################
 class CounterExampleException(Exception):
+	"""
+	Exception to be raised in case a counter example is found.
+	"""
 	def __init__(self, q, l, E, r, s = None, e = None):
 		self.q = q
 		self.l = l
@@ -14,25 +20,44 @@ class CounterExampleException(Exception):
 		return "q = {}, j = {}, E = {}, #E = {}, l = {}, r = {}, rl = {}, s = {}, e = {}".format(self.q.factor(),self.E.j_invariant(),self.E.a_invariants(),self.E.cardinality().factor(),self.l,self.r,(self.l-1)/(2*self.r),self.s,self.e)
 
 def is_normal(alpha, r, q, p):
+	"""
+	Check that alpha in F_q of characteristic p is normal in F_q^r.
+	"""
 	K = alpha.parent()
 	x = polygen(K)
 	falpha = sum(alpha**(p**i)*x**i for i in xrange(0, r))
 	return falpha.gcd(x**r-1) == 1
 
 def is_gen_all(alpha, r, q, p):
+	"""
+	Check that alpha in F_q of characteristic p generates F_q ^r.
+	"""
 	return alpha.minimal_polynomial().degree() == r
 
 def is_gen_prime(alpha, r, q, p):
+	"""
+	Check that alpha in F_q of characteristic p generates F_q^r
+	where q = p and r is prime.
+	"""
 	# only for r and q prime
 	return alpha.polynomial().degree() >= 1
 
 def periodify_trace(b, P, rl, coord = 0):
-		return sum(((b**i).lift()*P)[coord] for i in xrange(0,rl))
+	"""
+	Compute the elliptic trace of P for (b, rl).
+	"""
+	return sum(((b**i).lift()*P)[coord] for i in xrange(0,rl))
 
 def periodify_norm(b, P, rl, coord = 0):
-		return prod(((b**i).lift()*P)[coord] for i in xrange(0,rl))
+	"""
+	Compute the elliptic norm of P for (b, rl).
+	"""
+	return prod(((b**i).lift()*P)[coord] for i in xrange(0,rl))
 
 def periodify_all(xP, rl, s, e):
+	"""
+	Compute the elliptic symmetric function up to powers for P for (b, rl).
+	"""
 	print rl, s, binomial(rl, s)
 	sys.stdout.flush()
 	if e == 1:
@@ -64,6 +89,11 @@ def periodify_all(xP, rl, s, e):
 		return sum(prod(xP[i] for i in c)**e for c in Combinations(rl, s))
 
 def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
+	"""
+	Check the conjecture for the curve E and the prime l
+	if rhe extension degree r is  within rbound.
+	The symmetric functions to check are given by sbound and powers.
+	"""
 	if rbound is False:
 		rbound = [1, Infinity]
 	rmin = rbound[0]
