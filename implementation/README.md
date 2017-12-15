@@ -46,7 +46,7 @@ Update the library paths (must be done each time a new terminal is open)
 	export LD_LIBRARY_PATH=$PWD:$LD_LIBRARY_PATH
 	export PYTHONPATH=$PWD:$PYTHONPATH
 
-Lauch SageMath
+Launch SageMath
 
 	sage
 
