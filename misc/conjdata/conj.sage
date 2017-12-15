@@ -1,8 +1,8 @@
 import sys
 
 ##############################################################################
-# Functions to check all curves for l in a given range
-# and some elliptic trace, norm or symmetric function in between
+# Helper functions to check that elements are normal or generating
+# and compute symmetric functions of powers.
 ##############################################################################
 class CounterExampleException(Exception):
 	"""
@@ -56,7 +56,7 @@ def periodify_norm(b, P, rl, coord = 0):
 
 def periodify_all(xP, rl, s, e):
 	"""
-	Compute the elliptic symmetric function up to powers for P for (b, rl).
+	Compute the elliptic symmetric function of powers for P for (b, rl).
 	"""
 	print rl, s, binomial(rl, s)
 	sys.stdout.flush()
@@ -88,10 +88,16 @@ def periodify_all(xP, rl, s, e):
 	else:
 		return sum(prod(xP[i] for i in c)**e for c in Combinations(rl, s))
 
+##############################################################################
+# Functions to check the conjecture for all curves for l in a given range
+# and some elliptic trace, norm or symmetric function in between of powers.
+# This is the brute force method named "strategy 1".
+##############################################################################
 def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
 	"""
 	Check the conjecture for the curve E and the prime l
-	if rhe extension degree r is  within rbound.
+	if the extension degree r is within rbound and only if it is prime
+	depending on the prime parameter.
 	The symmetric functions to check are given by sbound and powers.
 	"""
 	if rbound is False:
@@ -238,6 +244,13 @@ def check_ff_curve(E, l = 5, rbound = False, sbound = False, powers = False, pri
 	return basis
 
 def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True, subfield = False):
+	"""
+	Check the conjecture for the all curves defined over K
+	(one curve for each isomorphism class) and the prime l
+	if the extension degree r is within rbound and only if it is prime
+	depending on the prime parameter.
+	The symmetric functions to check are given by sbound and powers.
+	"""
 	cnt = 0
 	d = K.degree()
 	e = [p**ZZ(d/i) for i in d.prime_divisors()]
@@ -266,6 +279,14 @@ def check_ff_jinv(K = GF(7), l = 5, rbound = False, sbound = False, powers = Fal
 	return [cnt, len(false), false]
 
 def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = False, prime = False, normal = False, verbose = False, abort = True):
+	"""
+	Check the conjecture for all curves given by equations with
+	coefficients in K (therefore several times the same curve up
+	to isomorphism) and the prime l
+	if the extension degree r is within rbound and only if it is prime
+	depending on the prime parameter.
+	The symmetric functions to check are given by sbound and powers.
+	"""
 	cnt = 0
 	K2 = K**2
 	false = []
@@ -288,6 +309,15 @@ def check_ff_coeffs(K = GF(13), l = 7, rbound = False, sbound = False, powers = 
 	return [cnt, len(false), false]
 
 def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = False, sbound = False, powers = False, prime = True, normal = False, verbose = False):
+	"""
+	Check the conjecture for the all curves
+	(one curve for each isomorphism class) 
+	defined over the prime fields of characteristic within pbound
+	and the prime l within lbound
+	if the extension degree r is within rbound and only if it is prime
+	depending on the prime parameter.
+	The symmetric functions to check are given by sbound and powers.
+	"""
 	if pbound is False:
 		pbound = [5, Infinity]
 	pmin = pbound[0]
@@ -345,117 +375,10 @@ def check_ff_range(pbound = False, dbound = False, lbound = False, rbound = Fals
 		cnt += pcnt
 		print "pcnt =", pcnt, ", cnt =", cnt
 
-def check_extdeg_jinv(r, K, Kr, l, ldict = None, prime = False, verbose = False):
-	p = K.characteristic()
-	q = Kr.order()
-	jcnt, gcnt, ncnt = 0, 0, 0
-	if prime: 
-		is_gen = is_gen_prime
-	else:
-		is_gen = is_gen_all
-	xl, al, bl, rl = ldict[l]
-
-	for j in K:
-		# Exclude special curves
-		if j == 0 or j == 1728:
-			continue
-
-		E = EllipticCurve(j=K(j))
-		t = E.trace_of_frobenius()
-		fmod = xl**2-t*xl+p
-		froots = fmod.roots()
-		if len(froots) != 2:
-			continue
-		r0, r1 = [z.multiplicative_order() if z != 0 else Infinity for z, _ in froots]
-		if r in [r0, r1]:
-			pass
-		elif (r % 2 == 0 and ZZ(r/2) in [r0, r1]) or (2*r != l-1 and 2*r in [r0, r1]):
-			E = E.quadratic_twist()
-			fmod = xl**2+t*xl+p
-			froots = fmod.roots()
-			r0, r1 = [z.multiplicative_order() if z != 0 else Infinity for z, _ in froots]
-		else:
-			continue
-		try:
-			assert(r in [r0, r1])
-		except AssertionError:
-			print p, r, l, j, E
-			raise
-		s = r1 if r == r0 else r1
-		if s.divides(r):
-			continue
-
-		EKr = E.base_extend(Kr)
-		m = E.cardinality(extension_degree=r)
-		ml = ZZ(m/l)
-
-		P = EKr(0)
-		while P == 0:
-			P = ml*EKr.random_element()
-
-		period = periodify_trace(bl, P, rl, 1 if r % 2 == 0 else 0)
-		jcnt += 1
-		if not is_gen(period, r, q, p):
-			print p, r, l, j, E
-			raise Exception
-		else:
-			gcnt += 1
-		ncnt += is_normal(period, r, q, p)
-
-	return jcnt, gcnt, ncnt
-
-def check_extdeg(r = 3, pbound = False, verbose = False):
-	if pbound is False:
-		pbound = [5, Infinity]
-	pmin = pbound[0]
-	pmax = pbound[1]
-	prime = r.is_prime()
-	ldict = {}
-	llist = []
-	lmax = 3
-
-	cnt = 0
-	for p in Primes():
-		pcnt = 0
-		if p < pmin:
-			continue
-		if p > pmax:
-			break
-		linfty = p.n()**(r)+2*p.n()**(1/2*r)
-		K = GF(p)
-		Kr = K.extension(r, name='z')
-		print "p =", p, ", r =", r, ", p^-r =", p.n()**-r, ", linfty =", linfty
-		lpcnt = 0
-		for l in llist:
-			lpcnt += 1
-			if verbose and lpcnt % 10**4 == 0:
-				print "lpcnt =", lpcnt, ", l =", l
-			jcnt, gcnt, ncnt = check_extdeg_jinv(r, K, Kr, l, ldict, prime=prime, verbose=verbose)
-			if jcnt != 0:
-				print p, r, l, jcnt, gcnt, ncnt, ncnt.n()/gcnt.n()
-			if jcnt != gcnt:
-				raise Exception
-		for l in primes(lmax + 1, linfty.ceil(), proof=False):
-			if (l-1) % r != 0 or ZZ((l-1)/r).gcd(r) != 1:
-				continue
-			L = GF(l)
-			xl = polygen(L)
-			al = L.multiplicative_generator()
-			bl = al**(r if r % 2 == 0 else 2*r)
-			rl = ZZ((l-1)/(r if r % 2 == 0 else 2*r))
-			ldict[l] = (xl, al, bl, rl)
-			llist.append(l)
-			lmax = l
-			lpcnt += 1
-			if verbose and lpcnt % 10**4 == 0:
-				print "lpcnt =", lpcnt, ", l =", l
-			jcnt, gcnt, ncnt = check_extdeg_jinv(r, K, Kr, l, ldict, prime=prime, verbose=verbose)
-			if jcnt != 0:
-				print p, r, l, jcnt, gcnt, ncnt, ncnt.n()/gcnt.n()
-			if jcnt != gcnt:
-				raise Exception
-
 def check_ff_cyclo(K = GF(7), l = 5):
+	"""
+	Check that Gaussian periods are normal (which is a theorem).
+	"""
 	a = GF(l).multiplicative_generator()
 	x = polygen(ZZ)
 	r = GF(l)(K.order()).multiplicative_order()
@@ -471,8 +394,17 @@ def check_ff_cyclo(K = GF(7), l = 5):
 	period = sum(zeta**(b**i) for i in xrange(0,rl))
 	return is_normal(period, r, K.order(), K.characteristic())
 
-# Test l = 4*r+1
+##############################################################################
+# Functions to check the conjecture using the multiplication
+# polynomial.
+# This is the "strategy 2".
+##############################################################################
 def test_p(ell, r, d, i, p, smart=True):
+	"""
+	Check the conjecture for l = 2*d*r+1 using the
+	polynomial giving the multiplication by a d-th root
+	of -1 mod l on the curve.
+	"""
 	count = 0
 	ex = []
 	xell = polygen(GF(ell))
@@ -516,6 +448,11 @@ def test_p(ell, r, d, i, p, smart=True):
 	return count, ex
 
 def test_ell(ell, d = 2, max_p=Infinity, abort=True, smart=True):
+	"""
+	Check the conjecture for l = 2*d*r+1 using the
+	polynomial giving the multiplication by a d-th root
+	of -1 mod l on the curve on a range of finite fields.
+	"""
 	assert((ell-1)%2*d==0)
 	r = (ell - 1)//(2*d)
 	assert(is_prime(r))
@@ -533,8 +470,17 @@ def test_ell(ell, d = 2, max_p=Infinity, abort=True, smart=True):
 		p = next_prime(p)
 	return ex
 
-# generate rational curves with 13-torsion over cubic extension
+##############################################################################
+# Functions to check the conjecture using modular curves
+# and the multiplication polynomial.
+# This is the "strategy 3".
+##############################################################################
 def test_X0of13(T=QQ, period=None, abort=True):
+	"""
+	Check the conjecture by generating rational curves
+	with 13-torsion over a cubic extension
+	and using multiplication polynomial.
+	"""
 	_.<t> = QQ[]
 	j = (t^4 - t^3 + 5*t^2 + t + 1)*(t^8 - 5*t^7 + 7*t^6 - 5*t^5 + 5*t^3 + 7*t^2 + 5*t + 1)^3/(t^13 * (t^2 - 3*t - 1))
 	ex = []
@@ -556,10 +502,15 @@ def test_X0of13(T=QQ, period=None, abort=True):
 				if abort and goodp:
 					return ex
 
-# test other X_0(ell) for prime ell
-# this gives nothing for 43, 67 there is no bad p and things look ok
-# in particular only ell is in denominators and there is no gcd
 def test_X0ofPrime(E, ell, d, r, naive=False, print_height=True, early_stop=False):
+ 	"""
+	Check the conjecture using modular curves X_0(ell) for prime ell
+	and multiplication polynomial.
+
+	Note that this gives nothing for 43, 67:
+	there is no bad p and things look ok;
+	in particular only ell is in denominators and there is no gcd.
+	"""
 	assert(ell.is_prime())
 	assert(ell == 2*d*r+1)
 	if naive:
@@ -590,9 +541,13 @@ def test_X0ofPrime(E, ell, d, r, naive=False, print_height=True, early_stop=Fals
 	goodp = filter(lambda (p,P): not p.divides(badp), gcd(P.list()[1:]).factor())
 	return P, goodp
 
-# find curves with a rational $25$-isogeny
-# and $25$-torsion (or some abscissae) over a quintic number field
 def find_X1of25(T = QQ, verbose = False):
+	"""
+	Check the conjecture using the modular curve of level 25
+	by generating curves with a rational $25$-isogeny
+	and $25$-torsion (or some abscissae) over a quintic number field
+	and using multiplication polynomial.
+	"""
 	x = polygen(QQ)
 	j25 = (x^10+10*x^8+35*x^6-12*x^5+50*x^4-60*x^3+25*x^2-60*x+16)^3/(x^5+5*x^3+5*x-11)
 	for t in T:
@@ -611,6 +566,10 @@ C15 = ["50A1", "50A2", "50A3", "50A4"]
 C21 = ["162B1", "162B2", "162B3", "162B4"]
 C27 = ["27A2"]
 def pattern_X0ofComposite(n=15, C=C15):
+	"""
+	Check the conjecture using modular curves of composite level
+	and multiplication polynomial.
+	"""
 	for c in C:
 		E = EllipticCurve(c)
 		f = E.division_polynomial(n)
