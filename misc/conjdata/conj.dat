@@ -1,5 +1,10 @@
 ###############################################################################
-###############################################################################
+# Counter examples for variations of the conjecture using other symmetric
+# functions of powers of the abscissae different from the trace
+# from the run we made (and which are given below).
+# The level of the symmetric function is given by s:
+# 1 is the trace, oo (or norm) is the norm;
+# and the exponent to which the abscissae are raised is given by d.
 ###############################################################################
 #norm r=3 rl=77 l=463
 #pcnt = 107 , cnt = 1046
@@ -103,13 +108,18 @@ p = 673 , d = [1, 1] , sbound = [1, +Infinity, 1048576] , rbound = [3, 3] , prim
 j = 280 , r = 3 , rl = 55 , p =  673 , l = 331
 CounterExampleException: q = 673, j = 280, E = (0, 0, 0, 636, 457), #E = 2^3 * 83, l = 331, r = 3, rl = 55, s = 54, e = 1
 
+###############################################################################
+###############################################################################
+###############################################################################
 
 ###############################################################################
+# Data of ranges of p and ell for which the conjecture was checked.
+# When a counter example was found in a given run it is indicated by !!!
+# and the counter example data is given above.
 ###############################################################################
+
 ###############################################################################
-#checked
-###############################################################################
-#trace prime
+# s=trace d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), prime=True)
 p = 2753 , d = 1 , prime = True , norm = False
@@ -167,7 +177,7 @@ p = 419 , d = 1 , prime = True , norm = False
 pcnt = 998 , cnt = 24707
 
 ###############################################################################
-#trace all
+# s=trace d=1 r=any
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), prime=False)
 p = 1831 , d = 1 , prime = False , norm = False
@@ -185,14 +195,70 @@ p = 1753 , d = [1, 1] , sbound = [1, 1, +Infinity] , rbound = [1, +Infinity, +In
 pcnt = 12349 , cnt = 1439322
 
 ###############################################################################
-#norm all
+# s=trace d=1 r=3
 ###############################################################################
-check_ff_range(lbound = [Integer(0),Integer(100)], sbound=True, prime=False)
-p = 1741 , d = [1, 1] , sbound = [+Infinity, +Infinity, +Infinity] , rbound = [1, +Infinity, +Infinity] , prime = False
-pcnt = 10351 , cnt = 1416205
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(3), norm=False, prime=True)
+p = 11549 , d = 1 , prime = True , norm = False
+pcnt = 16765 , cnt = 6305941
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(3), norm=False, prime=True)
+p = 13513 , d = 1 , prime = True , norm = False
+pcnt = 2179 , cnt = 1377327
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(3), norm=False, prime=True)
+p = 11083 , d = 1 , prime = True , norm = False
+pcnt = 1417 , cnt = 1150277
+
+check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(3), norm=False, prime=True)
+p = 6551 , d = 1 , prime = True , norm = False
+pcnt = 1070 , cnt = 442503
 
 ###############################################################################
-#norm prime
+# s=trace d=1 r=5
+###############################################################################
+check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(5), norm=False, prime=True)
+p = 11329 , d = 1 , prime = True , norm = False
+pcnt = 16535 , cnt = 6371281
+
+check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(5), norm=False, prime=True)
+p = 13697 , d = 1 , prime = True , norm = False
+pcnt = 1259 , cnt = 1457441
+
+check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(5), norm=False, prime=True)
+p = 10937 , d = 1 , prime = True , norm = False
+pcnt = 1584 , cnt = 1174273
+
+check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(5), norm=False, prime=True)
+p = 6473 , d = 1 , prime = True , norm = False
+pcnt = 1311 , cnt = 586109
+#
+###############################################################################
+# s=trace d=1 r=9
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(200)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
+p = 2657 , l = 181--
+
+check_ff_range(lbound=[Integer(200),Integer(500)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
+p = 3889 , l = 397
+
+###############################################################################
+# s=trace d=1 r=15
+###############################################################################
+check_ff_range(lbound=[Integer(0),Integer(500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
+p = 2593 , l = 61--
+
+check_ff_range(lbound=[Integer(500),Integer(1500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
+p = 2113 , l = 1321--
+
+###############################################################################
+# s=trace d=1 r=21
+###############################################################################
+check_ff_range(lbound=[Integer(00),Integer(1500)], rbound=[Integer(21),Integer(21)], prime=False, verbose=True)
+p = 1787 , l = 421--
+
+
+###############################################################################
+# s=norm d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=True, prime=True)
 p = 2707 , d = 1 , prime = True , norm = True
@@ -235,7 +301,14 @@ p = 293 , d = 1 , prime = True , norm = True
 pcnt = 298 , cnt = 13134
 
 ###############################################################################
-#s=2 prime
+# s=norm d=1 r=any
+###############################################################################
+check_ff_range(lbound = [Integer(0),Integer(100)], sbound=True, prime=False)
+p = 1741 , d = [1, 1] , sbound = [+Infinity, +Infinity, +Infinity] , rbound = [1, +Infinity, +Infinity] , prime = False
+pcnt = 10351 , cnt = 1416205
+
+###############################################################################
+# s=2 d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(2), prime=True)
 p = 7993 , d = 1 , prime = True , norm = 2
@@ -280,7 +353,7 @@ p = 2203 , d = 1 , prime = True , norm = 2
 pcnt = 2442 , cnt = 392749
 
 ###############################################################################
-#s=3 prime
+# s=3 d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(3), prime=True)
 p = 6829 , d = 1 , prime = True , norm = 3
@@ -304,7 +377,7 @@ p = 733 , d = 1 , prime = True , norm = 3
 pcnt = 972 , cnt = 59136
 
 ###############################################################################
-#s=4 prime
+# s=4 d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), norm=Integer(4), prime=True)
 p = 4951 , d = 1 , prime = True , norm = 4
@@ -327,7 +400,7 @@ p = 139 , d = 1 , prime = True , norm = 4
 pcnt = 64 , cnt = 1762
 
 ###############################################################################
-#s=5 prime
+# s=5 d=1 r=prime
 ###############################################################################
 check_ff_range(lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=True, norm=Integer(5))
 p = 1319 , d = 1 , prime = True , norm = 5
@@ -350,7 +423,7 @@ p = 17 , d = 1 , prime = True , norm = 5
 pcnt = 9 , cnt = 20
 
 ###############################################################################
-#s=6 prime
+# s=6 d=1 r=prime
 ###############################################################################
 check_ff_range(pmin=Integer(114), lmin=Integer(Integer(0)), lmax=Integer(Integer(100)), prime=True, norm=Integer(6))
 p = 977 , d = 1 , prime = True , norm = 6
@@ -373,46 +446,7 @@ p = 4493 , d = [1, 1] , prime = True , sbound = [6, 6]
 pcnt = 3650 , cnt = 904599
 
 ###############################################################################
-#trace r=3
-###############################################################################
-check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(3), norm=False, prime=True)
-p = 11549 , d = 1 , prime = True , norm = False
-pcnt = 16765 , cnt = 6305941
-
-check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(3), norm=False, prime=True)
-p = 13513 , d = 1 , prime = True , norm = False
-pcnt = 2179 , cnt = 1377327
-
-check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(3), norm=False, prime=True)
-p = 11083 , d = 1 , prime = True , norm = False
-pcnt = 1417 , cnt = 1150277
-
-check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(3), norm=False, prime=True)
-p = 6551 , d = 1 , prime = True , norm = False
-pcnt = 1070 , cnt = 442503
-
-###############################################################################
-#trace r=5
-###############################################################################
-
-check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(5), norm=False, prime=True)
-p = 11329 , d = 1 , prime = True , norm = False
-pcnt = 16535 , cnt = 6371281
-
-check_ff_range(lmin=Integer(100), lmax=Integer(200), rfixed=Integer(5), norm=False, prime=True)
-p = 13697 , d = 1 , prime = True , norm = False
-pcnt = 1259 , cnt = 1457441
-
-check_ff_range(lmin=Integer(200), lmax=Integer(400), rfixed=Integer(5), norm=False, prime=True)
-p = 10937 , d = 1 , prime = True , norm = False
-pcnt = 1584 , cnt = 1174273
-
-check_ff_range(lmin=Integer(400), lmax=Integer(1000), rfixed=Integer(5), norm=False, prime=True)
-p = 6473 , d = 1 , prime = True , norm = False
-pcnt = 1311 , cnt = 586109
-
-###############################################################################
-#norm r=3
+# s=norm d=1 r=3
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(3), norm=True, prime=True)
 p = 11489 , d = 1 , prime = True , norm = True
@@ -436,7 +470,7 @@ p = 3331 , d = 1 , prime = True , norm = True
 pcnt = 357 , cnt = 135687
 
 ###############################################################################
-#norm r=5
+# s=norm d=1 r=5
 ###############################################################################
 check_ff_range(lmin=Integer(0), lmax=Integer(100), rfixed=Integer(5), norm=True, prime=True)
 p = 11411 , d = 1 , prime = True , norm = True
@@ -459,7 +493,7 @@ p = 3457 , d = 1 , prime = True , norm = True
 pcnt = 899 , cnt = 165282
 
 ###############################################################################
-#norm d=2 r=3
+# s=norm d=2 r=3
 ###############################################################################
 n=Integer(000); r=Integer(3); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
 p = 173 l = 31--
@@ -477,7 +511,7 @@ n=Integer(400); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integ
 p = 223 , l = 457--
 
 ###############################################################################
-#norm d=2 r=5
+# s=norm d=2 r=5
 ###############################################################################
 n=Integer(000); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbound=[n,n+Integer(100)], rbound=[r,r], sbound=True, prime=True, verbose=True)
 p = 173 l = 61--
@@ -495,31 +529,7 @@ n=Integer(400); r=Integer(5); check_ff_range(dbound=[Integer(2),Integer(2)], lbo
 p = 163 l = 431--
 
 ###############################################################################
-# s=1 d=1 r=9
-###############################################################################
-check_ff_range(lbound=[Integer(0),Integer(200)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
-p = 2657 , l = 181--
-
-check_ff_range(lbound=[Integer(200),Integer(500)], rbound=[Integer(9),Integer(9)], prime=False, verbose=True)
-p = 3889 , l = 397
-
-###############################################################################
-# s=1 d=1 r=15
-###############################################################################
-check_ff_range(lbound=[Integer(0),Integer(500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
-p = 2593 , l = 61--
-
-check_ff_range(lbound=[Integer(500),Integer(1500)], rbound=[Integer(15),Integer(15)], prime=False, verbose=True)
-p = 2113 , l = 1321--
-
-###############################################################################
-# s=1 d=1 r=21
-###############################################################################
-check_ff_range(lbound=[Integer(00),Integer(1500)], rbound=[Integer(21),Integer(21)], prime=False, verbose=True)
-p = 1787 , l = 421--
-
-###############################################################################
-# s=all d=1 r=3 limit=2**20
+# s=any d=1 r=3 limit=2**20
 ###############################################################################
 check_ff_range(pbound=[Integer(1010),Infinity], lbound=[Integer(0),Integer(100)], rbound=[Integer(3),Integer(3)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p =  17467 , l = 97--
@@ -560,7 +570,7 @@ check_ff_range(pbound=[Integer(44),Infinity], lbound=[Integer(1500),Integer(3000
 p =  3761 , l = 2311--
 
 ###############################################################################
-# s=all d=1 r=5 limit=2**20
+# s=any d=1 r=5 limit=2**20
 ###############################################################################
 check_ff_range(lbound=[Integer(0),Integer(100)], rbound=[Integer(5),Integer(5)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p =  34159 , l = 71
@@ -603,7 +613,7 @@ check_ff_range(lbound=[Integer(1500),Integer(3000)], rbound=[Integer(5),Integer(
 p =  2213 , l = 2111--
 
 ###############################################################################
-# s=all d=1 r=7 limit=2**20
+# s=any d=1 r=7 limit=2**20
 ###############################################################################
 check_ff_range(lbound=[0,100], rbound=[7,7], prime=True, sbound=[1, Infinity, 2**20], verbose=True)
 p =  35051 , l = 43--
@@ -642,13 +652,13 @@ check_ff_range(lbound=[Integer(1500),Integer(3000)], rbound=[Integer(7),Integer(
 p =  1321 , l = 2591--
 
 ###############################################################################
-# s=all d=1 r=11 limit=2**20
+# s=any d=1 r=11 limit=2**20
 ###############################################################################
 check_ff_range(lbound=[Integer(0),Integer(2000)], rbound=[Integer(11),Integer(11)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p =  1193 , l = 881--
 
 ###############################################################################
-# s=all d=1 r=13,17 limit=2**20
+# s=any d=1 r=13,17 limit=2**20
 ###############################################################################
 check_ff_range(lbound=[Integer(0),Integer(2000)], rbound=[Integer(13),Integer(17)], prime=True, sbound=[Integer(1), Infinity, Integer(2)**Integer(20)], verbose=True)
 p =  751 , l = 547--
