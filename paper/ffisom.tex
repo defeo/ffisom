@@ -1434,12 +1434,12 @@ $\theta \in k$ with nonzero trace, $\alpha$ can be explicitly set as
 	(a + \sigma(a) + \cdots + \sigma^{rt - 2}(a))\sigma^{rt - 1}(\theta)]
 \end{equation}
 where $t = [\F_q : \F_p]$.
-To compute $\alpha$ using Eq.~\eqref{equ:art-sch-hil} efficiently, we define
-$ \xi_i = \sigma^i(x)$, and, 
+To compute $\alpha$ using Eq.~\eqref{equ:art-sch-hil} efficiently, for $j \ge 1$, we define
+$ \xi_j = \sigma^j(x)$, and, 
 for $u$ in $k$, 
-\[ \beta_{u,i} = u + \sigma(u) + \cdots + \sigma^{i - 1}(u), \quad 
-\alpha_{u,i} = \beta_{a,1}\sigma(u) + \cdots +
-\beta_{a,i}\sigma^i(u). \] Our goal is to ultimately compute
+\[ \beta_{u,j} = u + \sigma(u) + \cdots + \sigma^{j - 1}(u), \quad 
+\alpha_{u,j} = \beta_{a,1}\sigma(u) + \cdots +
+\beta_{a,j}\sigma^j(u). \] Our goal is to ultimately compute
 $\beta_{\theta,rt}=\trace(\theta) $ and $\alpha =
 \beta_{\theta,rt}^{-1}\,\alpha_{\theta,rt}$. For this, we show how to
 compute quadruples of the form $(\xi_j, \beta_{a,j}, \beta_{\theta,j},
