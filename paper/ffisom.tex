@@ -1003,11 +1003,10 @@ $\gal(k / \F_q)$ can be extended to $k[\zeta]$ by
 \[
 \left.
 \begin{array}{llll}
-\sigma: & k[\zeta] & \rightarrow & k[\zeta] \\
-& x \otimes \zeta & \mapsto & x^q \otimes \zeta
+\sigma: & k[\zeta] & \rightarrow & k[\zeta], \\
+& x \otimes \zeta & \mapsto & x^q \otimes \zeta.
 \end{array}
 \right.
-.
 \]
 Allombert shows (see~\cite[Prop.~3.2]{Allombert02}) that $\sigma$ is
 an automorphism of $\F_q(\zeta)$-algebras, and that its fixed set is
@@ -2213,11 +2212,12 @@ test integers of the form $\ell=ur+1$ for increasing $u$, until a
 suitable one is found. %
 We summarize the elliptic case in Algorithm~\ref{algorithm:selectell}.
 
+\begin{figure}
 \begin{algorithm}
   [Parameter selection for Rains' elliptic algorithm]
   \label{algorithm:selectell}
   \begin{algorithmic}[1]
-    \REQUIRE Prime powers $q=p^d$ and $r$, a bound $\bar{u}\in o(\sqrt[4]{q}/r)$;
+    \REQUIRE Prime powers $q$ and $r$, a bound $\bar{u}\in o(\sqrt[4]{q}/r)$;
     \ENSURE An elliptic curve suitable for Rains' elliptic algorithm, or FAIL.
     \FOR{$u=1$ to $\bar{u}$}
     \IF{\label{alg:selectell:prime} $\gcd(u,r)=1$, and $\ell=ur+1$ is prime, and $q^r\ne1\bmod\ell$}
@@ -2231,7 +2231,8 @@ We summarize the elliptic case in Algorithm~\ref{algorithm:selectell}.
     \RETURN FAIL.
   \end{algorithmic}
 \end{algorithm}
-  
+\end{figure}  
+
 Nevertheless, we are left with a question: when does the search for a
 suitable prime $\ell$ stop? %
 It is not easy to give a precise answer: already the condition that
@@ -2590,6 +2591,7 @@ on the $x$-coordinate, we work in a field extension twice as small
 compared to the original algorithm. %
 This is summarized in Algorithm~\ref{algorithm:rains-conic}.
 
+\begin{figure}
 \begin{algorithm}[Rains' conic algorithm]
   \label{algorithm:rains-conic}
   \begin{algorithmic}[1]
@@ -2614,6 +2616,7 @@ This is summarized in Algorithm~\ref{algorithm:rains-conic}.
     \RETURN\label{algorithm:rains-conic:trace} $\alpha \leftarrow \trace_{k'/k}\eta(\zeta) = \sum_{i=0}^{s-1}[q^{ri}]\eta(\zeta)$.
   \end{algorithmic}
 \end{algorithm}
+\end{figure}
 
 \begin{proposition}
   Algorithm~\ref{algorithm:rains-conic} is correct: on input
