@@ -1,0 +1,345 @@
+\documentclass[francais]{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\graphicspath{{graphics/}}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows,arrows.meta,positioning}
+\tikzset{>/.tip={Computer Modern Rightarrow[scale=2,line width=1pt]}}
+\tikzset{|/.tip={Bar[scale=2,line width=1pt]}}
+\tikzset{c_/.tip={Hooks[scale=2,line width=1pt,right]}}
+\tikzset{c^/.tip={Hooks[scale=2,line width=1pt,left]}}
+
+\colorlet{alert}{red}
+
+\def\Q {\ensuremath{\mathbb{Q}}}
+\def\Z {\ensuremath{\mathbb{Z}}}
+\def\F {\ensuremath{\mathbb{F}}}
+\def\Tr {\ensuremath{\mathrm{Tr}}}
+\def\M {\ensuremath{\mathsf{M}}}
+\def\tildO {\tilde{O}}
+\def\Id {\ensuremath{\mathrm{Id}}}
+
+\DeclareMathOperator{\Gal}{Gal}
+\DeclareMathOperator{\ord}{ord}
+
+\newcommand{\paragraph}[1]{\smallskip\textbf{#1}}
+
+\makeatletter
+\def\beamer@andinst{ }
+\makeatother
+\title[Lattices of finite fields]{Algorithms for lattices of compatibly embedded finite fields}
+\author[LB, LDF, JD, JPF, ÉS]{\small Ludovic Brieulle\inst{1} \and Luca De Feo\inst{2} \and Javad Doliskani\inst{3} \and Jean-Pierre~Flori\inst{4} \and Éric Schost\inst{3}}
+\institute[UAM, UVSQ, UW, ANSSI]{\tiny \vspace*{0.5em}\inst{1} Université d'Aix-Marseille \and
+  \inst{2} Université de Versailles -- Saint-Quentin-en-Yvelines\\ \and
+  \vspace*{-0.8em} \inst{3} University of Waterloo \and
+  \inst{4} Agence nationale de sécurité des systèmes d'information}
+\date[2018/01/17]{}
+
+\begin{document}
+
+\begin{frame}<handout:0> \titlepage
+\end{frame}
+
+\section{The embedding problem}
+
+\begin{frame}\frametitle{The embedding problem}
+%  \begin{columns}
+%    \begin{column}{.3\textwidth}
+   \begin{wrapfigure}{r}{0.45\textwidth}
+     \centering
+ %     \resizebox{\textwidth}{!}{
+      \begin{tikzpicture}[node distance=8em,font=\large]
+        \node(Fq){$\F_q$};
+        \node(Fqf)[above left of=Fq]{$k=\F_q[X]/f(X)$};
+        \node(Fqg)[above right of=Fqf]{$K=\F_q[Y]/g(Y)$};
+        \draw[]
+        (Fq) edge (Fqf)
+        (Fq) edge (Fqg)
+        (Fqf) edge[left,auto,color=alert] node{$\varphi$} (Fqg);
+      \end{tikzpicture}
+  %  }
+    \end{wrapfigure}
+  %  \end{column}
+  %  \begin{column}{0.7\textwidth}
+   % \begin{definition}
+
+    \paragraph{Let}
+    \begin{itemize}
+    \item $\F_q$ be a field with $q$ elements,
+    \item $f$ and $g$ be irreducible polynomials in $\F_q[X]$ and
+      $\F_q[Y]$,
+    \item $r=\deg f$, $s=\deg g$ and $r|s$.
+    \end{itemize}
+  %\end{definition}
+  %\begin{theorem}
+    \vfill
+    There exists a field
+    embedding \[\color{alert}\varphi:k\hookrightarrow K,\] unique up to
+    \mbox{$\F_q$-auto}morphisms of $k$.
+%  \end{column}
+%\end{columns}
+% \end{theorem}
+\end{frame}
+
+\begin{frame}\frametitle{Embedding description}
+      \begin{wrapfigure}{r}{0.4\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=8em,font=\Large]
+        \node(Fq){$\F_q$};
+        \node(Fqf)[above left of=Fq]{$k=\F_q[\alpha]$};
+        \node(Fqg)[above right of=Fqf]{$K$};
+        \begin{scope}[alert,node distance=2em]
+          \node(a)[above of=Fqf]{$\alpha$};
+          \node(b)[left of=Fqg]{$\beta$};
+        \end{scope}
+        \draw[auto,font=\small]
+        (Fq) edge node[left]{$r$} (Fqf)
+        (Fq) edge node[right]{$s$} (Fqg)
+        (Fqf) edge (Fqg);
+        \draw[|->,alert]
+        (a) edge (b);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \textbf{Determine} elements $\alpha$ and $\beta$ such
+    that
+    \begin{itemize}
+    \item $\alpha$ generates $k=\F_q[\alpha]$,
+    \item there exists $\varphi:\alpha\mapsto\beta$.
+    \end{itemize}
+    \vfill
+    \paragraph{Naive solution:} take
+    \begin{itemize}
+    \item $\alpha= X \mod f(X)$, and
+    \item $\beta$ a root of $f$ in $K$.
+    \end{itemize}
+    Cost of factorization: $\tildO(rs^{(\omega+1)/2})$
+\end{frame}
+
+\begin{frame}\frametitle{Some history}
+    \begin{enumerate}
+    \item['91] Lenstra~\cite{LenstraJr91} proves that the isomorphism
+      problem is in $\mathsf{P}$.
+      \begin{itemize}
+      \item Based on Kummer theory, pervasive use of linear algebra.
+      \item Does not prove precise complexity. Rough estimate:
+        $\Omega(r^3)$.
+      \end{itemize}
+    \item['92] Pinch's algorithm~\cite{Pinch}:
+      \begin{itemize}
+      \item Based on mapping algebraic groups over $k,K$.
+      \item Incomplete algorithm, no complexity analysis.
+      \end{itemize}
+    \item['96] Rains~\cite{rains2008} generalizes Pinch's algorithm.
+      \begin{itemize}
+      \item Complete algorithm, rigorous complexity analysis.
+      \item Unpublished. Leaves open question of using elliptic
+        curves.
+      \end{itemize}
+    \item['97] Magma~\cite{MAGMA} implements lattices of finite fields
+      using on polynomial factorization and linear algebra~\cite{bosma+cannon+steel97}.
+    \end{enumerate}
+  \end{frame}
+\begin{frame}\frametitle{Some history (cont.)}
+  \begin{enumerate}
+    \item['02] Allombert's variant of Lenstra's algorithm~\cite{Allombert02,Allombert02-rev}:
+      \begin{itemize}
+      \item Trades determinism for efficiency.
+      \item Implementation integrated into Pari/GP~\cite{Pari}.
+      \end{itemize}
+    \item['07] Magma implements Rains' algorithm.
+    \item['16] Narayanan proves the first $\tildO(r^2)$ upper
+      bound~\cite{narayanan2016fast}.
+      \begin{itemize}
+      \item Variant of Allombert's algorithm.
+      \item Using asymptotically fast modular composition.
+      \end{itemize}
+    \item[Now] Knowledge systematization. Notable results:
+      \begin{itemize}
+      \item Better variants of Allombert's algorithm.
+      \item $\tildO(r^2)$ upper bound \emph{without fast modular
+          composition}.
+      \item Generalized Rains' algorithm to elliptic curves.
+      \item C/Flint~\cite{hart2010flint} and Sage~\cite{Sage} implementations, experiments, comparisons.
+      \end{itemize}
+    \end{enumerate}
+  \end{frame}
+
+\subsection{Using Kummer theory}
+
+\begin{frame}\frametitle{Allombert's algorithm}
+      \begin{wrapfigure}[9]{r}{0.35\textwidth}
+      \begin{tikzpicture}[node distance=5em,on grid,black!70]
+        \node(Fq){$\F_q$};
+        \node(Fqz)[above=of Fq]{$\F_q(\zeta)$};
+        \node(k)[above left=of Fq]{$k$};
+        \node(kz)[above=of k]{$k\otimes\F_q(\zeta)$};
+        \node(K)[above right=of Fq]{$K$};
+        \node(Kz)[above=of K]{$K\otimes\F_q(\zeta)$};
+        \draw[font=\small,above]
+        (Fq) edge (Fqz)
+        (Fq) edge node{$\sigma$} (k)
+        (Fqz) edge node{$\sigma$} (kz)
+        (k) edge (kz)
+        (Fq) edge node{$\sigma$} (K)
+        (Fqz) edge node{$\sigma$} (Kz)
+        (K) edge (Kz)
+        (kz) edge node{$\sim$} (Kz);
+      \end{tikzpicture}
+    \end{wrapfigure}
+    
+    Assuming $\gcd(r,q)=1$:
+    \begin{itemize}
+    \item Let $h$ be an irreducible factor of the $r$-th cyclotomic
+      polynomial over $\F_q$;
+    \item Extend the action of $\Gal(k/\F_q)$ to the \textbf{ring}
+      $k[\zeta]=k[Z]/h(Z)$:
+      \[\begin{array}{llll}
+          \sigma: & k[\zeta] & \rightarrow & k[\zeta], \\
+                  & x \otimes \zeta & \mapsto & \sigma(x) \otimes \zeta;
+        \end{array}\]
+    \end{itemize}
+
+    \begin{itemize}
+    \item \textbf{Solve Hilbert 90:} find $\theta_1 \in k[\zeta]$ such that
+      $\sigma(\theta_1) = \zeta\theta_1$ using linear algebra;
+    \item Compute $\theta_2 \in K[\zeta]$ similarly;
+    \end{itemize}
+
+    \begin{itemize}
+    \item Compute $c = \sqrt[r]{\theta_1^r/\theta_2^r} \in\F_q(\zeta)$;
+    \item Project $\theta_1\mapsto\alpha\in k$ and
+      $c\theta_2\mapsto\beta\in K$.
+    \end{itemize}
+  \end{frame}
+
+\begin{frame}\frametitle{Implementation (take 1)}
+  \begin{block}{Factorization}
+  \begin{itemize}
+  \item The factor $h$ of $\Phi_r$ is of degree $\ord_r(q) = O(r)$;
+  \item Computing it is $\tildO(r)$ using Shoup~\cite{shoup94};
+  \item Computing $r$-th roots in $\F_q(\zeta)$ is $\tildO(r^2)$ using Kaltofen--Shoup~\cite{kaltofen+shoup97}.
+  \end{itemize}
+\end{block}
+  \begin{block}{Linear algebra}
+  \begin{itemize}
+  \item Computing a matrix for $\sigma$ over $\F_q$ is $\tildO(r^2)$;
+  \item Computing its kernel over $\F_q(\zeta)$ is \alert{$\tildO((sr)^\omega)$}.
+  \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}\frametitle{Implementation (take 2, 3, 4, 5, \ldots)}
+  \begin{block}{Reaching subquadratic complexity}
+    \begin{enumerate}
+    \item Use the factorization $h(S) = (S - \zeta) b(S)$ to perform linear algebra over $\F_q$.
+    \item Use the factorization $S^r - 1 =  (S - \zeta) b(S) g(S)$ with $h$ and $g$ in $\F_q[S]$ to replace linear algebra by modular composition.
+    \end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}
+%  \begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{../../paper/plots/bench-allombert-lowaux}
+%    \caption{
+      \flushleft
+      \textbf{Allombert's algorithm} where the auxiliary degree
+      $s=\ord_r(q)\le 10$.  Dots represent individual runs, lines
+      represent degree 2 linear regressions.
+%    }
+%  \end{figure}
+\end{frame}
+
+\begin{frame}
+%  \begin{figure}
+    \centering
+    \includegraphics[width=.8\textwidth]{../../paper/plots/bench-allombert-anyaux}
+%    \caption{
+      \flushleft
+      \textbf{Allombert's algorithm,} as a function of the auxiliary degree
+      $s=\ord_r(q)$ scaled down by $r^2$.
+%    }
+%  \end{figure}
+\end{frame}
+
+\subsection{Using algebraic groups}
+
+\begin{frame}\frametitle{Pinch's algorithm}
+      \begin{wrapfigure}[3]{r}{0pt}
+      \begin{tikzpicture}[node distance=6em,font=\Large,on grid]
+        \node(Fq){$\F_q$};
+        \node(kum)[above=of Fq]{$\F_q[\mu_\ell]$};
+        \node(k)[left=4em of kum]{$k$};
+        \node(K)[right=4em of kum]{$K$};
+        \draw[auto,font=\small]
+        (Fq) edge (kum)
+        (Fq) edge (k)
+        (Fq) edge (K)
+        (k) edge node{$\sim$} (kum)
+        (kum) edge node{$\sim$} (K);
+      \end{tikzpicture}
+    \end{wrapfigure}
+
+    \paragraph{Pinch's idea}
+    \begin{itemize}
+    \item Find \emph{small} $\ell$ such that $k\simeq\F_q[\mu_\ell]$,
+    \item Pick $\ell$-th roots of unity $\alpha\in k$, $\beta\in K$,
+    \item Find $e$ s.t. $\alpha\mapsto\beta^e$ using brute force.
+    \item \textbf{Problem 1:} worst case $\ell\in O(q^r)$.
+    \item \textbf{Problem 2:} potentially $O(\ell)$ exponents $e$ to test
+      depending on the splitting of $\Phi_l$ over $\F_q$.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}\frametitle{Rains' algorithm and variants}
+    \begin{itemize}
+    \item Replace $\alpha,\beta$ with \emph{Gaussian periods}:
+      \[\eta(\alpha) = \sum_{\sigma\in S}\alpha^\sigma\]
+      where $(\Z/\ell\Z)^\times = \langle q\rangle \times S$.
+    \begin{itemize}
+    \item Periods are normal elements, hence yield bases of $k$, $K$.
+    \item Periods are unique up to Galois action, hence $\eta(\alpha)\mapsto\eta(\beta)$ always defines an isomorphism.
+      \item The size of $\ell$ can be controlled by allowing auxiliary extensions.
+    \end{itemize}
+    \end{itemize}
+    \begin{itemize}
+    \item Use higher dimensional algebraic groups:
+  \begin{itemize}
+  \item Replace $\F_q[\mu_\ell]$ with the $\ell$-torsion of
+    \emph{random} elliptic curves $E/\F_q$;
+  \item Replace Gaussian periods with \emph{elliptic
+      periods}~\cite{mihailescu+morain+schost07};
+  \item This removes the need for auxiliary extensions.
+  \end{itemize}
+      \end{itemize}
+\end{frame}
+
+\begin{frame}
+  %\begin{figure}
+    \centering
+    \includegraphics[width=.75\textwidth]{../../paper/plots/bench-all}
+    % \caption{
+    \flushleft
+      \textbf{Allombert's vs Rains'} at some fixed auxiliary extension
+      degrees $s$. Lines represent median times, shaded areas minimum
+      and maximum times.
+   % }
+%  \end{figure}
+\end{frame}
+
+\begin{frame}
+\Huge \textbf{Questions ?}
+\end{frame}
+
+\begin{frame}[allowframebreaks]\frametitle{\refname}
+  \scriptsize
+    \bibliographystyle{plain}
+    \bibliography{../../paper/refs}
+\end{frame}
+
+\end{document}
