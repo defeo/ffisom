@@ -32,11 +32,16 @@
 \def\beamer@andinst{ }
 \makeatother
 \title[Lattices of finite fields]{Algorithms for lattices of compatibly embedded finite fields}
-\author[LB, LDF, JD, JPF, ÉS]{\small Ludovic Brieulle\inst{1} \and Luca De Feo\inst{2} \and Javad Doliskani\inst{3} \and Jean-Pierre~Flori\inst{4} \and Éric Schost\inst{3}}
+\author[LB, LDF, JD, JPF, ÉS]{Luca De Feo\inst{2} \and Jean-Pierre~Flori\inst{4}\\
+  \bigskip
+  \small joint work with\\
+  Ludovic Brieulle\inst{1} \and  Javad Doliskani\inst{3}\\
+  \and Édouard Rousseau\inst{2} \inst{5} \and Éric Schost\inst{3}}
 \institute[UAM, UVSQ, UW, ANSSI]{\tiny \vspace*{0.5em}\inst{1} Université d'Aix-Marseille \and
   \inst{2} Université de Versailles -- Saint-Quentin-en-Yvelines\\ \and
   \vspace*{-0.8em} \inst{3} University of Waterloo \and
-  \inst{4} Agence nationale de sécurité des systèmes d'information}
+  \inst{4} Agence nationale de sécurité des systèmes d'information\\
+  \inst{5} Télécom Paristech}
 \date[2018/01/17]{}
 
 \begin{document}
@@ -330,6 +335,197 @@
       and maximum times.
    % }
 %  \end{figure}
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tikzset{round/.style={circle, draw=black, very thick, scale = 0.7}}
+\tikzset{arrow/.style={->, >=latex}}
+\tikzset{dashed-arrow/.style={->, >=latex, dashed}}
+\newcommand{\ie}{\emph{i.e. }}
+\newcommand{\eg}{\emph{e.g. }}
+\newcommand{\embed}[2]{\phi_{#1\hookrightarrow#2}}
+
+\begin{frame}
+  \centering
+  \huge{Part II: Compatible embeddings}
+\end{frame}
+
+\begin{frame}{The compatibility problem}
+  \textcolor{purple}{\textbf{Context:}}
+  \begin{itemize}
+    \item $E$, $F$, $G$ fields
+    \item $E$ subfield of $F$ and $F$ subfield of $G$
+    \item $\phi_{E\hookrightarrow F}$, $\embed{F}{G}$,
+      $\embed{E}{G}$ embeddings
+  \end{itemize}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (E) at (0, 0) {$E$}; 
+      \node (F) at (1.5, 1) {$F$}; 
+      \node (G) at (0.5, 2) {$G$}; 
+
+      \draw[arrow] (E) -- (F);
+      \draw[arrow] (E) -- (G);
+      \draw[arrow] (F) -- (G);
+
+      \node (f12) at (1.25, 0.25) {$\embed{E}{F}$};
+      \node (f13) at (-0.35, 1) {$\embed{E}{G}$};
+      \node (f23) at (1.6, 1.65) {$\embed{F}{G}$};
+    \end{tikzpicture}
+  \end{figure}
+  \[
+    \textcolor{purple}{\embed{F}{G}\circ\embed{E}{F}\overset{?}{=}\embed{E}{G}}
+  \]
+\end{frame}
+
+\begin{frame}{The compatibility problem}
+   \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (E) at (0, 0) {$E$}; 
+      \node (F) at (2, 2) {$F$}; 
+      \node (G) at (-2, 2) {$G$}; 
+      \node (H) at (0, 4) {$H$}; 
+
+      \draw[arrow] (E) -- (F);
+      \draw[arrow] (E) -- (G);
+      \draw[arrow] (G) -- (H);
+      \draw[arrow] (F) -- (H);
+
+      \node (f12) at (1.65, 0.8) {$\embed{E}{F}$};
+      \node (f13) at (-1.65, 0.8) {$\embed{E}{G}$};
+      \node (f24) at (1.75, 3) {$\embed{F}{G}$};
+      \node (f34) at (-1.65, 3.2) {$\embed{G}{H}$};
+    \end{tikzpicture}
+  \end{figure}
+  \[
+    \textcolor{purple}{\embed{G}{H}\circ\embed{E}{G}\overset{?}{=}\embed{F}{H}\circ\embed{E}{F}}
+  \]
+\end{frame}
+
+\begin{frame}{Bosma, Cannon and Steel '97~\cite{bosma+cannon+steel97}}
+  \begin{itemize}
+    \item Based upon \emph{naive} embedding algorithms.
+    \item Supports arbitrary, user-defined finite fields.
+    \item Allows to compute the embeddings in arbitrary order.
+    \item Implemented by MAGMA.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Bosma, Cannon and Steel framework}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (E) at (0, 0) {$E$}; 
+      \node (F) at (1.5, 1) {$F$}; 
+      \node (G) at (0.5, 2) {$G$}; 
+
+      \draw[arrow] (E) -- (F);
+      \draw[arrow] (E) -- (G);
+      \draw[dashed-arrow] (F) -- (G);
+
+      \node (f12) at (1.25, 0.25) {$\embed{E}{F}$};
+      \node (f13) at (-0.35, 1) {$\embed{E}{G}$};
+    \end{tikzpicture}
+  \end{figure}
+  \begin{itemize}
+    \item Take $\embed{F}{G}'$ an arbitrary embedding between $F$ and
+      $G$
+    \item Find $\sigma\in\Gal(G/\mathbb{F}_p)$ such that
+      $\sigma\circ\embed{F}{G}'\circ\embed{E}{F}=\embed{E}{G}$
+    \item Set $\embed{F}{G}:=\sigma\circ\embed{F}{G}'$
+    \item There are $|\Gal(F/E)|$ compatible morphisms
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Bosma, Cannon and Steel framework}
+  What about several subfields $E_1, E_2, \dots, E_r$ ?
+  \begin{itemize}
+    \item Enforce these axioms on the lattice:
+      \begin{itemize}
+        \item[CE1] (Unicity) At most one morphism $\embed{E}{F}$
+        \item[CE2] (Reflexivity) For each $E$, $\embed{E}{E}=\Id_E$
+        \item[CE3] (Invertibility) For each pair $(E, F)$ with $E\cong F$,
+          $\embed{E}{F}=\embed{F}{E}^{-1}$ 
+        \item[CE4] (Transitivity) For any triple $(E, F, G)$ with $E$
+          subfield of $F$ and $F$ subfield of $G$, if we have
+         computed $\embed{E}{F}$ and $\embed{F}{G}$, then
+         $\embed{E}{G}=\embed{F}{G}\circ\embed{E}{F}$
+       \item[CE5] (\textbf{Intersections}) For any triple $(E, F, G)$
+         with $E$ and $F$ subfields of $G$, we have that the field
+         $S=E\cap F$ is embedded in $E$ and $F$, \ie we have computed
+         $\embed{S}{E}$ and $\embed{S}{F}$
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{The Bosma, Cannon and Steel framework}
+    \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (E1) at (-2, 0) {$E_1$}; 
+      \node (E2) at (-1, 0) {$E_2$}; 
+      \node (Er) at (0.75, 0) {$E_r$}; 
+      \node (F) at (1.5, 1) {$F$}; 
+      \node (G) at (0.5, 2) {$G$}; 
+      \node (p) at (0, 0) {$\dots$};
+
+      \draw[arrow] (E1) -- (F);
+      \draw[arrow] (E1) -- (G);
+      \draw[arrow] (E2) -- (F);
+      \draw[arrow] (E2) -- (G);
+      \draw[arrow] (Er) -- (F);
+      \draw[arrow] (Er) -- (G);
+      \draw[dashed-arrow] (F) -- (G);
+    \end{tikzpicture}
+  \end{figure}
+  \begin{itemize}
+    \item Set $F'$ the field generated by the fields $E_i$ in $F$
+    \item Set $G'$ the field generated by the fields $E_i$ in $G$
+  \end{itemize}
+  \begin{block}{Theorem}
+There exists a unique isomorphism $\chi:F'\to G'$ that is compatible with all
+embeddings, \ie such that for all $i$,
+$\embed{E_i}{G'}=\chi\circ\embed{E_i}{F'}$.
+  \end{block}
+\end{frame}
+
+
+\begin{frame}{New problem: compute embeddings with common subfields}
+  \begin{itemize}
+    \item We want to embed $E$ in $F$
+      \begin{itemize}
+        \item additionnal information: $S$ is a field embedded in $E$ and $F$
+      \end{itemize}
+    \item The naive algorithm can be sped up by replacing $\F_p$ with
+      $S$ as base field\\
+      (degree $[E:S]$ polynomial factorization \textbf{vs} degree
+      $[E:\mathbb{F}_p]$)
+    \item More generally: $S$ the compositum of all \textbf{known}
+      fields embedded in $E$ and $F$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Some questions}
+  \begin{itemize}
+  \item Bosma, Cannon and Steel framework + Allombert's algorithm:\\
+    \emph{any smart optimizations possible}?
+  \item Allombert's algorithm\\ \emph{with common subfield knowledge}?
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Demo}
+  \begin{itemize}
+  \item Our implementations of Allombert's algorithm + \emph{embedding
+      evaluation} are being pushed into Flint
+    (\url{https://github.com/wbhart/flint2/pull/351});
+  \item A compatible embedding framework is being added to
+    \href{http://nemocas.org/}{Nemo}
+    (\url{https://github.com/Nemocas/Nemo.jl/issues/233}).
+  \end{itemize}
 \end{frame}
 
 \begin{frame}
