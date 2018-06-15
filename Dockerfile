@@ -1,4 +1,4 @@
-FROM sagemath/sagemath:8.0-2
+FROM sagemath/sagemath:8.0
 
 ENV NB_USER=sage
 ENV HOME /home/sage
